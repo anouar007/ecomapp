@@ -234,6 +234,38 @@
                             <span>Émis le :</span>
                             <span class="fw-semibold text-dark">{{ $invoice->issued_at->format('d/m/Y H:i') }}</span>
                         </div>
+                        @if($invoice->items && $invoice->items->isNotEmpty())
+                            <div class="border-top pt-2 mt-1">
+                                <div class="text-muted fw-semibold mb-1.5" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;">
+                                    Articles inclus
+                                </div>
+                                <div class="d-flex flex-column gap-1.5" style="max-height: 220px; overflow-y: auto;">
+                                    @foreach($invoice->items as $editItem)
+                                        <div class="d-flex align-items-center gap-2 p-1.5 rounded-3 bg-white border">
+                                            @if($editItem->product_image)
+                                                <img src="{{ $editItem->product_image }}" alt="{{ $editItem->displayName }}"
+                                                     width="30" height="30"
+                                                     class="rounded border flex-shrink-0"
+                                                     style="width: 30px; height: 30px; object-fit: contain; background: #ffffff; padding: 1px;"
+                                                     onerror="this.style.display='none';">
+                                            @else
+                                                <div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted flex-shrink-0" style="width: 30px; height: 30px;">
+                                                    <i class="fas fa-file-alt" style="font-size: 11px;"></i>
+                                                </div>
+                                            @endif
+                                            <div class="min-w-0 flex-grow-1">
+                                                <div class="text-dark fw-semibold text-truncate" style="font-size: 0.78rem;" title="{{ $editItem->displayName }}">
+                                                    {{ $editItem->displayName }}
+                                                </div>
+                                                <div class="text-muted" style="font-size: 0.68rem;">
+                                                    x{{ $editItem->quantity }} &bull; {{ $editItem->formatted_total_price_ht }} HT
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                         <hr class="my-1 border-secondary-subtle">
                         <div class="d-flex justify-content-between align-items-baseline">
                             <span class="fw-bold text-dark fs-6">Montant Total :</span>

@@ -38,6 +38,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/live-clients', [DashboardController::class, 'liveClients'])->name('dashboard.live-clients');
     });
+
+    // Admin Notifications & Personal Reminders
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::get('/feed', [\App\Http\Controllers\NotificationController::class, 'feed'])->name('feed');
+        Route::post('/read', [\App\Http\Controllers\NotificationController::class, 'markRead'])->name('read');
+        Route::post('/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('read-all');
+        Route::post('/snooze', [\App\Http\Controllers\NotificationController::class, 'snooze'])->name('snooze');
+        Route::post('/dismiss', [\App\Http\Controllers\NotificationController::class, 'dismiss'])->name('dismiss');
+        Route::post('/restore', [\App\Http\Controllers\NotificationController::class, 'restore'])->name('restore');
+        Route::post('/contact/{contactMessage}/read', [\App\Http\Controllers\NotificationController::class, 'markContactRead'])->name('contact.read');
+        Route::post('/stock-alert/{alert}/acknowledge', [\App\Http\Controllers\NotificationController::class, 'acknowledgeStockAlert'])->name('stock-alert.acknowledge');
+        Route::post('/reminders', [\App\Http\Controllers\NotificationController::class, 'storeReminder'])->name('reminders.store');
+        Route::post('/reminders/{reminder}/complete', [\App\Http\Controllers\NotificationController::class, 'completeReminder'])->name('reminders.complete');
+        Route::delete('/reminders/{reminder}', [\App\Http\Controllers\NotificationController::class, 'destroyReminder'])->name('reminders.destroy');
+    });
     
     // Profile Management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');

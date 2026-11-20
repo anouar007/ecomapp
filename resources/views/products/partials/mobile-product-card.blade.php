@@ -18,7 +18,7 @@
                      src="{{ $product->thumbnail }}" 
                      alt="{{ $product->name }}" 
                      onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
-                     @if($product->image_padding_style) style="padding: {{ $product->image_padding_style }} !important; box-sizing: border-box !important;" @endif>
+                     @if($product->primary_image_padding_style) style="padding: {{ $product->primary_image_padding_style }} !important; box-sizing: border-box !important;" @endif>
             </div>
             <button type="button" 
                     class="mobile-prod-thumb-badge" 

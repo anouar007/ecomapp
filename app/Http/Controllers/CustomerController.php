@@ -120,7 +120,7 @@ class CustomerController extends Controller
         $customer->recalculateMetrics();
 
         // Customer statistics and order history
-        $recentOrders = $customer->allOrders()->with('items.product')->orderBy('created_at', 'desc')->paginate(15);
+        $recentOrders = $customer->allOrders()->with(['items.product.images', 'items.product.primaryImage', 'items.variant'])->orderBy('created_at', 'desc')->paginate(15);
         $recentInvoices = $customer->invoices()->orderBy('created_at', 'desc')->limit(10)->get();
         $recentTransactions = $customer->transactions()->with('createdBy')->limit(20)->get();
 

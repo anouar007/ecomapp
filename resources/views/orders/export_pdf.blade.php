@@ -228,7 +228,7 @@
         @php
             $statusBadge = match($order->status) {
                 'delivered', 'completed' => 'badge-success',
-                'processing', 'shipped', 'en_demande' => 'badge-info',
+                'processing', 'shipped', 'en_demande', 'reserved' => 'badge-info',
                 'cancelled', 'refunded' => 'badge-danger',
                 default => 'badge-warning',
             };
@@ -237,6 +237,7 @@
                 'shipped' => 'Expédiée',
                 'processing' => 'En cours',
                 'en_demande' => 'Sur Commande',
+                'reserved' => 'Réservé',
                 'cancelled' => 'Annulée',
                 default => 'En attente',
             };
@@ -317,9 +318,25 @@
                         @endphp
                         <tr>
                             <td>
-                                <strong>{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
-                                @if($item->variant_name)
-                                    <span style="color: #64748b;">({{ $item->variant_name }})</span>
+                                @if($pdfImg = $item->pdf_product_image)
+                                    <table style="width: 100%; border-collapse: collapse; margin: 0; padding: 0;">
+                                        <tr style="background: transparent !important; border: none !important;">
+                                            <td style="width: 26px; border: none !important; padding: 0 5px 0 0 !important; background: transparent !important; vertical-align: middle;">
+                                                <img src="{{ $pdfImg }}" alt="" style="display: block; width: 22px; height: 22px; object-fit: contain; border: 1px solid #e2e8f0; border-radius: 3px; background: #ffffff; padding: 1px;">
+                                            </td>
+                                            <td style="border: none !important; padding: 0 !important; background: transparent !important; vertical-align: middle;">
+                                                <strong>{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
+                                                @if($item->variant_name)
+                                                    <span style="color: #64748b;">({{ $item->variant_name }})</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    </table>
+                                @else
+                                    <strong>{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
+                                    @if($item->variant_name)
+                                        <span style="color: #64748b;">({{ $item->variant_name }})</span>
+                                    @endif
                                 @endif
                             </td>
                             <td style="color: #64748b;">{{ $item->product_sku ?? ($item->product->sku ?? '—') }}</td>

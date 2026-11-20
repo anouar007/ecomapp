@@ -18,6 +18,14 @@
     $paymentStatus = $order->payment_status ?? 'pending';
 
     $heroConfig = match($status) {
+        'reserved' => [
+            'badge' => __('Commande réservée'),
+            'badge_class' => 'bg-primary-subtle text-primary border border-primary-subtle',
+            'badge_icon' => 'fas fa-bookmark',
+            'title' => __('Commande réservée !'),
+            'subtitle' => __('Vos articles ont bien été réservés par notre équipe. Nous vous tiendrons informé dès l\'étape suivante.'),
+            'icon' => 'fas fa-bookmark',
+        ],
         'processing' => [
             'badge' => __('Commande en préparation'),
             'badge_class' => 'bg-info-subtle text-info border border-info-subtle',
@@ -64,7 +72,7 @@
 
     $isStep1Complete = true;
     $isStep2Complete = in_array($status, ['shipped', 'delivered']);
-    $isStep2Active = in_array($status, ['pending', 'processing']);
+    $isStep2Active = in_array($status, ['pending', 'en_demande', 'reserved', 'processing']);
     $isStep3Complete = ($status === 'delivered');
     $isStep3Active = ($status === 'shipped');
     $isStep4Complete = ($status === 'delivered');
@@ -76,6 +84,7 @@
 
     $stepperProgressPercent = match($status) {
         'pending' => 20,
+        'reserved' => 35,
         'processing' => 45,
         'shipped' => 75,
         'delivered' => 100,
@@ -85,6 +94,7 @@
 
     $statusLabel = match($status) {
         'pending' => __('Validée'),
+        'reserved' => __('Réservé'),
         'processing' => __('En préparation'),
         'shipped' => __('Expédiée'),
         'delivered' => __('Livrée'),
@@ -94,6 +104,7 @@
 
     $statusBadgeClass = match($status) {
         'pending' => 'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+        'reserved' => 'bg-primary-subtle text-primary border border-primary-subtle',
         'processing' => 'bg-info-subtle text-info border border-info-subtle',
         'shipped' => 'bg-primary-subtle text-primary border border-primary-subtle',
         'delivered' => 'bg-success-subtle text-success border border-success-subtle',
@@ -103,6 +114,7 @@
 
     $statusBadgeIcon = match($status) {
         'pending' => 'fas fa-clock text-warning',
+        'reserved' => 'fas fa-bookmark text-primary',
         'processing' => 'fas fa-box-open text-info',
         'shipped' => 'fas fa-truck-fast text-primary',
         'delivered' => 'fas fa-circle-check text-success',
@@ -371,9 +383,19 @@
 
                             {{-- Adresse de livraison --}}
                             <div class="col-sm-6">
+                                @php
+                                    $isStorePickupOrder = str_starts_with((string) $order->shipping_address, 'Retrait au magasin de Casablanca');
+                                    $successPickupPhone = $pickupPhone ?? '06 29 03 57 77';
+                                    $successPickupTelHref = 'tel:' . preg_replace('/[^\d\+]/', '', $successPickupPhone);
+                                    $successPickupMapsUrl = $pickupMapsUrl ?? 'https://maps.app.goo.gl/NfQmJQ1xqXSydiUk6';
+                                @endphp
                                 <div class="p-3 rounded-3 bg-light border h-100">
                                     <div class="text-muted small fw-semibold mb-1.5 text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">
-                                        <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ __('Adresse de livraison') }}
+                                        @if($isStorePickupOrder)
+                                            <i class="fas fa-store text-success me-1"></i>{{ __('Pickup at Casablanca Store') }}
+                                        @else
+                                            <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ __('Adresse de livraison') }}
+                                        @endif
                                     </div>
                                     <div class="fw-bold text-dark mb-1">
                                         {{ $order->shipping_city }}
@@ -385,9 +407,20 @@
                                         {{ $order->shipping_address }}
                                     </div>
                                     <div class="pt-2 border-top">
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.70rem;">
-                                            <i class="fas fa-bolt me-1"></i>{{ __('Livraison Express 24/48h partout au Maroc') }}
-                                        </span>
+                                        @if($isStorePickupOrder)
+                                            <div class="d-flex flex-wrap gap-1.5">
+                                                <a href="{{ $successPickupTelHref }}" class="btn btn-sm btn-outline-success rounded-pill px-2 py-0.5 fw-semibold" style="font-size: 0.72rem;">
+                                                    <i class="fas fa-phone-alt me-1"></i>{{ $successPickupPhone }}
+                                                </a>
+                                                <a href="{{ $successPickupMapsUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-success rounded-pill px-2 py-0.5 fw-semibold" style="font-size: 0.72rem;">
+                                                    <i class="fas fa-map-location-dot me-1"></i>{{ __('View location on Google Maps') }}
+                                                </a>
+                                            </div>
+                                        @else
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.70rem;">
+                                                <i class="fas fa-bolt me-1"></i>{{ __('Livraison Express 24/48h partout au Maroc') }}
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -803,6 +836,10 @@ function updateStepperClasses(status) {
         s1.classList.add('is-complete');
         s2.classList.add('is-active');
         if (lineFill) lineFill.style.width = '20%';
+    } else if (status === 'reserved') {
+        s1.classList.add('is-complete');
+        s2.classList.add('is-active');
+        if (lineFill) lineFill.style.width = '35%';
     } else if (status === 'processing') {
         s1.classList.add('is-complete');
         s2.classList.add('is-active');

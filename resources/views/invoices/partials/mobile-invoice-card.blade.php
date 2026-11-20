@@ -142,8 +142,19 @@
         @endif
 
         <!-- Items Count -->
-        <span class="mobile-order-items-pill">
-            <i class="fas fa-box text-muted me-1"></i>{{ $invoice->items->count() }} article{{ $invoice->items->count() > 1 ? 's' : '' }}
+        @php
+            $firstMobProdImg = $invoice->items->map(fn($it) => $it->product_image)->filter()->first();
+        @endphp
+        <span class="mobile-order-items-pill d-inline-flex align-items-center gap-1.5">
+            @if($firstMobProdImg)
+                <img src="{{ $firstMobProdImg }}" alt="" width="20" height="20"
+                     class="rounded border flex-shrink-0"
+                     style="width: 20px; height: 20px; object-fit: contain; background: #ffffff; padding: 1px;"
+                     onerror="this.style.display='none';">
+            @else
+                <i class="fas fa-box text-muted me-1"></i>
+            @endif
+            <span>{{ $invoice->items->count() }} article{{ $invoice->items->count() > 1 ? 's' : '' }}</span>
         </span>
 
         @if($invoice->due_date)

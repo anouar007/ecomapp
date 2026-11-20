@@ -14,7 +14,7 @@ class CartController extends Controller
      */
     public function index(Request $request)
     {
-        $cart = session()->get('cart', []);
+        $cart = self::hydrateCartImages(session()->get('cart', []));
         $total = 0;
         
         foreach ($cart as $id => $details) {
@@ -172,6 +172,7 @@ class CartController extends Controller
 
             if (isset($cart[$cartKey])) {
                 $cart[$cartKey]['quantity'] += $quantity;
+                $cart[$cartKey]['image'] = $image;
             } else {
                 $cart[$cartKey] = [
                     'product_id' => $product->id,
@@ -306,11 +307,61 @@ class CartController extends Controller
     }
 
     /**
+     * Refresh cart item images from the database so every item always displays its current main product image.
+     */
+    public static function hydrateCartImages(array $cart): array
+    {
+        if (empty($cart)) {
+            return $cart;
+        }
+
+        $productIds = [];
+        $variantIds = [];
+        foreach ($cart as $key => $details) {
+            $prodId = (int) ($details['product_id'] ?? explode('_', (string) $key)[0]);
+            if ($prodId > 0) {
+                $productIds[] = $prodId;
+            }
+            if (!empty($details['variant_id'])) {
+                $variantIds[] = (int) $details['variant_id'];
+            }
+        }
+
+        $productIds = array_values(array_unique($productIds));
+        if (empty($productIds)) {
+            return $cart;
+        }
+
+        $products = Product::with(['images', 'primaryImage'])
+            ->whereIn('id', $productIds)
+            ->get()
+            ->keyBy('id');
+
+        $variants = !empty($variantIds)
+            ? \App\Models\ProductVariant::whereIn('id', array_values(array_unique($variantIds)))->get()->keyBy('id')
+            : collect();
+
+        foreach ($cart as $key => $details) {
+            $prodId = (int) ($details['product_id'] ?? explode('_', (string) $key)[0]);
+            $product = $products->get($prodId);
+            if ($product) {
+                $variantId = !empty($details['variant_id']) ? (int) $details['variant_id'] : null;
+                $variant = $variantId ? $variants->get($variantId) : null;
+                $cart[$key]['image'] = ($variant && !empty($variant->image_url))
+                    ? $variant->image_url
+                    : $product->thumbnail;
+            }
+        }
+
+        return $cart;
+    }
+
+    /**
      * Return mini-cart items HTML for AJAX refresh.
      */
     public function miniCartItems()
     {
-        $cart = session()->get('cart', []);
+        $cart = self::hydrateCartImages(session()->get('cart', []));
         return view('frontend.cart.partials.mini-cart-items', compact('cart'));
     }
 

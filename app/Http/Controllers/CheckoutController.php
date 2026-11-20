@@ -7,24 +7,30 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Coupon;
 use App\Models\Customer;
+use App\Models\Store;
 use App\Services\DeliveryService;
 use App\Services\MailConfigService;
 use App\Mail\OrderConfirmation;
 use App\Mail\NewOrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+    public const CASABLANCA_PICKUP_ADDRESS = '01 Rue 102, Hay Wiam, Al Oulfa';
+    public const CASABLANCA_PICKUP_MAPS_URL = 'https://maps.app.goo.gl/NfQmJQ1xqXSydiUk6';
+    public const CASABLANCA_PICKUP_PHONE = '06 29 03 57 77';
+
     /**
      * Show the checkout form.
      */
     public function index(Request $request)
     {
-        $cart = session()->get('cart', []);
+        $cart = CartController::hydrateCartImages(session()->get('cart', []));
         
         if (empty($cart)) {
             return redirect()->route('shop.index')->with('error', 'Votre panier est vide.');
@@ -91,8 +97,31 @@ class CheckoutController extends Controller
 
         $total = max(0, $subtotal - $discount);
         $cities = DeliveryService::getCities();
+        $pickupStore = $this->resolveCasablancaPickupStore();
+        $pickupAddress = $pickupStore?->address ?: self::CASABLANCA_PICKUP_ADDRESS;
+        $pickupMapsUrl = self::CASABLANCA_PICKUP_MAPS_URL;
+        $pickupPhone = $pickupStore?->phone ?: self::CASABLANCA_PICKUP_PHONE;
 
-        return view('frontend.checkout.index', compact('cart', 'subtotal', 'discount', 'appliedCoupon', 'total', 'cities'));
+        return view('frontend.checkout.index', compact('cart', 'subtotal', 'discount', 'appliedCoupon', 'total', 'cities', 'pickupStore', 'pickupAddress', 'pickupMapsUrl', 'pickupPhone'));
+    }
+
+    /**
+     * Resolve the active Casablanca pickup store (falling back to default active store).
+     */
+    protected function resolveCasablancaPickupStore(): ?Store
+    {
+        return Store::where('is_active', true)
+            ->where(function ($q) {
+                $q->where('city', 'like', '%casablanca%')
+                    ->orWhere('name', 'like', '%casablanca%');
+            })
+            ->orderByDesc('is_default')
+            ->orderBy('sort_order')
+            ->first()
+            ?? Store::where('is_active', true)
+                ->orderByDesc('is_default')
+                ->orderBy('sort_order')
+                ->first();
     }
 
     /**
@@ -100,6 +129,9 @@ class CheckoutController extends Controller
      */
     public function store(Request $request)
     {
+        $deliveryMethod = $request->input('delivery_method', 'delivery');
+        $isStorePickup = $deliveryMethod === 'pickup_casablanca';
+
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'nullable|email|max:255',
@@ -113,14 +145,32 @@ class CheckoutController extends Controller
                     }
                 },
             ],
-            'shipping_address' => 'required|string|max:255',
-            'shipping_city' => 'required|string|max:255',
+            'customer_phone_confirmation' => [
+                'required',
+                'string',
+                'max:30',
+                function ($attribute, $value, $fail) use ($request) {
+                    $primary = $this->normalizeAndValidatePhone((string) $request->input('customer_phone', ''));
+                    $confirm = $this->normalizeAndValidatePhone((string) $value);
+                    if ($confirm === null) {
+                        $fail('Veuillez confirmer avec un numéro de téléphone valide.');
+                        return;
+                    }
+                    if ($primary !== null && $primary !== $confirm) {
+                        $fail(__('Phone numbers do not match.'));
+                    }
+                },
+            ],
+            'delivery_method' => 'nullable|in:delivery,pickup_casablanca',
+            'shipping_address' => ($isStorePickup ? 'nullable' : 'required') . '|string|max:255',
+            'shipping_city' => ($isStorePickup ? 'nullable' : 'required') . '|string|max:255',
             'shipping_city_custom' => 'nullable|string|max:255',
             'ice' => 'nullable|string|max:50',
             'shipping_state' => 'nullable|string|max:255',
         ], [
             'customer_name.required' => 'Veuillez saisir votre nom complet.',
             'customer_phone.required' => 'Veuillez saisir votre numéro de téléphone.',
+            'customer_phone_confirmation.required' => 'Veuillez confirmer votre numéro de téléphone.',
             'shipping_address.required' => 'Veuillez renseigner votre adresse de livraison.',
             'shipping_city.required' => 'Veuillez sélectionner ou saisir votre ville.',
         ]);
@@ -130,13 +180,21 @@ class CheckoutController extends Controller
         $cleanPhone = $this->normalizeAndValidatePhone($rawPhone) ?? preg_replace('/[^\d\+]/', '', $rawPhone);
         $cleanEmail = !empty($request->customer_email) ? trim(strtolower((string)$request->customer_email)) : null;
 
-        // Determine actual city name (support manual entry if city is not in the list)
-        $cityName = trim($request->shipping_city ?? '');
-        if ($cityName === '__other__' || empty($cityName)) {
-            $cityName = trim($request->shipping_city_custom ?? '');
-            if (empty($cityName)) {
-                return back()->withInput()->withErrors(['shipping_city' => 'Veuillez renseigner le nom de votre ville.']);
+        $pickupStore = $isStorePickup ? $this->resolveCasablancaPickupStore() : null;
+        if ($isStorePickup) {
+            $cityName = $pickupStore?->city ?: 'Casablanca';
+            $pickupAddress = $pickupStore?->address ?: self::CASABLANCA_PICKUP_ADDRESS;
+            $shippingAddress = 'Retrait au magasin de Casablanca — ' . $pickupAddress;
+        } else {
+            // Determine actual city name (support manual entry if city is not in the list)
+            $cityName = trim($request->shipping_city ?? '');
+            if ($cityName === '__other__' || empty($cityName)) {
+                $cityName = trim($request->shipping_city_custom ?? '');
+                if (empty($cityName)) {
+                    return back()->withInput()->withErrors(['shipping_city' => 'Veuillez renseigner le nom de votre ville.']);
+                }
             }
+            $shippingAddress = trim((string) $request->shipping_address);
         }
 
         $cart = session()->get('cart', []);
@@ -189,8 +247,10 @@ class CheckoutController extends Controller
             }
         }
 
-        // Calculate dynamic delivery fee from resolved city (or 0 if free shipping coupon)
-        $shippingCost = $isFreeShipping ? 0.0 : DeliveryService::getDeliveryCost($cityName, 40.0);
+        // Calculate dynamic delivery fee from resolved city (or 0 for Casablanca store pickup / free shipping coupon)
+        $shippingCost = ($isStorePickup || $isFreeShipping)
+            ? 0.0
+            : DeliveryService::getDeliveryCost($cityName, 40.0);
 
         $taxRateSetting = floatval(setting('tax_rate', 20)) / 100;
         $tax = $taxRateSetting > 0 ? ($subtotal - ($subtotal / (1 + $taxRateSetting))) : 0;
@@ -198,7 +258,7 @@ class CheckoutController extends Controller
         $total = max(0, $subtotal + $shippingCost - $discount); // Total TTC including shipping minus discount
 
         try {
-            $order = DB::transaction(function () use ($request, $cleanPhone, $cleanEmail, $cityName, $subtotalNet, $tax, $shippingCost, $discount, $coupon, $total, $cart, $subtotal) {
+            $order = DB::transaction(function () use ($request, $cleanPhone, $cleanEmail, $shippingAddress, $cityName, $isStorePickup, $pickupStore, $subtotalNet, $tax, $shippingCost, $discount, $coupon, $total, $cart, $subtotal) {
                 // Create Order
                 $order = Order::create([
                     'order_number' => 'ORD-' . strtoupper(Str::random(10)),
@@ -207,7 +267,7 @@ class CheckoutController extends Controller
                     'customer_email' => $cleanEmail,
                     'customer_phone' => $cleanPhone ?: $request->customer_phone,
                     'ice' => $request->ice,
-                    'shipping_address' => $request->shipping_address,
+                    'shipping_address' => $shippingAddress,
                     'shipping_city' => $cityName,
                     'shipping_state' => $request->shipping_state,
                     'shipping_zip' => 'N/A',
@@ -277,7 +337,7 @@ class CheckoutController extends Controller
                         }
                     } elseif ($product && $product->track_inventory) {
                         $stockBefore = (int) ($product->stock ?? 0);
-                        $defaultStoreId = Product::defaultStoreId();
+                        $defaultStoreId = ($isStorePickup && $pickupStore) ? $pickupStore->id : Product::defaultStoreId();
                         $remaining = $qty;
                         $storeStocks = \App\Models\ProductStock::where('product_id', $product->id)
                             ->where('quantity', '>', 0)
@@ -400,7 +460,12 @@ class CheckoutController extends Controller
             ->where('id', $id)
             ->orWhere('order_number', $id)
             ->firstOrFail();
-        return view('frontend.checkout.success', compact('order'));
+
+        $pickupStore = $this->resolveCasablancaPickupStore();
+        $pickupMapsUrl = self::CASABLANCA_PICKUP_MAPS_URL;
+        $pickupPhone = $pickupStore?->phone ?: self::CASABLANCA_PICKUP_PHONE;
+
+        return view('frontend.checkout.success', compact('order', 'pickupMapsUrl', 'pickupPhone'));
     }
 
     /**
@@ -418,6 +483,7 @@ class CheckoutController extends Controller
 
         $stepIndex = match($status) {
             'pending' => 1,
+            'reserved' => 2,
             'processing' => 2,
             'shipped' => 3,
             'delivered' => 4,
@@ -427,6 +493,7 @@ class CheckoutController extends Controller
 
         $statusLabel = match($status) {
             'pending' => __('Validée'),
+            'reserved' => __('Réservé'),
             'processing' => __('En préparation'),
             'shipped' => __('Expédiée'),
             'delivered' => __('Livrée'),
@@ -436,6 +503,7 @@ class CheckoutController extends Controller
 
         $statusBadgeClass = match($status) {
             'pending' => 'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+            'reserved' => 'bg-primary-subtle text-primary border border-primary-subtle',
             'processing' => 'bg-info-subtle text-info border border-info-subtle',
             'shipped' => 'bg-primary-subtle text-primary border border-primary-subtle',
             'delivered' => 'bg-success-subtle text-success border border-success-subtle',
@@ -445,6 +513,7 @@ class CheckoutController extends Controller
 
         $statusBadgeIcon = match($status) {
             'pending' => 'fas fa-clock text-warning',
+            'reserved' => 'fas fa-bookmark text-primary',
             'processing' => 'fas fa-box-open text-info',
             'shipped' => 'fas fa-truck-fast text-primary',
             'delivered' => 'fas fa-circle-check text-success',
@@ -467,6 +536,17 @@ class CheckoutController extends Controller
         };
 
         $hero = match($status) {
+            'reserved' => [
+                'badge_text' => __('Commande réservée'),
+                'badge_class' => 'bg-primary-subtle text-primary border border-primary-subtle',
+                'badge_icon' => 'fas fa-bookmark me-1.5',
+                'title' => __('Commande réservée !'),
+                'subtitle' => __('Vos articles ont bien été réservés par notre équipe. Nous vous tiendrons informé dès l\'étape suivante.'),
+                'icon' => 'fas fa-bookmark',
+                'accent' => 'linear-gradient(90deg, #7c3aed 0%, #6d28d9 50%, #10b981 100%)',
+                'icon_bg' => 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+                'icon_glow' => 'rgba(124, 58, 237, 0.35)',
+            ],
             'processing' => [
                 'badge_text' => __('Commande en cours de préparation'),
                 'badge_class' => 'bg-info-subtle text-info border border-info-subtle',
@@ -592,5 +672,88 @@ class CheckoutController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Reverse-geocode browser GPS coordinates into a street address and matched delivery city.
+     */
+    public function reverseGeocode(Request $request)
+    {
+        $validated = $request->validate([
+            'lat' => 'required|numeric|between:-90,90',
+            'lon' => 'required|numeric|between:-180,180',
+        ]);
+
+        $latFmt = number_format((float) $validated['lat'], 6, '.', '');
+        $lonFmt = number_format((float) $validated['lon'], 6, '.', '');
+        $mapsUrl = "https://www.google.com/maps?q={$latFmt},{$lonFmt}";
+
+        try {
+            $response = Http::timeout(6)
+                ->withHeaders([
+                    'User-Agent' => 'WinaShopCheckout/1.0 (+' . config('app.url') . ')',
+                ])
+                ->get('https://nominatim.openstreetmap.org/reverse', [
+                    'format' => 'jsonv2',
+                    'lat' => $latFmt,
+                    'lon' => $lonFmt,
+                    'addressdetails' => 1,
+                    'accept-language' => app()->getLocale() === 'ar' ? 'ar,fr' : 'fr,en',
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $addr = is_array($data['address'] ?? null) ? $data['address'] : [];
+
+                $streetLine = trim(($addr['house_number'] ?? '') . ' ' . ($addr['road'] ?? $addr['pedestrian'] ?? $addr['residential'] ?? ''));
+                $area = trim((string) ($addr['neighbourhood'] ?? $addr['suburb'] ?? $addr['quarter'] ?? ''));
+                $district = trim((string) ($addr['city_district'] ?? ''));
+
+                $parts = array_values(array_unique(array_filter([$streetLine, $area, $district], fn ($v) => $v !== '')));
+                $resolvedAddress = !empty($parts)
+                    ? Str::limit(implode(', ', $parts), 240, '')
+                    : Str::limit((string) ($data['display_name'] ?? "Position GPS ({$latFmt}, {$lonFmt})"), 240, '');
+
+                $resolvedCity = null;
+                $cityCandidates = [];
+                foreach (['city', 'town', 'village', 'municipality', 'county', 'state_district', 'state'] as $key) {
+                    $val = trim((string) ($addr[$key] ?? ''));
+                    if ($val !== '') {
+                        $cityCandidates[$key] = $val;
+                        $matched = DeliveryService::findCity($val);
+                        if ($matched && !empty($matched['name_en'])) {
+                            $resolvedCity = $matched['name_en'];
+                            break;
+                        }
+                    }
+                }
+                if ($resolvedCity === null) {
+                    foreach (['city', 'town', 'village', 'municipality'] as $fallbackKey) {
+                        if (!empty($cityCandidates[$fallbackKey])) {
+                            $resolvedCity = $cityCandidates[$fallbackKey];
+                            break;
+                        }
+                    }
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'address' => $resolvedAddress,
+                    'city' => $resolvedCity,
+                    'maps_url' => $mapsUrl,
+                    'fallback' => false,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Reverse geocode fallback triggered: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'address' => "Position GPS ({$latFmt}, {$lonFmt})",
+            'city' => null,
+            'maps_url' => $mapsUrl,
+            'fallback' => true,
+        ]);
     }
 }

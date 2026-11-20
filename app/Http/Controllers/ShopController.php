@@ -274,7 +274,7 @@ class ShopController extends Controller
      */
     public function json($id)
     {
-        $product = Product::with('productCategory', 'primaryImage')->findOrFail($id);
+        $product = Product::with(['productCategory', 'primaryImage', 'images'])->findOrFail($id);
         
         return response()->json([
             'id' => $product->id,

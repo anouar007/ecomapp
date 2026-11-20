@@ -42,50 +42,268 @@
 }
 
 .pos-mobile-tab {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     border: 1px solid #e2e8f0;
     background: #f8fafc;
     color: #475569;
     border-radius: 10px;
-    padding: 8px 10px;
-    font-size: 12.5px;
-    font-weight: 600;
+    padding: 6px 4px;
+    font-size: 11px;
+    font-weight: 700;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 3px;
     cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pos-mobile-tab .step-badge-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #334155;
+    font-size: 10.5px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .pos-mobile-tab.active {
     background: #dc2626;
     color: #ffffff;
     border-color: #dc2626;
+    box-shadow: 0 3px 10px rgba(220, 38, 38, 0.22);
+}
+
+.pos-mobile-tab.active .step-badge-num {
+    background: #ffffff;
+    color: #dc2626;
+}
+
+.pos-mobile-tab.done {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+.pos-mobile-tab.done .step-badge-num {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+#posStepConfirmBox {
+    display: none;
 }
 
 @media (max-width: 1023px) {
     .main-content {
-        height: auto;
-        min-height: calc(100vh - 70px);
-        overflow: visible;
+        height: auto !important;
+        min-height: calc(100vh - 60px) !important;
+        overflow: visible !important;
+        overflow-y: visible !important;
     }
     .pos-mobile-tabs {
-        display: flex;
-        position: sticky;
-        top: 70px;
-        z-index: 20;
+        display: flex !important;
+        position: fixed !important;
+        top: 60px !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 45 !important;
+        padding: 6px 8px !important;
+        gap: 5px !important;
+        background: #ffffff !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08) !important;
+    }
+    .pos-mobile-tab {
+        min-height: 46px;
     }
     .pos-layout {
-        display: block;
-        height: auto;
-    }
-    .pos-pane {
-        display: none;
+        display: block !important;
         height: auto !important;
+        overflow: visible !important;
+        padding-top: 60px !important;
+    }
+    .pos-pane:not(.mobile-active) {
+        display: none !important;
     }
     .pos-pane.mobile-active {
         display: flex !important;
-        flex-direction: column;
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: calc(100vh - 130px) !important;
+        overflow: visible !important;
+        padding-bottom: 96px !important;
+    }
+    .pos-products-area,
+    .cart-items-panel,
+    .order-form-panel {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+    }
+    .pos-header {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        padding: 10px !important;
+        gap: 8px !important;
+        background: #ffffff !important;
+    }
+    .pos-header .search-container {
+        display: block !important;
+        flex: 1 1 calc(100% - 96px) !important;
+        min-width: 170px !important;
+        order: 1 !important;
+    }
+    .pos-header .search-input {
+        display: block !important;
+        width: 100% !important;
+        height: 42px !important;
+        font-size: 14px !important;
+        background: #ffffff !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-radius: 10px !important;
+    }
+    .pos-header #posMobileFiltersToggle {
+        order: 2 !important;
+        height: 42px !important;
+    }
+    .pos-header .pos-filters-collapse {
+        order: 4 !important;
+    }
+    .products-grid {
+        flex: none !important;
+        height: auto !important;
+        min-height: 280px !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 10px !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+    }
+    .items-list,
+    .panel-content {
+        flex: none !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    /* Step 3 (Client), Step 4 (Payment), Step 5 (Confirmation) sub-panes inside #paneCheckout */
+    #paneCheckout[data-mobile-step="3"] #posStepDiscountBox,
+    #paneCheckout[data-mobile-step="3"] #posStepPaymentBox,
+    #paneCheckout[data-mobile-step="3"] #posStepConfirmBox,
+    #paneCheckout[data-mobile-step="3"] .order-totals {
+        display: none !important;
+    }
+    #paneCheckout[data-mobile-step="4"] #posStepClientBox,
+    #paneCheckout[data-mobile-step="4"] #posStepConfirmBox,
+    #paneCheckout[data-mobile-step="4"] .order-totals {
+        display: none !important;
+    }
+    #paneCheckout[data-mobile-step="5"] #posStepClientBox,
+    #paneCheckout[data-mobile-step="5"] #posStepDiscountBox,
+    #paneCheckout[data-mobile-step="5"] #posStepPaymentBox {
+        display: none !important;
+    }
+    #paneCheckout[data-mobile-step="5"] #posStepConfirmBox {
+        display: block !important;
+    }
+    .pos-product-card {
+        min-height: 170px !important;
+    }
+    .card-img-wrapper {
+        height: 92px !important;
+        min-height: 92px !important;
+    }
+    .control-btn,
+    .cart-item-remove {
+        width: 34px !important;
+        height: 34px !important;
+    }
+    .payment-pill {
+        min-height: 38px;
+        padding: 7px 12px !important;
+        font-size: 12.5px !important;
+    }
+    .cash-preset-btn {
+        min-height: 36px;
+        padding: 5px 11px !important;
+        font-size: 12px !important;
+    }
+    .pay-btn {
+        min-height: 48px;
+        font-size: 15px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .pos-filters-collapse {
+        display: flex;
+        width: 100%;
+        gap: 6px;
+        flex-wrap: wrap;
+        padding-top: 6px;
+        border-top: 1px solid #f1f5f9;
+    }
+    .pos-filters-collapse.collapsed-mobile {
+        display: none !important;
+    }
+    .pos-filters-collapse .pos-store-picker {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 130px;
+    }
+    .pos-filters-collapse .pos-store-select {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .pos-filters-collapse {
+        display: contents;
+    }
+}
+
+@media (hover: none) {
+    .pos-product-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    .pos-product-card:hover .overlay-add {
+        opacity: 0;
+    }
+    .pos-product-card:active {
+        transform: scale(0.97);
+        border-color: #dc2626;
+    }
+}
+
+.pos-mobile-bottom-bar {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    .pos-mobile-bottom-bar.visible {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 45;
+        background: #0f172a;
+        color: #ffffff;
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+        box-shadow: 0 -6px 24px rgba(15, 23, 42, 0.22);
     }
 }
 
@@ -602,6 +820,17 @@
     margin-bottom: 8px;
 }
 
+.cart-item-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: contain;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 2px;
+    flex-shrink: 0;
+}
+
 .cart-item-name {
     font-size: 13px;
     font-weight: 600;
@@ -672,10 +901,76 @@
     margin-top: 8px;
     padding-top: 8px;
     border-top: 1px dashed #e2e8f0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 8px;
+}
+
+.cart-item-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.cart-item-field-label {
+    font-size: 10.5px;
+    color: #64748b;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.item-price-input {
+    width: 100%;
+    min-width: 0;
+    padding: 4px 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 12px;
+    background: #ffffff;
+    text-align: right;
+    color: #0f172a;
+}
+
+.item-price-input:focus {
+    outline: none;
+    border-color: #0284c7;
+}
+
+.item-price-input.has-custom-price {
+    border-color: #0284c7;
+    background: #f0f9ff;
+    font-weight: 700;
+    color: #0369a1;
+}
+
+.cart-item-store-row {
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px dashed #e2e8f0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 6px;
+}
+
+.cart-store-select {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #1e293b;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.cart-store-select:focus {
+    outline: none;
+    border-color: #dc2626;
 }
 
 .item-disc-inputs {
@@ -756,7 +1051,7 @@
 
 .payment-pills {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 6px;
 }
 
@@ -787,6 +1082,10 @@
 .payment-pill:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+}
+
+#posStatusPill.dropdown-toggle::after {
+    display: none !important;
 }
 
 .order-totals {
@@ -855,16 +1154,27 @@
     $currencySymbol = setting('currency_symbol', 'DH');
 @endphp
 
-<!-- Mobile Tab Switcher -->
-<div class="pos-mobile-tabs">
-    <button type="button" class="pos-mobile-tab active" data-pane="paneCatalog" onclick="switchMobilePane('paneCatalog', this)">
-        <i class="fas fa-th-large"></i> Catalogue
+<!-- Mobile 5-Step Wizard Switcher -->
+<div class="pos-mobile-tabs" id="posMobileStepper">
+    <button type="button" class="pos-mobile-tab active" data-step="1" onclick="goToMobileStep(1)">
+        <span class="step-badge-num">1</span>
+        <span>Produits</span>
     </button>
-    <button type="button" class="pos-mobile-tab" data-pane="paneCart" onclick="switchMobilePane('paneCart', this)">
-        <i class="fas fa-shopping-cart"></i> Panier (<span id="mobileCartBadge">0</span>)
+    <button type="button" class="pos-mobile-tab" data-step="2" onclick="goToMobileStep(2)">
+        <span class="step-badge-num">2</span>
+        <span>Panier (<span id="mobileCartBadge">0</span>)</span>
     </button>
-    <button type="button" class="pos-mobile-tab" data-pane="paneCheckout" onclick="switchMobilePane('paneCheckout', this)">
-        <i class="fas fa-cash-register"></i> Caisse
+    <button type="button" class="pos-mobile-tab" data-step="3" onclick="goToMobileStep(3)">
+        <span class="step-badge-num">3</span>
+        <span>Client</span>
+    </button>
+    <button type="button" class="pos-mobile-tab" data-step="4" onclick="goToMobileStep(4)">
+        <span class="step-badge-num">4</span>
+        <span>Paiement</span>
+    </button>
+    <button type="button" class="pos-mobile-tab" data-step="5" onclick="goToMobileStep(5)">
+        <span class="step-badge-num">5</span>
+        <span>Confirm.</span>
     </button>
 </div>
 
@@ -874,55 +1184,49 @@
         <div class="pos-header">
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom ou code SKU... (F2)" style="padding-right: 32px;" autofocus>
+                <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom ou SKU..." style="padding-right: 32px;">
                 <button type="button" id="clearSearchBtn" onclick="clearSearchInput()" title="Effacer" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:transparent;color:#94a3b8;cursor:pointer;padding:4px;">
                     <i class="fas fa-times-circle"></i>
                 </button>
             </div>
 
-            @if(isset($stores) && $stores->count() > 0)
-            <div class="pos-store-picker" title="Point de vente / Dépôt actif">
-                <i class="fas fa-warehouse"></i>
-                <select id="posStoreSelect" class="pos-store-select">
-                    <option value="" selected>Tous les magasins / dépôts</option>
-                    @foreach($stores as $posStore)
-                        <option value="{{ $posStore->id }}">
-                            {{ $posStore->name }} ({{ $posStore->code }})
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            @endif
+            <button type="button" class="pos-icon-btn d-md-none" id="posMobileFiltersToggle" onclick="toggleMobilePosFilters()" title="Filtres">
+                <i class="fas fa-sliders-h text-danger"></i>
+                <span>Filtres</span>
+            </button>
 
-            @if(isset($brands) && $brands->count() > 0)
-            <div class="pos-store-picker" title="Filtrer par marque">
-                <i class="fas fa-tag"></i>
-                <select id="brandFilter" class="pos-store-select">
-                    <option value="">Toutes marques</option>
-                    @foreach($brands as $brand)
-                        <option value="{{ $brand->id }}">{{ $brand->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            @endif
+            <div class="pos-filters-collapse" id="posFiltersWrap">
+                @if(isset($stores) && $stores->count() > 0)
+                <div class="pos-store-picker" title="Point de vente / Dépôt actif">
+                    <i class="fas fa-warehouse"></i>
+                    <select id="posStoreSelect" class="pos-store-select">
+                        <option value="" selected>Tous les magasins / dépôts</option>
+                        @foreach($stores as $posStore)
+                            <option value="{{ $posStore->id }}">
+                                {{ $posStore->name }} ({{ $posStore->code }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
 
-            <div class="pos-store-picker" title="Filtrer par disponibilité">
-                <i class="fas fa-boxes-stacked"></i>
-                <select id="stockFilter" class="pos-store-select">
-                    <option value="all">Tous stocks</option>
-                    <option value="in_stock">En stock</option>
-                    <option value="low_stock">Stock faible (≤5)</option>
-                </select>
+                @if(isset($brands) && $brands->count() > 0)
+                <div class="pos-store-picker" title="Filtrer par marque">
+                    <i class="fas fa-tag"></i>
+                    <select id="brandFilter" class="pos-store-select">
+                        <option value="">Toutes marques</option>
+                        @foreach($brands as $brand)
+                            <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
             </div>
 
             <button type="button" id="resetFiltersBtn" class="pos-icon-btn" onclick="resetPosFilters()" style="display: none;" title="Réinitialiser les filtres">
                 <i class="fas fa-rotate-left text-danger"></i>
             </button>
-
-            <a href="{{ route('orders.pos') }}" class="pos-kpi-pill d-none d-md-inline-flex text-decoration-none" title="Voir les commandes POS">
-                <i class="fas fa-chart-line"></i>
-                <span>Aujourd'hui : <strong id="todaySalesCount">{{ $todayPosCount ?? 0 }}</strong> • <strong id="todaySalesTotal">{{ currency($todayPosTotal ?? 0) }}</strong></span>
-            </a>
 
             <button type="button" class="pos-icon-btn" onclick="openHeldOrdersModal()" title="Tickets mis en attente">
                 <i class="fas fa-pause-circle text-warning"></i>
@@ -933,11 +1237,6 @@
             <button type="button" class="pos-icon-btn d-none d-lg-inline-flex" onclick="togglePosFullscreen()" title="Plein écran">
                 <i class="fas fa-expand" id="fullscreenIcon"></i>
             </button>
-
-            <div class="pos-terminal-badge d-none d-xl-flex">
-                <i class="fas fa-cash-register"></i>
-                <span>POS-{{ str_pad(auth()->id(), 3, '0', STR_PAD_LEFT) }}</span>
-            </div>
         </div>
 
         <div class="categories-wrapper">
@@ -982,17 +1281,17 @@
     </div>
 
     <!-- Right: Client Info + Global Discount + Payment -->
-    <div class="order-form-panel pos-pane" id="paneCheckout">
+    <div class="order-form-panel pos-pane" id="paneCheckout" data-mobile-step="3">
         <div class="panel-header">
             <div class="panel-title">
                 <i class="fas fa-file-invoice-dollar"></i>
-                Client & Encaissement
+                <span id="paneCheckoutTitle">Client & Encaissement</span>
             </div>
         </div>
 
         <div class="panel-content">
-            <!-- Customer Selection + Editable Info (Name, Phone, City) + Save Option -->
-            <div class="pos-card-box">
+            <!-- Step 3 on Mobile: Customer Selection + Editable Info -->
+            <div class="pos-card-box" id="posStepClientBox">
                 <div class="pos-section-label">
                     <span><i class="fas fa-user me-1 text-danger"></i> Client</span>
                     <button type="button" onclick="resetCustomerFields()" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size: 11px; color: #64748b;">
@@ -1025,7 +1324,7 @@
                         <input type="text" id="customerName" class="compact-input" value="Client de passage" placeholder="Nom du client *">
                     </div>
                     <div class="col-6">
-                        <input type="text" id="customerPhone" class="compact-input" placeholder="Téléphone">
+                        <input type="tel" id="customerPhone" class="compact-input" placeholder="Téléphone (10 chiffres)" inputmode="numeric" maxlength="10" pattern="[0-9]{10}">
                     </div>
                     <div class="col-6">
                         <input type="text" id="customerCity" list="posCityList" class="compact-input" placeholder="Ville">
@@ -1068,22 +1367,23 @@
                 </div>
             </div>
 
-            <!-- Global Discount -->
-            <div class="pos-card-box">
+            <!-- Step 4 on Mobile: Global Discount -->
+            <div class="pos-card-box" id="posStepDiscountBox">
                 <div class="pos-section-label">
                     <span><i class="fas fa-tag me-1 text-danger"></i> Remise globale</span>
                 </div>
                 <div style="display: flex; gap: 8px;">
                     <input type="number" id="discountAmount" class="compact-input" placeholder="0" min="0" step="0.01" style="flex: 1;">
                     <select id="discountType" class="compact-input" style="width: 78px; font-weight: 600;">
+                        <option value="fixed" selected>{{ $currencySymbol }}</option>
                         <option value="percent">%</option>
-                        <option value="fixed">{{ $currencySymbol }}</option>
                     </select>
                 </div>
+                <div id="globalDiscountSplitPreview" style="display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0; font-size: 11.5px;"></div>
             </div>
 
-            <!-- Payment Method & Cash Tendered -->
-            <div class="pos-card-box">
+            <!-- Step 4 on Mobile: Payment Method & Cash Tendered -->
+            <div class="pos-card-box" id="posStepPaymentBox">
                 <div class="pos-section-label">
                     <span><i class="fas fa-credit-card me-1 text-danger"></i> Mode de paiement</span>
                 </div>
@@ -1091,9 +1391,44 @@
                 <div class="payment-pills mb-2">
                     <button type="button" class="payment-pill active" data-method="cash" onclick="selectPaymentMethod('cash', this)">💵 Espèces</button>
                     <button type="button" class="payment-pill" data-method="card" onclick="selectPaymentMethod('card', this)">💳 Carte</button>
-                    <button type="button" class="payment-pill" data-method="mobile" onclick="selectPaymentMethod('mobile', this)">📱 Mobile</button>
-                    <button type="button" class="payment-pill" id="creditOption" data-method="credit" onclick="selectPaymentMethod('credit', this)" disabled>🏦 Crédit</button>
+                    <button type="button" class="payment-pill" data-method="virement" onclick="selectPaymentMethod('virement', this)">🏛️ Virement</button>
                     <button type="button" class="payment-pill" data-method="other" onclick="selectPaymentMethod('other', this)">⚪ Autre</button>
+                </div>
+
+                <!-- Paiement Partiel (Acompte + Échéance) -->
+                <div id="partialPaymentToggleWrap" class="mt-2 pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="isPartialPayment" onchange="togglePartialPaymentBox()" style="cursor: pointer;">
+                        <label class="form-check-label" for="isPartialPayment" style="font-size: 12px; font-weight: 700; color: #0f172a; cursor: pointer;">
+                            <i class="fas fa-calendar-alt text-warning me-1"></i> Paiement partiel (Acompte + Échéance)
+                        </label>
+                    </div>
+                    <div id="partialPaymentFields" style="display: none; margin-top: 8px; padding: 9px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label for="partialPaidAmount" style="font-size: 11px; color: #78350f; font-weight: 700; display: block; margin-bottom: 3px;">
+                                    Payé maintenant ({{ $currencySymbol }})
+                                </label>
+                                <input type="number" id="partialPaidAmount" class="compact-input" placeholder="0.00" min="0" step="0.01" oninput="updatePartialPaymentSummary()" style="font-weight: 700; text-align: right;">
+                            </div>
+                            <div class="col-6">
+                                <label for="paymentDueDate" style="font-size: 11px; color: #78350f; font-weight: 700; display: block; margin-bottom: 3px;">
+                                    Date limite (Échéance) *
+                                </label>
+                                <input type="date" id="paymentDueDate" class="compact-input" min="{{ now()->toDateString() }}" value="{{ now()->addDays(15)->toDateString() }}" style="font-size: 12px;">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2 pt-1.5 border-top" style="border-color: #fde68a !important; font-size: 12px;">
+                            <span style="color: #92400e; font-weight: 600;">Reste à payer :</span>
+                            <strong id="partialRemainingDisplay" style="color: #dc2626; font-size: 13.5px;">{{ currency(0) }}</strong>
+                        </div>
+                        <div id="partialClientNotice" style="display: none; margin-top: 6px; padding: 6px 8px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; color: #991b1b; font-size: 11px; font-weight: 600;">
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <span><i class="fas fa-exclamation-triangle me-1"></i> Nom réel et téléphone du client requis.</span>
+                                <button type="button" onclick="goToMobileStep(3)" class="btn btn-link btn-sm p-0 text-danger fw-bold d-lg-none text-decoration-none" style="font-size: 11px;">Compléter</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="cashTenderedBox" class="mt-2 pt-2 border-top" style="border-color: #f1f5f9 !important;">
@@ -1114,7 +1449,77 @@
                     </div>
                 </div>
 
+                <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-color: #f1f5f9 !important;">
+                    <input type="hidden" id="orderStatus" value="delivered">
+                    <div style="min-width: 0;">
+                        <div style="font-size: 11.5px; color: #334155; font-weight: 700; line-height: 1.25;">
+                            <i class="fas fa-truck-fast me-1 text-danger"></i> Statut commande
+                        </div>
+                        <div id="orderStatusStockHint" style="font-size: 10.5px; font-weight: 600; color: #16a34a; line-height: 1.25;">Stock déduit</div>
+                    </div>
+                    <div class="dropdown d-inline-block flex-shrink-0">
+                        <button type="button"
+                                class="brand-badge brand-badge-btn success dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                data-bs-auto-close="true"
+                                data-bs-boundary="viewport"
+                                data-bs-popper-config='{"strategy":"fixed"}'
+                                aria-expanded="false"
+                                id="posStatusPill"
+                                title="Changer le statut de livraison">
+                            <span class="status-dot dot-green" id="posStatusDot"></span>
+                            <span id="posStatusLabel">Livrée</span>
+                            <i class="fas fa-chevron-down opacity-50 ms-0.5" style="font-size: 0.6rem;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="posStatusPill" id="posStatusMenu">
+                            <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de livraison</li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-status="pending" onclick="setPosOrderStatus('pending')">
+                                    <span><span class="status-dot dot-amber me-1.5"></span> En attente</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-status="en_demande" onclick="setPosOrderStatus('en_demande')">
+                                    <span><span class="status-dot dot-blue me-1.5"></span> Sur Commande</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-status="reserved" onclick="setPosOrderStatus('reserved')">
+                                    <span><span class="status-dot dot-purple me-1.5"></span> Réservé</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-status="processing" onclick="setPosOrderStatus('processing')">
+                                    <span><span class="status-dot dot-blue me-1.5"></span> En cours</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-status="shipped" onclick="setPosOrderStatus('shipped')">
+                                    <span><span class="status-dot dot-teal me-1.5"></span> Expédiée</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between active" data-status="delivered" onclick="setPosOrderStatus('delivered')">
+                                    <span><span class="status-dot dot-green me-1.5"></span> Livrée</span>
+                                    <i class="fas fa-check text-success small"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
                 <input type="text" id="orderNotes" class="compact-input mt-2" placeholder="Note interne (optionnel)">
+            </div>
+
+            <!-- Step 5 on Mobile: Confirmation Summary -->
+            <div class="pos-card-box" id="posStepConfirmBox">
+                <div class="pos-section-label">
+                    <span><i class="fas fa-clipboard-check me-1 text-danger"></i> Récapitulatif de la commande</span>
+                    <button type="button" onclick="goToMobileStep(2)" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size: 11px; color: #dc2626;">
+                        Modifier panier
+                    </button>
+                </div>
+                <div id="posMobileConfirmSummary" style="font-size: 12.5px; color: #334155;"></div>
             </div>
         </div>
 
@@ -1133,7 +1538,7 @@
                 <span id="total" style="color: #dc2626;">{{ currency(0) }}</span>
             </div>
 
-            <div style="margin-top: 8px; font-size: 10.5px; color: #64748b; text-align: center;">
+            <div class="d-none d-lg-block" style="margin-top: 8px; font-size: 10.5px; color: #64748b; text-align: center;">
                 <kbd style="background: #f1f5f9; color: #334155; padding: 1px 5px; border-radius: 3px; border: 1px solid #cbd5e1;">F2</kbd> Rechercher
                 <span class="mx-1">•</span>
                 <kbd style="background: #f1f5f9; color: #334155; padding: 1px 5px; border-radius: 3px; border: 1px solid #cbd5e1;">F4</kbd> Vider
@@ -1145,11 +1550,43 @@
                 <i class="fas fa-check-circle"></i>
                 <span id="checkoutBtnLabel">Encaisser {{ currency(0) }}</span>
             </button>
+
+            <button type="button" class="btn btn-outline-secondary w-100 mt-2 rounded-3 fw-semibold d-lg-none" onclick="goToMobileStep(4)" style="font-size: 13px; min-height: 42px;">
+                <i class="fas fa-arrow-left me-1"></i> Retour à l'étape 4 (Paiement)
+            </button>
         </div>
     </div>
 </div>
 
+<!-- Sticky Mobile Step Wizard Bottom Bar (Steps 1 to 4) -->
+<div class="pos-mobile-bottom-bar" id="mobilePosBottomBar">
+    <button type="button" id="mobileWizardPrevBtn" onclick="prevMobileStep()" class="btn btn-sm btn-outline-light rounded-pill px-3 fw-semibold flex-shrink-0" style="min-height: 40px; display: none;">
+        <i class="fas fa-arrow-left me-1"></i> <span id="mobileWizardPrevLabel">Retour</span>
+    </button>
+    <div style="min-width: 0; flex: 1;">
+        <div style="font-size: 11px; color: #94a3b8; line-height: 1.2;">
+            <span id="mobileBottomStepHint">Étape 1/5</span> • <span id="mobileBottomCount">0</span> art.
+        </div>
+        <div id="mobileBottomTotal" style="font-size: 15.5px; font-weight: 800; color: #ffffff; line-height: 1.25;">
+            {{ currency(0) }}
+        </div>
+    </div>
+    <button type="button" id="mobileWizardNextBtn" onclick="nextMobileStep()" class="btn btn-sm btn-danger rounded-pill px-3.5 fw-bold flex-shrink-0" style="min-height: 40px;">
+        <span id="mobileWizardNextLabel">Panier</span> <i class="fas fa-arrow-right ms-1"></i>
+    </button>
+</div>
+
 @push('scripts')
+@php
+    $posStoresPayload = ($stores ?? collect())->map(function ($s) {
+        return [
+            'id' => (int) $s->id,
+            'name' => $s->name,
+            'code' => $s->code,
+            'is_default' => (bool) $s->is_default,
+        ];
+    })->values();
+@endphp
 <script>
 window.currencyConfig = {
     symbol: '{{ setting("currency_symbol", "DH") }}',
@@ -1160,12 +1597,15 @@ window.currencyConfig = {
     tax_rate: {{ floatval(setting("tax_rate", 20)) }} / 100
 };
 
+window.posStores = @json($posStoresPayload);
+
 window.posState = {
     products: [],
     cart: [],
     currentTotal: 0,
     todayCount: {{ (int) ($todayPosCount ?? 0) }},
-    todayTotal: {{ (float) ($todayPosTotal ?? 0) }}
+    todayTotal: {{ (float) ($todayPosTotal ?? 0) }},
+    saveCustomerManualOverride: false
 };
 
 window.POS_HELD_STORAGE_KEY = 'wina_pos_held_orders_v1';
@@ -1206,6 +1646,7 @@ window.setCashPreset = function(val) {
         ? (window.posState.currentTotal > 0 ? window.posState.currentTotal.toFixed(2) : '')
         : Number(val).toFixed(2);
     updateCashChange();
+    updateMobileBottomBar();
 };
 
 window.holdCurrentCart = function() {
@@ -1222,7 +1663,11 @@ window.holdCurrentCart = function() {
         customerCity: document.getElementById('customerCity')?.value || '',
         customerId: document.getElementById('customerId')?.value || '',
         discountAmount: document.getElementById('discountAmount')?.value || '',
-        discountType: document.getElementById('discountType')?.value || 'percent',
+        discountType: document.getElementById('discountType')?.value || 'fixed',
+        isPartialPayment: !!document.getElementById('isPartialPayment')?.checked,
+        partialPaidAmount: document.getElementById('partialPaidAmount')?.value || '',
+        paymentDueDate: document.getElementById('paymentDueDate')?.value || '',
+        orderStatus: document.getElementById('orderStatus')?.value || 'delivered',
         notes: document.getElementById('orderNotes')?.value || '',
         total: window.posState.currentTotal,
         cart: window.posState.cart
@@ -1231,6 +1676,12 @@ window.holdCurrentCart = function() {
 
     window.posState.cart = [];
     document.getElementById('discountAmount').value = '';
+    document.getElementById('discountType').value = 'fixed';
+    if (document.getElementById('isPartialPayment')) document.getElementById('isPartialPayment').checked = false;
+    if (document.getElementById('partialPaidAmount')) document.getElementById('partialPaidAmount').value = '';
+    if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
+    togglePartialPaymentBox();
+    setPosOrderStatus('delivered');
     document.getElementById('orderNotes').value = '';
     resetCustomerFields();
     renderCart();
@@ -1273,7 +1724,21 @@ window.resumeHeldOrder = function(idx) {
     list.splice(idx, 1);
     saveHeldOrders(list);
 
-    window.posState.cart = held.cart || [];
+    window.posState.cart = (held.cart || []).map(item => {
+        const prod = (window.posState.products || []).find(p => p.id === item.product_id);
+        const cloned = { ...item };
+        if (!Array.isArray(cloned.stores)) {
+            cloned.stores = prod && Array.isArray(prod.stores) ? prod.stores.map(s => ({ ...s })) : [];
+        }
+        if (cloned.global_stock === undefined || cloned.global_stock === null) {
+            cloned.global_stock = prod ? (parseInt(prod.global_stock ?? prod.stock, 10) || 0) : (parseInt(cloned.stock, 10) || 0);
+        }
+        if (cloned.store_id === undefined) {
+            cloned.store_id = resolveDefaultItemStoreId(prod || cloned);
+        }
+        cloned.stock = getItemMaxStock(cloned);
+        return cloned;
+    });
     if (held.customerId) {
         document.getElementById('customerSelect').value = held.customerId;
         document.getElementById('customerSelect').dispatchEvent(new Event('change'));
@@ -1284,7 +1749,12 @@ window.resumeHeldOrder = function(idx) {
         document.getElementById('customerCity').value = held.customerCity || '';
     }
     document.getElementById('discountAmount').value = held.discountAmount || '';
-    document.getElementById('discountType').value = held.discountType || 'percent';
+    document.getElementById('discountType').value = held.discountType || 'fixed';
+    if (document.getElementById('isPartialPayment')) document.getElementById('isPartialPayment').checked = !!held.isPartialPayment;
+    if (document.getElementById('partialPaidAmount')) document.getElementById('partialPaidAmount').value = held.partialPaidAmount || '';
+    if (document.getElementById('paymentDueDate') && held.paymentDueDate) document.getElementById('paymentDueDate').value = held.paymentDueDate;
+    togglePartialPaymentBox();
+    setPosOrderStatus(held.orderStatus || 'delivered');
     document.getElementById('orderNotes').value = held.notes || '';
     renderCart();
     renderProducts();
@@ -1313,19 +1783,375 @@ function escapeHtml(str) {
     }[s]));
 }
 
-function switchMobilePane(paneId, btn) {
+function normalizePosPhone(raw) {
+    let digits = String(raw || '').replace(/\D/g, '');
+    if (digits.startsWith('212') && digits.length === 12) {
+        digits = '0' + digits.slice(3);
+    } else if (digits.startsWith('00212') && digits.length === 14) {
+        digits = '0' + digits.slice(5);
+    }
+    return digits.slice(0, 10);
+}
+
+window.goToMobileStep = function(step) {
+    const targetStep = Math.max(1, Math.min(5, parseInt(step, 10) || 1));
+    const cart = window.posState?.cart || [];
+
+    if (targetStep > 1 && cart.length === 0) {
+        Swal.fire({ icon: 'warning', title: 'Panier vide', text: 'Sélectionnez au moins un produit à l\'étape 1.' });
+        return;
+    }
+
+    if (targetStep >= 4) {
+        const cName = (document.getElementById('customerName')?.value || '').trim();
+        if (!cName) {
+            Swal.fire({ icon: 'warning', title: 'Nom du client requis', text: 'Veuillez renseigner le nom du client à l\'étape 3.' });
+            if (window.posState.mobileStep !== 3) window.goToMobileStep(3);
+            return;
+        }
+        const cPhone = (document.getElementById('customerPhone')?.value || '').trim();
+        if (cPhone !== '' && !/^\d{10}$/.test(cPhone)) {
+            Swal.fire({ icon: 'warning', title: 'Téléphone invalide', text: 'Le numéro de téléphone doit contenir exactement 10 chiffres.' });
+            if (window.posState.mobileStep !== 3) window.goToMobileStep(3);
+            document.getElementById('customerPhone')?.focus();
+            return;
+        }
+    }
+
+    if (targetStep === 5 && document.getElementById('isPartialPayment')?.checked) {
+        if (!validatePartialClientInfo()) {
+            return;
+        }
+        const total = window.posState?.currentTotal || 0;
+        const paidNow = parseFloat(document.getElementById('partialPaidAmount')?.value) || 0;
+        const dueDate = (document.getElementById('paymentDueDate')?.value || '').trim();
+        if (paidNow < 0 || paidNow >= total) {
+            Swal.fire({ icon: 'warning', title: 'Acompte invalide', text: 'Le montant payé maintenant doit être inférieur au total.' });
+            if (window.posState.mobileStep !== 4) window.goToMobileStep(4);
+            return;
+        }
+        if (!dueDate) {
+            Swal.fire({ icon: 'warning', title: 'Échéance requise', text: 'Veuillez indiquer la date limite pour le reste à payer.' });
+            if (window.posState.mobileStep !== 4) window.goToMobileStep(4);
+            return;
+        }
+    }
+
+    window.posState.mobileStep = targetStep;
+
+    // Update top 5-step progress tabs
+    document.querySelectorAll('#posMobileStepper .pos-mobile-tab').forEach(tab => {
+        const s = parseInt(tab.dataset.step, 10);
+        tab.classList.toggle('active', s === targetStep);
+        tab.classList.toggle('done', s < targetStep);
+        const badge = tab.querySelector('.step-badge-num');
+        if (badge) {
+            badge.innerHTML = s < targetStep ? '<i class="fas fa-check" style="font-size:9px;"></i>' : String(s);
+        }
+    });
+
+    // Switch visible pane & checkout sub-step
     document.querySelectorAll('.pos-pane').forEach(el => el.classList.remove('mobile-active'));
-    document.querySelectorAll('.pos-mobile-tab').forEach(el => el.classList.remove('active'));
-    document.getElementById(paneId)?.classList.add('mobile-active');
-    btn?.classList.add('active');
+    const checkoutPane = document.getElementById('paneCheckout');
+    const checkoutTitle = document.getElementById('paneCheckoutTitle');
+
+    if (targetStep === 1) {
+        document.getElementById('paneCatalog')?.classList.add('mobile-active');
+    } else if (targetStep === 2) {
+        document.getElementById('paneCart')?.classList.add('mobile-active');
+    } else {
+        if (checkoutPane) {
+            checkoutPane.setAttribute('data-mobile-step', String(targetStep));
+            checkoutPane.classList.add('mobile-active');
+        }
+        if (checkoutTitle) {
+            if (targetStep === 3) checkoutTitle.textContent = 'Étape 3 : Informations Client';
+            else if (targetStep === 4) checkoutTitle.textContent = 'Étape 4 : Remise & Paiement';
+            else checkoutTitle.textContent = 'Étape 5 : Confirmation & Encaissement';
+        }
+        if (targetStep === 5) {
+            renderMobileConfirmSummary();
+        }
+    }
+
+    updateMobileBottomBar();
+    if (window.innerWidth < 1024) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+};
+
+window.nextMobileStep = function() {
+    const cur = window.posState?.mobileStep || 1;
+    if (cur < 5) window.goToMobileStep(cur + 1);
+};
+
+window.prevMobileStep = function() {
+    const cur = window.posState?.mobileStep || 1;
+    if (cur > 1) window.goToMobileStep(cur - 1);
+};
+
+function switchMobilePane(paneId) {
+    if (paneId === 'paneCatalog') window.goToMobileStep(1);
+    else if (paneId === 'paneCart') window.goToMobileStep(2);
+    else window.goToMobileStep(3);
+}
+
+function renderMobileConfirmSummary() {
+    const box = document.getElementById('posMobileConfirmSummary');
+    if (!box) return;
+
+    const cart = window.posState?.cart || [];
+    const cName = (document.getElementById('customerName')?.value || 'Client de passage').trim();
+    const cPhone = (document.getElementById('customerPhone')?.value || '').trim();
+    const cCity = (document.getElementById('customerCity')?.value || '').trim();
+    const method = document.getElementById('paymentMethod')?.value || 'cash';
+    const methodLabels = {
+        cash: '💵 Espèces',
+        card: '💳 Carte bancaire',
+        virement: '🏛️ Virement bancaire',
+        credit: '🏦 À crédit',
+        other: '⚪ Autre'
+    };
+    const isPartial = !!document.getElementById('isPartialPayment')?.checked && method !== 'credit';
+    const partialPaidNow = Math.max(0, parseFloat(document.getElementById('partialPaidAmount')?.value) || 0);
+    const partialDueDate = (document.getElementById('paymentDueDate')?.value || '').trim();
+    const orderStatus = document.getElementById('orderStatus')?.value || 'delivered';
+    const orderStatusBadgeHtml = formatPosStatusBadgeHtml(orderStatus);
+    const notes = (document.getElementById('orderNotes')?.value || '').trim();
+    const received = parseFloat(document.getElementById('amountReceived')?.value);
+    const pricing = computeCartPricing();
+    const total = pricing.total;
+
+    const partialHtml = isPartial
+        ? `<div class="mt-1 small" style="color:#92400e;">
+               Paiement partiel — Payé : <strong>${formatCurrency(partialPaidNow)}</strong> • Reste : <strong class="text-danger">${formatCurrency(Math.max(0, total - partialPaidNow))}</strong>
+               ${partialDueDate ? ` • Échéance : <strong>${escapeHtml(partialDueDate.split('-').reverse().join('/'))}</strong>` : ''}
+           </div>`
+        : '';
+
+    const itemsHtml = pricing.lines.map(line => {
+        const item = line.item;
+        const isCustomDiff = line.hasCustomPrice && Math.abs(line.basePrice - (parseFloat(item.price) || 0)) >= 0.005;
+        const customBadge = isCustomDiff
+            ? '<span class="badge bg-primary-subtle text-primary me-1" style="font-size:9.5px;">Perso</span>'
+            : '';
+        let unitHtml = '';
+        if (line.totalLineDiscount > 0) {
+            unitHtml = `<div style="font-size:10.5px;color:#64748b;">${customBadge}<del>${formatCurrency(line.basePrice)}</del> <strong style="color:#16a34a;">${formatCurrency(line.finalUnitPrice)}/u</strong></div>`;
+        } else if (isCustomDiff) {
+            unitHtml = `<div style="font-size:10.5px;color:#0284c7;">Prix perso : <strong>${formatCurrency(line.basePrice)}/u</strong></div>`;
+        }
+        const storeName = getItemStoreName(item);
+        const storeHtml = storeName
+            ? `<div style="font-size:10.5px;color:#64748b;"><i class="fas fa-warehouse me-1"></i>${escapeHtml(storeName)}</div>`
+            : '';
+        return `<div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="border-color:#f1f5f9 !important;">
+            <div class="text-truncate me-2">
+                <span><strong>${item.quantity}×</strong> ${escapeHtml(item.name)}</span>
+                ${storeHtml}
+                ${unitHtml}
+            </div>
+            <strong class="flex-shrink-0">${formatCurrency(line.finalNet)}</strong>
+        </div>`;
+    }).join('');
+
+    const changeHtml = (method === 'cash' && !isNaN(received) && received > 0)
+        ? `<div class="d-flex justify-content-between mt-1">
+               <span class="text-muted">Reçu : <strong>${formatCurrency(received)}</strong></span>
+               <span class="${received >= total ? 'text-success' : 'text-danger'} fw-bold">
+                   ${received >= total ? 'Monnaie : ' + formatCurrency(received - total) : 'Manque : ' + formatCurrency(total - received)}
+               </span>
+           </div>`
+        : '';
+
+    box.innerHTML = `
+        <div class="p-2.5 rounded-3 mb-2" style="background:#f8fafc;border:1px solid #e2e8f0;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-muted small fw-semibold"><i class="fas fa-user me-1"></i>Client</span>
+                <button type="button" onclick="goToMobileStep(3)" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px;">Modifier</button>
+            </div>
+            <div class="fw-bold text-dark">${escapeHtml(cName)}</div>
+            ${(cPhone || cCity) ? `<div class="text-muted small">${escapeHtml([cPhone, cCity].filter(Boolean).join(' • '))}</div>` : ''}
+        </div>
+        <div class="p-2.5 rounded-3 mb-2" style="background:#f8fafc;border:1px solid #e2e8f0;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-muted small fw-semibold"><i class="fas fa-credit-card me-1"></i>Paiement</span>
+                <button type="button" onclick="goToMobileStep(4)" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px;">Modifier</button>
+            </div>
+            <div class="fw-bold text-dark">${methodLabels[method] || method}</div>
+            <div class="small mt-1 d-flex align-items-center gap-1.5" style="color:#334155;"><span>Statut :</span> ${orderStatusBadgeHtml}</div>
+            ${partialHtml}
+            ${changeHtml}
+            ${notes ? `<div class="text-muted small mt-1"><i class="fas fa-sticky-note me-1"></i>${escapeHtml(notes)}</div>` : ''}
+        </div>
+        <div class="p-2.5 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+            <div class="text-muted small fw-semibold mb-1"><i class="fas fa-shopping-basket me-1"></i>Articles (${cart.reduce((s, i) => s + i.quantity, 0)})</div>
+            ${itemsHtml}
+        </div>
+    `;
+}
+
+function toggleMobilePosFilters() {
+    const wrap = document.getElementById('posFiltersWrap');
+    const btn = document.getElementById('posMobileFiltersToggle');
+    if (!wrap) return;
+    const isCollapsed = wrap.classList.toggle('collapsed-mobile');
+    if (btn) {
+        btn.style.borderColor = !isCollapsed ? '#dc2626' : '#e2e8f0';
+        btn.style.background = !isCollapsed ? '#fef2f2' : '#ffffff';
+    }
+}
+
+function updateMobileBottomBar() {
+    const bar = document.getElementById('mobilePosBottomBar');
+    if (!bar) return;
+    const cart = window.posState?.cart || [];
+    const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+    const step = window.posState?.mobileStep || 1;
+
+    const countEl = document.getElementById('mobileBottomCount');
+    const totalEl = document.getElementById('mobileBottomTotal');
+    const stepHintEl = document.getElementById('mobileBottomStepHint');
+    const prevBtn = document.getElementById('mobileWizardPrevBtn');
+    const prevLabel = document.getElementById('mobileWizardPrevLabel');
+    const nextBtn = document.getElementById('mobileWizardNextBtn');
+    const nextLabel = document.getElementById('mobileWizardNextLabel');
+
+    if (countEl) countEl.textContent = totalItems;
+    if (totalEl) totalEl.textContent = formatCurrency(window.posState?.currentTotal || 0);
+    if (stepHintEl) stepHintEl.textContent = `Étape ${step}/5`;
+
+    const prevNames = { 2: 'Produits', 3: 'Panier', 4: 'Client' };
+    const nextNames = { 1: '2. Panier', 2: '3. Client', 3: '4. Paiement', 4: '5. Confirmation' };
+
+    if (prevBtn) {
+        prevBtn.style.display = step > 1 && step < 5 ? '' : 'none';
+        if (prevLabel && prevNames[step]) prevLabel.textContent = prevNames[step];
+    }
+    if (nextBtn) {
+        nextBtn.disabled = totalItems === 0;
+        if (nextLabel && nextNames[step]) nextLabel.textContent = nextNames[step];
+    }
+
+    if (step === 5) {
+        renderMobileConfirmSummary();
+    }
+
+    if ((totalItems > 0 || step > 1) && step < 5) {
+        bar.classList.add('visible');
+    } else {
+        bar.classList.remove('visible');
+    }
+}
+
+function resolveDefaultItemStoreId(product) {
+    const posList = (Array.isArray(product?.stores) ? product.stores : [])
+        .filter(s => (parseInt(s.quantity, 10) || 0) > 0);
+    const selectedFilterId = document.getElementById('posStoreSelect')?.value || '';
+    const allStores = window.posStores || [];
+    const defaultStoreId = allStores.find(s => s.is_default)?.id || allStores[0]?.id || null;
+
+    if (posList.length > 0) {
+        if (selectedFilterId && posList.some(s => Number(s.id) === Number(selectedFilterId))) {
+            return Number(selectedFilterId);
+        }
+        if (defaultStoreId && posList.some(s => Number(s.id) === Number(defaultStoreId))) {
+            return Number(defaultStoreId);
+        }
+        const sorted = [...posList].sort((a, b) => (parseInt(b.quantity, 10) || 0) - (parseInt(a.quantity, 10) || 0));
+        return Number(sorted[0].id);
+    }
+
+    if (selectedFilterId) return Number(selectedFilterId);
+    return defaultStoreId ? Number(defaultStoreId) : null;
+}
+
+function getItemMaxStock(item) {
+    if (Array.isArray(item.stores) && item.stores.length > 0) {
+        const row = item.store_id !== null && item.store_id !== undefined
+            ? item.stores.find(s => Number(s.id) === Number(item.store_id))
+            : null;
+        if (row) {
+            return parseInt(row.quantity, 10) || 0;
+        }
+        return parseInt(item.stock, 10) || 0;
+    }
+    return parseInt(item.global_stock ?? item.stock, 10) || 0;
+}
+
+function getItemStoreName(item) {
+    if (item.store_id === null || item.store_id === undefined || item.store_id === '') {
+        return '';
+    }
+    const targetId = Number(item.store_id);
+    const fromItem = (Array.isArray(item.stores) ? item.stores : []).find(s => Number(s.id) === targetId);
+    if (fromItem?.name) return fromItem.name;
+    const fromGlobal = (window.posStores || []).find(s => Number(s.id) === targetId);
+    return fromGlobal?.name || '';
+}
+
+function renderCartStoreOptions(item) {
+    const mergedStores = [];
+    const seen = new Set();
+
+    (window.posStores || []).forEach(st => {
+        const sid = Number(st.id);
+        if (!seen.has(sid)) {
+            seen.add(sid);
+            mergedStores.push({ id: sid, name: st.name });
+        }
+    });
+    (Array.isArray(item.stores) ? item.stores : []).forEach(st => {
+        const sid = Number(st.id);
+        if (!seen.has(sid)) {
+            seen.add(sid);
+            mergedStores.push({ id: sid, name: st.name });
+        }
+    });
+
+    const hasStoreAlloc = Array.isArray(item.stores) && item.stores.length > 0;
+    if (hasStoreAlloc) {
+        return mergedStores.map(st => {
+            const found = item.stores.find(s => Number(s.id) === st.id);
+            const qty = parseInt(found?.quantity, 10) || 0;
+            const selected = Number(item.store_id) === st.id ? 'selected' : '';
+            const disabled = qty <= 0 ? 'disabled' : '';
+            return `<option value="${st.id}" ${selected} ${disabled}>${escapeHtml(st.name)} (${qty})</option>`;
+        }).join('');
+    }
+
+    const globalQty = parseInt(item.global_stock ?? item.stock, 10) || 0;
+    if (mergedStores.length > 0) {
+        return mergedStores.map(st => {
+            const selected = Number(item.store_id) === st.id ? 'selected' : '';
+            return `<option value="${st.id}" ${selected}>${escapeHtml(st.name)} (Stock global : ${globalQty})</option>`;
+        }).join('');
+    }
+
+    return `<option value="">Stock global (${globalQty})</option>`;
+}
+
+function hasItemCustomPrice(item) {
+    if (item.custom_price === null || item.custom_price === undefined || item.custom_price === '') {
+        return false;
+    }
+    const parsed = parseFloat(item.custom_price);
+    return !isNaN(parsed) && parsed >= 0;
+}
+
+function getItemBasePrice(item) {
+    if (hasItemCustomPrice(item)) {
+        return +parseFloat(item.custom_price).toFixed(2);
+    }
+    return +(parseFloat(item.price) || 0).toFixed(2);
 }
 
 function computeItemLine(item) {
-    const unitPrice = parseFloat(item.price) || 0;
+    const unitPrice = getItemBasePrice(item);
     const qty = parseInt(item.quantity, 10) || 1;
     const gross = +(unitPrice * qty).toFixed(2);
     const discVal = parseFloat(item.discount_amount) || 0;
-    const discType = item.discount_type || 'percent';
+    const discType = item.discount_type || 'fixed';
 
     let lineDiscount = 0;
     if (discVal > 0 && gross > 0) {
@@ -1336,7 +2162,94 @@ function computeItemLine(item) {
         }
     }
     const net = +Math.max(0, gross - lineDiscount).toFixed(2);
-    return { gross, lineDiscount, net };
+    return { basePrice: unitPrice, gross, lineDiscount, net };
+}
+
+function computeCartPricing() {
+    const cart = window.posState?.cart || [];
+    let grossSubtotal = 0;
+    let itemDiscountsTotal = 0;
+    let itemsNetSubtotal = 0;
+
+    const lines = cart.map(item => {
+        const { basePrice, gross, lineDiscount, net } = computeItemLine(item);
+        grossSubtotal = +(grossSubtotal + gross).toFixed(2);
+        itemDiscountsTotal = +(itemDiscountsTotal + lineDiscount).toFixed(2);
+        itemsNetSubtotal = +(itemsNetSubtotal + net).toFixed(2);
+        return {
+            item,
+            basePrice,
+            hasCustomPrice: hasItemCustomPrice(item),
+            gross,
+            itemDiscount: lineDiscount,
+            netBeforeGlobal: net,
+            globalShare: 0,
+            totalLineDiscount: lineDiscount,
+            finalNet: net,
+            finalUnitPrice: basePrice,
+        };
+    });
+
+    const discountVal = parseFloat(document.getElementById('discountAmount')?.value) || 0;
+    const discountType = document.getElementById('discountType')?.value || 'fixed';
+    let globalDiscount = 0;
+    if (discountVal > 0 && itemsNetSubtotal > 0) {
+        globalDiscount = discountType === 'percent'
+            ? +((itemsNetSubtotal * Math.min(discountVal, 100)) / 100).toFixed(2)
+            : +Math.min(discountVal, itemsNetSubtotal).toFixed(2);
+    }
+
+    if (globalDiscount > 0 && itemsNetSubtotal > 0) {
+        let lastEligibleIdx = -1;
+        lines.forEach((line, idx) => {
+            if (line.netBeforeGlobal > 0) {
+                lastEligibleIdx = idx;
+            }
+        });
+
+        let allocated = 0;
+        lines.forEach((line, idx) => {
+            if (line.netBeforeGlobal <= 0) return;
+
+            let globalShare = 0;
+            if (idx === lastEligibleIdx) {
+                globalShare = +Math.min(line.netBeforeGlobal, Math.max(0, globalDiscount - allocated)).toFixed(2);
+            } else {
+                globalShare = +Math.min(line.netBeforeGlobal, globalDiscount * (line.netBeforeGlobal / itemsNetSubtotal)).toFixed(2);
+                allocated = +(allocated + globalShare).toFixed(2);
+            }
+
+            const qty = parseInt(line.item.quantity, 10) || 1;
+            const finalNet = +Math.max(0, line.netBeforeGlobal - globalShare).toFixed(2);
+            line.globalShare = globalShare;
+            line.totalLineDiscount = +(line.itemDiscount + globalShare).toFixed(2);
+            line.finalNet = finalNet;
+            line.finalUnitPrice = qty > 0 ? +(finalNet / qty).toFixed(2) : line.basePrice;
+        });
+    } else {
+        lines.forEach(line => {
+            const qty = parseInt(line.item.quantity, 10) || 1;
+            line.finalUnitPrice = qty > 0 ? +(line.finalNet / qty).toFixed(2) : line.basePrice;
+        });
+    }
+
+    const total = +Math.max(0, itemsNetSubtotal - globalDiscount).toFixed(2);
+    const totalDiscount = +(itemDiscountsTotal + globalDiscount).toFixed(2);
+    const linesById = {};
+    lines.forEach(line => {
+        linesById[line.item.product_id] = line;
+    });
+
+    return {
+        lines,
+        linesById,
+        grossSubtotal,
+        itemDiscountsTotal,
+        itemsNetSubtotal,
+        globalDiscount,
+        totalDiscount,
+        total,
+    };
 }
 
 window.clearSearchInput = function() {
@@ -1427,13 +2340,7 @@ function renderProducts() {
     grid.innerHTML = products.map(product => {
         const cartItem = window.posState.cart.find(i => i.product_id === product.id);
         const qtyBadge = cartItem ? `<div class="qty-badge">${cartItem.quantity}</div>` : '';
-
-        let imgSrc = fallbackSrc;
-        if (product.image) {
-            if (/^(https?:)?\//.test(product.image)) imgSrc = product.image;
-            else if (product.image.startsWith('images/')) imgSrc = '/' + product.image;
-            else imgSrc = '/storage/' + product.image;
-        }
+        const imgSrc = resolvePosProductImg(product.image);
 
         const isOut = product.stock <= 0;
         let stockBadge = '';
@@ -1469,7 +2376,8 @@ function renderProducts() {
         return `
             <div class="pos-product-card ${isOut ? 'out-of-stock-card' : ''}"
                  onclick="${isOut ? '' : `addToCart(${product.id})`}"
-                 title="${escapeHtml(product.name)}">
+                 aria-disabled="${isOut ? 'true' : 'false'}"
+                 title="${escapeHtml(product.name)}${isOut ? ' — Rupture de stock' : ''}">
                 ${qtyBadge}
                 ${saleBadge}
                 <div class="card-img-wrapper">
@@ -1494,21 +2402,36 @@ window.addToCart = function(productId) {
 
     const existing = window.posState.cart.find(i => i.product_id === productId);
     if (existing) {
-        if (existing.quantity >= product.stock) {
-            Swal.fire({ icon: 'warning', title: 'Stock limité', text: `Disponible : ${product.stock}`, timer: 1600, showConfirmButton: false });
+        if (product.image) {
+            existing.image = product.image;
+        }
+        existing.stores = Array.isArray(product.stores) ? product.stores.map(s => ({ ...s })) : (existing.stores || []);
+        existing.global_stock = parseInt(product.global_stock ?? product.stock, 10) || existing.global_stock || 0;
+        const maxStock = getItemMaxStock(existing);
+        existing.stock = maxStock;
+        if (existing.quantity >= maxStock) {
+            const storeName = getItemStoreName(existing);
+            Swal.fire({ icon: 'warning', title: 'Stock limité', text: `Disponible${storeName ? ' (' + storeName + ')' : ''} : ${maxStock}`, timer: 1600, showConfirmButton: false });
             return;
         }
         existing.quantity++;
     } else {
-        window.posState.cart.push({
+        const newItem = {
             product_id: product.id,
             name: product.name,
+            image: product.image || '',
             price: parseFloat(product.price),
+            custom_price: null,
             quantity: 1,
-            stock: product.stock,
+            stock: 0,
+            global_stock: parseInt(product.global_stock ?? product.stock, 10) || 0,
+            stores: Array.isArray(product.stores) ? product.stores.map(s => ({ ...s })) : [],
+            store_id: resolveDefaultItemStoreId(product),
             discount_amount: 0,
-            discount_type: 'percent'
-        });
+            discount_type: 'fixed'
+        };
+        newItem.stock = getItemMaxStock(newItem);
+        window.posState.cart.push(newItem);
     }
 
     renderCart();
@@ -1524,8 +2447,11 @@ window.updateQuantity = function(productId, delta) {
         removeFromCart(productId);
         return;
     }
-    if (next > item.stock) {
-        Swal.fire({ icon: 'warning', title: 'Stock limité', text: `Disponible : ${item.stock}`, timer: 1600, showConfirmButton: false });
+    const maxStock = getItemMaxStock(item);
+    item.stock = maxStock;
+    if (next > maxStock) {
+        const storeName = getItemStoreName(item);
+        Swal.fire({ icon: 'warning', title: 'Stock limité', text: `Disponible${storeName ? ' (' + storeName + ')' : ''} : ${maxStock}`, timer: 1600, showConfirmButton: false });
         return;
     }
     item.quantity = next;
@@ -1541,9 +2467,12 @@ window.setItemQuantity = function(productId, rawVal) {
         removeFromCart(productId);
         return;
     }
-    if (qty > item.stock) {
-        qty = item.stock;
-        Swal.fire({ icon: 'warning', title: 'Stock limité', text: `Disponible : ${item.stock}`, timer: 1400, showConfirmButton: false });
+    const maxStock = getItemMaxStock(item);
+    item.stock = maxStock;
+    if (qty > maxStock) {
+        qty = maxStock;
+        const storeName = getItemStoreName(item);
+        Swal.fire({ icon: 'warning', title: 'Stock limité', text: `Disponible${storeName ? ' (' + storeName + ')' : ''} : ${maxStock}`, timer: 1400, showConfirmButton: false });
     }
     item.quantity = qty;
     renderCart();
@@ -1556,6 +2485,60 @@ window.removeFromCart = function(productId) {
     renderProducts();
 };
 
+window.updateItemStore = function(productId, rawStoreId) {
+    const item = window.posState.cart.find(i => i.product_id === productId);
+    if (!item) return;
+
+    item.store_id = rawStoreId ? parseInt(rawStoreId, 10) : null;
+    const maxStock = getItemMaxStock(item);
+    item.stock = maxStock;
+
+    if (maxStock > 0 && item.quantity > maxStock) {
+        item.quantity = maxStock;
+        const storeName = getItemStoreName(item);
+        Swal.fire({
+            icon: 'warning',
+            title: 'Stock limité',
+            text: `Quantité ajustée à ${maxStock}${storeName ? ' (' + storeName + ')' : ''}`,
+            timer: 1600,
+            showConfirmButton: false
+        });
+    }
+
+    renderCart();
+    renderProducts();
+};
+
+window.updateItemCustomPrice = function(productId, rawVal, inputEl) {
+    const item = window.posState.cart.find(i => i.product_id === productId);
+    if (!item) return;
+
+    if (inputEl && inputEl.validity && inputEl.validity.badInput) {
+        return;
+    }
+
+    const trimmed = String(rawVal ?? '').trim();
+    if (trimmed === '') {
+        item.custom_price = null;
+    } else {
+        const parsed = parseFloat(trimmed);
+        if (!isNaN(parsed)) {
+            if (parsed < 0) {
+                item.custom_price = 0;
+                if (inputEl) inputEl.value = '0';
+            } else {
+                item.custom_price = parsed;
+            }
+        }
+    }
+
+    if (inputEl) {
+        inputEl.classList.toggle('has-custom-price', hasItemCustomPrice(item));
+    }
+
+    updateTotals();
+};
+
 window.updateItemDiscount = function(productId, value, type) {
     const item = window.posState.cart.find(i => i.product_id === productId);
     if (!item) return;
@@ -1563,17 +2546,36 @@ window.updateItemDiscount = function(productId, value, type) {
     if (value !== undefined) item.discount_amount = Math.max(0, parseFloat(value) || 0);
     if (type !== undefined) item.discount_type = type;
 
-    const { lineDiscount, net } = computeItemLine(item);
-    const lineNetEl = document.getElementById(`cart-line-net-${productId}`);
-    const lineDiscEl = document.getElementById(`cart-line-disc-${productId}`);
-    if (lineNetEl) lineNetEl.textContent = formatCurrency(net);
-    if (lineDiscEl) {
-        lineDiscEl.textContent = lineDiscount > 0 ? `-${formatCurrency(lineDiscount)}` : '';
-        lineDiscEl.style.display = lineDiscount > 0 ? 'inline-block' : 'none';
-    }
-
     updateTotals();
 };
+
+function formatCartUnitPriceHtml(line) {
+    if (line.totalLineDiscount > 0) {
+        return `<strong style="color:#16a34a;">${formatCurrency(line.finalUnitPrice)} / u</strong> <span style="color:#94a3b8;font-size:10.5px;">(après remise)</span>`;
+    }
+    return '';
+}
+
+function formatLineDiscountTitle(line) {
+    if (line.itemDiscount > 0 && line.globalShare > 0) {
+        return `Remise produit : -${formatCurrency(line.itemDiscount)} | Remise globale : -${formatCurrency(line.globalShare)}`;
+    }
+    if (line.globalShare > 0) {
+        return `Part remise globale : -${formatCurrency(line.globalShare)}`;
+    }
+    if (line.itemDiscount > 0) {
+        return `Remise produit : -${formatCurrency(line.itemDiscount)}`;
+    }
+    return '';
+}
+
+function resolvePosProductImg(rawImg) {
+    const fallbackSrc = '{{ asset("images/camera/cat_cameras.jpg") }}';
+    if (!rawImg) return fallbackSrc;
+    if (/^(https?:)?\//.test(rawImg)) return rawImg;
+    if (rawImg.startsWith('images/')) return '/' + rawImg;
+    return '/storage/' + rawImg;
+}
 
 function renderCart() {
     const container = document.getElementById('cartItems');
@@ -1594,14 +2596,26 @@ function renderCart() {
             <p style="font-size:12px;margin-top:4px;">Cliquez sur un produit pour l'ajouter</p>
         </div>`;
     } else {
+        const pricing = computeCartPricing();
         container.innerHTML = cart.map(item => {
-            const { lineDiscount, net } = computeItemLine(item);
+            const line = pricing.linesById[item.product_id];
+            const isCustomDiff = line.hasCustomPrice && Math.abs(line.basePrice - (parseFloat(item.price) || 0)) >= 0.005;
+            const maxQty = getItemMaxStock(item);
+            const matchedCatalogProduct = !item.image ? (window.posState.products || []).find(p => p.id === item.product_id) : null;
+            const cartThumbSrc = resolvePosProductImg(item.image || matchedCatalogProduct?.image || '');
             return `
                 <div class="cart-item-card">
                     <div class="cart-item-top">
-                        <div>
-                            <div class="cart-item-name">${escapeHtml(item.name)}</div>
-                            <div style="font-size:11.5px;color:#64748b;">${formatCurrency(item.price)} / u</div>
+                        <div class="d-flex align-items-start gap-2 flex-grow-1 min-w-0">
+                            <img src="${cartThumbSrc}"
+                                 alt="${escapeHtml(item.name)}"
+                                 class="cart-item-thumb"
+                                 loading="lazy"
+                                 onerror="this.onerror=null;this.src='{{ asset("images/camera/cat_cameras.jpg") }}';">
+                            <div class="min-w-0 flex-grow-1">
+                                <div class="cart-item-name">${escapeHtml(item.name)}</div>
+                                <div id="cart-unit-price-${item.product_id}" style="font-size:11.5px;color:#64748b;display:${line.totalLineDiscount > 0 ? 'block' : 'none'};">${formatCartUnitPriceHtml(line)}</div>
+                            </div>
                         </div>
                         <button type="button" class="cart-item-remove" onclick="removeFromCart(${item.product_id})" title="Retirer">
                             <i class="fas fa-times"></i>
@@ -1610,27 +2624,52 @@ function renderCart() {
                     <div class="cart-item-mid">
                         <div class="item-controls">
                             <button type="button" class="control-btn" onclick="updateQuantity(${item.product_id}, -1)"><i class="fas fa-minus"></i></button>
-                            <input type="number" class="qty-input-inline" min="1" max="${item.stock}" value="${item.quantity}" onchange="setItemQuantity(${item.product_id}, this.value)">
+                            <input type="number" class="qty-input-inline" min="1" max="${maxQty}" value="${item.quantity}" onchange="setItemQuantity(${item.product_id}, this.value)">
                             <button type="button" class="control-btn" onclick="updateQuantity(${item.product_id}, 1)"><i class="fas fa-plus"></i></button>
                         </div>
                         <div class="text-end">
-                            <span id="cart-line-disc-${item.product_id}" class="badge bg-success-subtle text-success me-1" style="font-size:10.5px;display:${lineDiscount > 0 ? 'inline-block' : 'none'};">
-                                ${lineDiscount > 0 ? `-${formatCurrency(lineDiscount)}` : ''}
+                            <span id="cart-line-disc-${item.product_id}" class="badge bg-success-subtle text-success me-1" title="${escapeHtml(formatLineDiscountTitle(line))}" style="font-size:10.5px;display:${line.totalLineDiscount > 0 ? 'inline-block' : 'none'};">
+                                ${line.totalLineDiscount > 0 ? `-${formatCurrency(line.totalLineDiscount)}` : ''}
                             </span>
-                            <strong id="cart-line-net-${item.product_id}" style="font-size:13.5px;color:#0f172a;">${formatCurrency(net)}</strong>
+                            <strong id="cart-line-net-${item.product_id}" style="font-size:13.5px;color:#0f172a;">${formatCurrency(line.finalNet)}</strong>
                         </div>
                     </div>
+                    <div class="cart-item-store-row">
+                        <label class="cart-item-field-label" for="cart-store-${item.product_id}" style="flex-shrink:0;">
+                            <i class="fas fa-warehouse me-1 text-secondary"></i>Dépôt
+                        </label>
+                        <select id="cart-store-${item.product_id}" class="cart-store-select"
+                                onchange="updateItemStore(${item.product_id}, this.value)">
+                            ${renderCartStoreOptions(item)}
+                        </select>
+                    </div>
                     <div class="cart-item-discount-row">
-                        <span style="font-size:11px;color:#64748b;font-weight:600;"><i class="fas fa-percent me-1 text-danger"></i>Remise</span>
-                        <div class="item-disc-inputs">
-                            <input type="number" class="item-disc-input" min="0" step="0.01"
-                                   value="${item.discount_amount > 0 ? item.discount_amount : ''}"
-                                   placeholder="0"
-                                   oninput="updateItemDiscount(${item.product_id}, this.value, undefined)">
-                            <select class="item-disc-type" onchange="updateItemDiscount(${item.product_id}, undefined, this.value)">
-                                <option value="percent" ${item.discount_type === 'percent' ? 'selected' : ''}>%</option>
-                                <option value="fixed" ${item.discount_type === 'fixed' ? 'selected' : ''}>${window.currencyConfig.symbol}</option>
-                            </select>
+                        <div class="cart-item-field">
+                            <label class="cart-item-field-label" for="cart-custom-price-${item.product_id}">
+                                <i class="fas fa-tag me-1 text-primary"></i>Prix (${window.currencyConfig.symbol})<span id="cart-custom-tag-${item.product_id}" class="badge bg-primary-subtle text-primary ms-1" style="font-size:9px;display:${isCustomDiff ? 'inline-block' : 'none'};">Perso</span>
+                            </label>
+                            <input type="number" id="cart-custom-price-${item.product_id}"
+                                   class="item-price-input ${line.hasCustomPrice ? 'has-custom-price' : ''}"
+                                   min="0" step="0.01"
+                                   value="${line.hasCustomPrice ? item.custom_price : ''}"
+                                   placeholder="${(parseFloat(item.price) || 0).toFixed(window.currencyConfig.decimals)}"
+                                   title="Prix personnalisé unitaire (vide = prix catalogue)"
+                                   oninput="updateItemCustomPrice(${item.product_id}, this.value, this)">
+                        </div>
+                        <div class="cart-item-field">
+                            <label class="cart-item-field-label">
+                                <i class="fas fa-percent me-1 text-danger"></i>Remise
+                            </label>
+                            <div class="item-disc-inputs">
+                                <input type="number" class="item-disc-input" min="0" step="0.01"
+                                       value="${item.discount_amount > 0 ? item.discount_amount : ''}"
+                                       placeholder="0"
+                                       oninput="updateItemDiscount(${item.product_id}, this.value, undefined)">
+                                <select class="item-disc-type" onchange="updateItemDiscount(${item.product_id}, undefined, this.value)">
+                                    <option value="fixed" ${(item.discount_type || 'fixed') === 'fixed' ? 'selected' : ''}>${window.currencyConfig.symbol}</option>
+                                    <option value="percent" ${item.discount_type === 'percent' ? 'selected' : ''}>%</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1643,31 +2682,59 @@ function renderCart() {
 
 function updateTotals() {
     const cart = window.posState.cart;
-    let grossSubtotal = 0;
-    let itemDiscountsTotal = 0;
-    let itemsNetSubtotal = 0;
+    const pricing = computeCartPricing();
 
-    cart.forEach(item => {
-        const { gross, lineDiscount, net } = computeItemLine(item);
-        grossSubtotal += gross;
-        itemDiscountsTotal += lineDiscount;
-        itemsNetSubtotal += net;
+    pricing.lines.forEach(line => {
+        const pid = line.item.product_id;
+        const unitEl = document.getElementById(`cart-unit-price-${pid}`);
+        const customTagEl = document.getElementById(`cart-custom-tag-${pid}`);
+        const discEl = document.getElementById(`cart-line-disc-${pid}`);
+        const netEl = document.getElementById(`cart-line-net-${pid}`);
+        const isCustomDiff = line.hasCustomPrice && Math.abs(line.basePrice - (parseFloat(line.item.price) || 0)) >= 0.005;
+
+        if (unitEl) {
+            unitEl.innerHTML = formatCartUnitPriceHtml(line);
+            unitEl.style.display = line.totalLineDiscount > 0 ? 'block' : 'none';
+        }
+        if (customTagEl) {
+            customTagEl.style.display = isCustomDiff ? 'inline-block' : 'none';
+        }
+        if (discEl) {
+            discEl.textContent = line.totalLineDiscount > 0 ? `-${formatCurrency(line.totalLineDiscount)}` : '';
+            discEl.style.display = line.totalLineDiscount > 0 ? 'inline-block' : 'none';
+            discEl.title = formatLineDiscountTitle(line);
+        }
+        if (netEl) netEl.textContent = formatCurrency(line.finalNet);
     });
 
-    const discountVal = parseFloat(document.getElementById('discountAmount')?.value) || 0;
-    const discountType = document.getElementById('discountType')?.value || 'percent';
-    let globalDiscount = 0;
-    if (discountVal > 0 && itemsNetSubtotal > 0) {
-        globalDiscount = discountType === 'percent'
-            ? +((itemsNetSubtotal * Math.min(discountVal, 100)) / 100).toFixed(2)
-            : +Math.min(discountVal, itemsNetSubtotal).toFixed(2);
+    const splitPreviewEl = document.getElementById('globalDiscountSplitPreview');
+    if (splitPreviewEl) {
+        if (pricing.globalDiscount > 0 && pricing.lines.length > 0) {
+            const rowsHtml = pricing.lines.map(line => {
+                const qty = parseInt(line.item.quantity, 10) || 1;
+                const qtyBadge = qty > 1 ? ` <span class="text-muted">(×${qty})</span>` : '';
+                const totalTag = qty > 1 ? ` <span class="text-muted">• Total: ${formatCurrency(line.finalNet)}</span>` : '';
+                return `<div class="d-flex justify-content-between align-items-center gap-2 py-1 border-bottom" style="border-color:#f1f5f9 !important;">
+                    <span class="text-truncate" style="max-width:46%;" title="${escapeHtml(line.item.name)}">${escapeHtml(line.item.name)}${qtyBadge}</span>
+                    <span class="text-end flex-shrink-0">
+                        <del class="text-muted">${formatCurrency(line.basePrice)}</del> → <strong style="color:#16a34a;">${formatCurrency(line.finalUnitPrice)}</strong>
+                        <span class="text-primary">(-${formatCurrency(line.globalShare)})</span>${totalTag}
+                    </span>
+                </div>`;
+            }).join('');
+            splitPreviewEl.innerHTML = `<div class="fw-semibold text-dark mb-1"><i class="fas fa-code-branch text-danger me-1"></i>Répartition par produit (nouveau prix) :</div>${rowsHtml}`;
+            splitPreviewEl.style.display = 'block';
+        } else {
+            splitPreviewEl.innerHTML = '';
+            splitPreviewEl.style.display = 'none';
+        }
     }
 
-    const total = +Math.max(0, itemsNetSubtotal - globalDiscount).toFixed(2);
-    const totalDiscount = +(itemDiscountsTotal + globalDiscount).toFixed(2);
+    const total = pricing.total;
+    const totalDiscount = pricing.totalDiscount;
     window.posState.currentTotal = total;
 
-    document.getElementById('subtotal').textContent = formatCurrency(grossSubtotal);
+    document.getElementById('subtotal').textContent = formatCurrency(pricing.grossSubtotal);
 
     const totalDiscountEl = document.getElementById('totalDiscountDisplay');
     if (totalDiscountEl) {
@@ -1682,16 +2749,198 @@ function updateTotals() {
     if (checkoutLabel) checkoutLabel.textContent = `Encaisser ${formatCurrency(total)}`;
 
     updateCashChange();
+    updatePartialPaymentSummary();
+    updateMobileBottomBar();
 }
+
+window.POS_ORDER_STATUS_META = {
+    pending:    { label: 'En attente',   dot: 'amber',  badgeClass: 'warning', textClass: 'text-warning' },
+    en_demande: { label: 'Sur Commande', dot: 'blue',   badgeClass: 'primary', textClass: 'text-primary' },
+    reserved:   { label: 'Réservé',      dot: 'purple', badgeClass: 'purple',  textClass: 'text-purple' },
+    processing: { label: 'En cours',     dot: 'blue',   badgeClass: 'primary', textClass: 'text-primary' },
+    shipped:    { label: 'Expédiée',     dot: 'teal',  badgeClass: 'info',    textClass: 'text-info' },
+    delivered:  { label: 'Livrée',       dot: 'green', badgeClass: 'success', textClass: 'text-success' }
+};
+
+window.formatPosStatusBadgeHtml = function(statusVal) {
+    const meta = window.POS_ORDER_STATUS_META[statusVal] || window.POS_ORDER_STATUS_META.delivered;
+    return `<span class="brand-badge ${meta.badgeClass}" style="padding: 2px 9px; font-size: 11px;"><span class="status-dot dot-${meta.dot}"></span> ${escapeHtml(meta.label)}</span>`;
+};
+
+window.updateOrderStatusHint = function() {
+    const raw = document.getElementById('orderStatus')?.value || 'delivered';
+    const status = window.POS_ORDER_STATUS_META[raw] ? raw : 'delivered';
+    const meta = window.POS_ORDER_STATUS_META[status];
+
+    const pillEl = document.getElementById('posStatusPill');
+    const dotEl = document.getElementById('posStatusDot');
+    const labelEl = document.getElementById('posStatusLabel');
+    if (pillEl) {
+        pillEl.className = `brand-badge brand-badge-btn ${meta.badgeClass} dropdown-toggle`;
+    }
+    if (dotEl) {
+        dotEl.className = `status-dot dot-${meta.dot}`;
+    }
+    if (labelEl) {
+        labelEl.textContent = meta.label;
+    }
+
+    const menuEl = document.getElementById('posStatusMenu');
+    if (menuEl) {
+        menuEl.querySelectorAll('.dropdown-item').forEach(btn => {
+            const isSelected = btn.dataset.status === status;
+            btn.classList.toggle('active', isSelected);
+            const oldCheck = btn.querySelector('.fa-check');
+            if (oldCheck) oldCheck.remove();
+            if (isSelected) {
+                btn.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${meta.textClass} small"></i>`);
+            }
+        });
+    }
+
+    const hintEl = document.getElementById('orderStatusStockHint');
+    if (hintEl) {
+        if (status === 'delivered') {
+            hintEl.textContent = 'Stock déduit';
+            hintEl.style.color = '#16a34a';
+        } else {
+            hintEl.textContent = 'Stock déduit à la livraison';
+            hintEl.style.color = '#d97706';
+        }
+    }
+    if (typeof updateMobileBottomBar === 'function') {
+        updateMobileBottomBar();
+    }
+};
+
+window.setPosOrderStatus = function(statusVal) {
+    const nextStatus = window.POS_ORDER_STATUS_META[statusVal] ? statusVal : 'delivered';
+    const statusEl = document.getElementById('orderStatus');
+    if (statusEl) {
+        statusEl.value = nextStatus;
+    }
+    updateOrderStatusHint();
+
+    const pillEl = document.getElementById('posStatusPill');
+    if (pillEl) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+            const inst = bootstrap.Dropdown.getInstance(pillEl);
+            if (inst) inst.hide();
+        }
+        pillEl.classList.remove('show');
+        pillEl.setAttribute('aria-expanded', 'false');
+    }
+    document.getElementById('posStatusMenu')?.classList.remove('show');
+};
+
+window.togglePartialPaymentBox = function() {
+    const method = document.getElementById('paymentMethod')?.value || 'cash';
+    const toggle = document.getElementById('isPartialPayment');
+    const fields = document.getElementById('partialPaymentFields');
+    const cashBox = document.getElementById('cashTenderedBox');
+    const isPartial = !!toggle?.checked && method !== 'credit';
+
+    if (fields) fields.style.display = isPartial ? 'block' : 'none';
+    if (cashBox) cashBox.style.display = (method === 'cash' && !isPartial) ? 'block' : 'none';
+
+    updateCashChange();
+    updatePartialPaymentSummary();
+};
+
+function hasValidPartialClientInfo() {
+    const name = (document.getElementById('customerName')?.value || '').trim();
+    const phone = (document.getElementById('customerPhone')?.value || '').trim();
+    const lower = name.toLowerCase();
+    return name !== '' && lower !== 'client de passage' && lower !== 'walk-in customer' && /^\d{10}$/.test(phone);
+}
+
+function syncAutoSaveCustomerCheckbox() {
+    const cb = document.getElementById('saveCustomerCheckbox');
+    if (!cb || window.posState?.saveCustomerManualOverride) {
+        return;
+    }
+
+    const customerId = (document.getElementById('customerId')?.value || '').trim();
+    const curName = (document.getElementById('customerName')?.value || '').trim();
+    const curPhone = (document.getElementById('customerPhone')?.value || '').trim();
+
+    if (!customerId) {
+        cb.checked = hasValidPartialClientInfo();
+        return;
+    }
+
+    const selectEl = document.getElementById('customerSelect');
+    const opt = selectEl && selectEl.selectedIndex >= 0 ? selectEl.options[selectEl.selectedIndex] : null;
+    const origName = (opt?.dataset.name || '').trim();
+    const origPhone = normalizePosPhone(opt?.dataset.phone || '');
+
+    cb.checked = hasValidPartialClientInfo() && (curName !== origName || curPhone !== origPhone);
+}
+
+function validatePartialClientInfo() {
+    if (hasValidPartialClientInfo()) {
+        return true;
+    }
+
+    const nameEl = document.getElementById('customerName');
+    const phoneEl = document.getElementById('customerPhone');
+    const name = (nameEl?.value || '').trim();
+    const lower = name.toLowerCase();
+    const needsName = name === '' || lower === 'client de passage' || lower === 'walk-in customer';
+
+    Swal.fire({
+        icon: 'warning',
+        title: 'Client requis',
+        text: 'Veuillez saisir le nom réel du client et un numéro de téléphone de 10 chiffres pour le paiement partiel.'
+    }).then(() => {
+        if (window.innerWidth < 1024) {
+            window.goToMobileStep(3);
+        }
+        const targetEl = needsName ? nameEl : phoneEl;
+        targetEl?.focus();
+        if (needsName) {
+            targetEl?.select();
+        }
+    });
+
+    return false;
+}
+
+window.updatePartialPaymentSummary = function() {
+    const cart = window.posState?.cart || [];
+    const total = window.posState?.currentTotal || 0;
+    const method = document.getElementById('paymentMethod')?.value || 'cash';
+    const isPartial = !!document.getElementById('isPartialPayment')?.checked && method !== 'credit';
+    const paidInput = document.getElementById('partialPaidAmount');
+    const remEl = document.getElementById('partialRemainingDisplay');
+    const clientNoticeEl = document.getElementById('partialClientNotice');
+    const checkoutLabel = document.getElementById('checkoutBtnLabel');
+
+    const paidNow = Math.max(0, parseFloat(paidInput?.value) || 0);
+    const remaining = Math.max(0, +(total - paidNow).toFixed(2));
+    if (remEl) remEl.textContent = formatCurrency(remaining);
+    if (clientNoticeEl) {
+        clientNoticeEl.style.display = (isPartial && !hasValidPartialClientInfo()) ? 'block' : 'none';
+    }
+
+    if (checkoutLabel) {
+        if (isPartial && cart.length > 0) {
+            checkoutLabel.textContent = `Encaisser acompte ${formatCurrency(paidNow)}`;
+        } else {
+            checkoutLabel.textContent = `Encaisser ${formatCurrency(total)}`;
+        }
+    }
+};
 
 function updateCashChange() {
     const method = document.getElementById('paymentMethod')?.value;
+    const isPartial = !!document.getElementById('isPartialPayment')?.checked && method !== 'credit';
     const received = parseFloat(document.getElementById('amountReceived')?.value);
     const changeRow = document.getElementById('changeRow');
     const changeEl = document.getElementById('changeAmount');
     if (!changeRow || !changeEl) return;
 
-    if (method === 'cash' && !isNaN(received) && received >= window.posState.currentTotal && window.posState.currentTotal > 0) {
+    if (method === 'cash' && !isPartial && !isNaN(received) && received >= window.posState.currentTotal && window.posState.currentTotal > 0) {
         changeRow.style.setProperty('display', 'flex', 'important');
         changeEl.textContent = formatCurrency(received - window.posState.currentTotal);
     } else {
@@ -1704,9 +2953,23 @@ window.selectPaymentMethod = function(method, btn) {
     document.querySelectorAll('.payment-pill').forEach(p => p.classList.remove('active'));
     btn?.classList.add('active');
 
+    const partialWrap = document.getElementById('partialPaymentToggleWrap');
+    const partialToggle = document.getElementById('isPartialPayment');
+    const partialFields = document.getElementById('partialPaymentFields');
+    if (method === 'credit') {
+        if (partialToggle) partialToggle.checked = false;
+        if (partialWrap) partialWrap.style.display = 'none';
+        if (partialFields) partialFields.style.display = 'none';
+    } else {
+        if (partialWrap) partialWrap.style.display = 'block';
+    }
+
+    const isPartial = !!partialToggle?.checked && method !== 'credit';
     const cashBox = document.getElementById('cashTenderedBox');
-    if (cashBox) cashBox.style.display = method === 'cash' ? 'block' : 'none';
+    if (cashBox) cashBox.style.display = (method === 'cash' && !isPartial) ? 'block' : 'none';
     updateCashChange();
+    updatePartialPaymentSummary();
+    updateMobileBottomBar();
 };
 
 window.resetCustomerFields = function() {
@@ -1717,13 +2980,15 @@ window.resetCustomerFields = function() {
     document.getElementById('customerPhone').value = '';
     document.getElementById('customerCity').value = '';
     document.getElementById('saveCustomerCheckbox').checked = false;
+    if (window.posState) {
+        window.posState.saveCustomerManualOverride = false;
+    }
     document.getElementById('creditInfo').style.display = 'none';
 
-    const creditOpt = document.getElementById('creditOption');
-    if (creditOpt) creditOpt.disabled = true;
     if (document.getElementById('paymentMethod').value === 'credit') {
         selectPaymentMethod('cash', document.querySelector('.payment-pill[data-method="cash"]'));
     }
+    updatePartialPaymentSummary();
 };
 
 window.clearCartConfirm = function() {
@@ -1765,8 +3030,33 @@ window.checkout = function() {
         return;
     }
 
+    if (customerPhone !== '' && !/^\d{10}$/.test(customerPhone)) {
+        Swal.fire({ icon: 'warning', title: 'Téléphone invalide', text: 'Le numéro de téléphone doit contenir exactement 10 chiffres.' });
+        document.getElementById('customerPhone')?.focus();
+        return;
+    }
+
     const paymentMethod = document.getElementById('paymentMethod').value;
     const total = window.posState.currentTotal;
+    const isPartialPayment = !!document.getElementById('isPartialPayment')?.checked && paymentMethod !== 'credit';
+    const partialPaidAmount = Math.max(0, parseFloat(document.getElementById('partialPaidAmount')?.value) || 0);
+    const paymentDueDate = (document.getElementById('paymentDueDate')?.value || '').trim();
+
+    if (isPartialPayment) {
+        if (!validatePartialClientInfo()) {
+            return;
+        }
+        if (partialPaidAmount < 0 || partialPaidAmount >= total) {
+            Swal.fire({ icon: 'warning', title: 'Acompte invalide', text: 'Le montant payé maintenant doit être inférieur au total.' });
+            document.getElementById('partialPaidAmount')?.focus();
+            return;
+        }
+        if (!paymentDueDate) {
+            Swal.fire({ icon: 'warning', title: 'Échéance requise', text: 'Veuillez indiquer la date limite pour le reste à payer.' });
+            document.getElementById('paymentDueDate')?.focus();
+            return;
+        }
+    }
 
     if (paymentMethod === 'credit') {
         if (!customerId) {
@@ -1796,16 +3086,21 @@ window.checkout = function() {
         save_customer: saveCustomer,
         store_id: document.getElementById('posStoreSelect')?.value || null,
         payment_method: paymentMethod,
-        amount_received: document.getElementById('amountReceived')?.value || null,
+        amount_received: isPartialPayment ? partialPaidAmount : (document.getElementById('amountReceived')?.value || null),
+        is_partial_payment: isPartialPayment,
+        paid_amount: isPartialPayment ? partialPaidAmount : null,
+        payment_due_date: isPartialPayment ? paymentDueDate : null,
+        status: document.getElementById('orderStatus')?.value || 'delivered',
         notes: document.getElementById('orderNotes')?.value || null,
         discount_amount: parseFloat(document.getElementById('discountAmount')?.value) || 0,
-        discount_type: document.getElementById('discountType')?.value || 'percent',
+        discount_type: document.getElementById('discountType')?.value || 'fixed',
         items: cart.map(item => ({
             product_id: item.product_id,
             quantity: item.quantity,
-            price: item.price,
+            price: getItemBasePrice(item),
             discount_amount: item.discount_amount || 0,
-            discount_type: item.discount_type || 'percent'
+            discount_type: item.discount_type || 'fixed',
+            store_id: item.store_id || null
         }))
     };
 
@@ -1858,9 +3153,15 @@ window.checkout = function() {
         if (totEl) totEl.textContent = formatCurrency(window.posState.todayTotal);
 
         const received = parseFloat(document.getElementById('amountReceived')?.value);
-        const changeHtml = (paymentMethod === 'cash' && !isNaN(received) && received > data.order.total)
+        const changeHtml = (!isPartialPayment && paymentMethod === 'cash' && !isNaN(received) && received > data.order.total)
             ? `<p class="mb-1"><strong>Monnaie à rendre :</strong> <span class="text-success fw-bold">${formatCurrency(received - data.order.total)}</span></p>`
             : '';
+        const partialOrderHtml = (data.order.remaining_amount && data.order.remaining_amount > 0)
+            ? `<p class="mb-1"><strong>Montant payé :</strong> <span class="text-success fw-bold">${formatCurrency(data.order.paid_amount || 0)}</span></p>
+               <p class="mb-1"><strong>Reste à payer :</strong> <span class="text-danger fw-bold">${formatCurrency(data.order.remaining_amount)}</span></p>
+               ${data.order.payment_due_date ? `<p class="mb-1"><strong>Échéance :</strong> ${escapeHtml(data.order.payment_due_date)}</p>` : ''}`
+            : '';
+        const statusLabelHtml = formatPosStatusBadgeHtml(data.order.status || 'delivered');
         const savedClientHtml = (saveCustomer && data.customer)
             ? `<p class="mb-0 text-success small"><i class="fas fa-user-check me-1"></i>Client enregistré : <strong>${escapeHtml(data.customer.name)}</strong></p>`
             : '';
@@ -1871,7 +3172,9 @@ window.checkout = function() {
             html: `
                 <div class="text-start p-2 rounded bg-light border mb-2">
                     <p class="mb-1"><strong>Commande :</strong> #${escapeHtml(data.order.order_number)}</p>
-                    <p class="mb-1"><strong>Total payé :</strong> <strong class="text-danger">${formatCurrency(data.order.total)}</strong></p>
+                    <p class="mb-1"><strong>Statut :</strong> ${statusLabelHtml}</p>
+                    <p class="mb-1"><strong>Total commande :</strong> <strong class="text-danger">${formatCurrency(data.order.total)}</strong></p>
+                    ${partialOrderHtml}
                     ${changeHtml}
                     ${savedClientHtml}
                 </div>
@@ -1889,11 +3192,18 @@ window.checkout = function() {
             }
             window.posState.cart = [];
             document.getElementById('discountAmount').value = '';
+            document.getElementById('discountType').value = 'fixed';
             document.getElementById('amountReceived').value = '';
+            if (document.getElementById('isPartialPayment')) document.getElementById('isPartialPayment').checked = false;
+            if (document.getElementById('partialPaidAmount')) document.getElementById('partialPaidAmount').value = '';
+            if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
+            togglePartialPaymentBox();
+            setPosOrderStatus('delivered');
             document.getElementById('orderNotes').value = '';
             resetCustomerFields();
             renderCart();
             loadProducts();
+            goToMobileStep(1);
         });
     })
     .catch(() => {
@@ -1901,7 +3211,7 @@ window.checkout = function() {
     })
     .finally(() => {
         btn.disabled = window.posState.cart.length === 0;
-        label.textContent = `Encaisser ${formatCurrency(window.posState.currentTotal)}`;
+        updatePartialPaymentSummary();
     });
 };
 
@@ -1928,6 +3238,14 @@ function initPosTerminal() {
                 addToCart(targetProduct.id);
                 searchInput.value = '';
                 loadProducts();
+            } else if (targetProduct && targetProduct.stock <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Rupture de stock',
+                    text: `${targetProduct.name} est actuellement en rupture de stock.`,
+                    timer: 1600,
+                    showConfirmButton: false
+                });
             } else {
                 loadProducts();
             }
@@ -1949,6 +3267,42 @@ function initPosTerminal() {
     document.getElementById('discountAmount')?.addEventListener('input', updateTotals);
     document.getElementById('discountType')?.addEventListener('change', updateTotals);
     document.getElementById('amountReceived')?.addEventListener('input', updateCashChange);
+    document.getElementById('saveCustomerCheckbox')?.addEventListener('change', function() {
+        if (window.posState) {
+            window.posState.saveCustomerManualOverride = true;
+        }
+    });
+
+    const customerNameEl = document.getElementById('customerName');
+    const clearDefaultWalkInName = function() {
+        if (this.value.trim().toLowerCase() === 'client de passage') {
+            this.value = '';
+            updatePartialPaymentSummary();
+            syncAutoSaveCustomerCheckbox();
+        }
+    };
+    customerNameEl?.addEventListener('focus', clearDefaultWalkInName);
+    customerNameEl?.addEventListener('click', clearDefaultWalkInName);
+    customerNameEl?.addEventListener('blur', function() {
+        if (this.value.trim() === '') {
+            this.value = 'Client de passage';
+            updatePartialPaymentSummary();
+            syncAutoSaveCustomerCheckbox();
+        }
+    });
+    customerNameEl?.addEventListener('input', function() {
+        updatePartialPaymentSummary();
+        syncAutoSaveCustomerCheckbox();
+    });
+
+    document.getElementById('customerPhone')?.addEventListener('input', function() {
+        const cleaned = this.value.replace(/\D/g, '').slice(0, 10);
+        if (this.value !== cleaned) {
+            this.value = cleaned;
+        }
+        updatePartialPaymentSummary();
+        syncAutoSaveCustomerCheckbox();
+    });
 
     document.getElementById('customerSelect')?.addEventListener('change', function() {
         if (!this.value) {
@@ -1959,13 +3313,19 @@ function initPosTerminal() {
         document.getElementById('customerId').value = this.value;
         document.getElementById('customerName').value = opt.dataset.name || '';
         document.getElementById('customerEmail').value = opt.dataset.email || '';
-        document.getElementById('customerPhone').value = opt.dataset.phone || '';
+        document.getElementById('customerPhone').value = normalizePosPhone(opt.dataset.phone || '');
         document.getElementById('customerCity').value = opt.dataset.city || '';
+        if (window.posState) {
+            window.posState.saveCustomerManualOverride = false;
+        }
+        const saveCb = document.getElementById('saveCustomerCheckbox');
+        if (saveCb) {
+            saveCb.checked = false;
+        }
 
         const creditLimit = parseFloat(opt.dataset.creditLimit) || 0;
         const balance = parseFloat(opt.dataset.balance) || 0;
         const creditInfo = document.getElementById('creditInfo');
-        const creditOpt = document.getElementById('creditOption');
 
         if (creditLimit > 0) {
             const avail = Math.max(0, creditLimit - balance);
@@ -1975,14 +3335,13 @@ function initPosTerminal() {
             const bar = document.getElementById('creditBar');
             bar.style.width = pct + '%';
             bar.style.background = pct > 90 ? '#dc2626' : (pct > 75 ? '#f59e0b' : '#10b981');
-            if (creditOpt) creditOpt.disabled = false;
         } else {
             creditInfo.style.display = 'none';
-            if (creditOpt) creditOpt.disabled = true;
             if (document.getElementById('paymentMethod').value === 'credit') {
                 selectPaymentMethod('cash', document.querySelector('.payment-pill[data-method="cash"]'));
             }
         }
+        updatePartialPaymentSummary();
     });
 
     if (window.__posKeydownHandler) {
@@ -2020,6 +3379,35 @@ function initPosTerminal() {
             opt.hidden = q !== '' && !text.includes(q);
         });
     });
+
+    const posStatusPillEl = document.getElementById('posStatusPill');
+    if (posStatusPillEl && typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+        bootstrap.Dropdown.getOrCreateInstance(posStatusPillEl, {
+            autoClose: true,
+            popperConfig: function(defaultBsPopperConfig) {
+                return {
+                    ...defaultBsPopperConfig,
+                    strategy: 'fixed',
+                    modifiers: [
+                        ...(defaultBsPopperConfig?.modifiers || []),
+                        {
+                            name: 'preventOverflow',
+                            options: {
+                                boundary: 'viewport',
+                                padding: 8
+                            }
+                        },
+                        {
+                            name: 'flip',
+                            options: {
+                                fallbackPlacements: ['top', 'bottom']
+                            }
+                        }
+                    ]
+                };
+            }
+        });
+    }
 
     refreshHeldBadge();
     renderCart();

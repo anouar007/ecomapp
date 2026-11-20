@@ -26,16 +26,14 @@
             @endif
         </div>
 
-        @if(session('cart') && count(session('cart')) > 0)
+        @if(!empty($cart) && count($cart) > 0)
         <div class="row g-3 g-lg-4 align-items-start">
             <div class="col-lg-8">
                 {{-- ── MOBILE VIEW: Compact & Elegant Item Cards (d-md-none) ── --}}
                 <div class="cart-mobile-items d-md-none mb-3">
-                    @foreach(session('cart') as $id => $details)
+                    @foreach($cart as $id => $details)
                     @php
-                        $cartImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/')))
-                            ? asset(ltrim($details['image'], '/'))
-                            : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
+                        $cartImg = \App\Models\Product::resolveImageUrl($details['image'] ?? null);
                     @endphp
                     <div class="cart-mobile-card cart-row-{{ $id }}" id="cart-row-mobile-{{ $id }}">
                         <div class="d-flex gap-3 align-items-center">
@@ -116,12 +114,10 @@
                                 </thead>
                                 <tbody>
                                     @php $total = 0; @endphp
-                                    @foreach(session('cart') as $id => $details)
+                                    @foreach($cart as $id => $details)
                                     @php
                                         $total += $details['price'] * $details['quantity'];
-                                        $cartImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/')))
-                                            ? asset(ltrim($details['image'], '/'))
-                                            : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
+                                        $cartImg = \App\Models\Product::resolveImageUrl($details['image'] ?? null);
                                         $baseProdId = $details['product_id'] ?? explode('_', (string)$id)[0];
                                     @endphp
                                     <tr class="border-bottom transition-all hover-bg-light cart-row-{{ $id }}" id="cart-row-{{ $id }}">

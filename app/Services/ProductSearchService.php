@@ -1139,14 +1139,14 @@ class ProductSearchService
         }
 
         $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
-        $cacheKey = 'live_search_v6_' . $cacheVer . '_' . md5(mb_strtolower($raw));
+        $cacheKey = 'live_search_v7_' . $cacheVer . '_' . md5(mb_strtolower($raw));
         return Cache::store('file')->remember($cacheKey, 600, function () use ($raw, $limit) {
             $categories = self::getMatchingCategories($raw, 3);
             $query = self::buildQuery($raw);
             $meta = self::getSearchMeta($raw);
 
             $totalCount = $query->count();
-            $products = $query->with(['productCategory', 'images'])
+            $products = $query->with(['productCategory', 'images', 'primaryImage'])
                 ->take($limit)
                 ->get();
 
@@ -1162,6 +1162,7 @@ class ProductSearchService
                     'discount' => $product->discount_percentage,
                     'in_stock' => $product->isInStock(),
                     'image' => $product->card_thumbnail,
+                    'fallback_image' => $product->thumbnail,
                     'url' => route('shop.show', $product->slug ?: $product->id, false),
                 ];
             });

@@ -114,6 +114,7 @@ function copyAffiliateLink(inputId, btn) {
             <thead class="bg-light">
                 <tr>
                     <th class="ps-4">{{ __('Order Number') }}</th>
+                    <th>{{ __('Articles') }}</th>
                     <th>{{ __('Date') }}</th>
                     <th>{{ __('Status') }}</th>
                     <th>{{ __('Total') }}</th>
@@ -122,8 +123,33 @@ function copyAffiliateLink(inputId, btn) {
             </thead>
             <tbody>
                 @forelse($recentOrders as $order)
+                @php
+                    $firstItem = $order->items->first();
+                    $itemsCount = $order->items_count ?? $order->items->count();
+                @endphp
                 <tr>
                     <td class="ps-4 fw-bold">#{{ $order->order_number }}</td>
+                    <td>
+                        @if($firstItem)
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="position-relative flex-shrink-0" style="width: 36px; height: 36px; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid #e2e8f0; padding: 2px;">
+                                    <img src="{{ $firstItem->product_image }}" alt="{{ $firstItem->product_name }}"
+                                         style="width: 100%; height: 100%; object-fit: contain;"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                         loading="lazy">
+                                    @if($itemsCount > 1)
+                                        <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-dark text-white" style="font-size: 0.56rem; padding: 1px 4px;">+{{ $itemsCount - 1 }}</span>
+                                    @endif
+                                </div>
+                                <div class="min-w-0" style="max-width: 180px;">
+                                    <div class="text-truncate fw-semibold text-dark small" title="{{ $firstItem->displayName }}">{{ $firstItem->product_name }}</div>
+                                    <div class="text-muted" style="font-size: 0.72rem;">x{{ $firstItem->quantity }} @if($itemsCount > 1) ({{ $itemsCount }} art.) @endif</div>
+                                </div>
+                            </div>
+                        @else
+                            <span class="text-muted small">{{ $itemsCount }} {{ __('article(s)') }}</span>
+                        @endif
+                    </td>
                     <td class="text-muted">{{ $order->created_at->format('d M Y') }}</td>
                     <td><span class="badge {{ $order->status_badge_class }}">{{ ucfirst($order->status) }}</span></td>
                     <td class="fw-bold">{{ $order->formatted_total }}</td>
@@ -135,7 +161,7 @@ function copyAffiliateLink(inputId, btn) {
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center py-5">
+                    <td colspan="6" class="text-center py-5">
                         <div class="opacity-50 mb-2">{{ __('No orders found') }}</div>
                         <a href="{{ route('shop.index') }}" class="btn btn-primary btn-sm rounded-pill">{{ __('Start Shopping') }}</a>
                     </td>
@@ -148,6 +174,10 @@ function copyAffiliateLink(inputId, btn) {
     {{-- Mobile Touch Cards (d-block d-md-none, zero horizontal scroll) --}}
     <div class="d-block d-md-none p-2.5">
         @forelse($recentOrders as $order)
+        @php
+            $mobFirstItem = $order->items->first();
+            $mobItemsCount = $order->items_count ?? $order->items->count();
+        @endphp
         <div class="card border rounded-3 p-3 mb-2.5 bg-white shadow-xs">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="fw-bold text-dark font-monospace" style="font-size: 0.95rem;">
@@ -157,6 +187,20 @@ function copyAffiliateLink(inputId, btn) {
                     {{ ucfirst($order->status) }}
                 </span>
             </div>
+            @if($mobFirstItem)
+            <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded-3 bg-light">
+                <div class="position-relative flex-shrink-0" style="width: 36px; height: 36px; border-radius: 6px; overflow: hidden; background: #fff; border: 1px solid #e2e8f0; padding: 2px;">
+                    <img src="{{ $mobFirstItem->product_image }}" alt="{{ $mobFirstItem->product_name }}"
+                         style="width: 100%; height: 100%; object-fit: contain;"
+                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                         loading="lazy">
+                </div>
+                <div class="min-w-0 flex-grow-1">
+                    <div class="fw-semibold text-dark text-truncate" style="font-size: 0.8rem;">{{ $mobFirstItem->product_name }}</div>
+                    <div class="text-muted" style="font-size: 0.7rem;">x{{ $mobFirstItem->quantity }} @if($mobItemsCount > 1) &bull; +{{ $mobItemsCount - 1 }} autre(s) @endif</div>
+                </div>
+            </div>
+            @endif
             <div class="d-flex align-items-center justify-content-between text-muted small mb-2.5">
                 <span><i class="far fa-calendar-alt me-1 text-muted"></i>{{ $order->created_at->format('d M Y') }}</span>
                 <span class="fw-bold text-danger fs-6">{{ $order->formatted_total }}</span>

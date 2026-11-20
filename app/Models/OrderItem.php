@@ -121,6 +121,39 @@ class OrderItem extends Model
     }
 
     /**
+     * Resolve the catalog Product associated with this order item (via relation, ID, SKU, or name).
+     */
+    protected function resolveProductModel(): ?Product
+    {
+        $product = $this->product;
+        if (!$product && $this->product_id) {
+            $product = Product::with(['images', 'primaryImage'])->find($this->product_id);
+        }
+
+        if (!$product && !empty($this->product_sku)) {
+            $product = Product::with(['images', 'primaryImage'])->where('sku', $this->product_sku)->first();
+        }
+        if (!$product && !empty($this->product_name)) {
+            $product = Product::with(['images', 'primaryImage'])->where('name', $this->product_name)->first();
+        }
+
+        return $product;
+    }
+
+    /**
+     * Get the main product image encoded as a base64 JPEG data URI for DomPDF exports.
+     */
+    public function getPdfProductImageAttribute(): ?string
+    {
+        $product = $this->resolveProductModel();
+        if (!$product) {
+            return null;
+        }
+
+        return Product::resolveImageDataUri($product->main_image, 72);
+    }
+
+    /**
      * Resolve the best candidate image path or URL for this order item.
      */
     protected function resolveRawProductImage(): string
@@ -134,19 +167,8 @@ class OrderItem extends Model
             return $variant->image_url;
         }
 
-        // 2. Direct Product Relation
-        $product = $this->product;
-        if (!$product && $this->product_id) {
-            $product = Product::find($this->product_id);
-        }
-
-        // 3. Fallback to product matching by SKU or Name if unlinked
-        if (!$product && !empty($this->product_sku)) {
-            $product = Product::where('sku', $this->product_sku)->first();
-        }
-        if (!$product && !empty($this->product_name)) {
-            $product = Product::where('name', $this->product_name)->first();
-        }
+        // 2-3. Direct Product Relation or fallback matching by ID / SKU / Name
+        $product = $this->resolveProductModel();
 
         // If product found, get its best thumbnail
         if ($product) {
@@ -167,7 +189,8 @@ class OrderItem extends Model
         // Secondary fallback: if the assigned product had no image (e.g. duplicate test item),
         // try finding any product with the same name that has a real image
         if (!empty($this->product_name)) {
-            $sibling = Product::where('name', $this->product_name)
+            $sibling = Product::with(['images', 'primaryImage'])
+                ->where('name', $this->product_name)
                 ->whereHas('images')
                 ->first();
             if ($sibling && !empty($sibling->thumbnail) && !str_contains($sibling->thumbnail, 'cat_cameras.jpg')) {

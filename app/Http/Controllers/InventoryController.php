@@ -342,7 +342,7 @@ class InventoryController extends Controller
      */
     public function movements(Request $request)
     {
-        $query = InventoryMovement::with(['product', 'creator', 'variant', 'fromStore', 'toStore']);
+        $query = InventoryMovement::with(['product.images', 'product.primaryImage', 'creator', 'variant', 'fromStore', 'toStore']);
 
         if ($request->filled('product_id')) {
             $query->where('product_id', $request->product_id);
@@ -391,7 +391,7 @@ class InventoryController extends Controller
      */
     public function alerts(Request $request)
     {
-        $query = StockAlert::with(['product.storeStocks.store', 'acknowledgedBy']);
+        $query = StockAlert::with(['product.images', 'product.primaryImage', 'product.storeStocks.store', 'acknowledgedBy']);
 
         if ($request->filled('status')) {
             if ($request->status === 'unacknowledged') {
@@ -440,7 +440,7 @@ class InventoryController extends Controller
      */
     public function adjust(Request $request, Product $product)
     {
-        $product->load(['variants', 'storeStocks.store']);
+        $product->load(['variants', 'storeStocks.store', 'images', 'primaryImage']);
         $stores = $this->activeStores();
         $selectedStoreId = $request->filled('store_id') ? (int) $request->store_id : null;
 
@@ -484,8 +484,10 @@ class InventoryController extends Controller
             $options['store_id'] = (int) $validated['store_id'];
         }
 
-        if ($request->filled('location_code')) {
-            $options['location_code'] = trim($validated['location_code']);
+        if ($request->has('location_code')) {
+            $options['location_code'] = $request->filled('location_code')
+                ? trim((string) $validated['location_code'])
+                : null;
         }
 
         if ($request->filled('min_quantity')) {
@@ -505,21 +507,43 @@ class InventoryController extends Controller
 
         if ($request->ajax() || $request->wantsJson()) {
             if ($success) {
-                $refreshed = $product->fresh();
-                $variant = !empty($validated['variant_id']) ? $product->variants()->find($validated['variant_id']) : null;
-                $storeStock = !empty($validated['store_id'])
-                    ? ProductStock::where('product_id', $product->id)->where('store_id', $validated['store_id'])->first()
+                $refreshed = $product->fresh(['variants', 'storeStocks']);
+                $variant = !empty($validated['variant_id'])
+                    ? $refreshed->variants->firstWhere('id', (int) $validated['variant_id'])
                     : null;
+                $storeStock = !empty($validated['store_id'])
+                    ? $refreshed->storeStocks->firstWhere('store_id', (int) $validated['store_id'])
+                    : null;
+
+                $variantsPayload = $refreshed->variants->map(fn ($v) => [
+                    'id' => (int) $v->id,
+                    'name' => $v->name,
+                    'stock' => (int) ($v->stock ?? 0),
+                    'min_stock' => (int) ($v->min_stock ?: 5),
+                ])->values()->all();
+
+                $storeStocksPayload = $refreshed->storeStocks->map(fn ($ss) => [
+                    'store_id' => (int) $ss->store_id,
+                    'quantity' => (int) $ss->quantity,
+                    'location_code' => $ss->location_code,
+                    'min_quantity' => (int) ($ss->min_quantity ?? 2),
+                ])->values()->all();
 
                 return response()->json([
                     'success' => true,
                     'message' => 'Stock ajusté avec succès.',
-                    'new_stock' => $refreshed->stock,
-                    'variant_id' => $variant ? $variant->id : null,
-                    'variant_stock' => $variant ? $variant->stock : null,
-                    'store_id' => $storeStock ? $storeStock->store_id : null,
-                    'store_stock' => $storeStock ? $storeStock->quantity : null,
+                    'product_id' => (int) $refreshed->id,
+                    'new_stock' => (int) ($refreshed->stock ?? 0),
+                    'threshold' => (int) ($refreshed->low_stock_threshold ?? $refreshed->min_stock ?? 10),
+                    'cost_price' => (float) ($refreshed->cost_price ?? 0),
+                    'variant_id' => $variant ? (int) $variant->id : null,
+                    'variant_stock' => $variant ? (int) ($variant->stock ?? 0) : null,
+                    'store_id' => $storeStock ? (int) $storeStock->store_id : null,
+                    'store_stock' => $storeStock ? (int) $storeStock->quantity : null,
                     'location_code' => $storeStock ? $storeStock->location_code : null,
+                    'min_quantity' => $storeStock ? (int) ($storeStock->min_quantity ?? 2) : null,
+                    'variants' => $variantsPayload,
+                    'store_stocks' => $storeStocksPayload,
                 ]);
             }
 

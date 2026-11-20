@@ -609,7 +609,11 @@
                             }
                         }
                     @endphp
-                    <tr>
+                    <tr id="inv-row-{{ $product->id }}"
+                        data-product-id="{{ $product->id }}"
+                        data-selected-store-id="{{ $selectedStoreId ?? '' }}"
+                        data-threshold="{{ $threshold }}"
+                        data-cost-price="{{ (float) ($product->cost_price ?? 0) }}">
                         <!-- Checkbox -->
                         <td style="padding-left: 1rem;">
                             <input type="checkbox" class="form-check-input inv-row-checkbox" value="{{ $product->id }}" onchange="updateInvBulkBar()">
@@ -642,10 +646,11 @@
                                             <button type="button"
                                                     class="btn btn-xs btn-outline-secondary py-0 px-1.5 d-inline-flex align-items-center gap-1 rounded"
                                                     style="font-size: 0.65rem; line-height: 1.4;"
+                                                    data-inv-variant-btn="{{ $product->id }}-{{ $variant->id }}"
                                                     onclick="openAdjustModal({{ $product->id }}, {{ $selectedStoreId ? $selectedStoreId : 'null' }}, {{ $variant->id }})"
                                                     title="Ajuster la variante {{ $variant->name }}">
                                                 <span class="fw-semibold">{{ $variant->name }}:</span>
-                                                <span class="badge {{ $variant->stock <= 0 ? 'bg-danger text-white' : ($variant->stock <= ($variant->min_stock ?: 5) ? 'bg-warning text-dark' : 'bg-light text-dark border') }} px-1 py-0" style="font-size: 0.6rem;">{{ $variant->stock }}</span>
+                                                <span class="badge {{ $variant->stock <= 0 ? 'bg-danger text-white' : ($variant->stock <= ($variant->min_stock ?: 5) ? 'bg-warning text-dark' : 'bg-light text-dark border') }} px-1 py-0" data-inv-variant-badge="{{ $product->id }}-{{ $variant->id }}" style="font-size: 0.6rem;">{{ $variant->stock }}</span>
                                             </button>
                                         @endforeach
                                     </div>
@@ -659,23 +664,21 @@
                             @if($isTracked)
                                 <div class="d-flex flex-column gap-1">
                                     <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                                        <span class="fw-bold text-dark fs-6">{{ $stock }}</span>
-                                        <span class="brand-badge {{ $badgeClass }} py-0.5 px-1.5" style="font-size: 0.68rem;">
+                                        <span class="fw-bold text-dark fs-6" id="inv-row-stock-{{ $product->id }}">{{ $stock }}</span>
+                                        <span class="brand-badge {{ $badgeClass }} py-0.5 px-1.5" id="inv-row-badge-{{ $product->id }}" style="font-size: 0.68rem;">
                                             {{ $badgeText }}
                                         </span>
-                                        @if($selectedStoreId && $storeLoc)
-                                            <span class="badge bg-light text-dark border font-monospace px-1.5 py-0.5" style="font-size: 0.65rem;" title="Emplacement Rayon">
-                                                <i class="fas fa-map-pin text-danger me-0.5"></i>{{ $storeLoc }}
-                                            </span>
-                                        @endif
                                         @if($selectedStoreId)
-                                            <span class="text-muted small" style="font-size: 0.68rem;">
+                                            <span class="badge bg-light text-dark border font-monospace px-1.5 py-0.5 {{ $storeLoc ? '' : 'd-none' }}" id="inv-row-loc-{{ $product->id }}" style="font-size: 0.65rem;" title="Emplacement Rayon">
+                                                <i class="fas fa-map-pin text-danger me-0.5"></i><span data-inv-loc-text>{{ $storeLoc }}</span>
+                                            </span>
+                                            <span class="text-muted small" id="inv-row-total-{{ $product->id }}" style="font-size: 0.68rem;">
                                                 / {{ (int)($product->stock ?? 0) }} total
                                             </span>
                                         @endif
                                     </div>
                                     <div class="progress" style="height: 4px; border-radius: 999px; background: #e2e8f0; max-width: 140px;">
-                                        <div class="progress-bar {{ $barClass }}" role="progressbar" style="width: {{ $percent }}%; border-radius: 999px;"></div>
+                                        <div class="progress-bar {{ $barClass }}" id="inv-row-bar-{{ $product->id }}" role="progressbar" style="width: {{ $percent }}%; border-radius: 999px;"></div>
                                     </div>
                                     @if(!$selectedStoreId && $stores->isNotEmpty())
                                     <div class="d-flex flex-wrap gap-1 mt-0.5">
@@ -689,14 +692,14 @@
                                             @endphp
                                             <button type="button"
                                                     class="store-inline-pill"
+                                                    data-inv-store-pill="{{ $product->id }}-{{ $st->id }}"
+                                                    data-store-name="{{ $st->name }}"
                                                     onclick="openAdjustModal({{ $product->id }}, {{ $st->id }})"
                                                     title="Cliquer pour ajuster {{ $st->name }}{{ $stLoc ? ' · ' . $stLoc : '' }}">
-                                                <span style="width: 6px; height: 6px; border-radius: 50%; background: {{ $dotColor }}; display: inline-block;"></span>
+                                                <span data-inv-store-dot style="width: 6px; height: 6px; border-radius: 50%; background: {{ $dotColor }}; display: inline-block;"></span>
                                                 <span class="text-truncate" style="max-width: 85px;">{{ $st->name }}</span>
-                                                <strong class="text-dark">{{ $stQty }}</strong>
-                                                @if($stLoc)
-                                                    <span class="text-muted font-monospace" style="font-size: 0.6rem;">· {{ $stLoc }}</span>
-                                                @endif
+                                                <strong class="text-dark" data-inv-store-qty>{{ $stQty }}</strong>
+                                                <span class="text-muted font-monospace {{ $stLoc ? '' : 'd-none' }}" data-inv-store-loc style="font-size: 0.6rem;">{{ $stLoc ? '· ' . $stLoc : '' }}</span>
                                             </button>
                                         @endforeach
                                     </div>
@@ -730,7 +733,7 @@
 
                         <!-- Seuil -->
                         <td class="text-center">
-                            <span class="{{ $reorderClass }}" style="font-size: 0.85rem;">{{ $reorderPt }}</span>
+                            <span class="{{ $reorderClass }}" id="inv-row-threshold-{{ $product->id }}" style="font-size: 0.85rem;">{{ $reorderPt }}</span>
                         </td>
 
                         <!-- Valeur marchande (Admin uniquement) / Statut -->
@@ -823,6 +826,10 @@
 
                     <div class="modal-body p-3.5">
                         <div id="modalAdjustError" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3" role="alert"></div>
+                        <div id="modalAdjustSuccess" class="alert alert-success py-2 px-3 small rounded-3 d-none mb-3 d-flex align-items-center justify-content-between" role="alert">
+                            <div><i class="fas fa-check-circle me-1.5"></i><span id="modalAdjustSuccessText">Modifications enregistrées.</span></div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.65rem;">Enregistré</span>
+                        </div>
 
                         <!-- Product Preview Card -->
                         <div class="p-3 mb-3 rounded-3 bg-light border d-flex align-items-center justify-content-between">
@@ -948,7 +955,7 @@
                             <i class="fas fa-check"></i> <span>Enregistrer l'ajustement</span>
                         </button>
                         <button type="button" class="btn btn-link text-muted small w-100 text-decoration-none mt-1" data-bs-dismiss="modal">
-                            Annuler
+                            <span id="modalAdjustCloseLabel">Fermer</span>
                         </button>
                     </div>
                 </form>
@@ -1180,25 +1187,12 @@
             errBox.classList.add('d-none');
             errBox.textContent = '';
         }
+        const okBox = document.getElementById('modalAdjustSuccess');
+        if (okBox) {
+            okBox.classList.add('d-none');
+        }
         const form = document.getElementById('adjustStockForm');
         form.action = `/inventory/${productId}/adjust`;
-
-        // Populate Store Dropdown with live per-store counts
-        const storeSelect = document.getElementById('modalStoreSelect');
-        if (storeSelect) {
-            Array.from(storeSelect.options).forEach(opt => {
-                if (!opt.value) {
-                    opt.textContent = `Stock global (${modalBaseStock} pcs)`;
-                    return;
-                }
-                const baseLabel = opt.dataset.baseLabel || opt.textContent.replace(/\s*—\s*\d+\s*pcs$/, '');
-                opt.dataset.baseLabel = baseLabel;
-                const rec = modalStoreStocks.find(s => String(s.store_id) === String(opt.value));
-                const qty = rec ? rec.quantity : 0;
-                opt.textContent = `${baseLabel} — ${qty} pcs`;
-            });
-            storeSelect.value = preferredStoreId ? String(preferredStoreId) : '';
-        }
 
         // Populate Variants Dropdown
         const variantContainer = document.getElementById('modalVariantContainer');
@@ -1211,6 +1205,7 @@
                 const opt = document.createElement('option');
                 opt.value = v.id;
                 opt.textContent = `${v.name} (Stock global: ${v.stock ?? 0})`;
+                opt.dataset.name = v.name;
                 opt.dataset.stock = v.stock ?? 0;
                 if (selectedVariantId && String(v.id) === String(selectedVariantId)) {
                     opt.selected = true;
@@ -1221,12 +1216,47 @@
             variantContainer.style.display = 'none';
         }
 
+        const storeSelect = document.getElementById('modalStoreSelect');
+        if (storeSelect) {
+            storeSelect.value = preferredStoreId ? String(preferredStoreId) : '';
+        }
+        refreshModalSelectLabels();
+
         document.getElementById('modalQuantityInput').value = 1;
         document.getElementById('modalReasonInput').value = '';
         selectOperation('in');
         syncModalStockContext();
 
-        new bootstrap.Modal(document.getElementById('adjustStockModal')).show();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('adjustStockModal')).show();
+    }
+
+    function refreshModalSelectLabels() {
+        const storeSelect = document.getElementById('modalStoreSelect');
+        if (storeSelect) {
+            Array.from(storeSelect.options).forEach(opt => {
+                if (!opt.value) {
+                    opt.textContent = `Stock global (${modalBaseStock} pcs)`;
+                    return;
+                }
+                const baseLabel = opt.dataset.baseLabel || opt.textContent.replace(/\s*—\s*\d+\s*pcs$/, '');
+                opt.dataset.baseLabel = baseLabel;
+                const rec = modalStoreStocks.find(s => String(s.store_id) === String(opt.value));
+                const qty = rec ? (parseInt(rec.quantity, 10) || 0) : 0;
+                opt.textContent = `${baseLabel} — ${qty} pcs`;
+            });
+        }
+
+        const variantSelect = document.getElementById('modalVariantSelect');
+        if (variantSelect && Array.isArray(modalVariantsList)) {
+            Array.from(variantSelect.options).forEach(opt => {
+                if (!opt.value) return;
+                const v = modalVariantsList.find(item => String(item.id) === String(opt.value));
+                if (v) {
+                    opt.dataset.stock = v.stock ?? 0;
+                    opt.textContent = `${v.name} (Stock global: ${v.stock ?? 0})`;
+                }
+            });
+        }
     }
 
     function syncModalStockContext() {
@@ -1471,6 +1501,222 @@
         validateTransferQty();
     }
 
+    function updateInventoryDomAfterSave(productId, data) {
+        if (!productId || !data) return;
+
+        const meta = window.__invProducts[productId] || { name: '', stock: 0, variants: [], storeStocks: [] };
+        const globalStock = parseInt(data.new_stock, 10) || 0;
+        meta.stock = globalStock;
+
+        if (Array.isArray(data.variants)) {
+            meta.variants = data.variants;
+        } else if (data.variant_id) {
+            const existingVar = (meta.variants || []).find(v => String(v.id) === String(data.variant_id));
+            if (existingVar) {
+                existingVar.stock = parseInt(data.variant_stock ?? existingVar.stock, 10) || 0;
+            }
+        }
+
+        if (Array.isArray(data.store_stocks)) {
+            meta.storeStocks = data.store_stocks;
+        } else if (data.store_id) {
+            meta.storeStocks = meta.storeStocks || [];
+            let existingStore = meta.storeStocks.find(s => String(s.store_id) === String(data.store_id));
+            if (!existingStore) {
+                existingStore = { store_id: parseInt(data.store_id, 10), quantity: 0, location_code: null, min_quantity: 2 };
+                meta.storeStocks.push(existingStore);
+            }
+            existingStore.quantity = parseInt(data.store_stock ?? existingStore.quantity, 10) || 0;
+            if ('location_code' in data) existingStore.location_code = data.location_code;
+            if (data.min_quantity !== null && data.min_quantity !== undefined) {
+                existingStore.min_quantity = parseInt(data.min_quantity, 10) || 0;
+            }
+        }
+        window.__invProducts[productId] = meta;
+
+        if (window.__transferStoreStocks && meta.storeStocks) {
+            const ssMap = window.__transferStoreStocks[productId] || {};
+            meta.storeStocks.forEach(ss => {
+                ssMap[ss.store_id] = parseInt(ss.quantity, 10) || 0;
+            });
+            window.__transferStoreStocks[productId] = ssMap;
+        }
+
+        const row = document.getElementById('inv-row-' + productId);
+        const selectedStoreId = row && row.dataset.selectedStoreId ? String(row.dataset.selectedStoreId) : '';
+        const selectedRec = selectedStoreId
+            ? (meta.storeStocks || []).find(s => String(s.store_id) === selectedStoreId)
+            : null;
+        const activeStock = selectedStoreId ? (selectedRec ? (parseInt(selectedRec.quantity, 10) || 0) : 0) : globalStock;
+        const threshold = selectedStoreId
+            ? (selectedRec ? (parseInt(selectedRec.min_quantity ?? 2, 10) || 0) : (parseInt(row?.dataset.threshold || '2', 10) || 2))
+            : (parseInt(data.threshold ?? row?.dataset.threshold ?? '10', 10) || 0);
+
+        if (row) {
+            row.dataset.threshold = String(threshold);
+            let badgeClass = 'success';
+            let badgeText = 'En stock';
+            let barClass = 'bg-success';
+            let percent = Math.min(100, (activeStock / Math.max(1, threshold * 3)) * 100);
+
+            if (activeStock <= 0) {
+                badgeClass = 'danger';
+                badgeText = 'Rupture';
+                barClass = 'bg-danger';
+                percent = 0;
+            } else if (activeStock <= threshold) {
+                badgeClass = 'warning';
+                badgeText = 'Faible';
+                barClass = 'bg-warning';
+                percent = Math.max(10, Math.min(100, (activeStock / Math.max(1, threshold * 2)) * 100));
+            }
+
+            const rowStockEl = document.getElementById('inv-row-stock-' + productId);
+            if (rowStockEl) rowStockEl.textContent = activeStock;
+
+            const rowBadgeEl = document.getElementById('inv-row-badge-' + productId);
+            if (rowBadgeEl) {
+                rowBadgeEl.className = `brand-badge ${badgeClass} py-0.5 px-1.5`;
+                rowBadgeEl.textContent = badgeText;
+            }
+
+            const rowBarEl = document.getElementById('inv-row-bar-' + productId);
+            if (rowBarEl) {
+                rowBarEl.className = `progress-bar ${barClass}`;
+                rowBarEl.style.width = `${percent}%`;
+            }
+
+            const rowTotalEl = document.getElementById('inv-row-total-' + productId);
+            if (rowTotalEl) rowTotalEl.textContent = `/ ${globalStock} total`;
+
+            const rowLocEl = document.getElementById('inv-row-loc-' + productId);
+            if (rowLocEl) {
+                const locText = selectedRec && selectedRec.location_code ? selectedRec.location_code : '';
+                const locSpan = rowLocEl.querySelector('[data-inv-loc-text]');
+                if (locSpan) locSpan.textContent = locText;
+                rowLocEl.classList.toggle('d-none', !locText);
+            }
+
+            if (selectedStoreId) {
+                const rowThreshEl = document.getElementById('inv-row-threshold-' + productId);
+                if (rowThreshEl) {
+                    rowThreshEl.textContent = threshold;
+                    rowThreshEl.className = activeStock <= threshold ? 'text-danger fw-bold' : 'text-muted';
+                }
+            }
+
+            row.querySelectorAll('[data-inv-store-pill^="' + productId + '-"]').forEach(pill => {
+                const attr = pill.getAttribute('data-inv-store-pill') || '';
+                const storeId = attr.split('-')[1];
+                const rec = (meta.storeStocks || []).find(s => String(s.store_id) === String(storeId));
+                const qty = rec ? (parseInt(rec.quantity, 10) || 0) : 0;
+                const minQty = rec ? (parseInt(rec.min_quantity ?? 2, 10) || 0) : 2;
+                const loc = rec && rec.location_code ? rec.location_code : '';
+                const dotColor = qty <= 0 ? '#94a3b8' : (qty <= minQty ? '#f59e0b' : '#10b981');
+
+                const dotEl = pill.querySelector('[data-inv-store-dot]');
+                if (dotEl) dotEl.style.background = dotColor;
+
+                const qtyEl = pill.querySelector('[data-inv-store-qty]');
+                if (qtyEl) qtyEl.textContent = qty;
+
+                const locEl = pill.querySelector('[data-inv-store-loc]');
+                if (locEl) {
+                    locEl.textContent = loc ? `· ${loc}` : '';
+                    locEl.classList.toggle('d-none', !loc);
+                }
+
+                const storeName = pill.dataset.storeName || '';
+                if (storeName) {
+                    pill.title = `Cliquer pour ajuster ${storeName}${loc ? ' · ' + loc : ''}`;
+                }
+            });
+        }
+
+        // Update variants (desktop + mobile)
+        (meta.variants || []).forEach(v => {
+            const vStock = parseInt(v.stock ?? 0, 10) || 0;
+            const vMin = parseInt(v.min_stock ?? 5, 10) || 5;
+            document.querySelectorAll(`[data-inv-variant-badge="${productId}-${v.id}"]`).forEach(el => {
+                el.textContent = vStock;
+                if (el.tagName === 'SPAN') {
+                    const cls = vStock <= 0
+                        ? 'bg-danger text-white'
+                        : (vStock <= vMin ? 'bg-warning text-dark' : 'bg-light text-dark border');
+                    el.className = `badge ${cls} px-1 py-0`;
+                }
+            });
+            document.querySelectorAll(`[data-mob-variant-btn="${productId}-${v.id}"]`).forEach(btn => {
+                btn.className = `badge ${vStock <= 0 ? 'bg-danger-subtle text-danger' : 'bg-light text-secondary border'} px-1.5 py-0.5`;
+            });
+        });
+
+        // Update mobile card if present
+        const mobCard = document.getElementById('mobile-inventory-card-' + productId);
+        if (mobCard) {
+            const mobValEl = document.getElementById('mob-stock-val-' + productId);
+            if (mobValEl) mobValEl.textContent = activeStock;
+
+            let statusClass = 'success';
+            let statusLabel = 'En stock';
+            let statusDot = 'dot-green';
+            let barColor = '#10b981';
+            let mobPercent = Math.min(100, (activeStock / Math.max(1, threshold * 3)) * 100);
+
+            if (activeStock <= 0) {
+                statusClass = 'danger';
+                statusLabel = 'Rupture';
+                statusDot = 'dot-red';
+                barColor = '#ef4444';
+                mobPercent = 0;
+            } else if (activeStock <= threshold) {
+                statusClass = 'warning';
+                statusLabel = 'Faible';
+                statusDot = 'dot-amber';
+                barColor = '#f59e0b';
+                mobPercent = Math.max(12, Math.min(100, (activeStock / Math.max(1, threshold * 2)) * 100));
+            }
+
+            const mobBadgeEl = document.getElementById('mob-stock-badge-' + productId);
+            if (mobBadgeEl) {
+                mobBadgeEl.className = `brand-badge ${statusClass} d-inline-flex align-items-center gap-1 py-0.5 px-1.5 mt-0.5`;
+                const dotSpan = mobBadgeEl.querySelector('.status-dot');
+                if (dotSpan) dotSpan.className = `status-dot ${statusDot}`;
+                const spans = mobBadgeEl.querySelectorAll('span');
+                if (spans.length > 1) spans[1].textContent = statusLabel;
+            }
+
+            const mobBarEl = document.getElementById('mob-stock-bar-' + productId);
+            if (mobBarEl) {
+                mobBarEl.style.width = `${mobPercent}%`;
+                mobBarEl.style.background = barColor;
+            }
+
+            mobCard.querySelectorAll(`[data-mob-store-pill^="${productId}-"]`).forEach(pill => {
+                const attr = pill.getAttribute('data-mob-store-pill') || '';
+                const storeId = attr.split('-')[1];
+                const rec = (meta.storeStocks || []).find(s => String(s.store_id) === String(storeId));
+                const qty = rec ? (parseInt(rec.quantity, 10) || 0) : 0;
+                const minQty = rec ? (parseInt(rec.min_quantity ?? 2, 10) || 0) : 2;
+                const loc = rec && rec.location_code ? rec.location_code : '';
+
+                const qtyEl = pill.querySelector('[data-mob-store-qty]');
+                if (qtyEl) qtyEl.textContent = qty;
+
+                const locEl = pill.querySelector('[data-mob-store-loc]');
+                if (locEl) {
+                    locEl.textContent = loc ? `(${loc})` : '';
+                    locEl.classList.toggle('d-none', !loc);
+                }
+
+                const pillBadge = qty <= 0
+                    ? 'bg-light text-muted border'
+                    : (qty <= minQty ? 'bg-warning-subtle text-warning border-warning-subtle' : 'bg-primary-subtle text-primary border-primary-subtle');
+                pill.className = `badge ${pillBadge} border d-inline-flex align-items-center gap-1 px-2 py-1`;
+            });
+        }
+    }
+
     if (!window.__invAdjustListenerBound) {
         window.__invAdjustListenerBound = true;
         document.addEventListener('submit', async function (e) {
@@ -1479,10 +1725,15 @@
 
             e.preventDefault();
             const errBox = document.getElementById('modalAdjustError');
+            const okBox = document.getElementById('modalAdjustSuccess');
+            const okText = document.getElementById('modalAdjustSuccessText');
             const submitBtn = document.getElementById('modalAdjustSubmitBtn');
             if (errBox) {
                 errBox.classList.add('d-none');
                 errBox.textContent = '';
+            }
+            if (okBox) {
+                okBox.classList.add('d-none');
             }
 
             const origHtml = submitBtn ? submitBtn.innerHTML : '';
@@ -1497,7 +1748,8 @@
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                     },
                     body: formData
                 });
@@ -1511,20 +1763,39 @@
                         errBox.textContent = msg;
                         errBox.classList.remove('d-none');
                     }
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = origHtml;
-                    }
                     return;
                 }
 
-                // Preserve all active filters, search, sort & page
-                window.location.reload();
+                // Keep the modal open & update state in place without refreshing the page
+                const productId = data.product_id || currentModalProductId;
+                updateInventoryDomAfterSave(productId, data);
+
+                const updatedMeta = window.__invProducts[productId];
+                if (updatedMeta) {
+                    modalBaseStock = parseInt(updatedMeta.stock, 10) || 0;
+                    modalVariantsList = updatedMeta.variants || [];
+                    modalStoreStocks = updatedMeta.storeStocks || [];
+                }
+                refreshModalSelectLabels();
+                syncModalStockContext();
+
+                const successMsg = data.message || 'Stock ajusté avec succès.';
+                if (okBox && okText) {
+                    okText.textContent = successMsg;
+                    okBox.classList.remove('d-none');
+                }
+                if (window.Toast) {
+                    window.Toast.fire({
+                        icon: 'success',
+                        title: successMsg
+                    });
+                }
             } catch (err) {
                 if (errBox) {
                     errBox.textContent = 'Erreur réseau lors de l\'enregistrement.';
                     errBox.classList.remove('d-none');
                 }
+            } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = origHtml;

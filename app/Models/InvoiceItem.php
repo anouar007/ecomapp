@@ -106,6 +106,59 @@ class InvoiceItem extends Model
     }
 
     /**
+     * Resolve the catalog Product associated with this invoice item, if any.
+     * Returns null for custom / manual service rows that do not exist in the catalog.
+     */
+    public function resolveProductModel(): ?Product
+    {
+        $product = $this->product;
+        if (!$product && $this->product_id) {
+            $product = Product::with(['images', 'primaryImage'])->find($this->product_id);
+        }
+
+        if (!$product && !empty($this->product_sku)) {
+            $product = Product::with(['images', 'primaryImage'])->where('sku', $this->product_sku)->first();
+        }
+
+        if (!$product && !empty($this->product_name)) {
+            $product = Product::with(['images', 'primaryImage'])->where('name', $this->product_name)->first();
+        }
+
+        return $product;
+    }
+
+    /**
+     * Get the resolved main product image URL for catalog invoice items, or null for custom manual rows.
+     */
+    public function getProductImageAttribute(): ?string
+    {
+        $product = $this->resolveProductModel();
+        return $product ? $product->thumbnail : null;
+    }
+
+    /**
+     * Get guaranteed public HTTPS main product image URL for invoice emails.
+     */
+    public function getEmailProductImageAttribute(): ?string
+    {
+        $url = $this->product_image;
+        return $url ? OrderItem::normalizePublicSecureUrl($url, true) : null;
+    }
+
+    /**
+     * Get base64 JPEG Data URI of the main product image for DomPDF documents.
+     */
+    public function getPdfProductImageAttribute(): ?string
+    {
+        $product = $this->resolveProductModel();
+        if (!$product) {
+            return null;
+        }
+
+        return Product::resolveImageDataUri($product->main_image, 72);
+    }
+
+    /**
      * Get formatted total price.
      */
     public function getFormattedTotalPriceAttribute(): string

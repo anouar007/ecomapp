@@ -630,6 +630,224 @@
                 margin-top: 60px !important;
             }
         }
+
+        /* ── Admin Notification Bell & Popover Center ── */
+        .navbar-notif-dropdown {
+            position: relative !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+        }
+
+        .nav-notif-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+            padding: 0;
+        }
+
+        .nav-notif-btn:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+            color: #0f172a;
+            transform: translateY(-1px);
+        }
+
+        .nav-notif-btn.has-critical {
+            border-color: #fecaca;
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .nav-notif-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: #dc2626;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            font-size: 0.65rem;
+            font-weight: 800;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+        }
+
+        .nav-notif-btn.has-critical .nav-notif-badge {
+            animation: notifPulse 2s infinite;
+        }
+
+        @keyframes notifPulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); }
+            70% { box-shadow: 0 0 0 7px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        .dropdown-menu.nav-notif-dropdown-menu {
+            width: 400px !important;
+            max-width: calc(100vw - 24px) !important;
+            padding: 0 !important;
+            margin-top: 10px !important;
+            border-radius: 16px !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.22) !important;
+            overflow: hidden !important;
+            background: #ffffff !important;
+        }
+
+        .notif-drop-header {
+            padding: 13px 16px 10px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+        }
+
+        .notif-tabs-bar {
+            display: flex;
+            gap: 5px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .notif-tabs-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .notif-tab-btn {
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .notif-tab-btn:hover {
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+
+        .notif-tab-btn.active {
+            background: #0f172a;
+            border-color: #0f172a;
+            color: #ffffff;
+        }
+
+        .notif-drop-list {
+            max-height: 390px;
+            overflow-y: auto;
+            padding: 8px;
+            background: #ffffff;
+        }
+
+        .notif-drop-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            margin-bottom: 6px;
+            background: #ffffff;
+            transition: all 0.15s ease;
+        }
+
+        .notif-drop-item.is-unread {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        .notif-drop-item.priority-critical {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .notif-drop-item:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+        }
+
+        .notif-icon-box {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        .notif-mini-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .notif-mini-action:hover {
+            background: #0f172a;
+            border-color: #0f172a;
+            color: #ffffff;
+        }
+
+        .notif-mini-action.is-primary {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: #ffffff;
+        }
+
+        .notif-mini-action.is-primary:hover {
+            background: #b91c1c;
+            border-color: #b91c1c;
+        }
+
+        @media (max-width: 575.98px) {
+            .nav-notif-btn {
+                width: 36px;
+                height: 36px;
+            }
+            .dropdown-menu.nav-notif-dropdown-menu {
+                position: fixed !important;
+                left: 10px !important;
+                right: 10px !important;
+                top: 64px !important;
+                width: auto !important;
+                max-width: none !important;
+                margin-top: 0 !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -686,6 +904,70 @@
                 <i class="fas fa-circle-question"></i>
                 <span>Guide</span>
             </button>
+
+            @php
+                $canSeeAdminNotifs = auth()->check() && app(\App\Services\AdminNotificationService::class)->canAccessAdminNotifications(auth()->user());
+            @endphp
+            @if($canSeeAdminNotifs)
+            <div class="dropdown navbar-notif-dropdown" id="navbar-notif-dropdown">
+                <button type="button"
+                        class="nav-notif-btn"
+                        id="notif-menu-trigger"
+                        data-bs-toggle="dropdown"
+                        data-bs-display="static"
+                        data-bs-auto-close="outside"
+                        aria-expanded="false"
+                        aria-label="Notifications et rappels"
+                        title="Notifications & Rappels">
+                    <i class="fas fa-bell"></i>
+                    <span class="nav-notif-badge d-none" id="nav-notif-badge">0</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end nav-notif-dropdown-menu"
+                     id="notif-dropdown-menu"
+                     aria-labelledby="notif-menu-trigger">
+                    <div class="notif-drop-header">
+                        <div class="d-flex align-items-center justify-content-between gap-2">
+                            <div class="d-flex align-items-center gap-2 min-w-0">
+                                <span class="fw-bold" style="font-size: 0.9rem;">Notifications & Rappels</span>
+                                <span class="badge rounded-pill bg-danger" id="nav-notif-header-pill" style="font-size: 0.66rem;">0</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
+                                <button type="button"
+                                        class="btn btn-sm btn-danger rounded-pill px-2 py-0.5 fw-semibold d-inline-flex align-items-center gap-1"
+                                        style="font-size: 0.69rem;"
+                                        onclick="window.WinaNotifications?.openReminderModal()">
+                                    <i class="fas fa-plus"></i><span>Rappel</span>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-light rounded-pill px-2 py-0.5 fw-semibold"
+                                        style="font-size: 0.69rem;"
+                                        onclick="window.WinaNotifications?.markAllRead()">
+                                    Tout lu
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="notif-tabs-bar" id="nav-notif-tabs">
+                        <button type="button" class="notif-tab-btn active" data-tab="all" onclick="window.WinaNotifications?.setTab('all', this)">Tout</button>
+                        <button type="button" class="notif-tab-btn" data-tab="credit" onclick="window.WinaNotifications?.setTab('credit', this)">Crédits</button>
+                        <button type="button" class="notif-tab-btn" data-tab="orders" onclick="window.WinaNotifications?.setTab('orders', this)">Commandes</button>
+                        <button type="button" class="notif-tab-btn" data-tab="reminders" onclick="window.WinaNotifications?.setTab('reminders', this)">Rappels</button>
+                        <button type="button" class="notif-tab-btn" data-tab="other" onclick="window.WinaNotifications?.setTab('other', this)">Autres</button>
+                    </div>
+                    <div class="notif-drop-list" id="nav-notif-list">
+                        <div class="text-center text-muted py-4 small">
+                            <i class="fas fa-spinner fa-spin me-1"></i> Chargement...
+                        </div>
+                    </div>
+                    <div class="border-top bg-light px-3 py-2 d-flex align-items-center justify-content-between">
+                        <span class="text-muted" id="nav-notif-footer-meta" style="font-size: 0.72rem;">Suivi en temps réel</span>
+                        <a href="{{ route('notifications.index') }}" class="text-danger fw-bold text-decoration-none" style="font-size: 0.76rem;" onclick="window.WinaNotifications?.closeDropdown()">
+                            Centre complet <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <div class="dropdown navbar-user-dropdown">
                 <button type="button" 
@@ -789,6 +1071,15 @@
                 <a href="{{ route('dashboard') }}" class="sidebar-menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" data-tooltip="Tableau de bord">
                     <i class="fas fa-home"></i>
                     <span>Tableau de bord</span>
+                </a>
+            </li>
+            @endif
+            @if(!empty($canSeeAdminNotifs) || (auth()->check() && app(\App\Services\AdminNotificationService::class)->canAccessAdminNotifications(auth()->user())))
+            <li class="sidebar-menu-item" data-section="overview">
+                <a href="{{ route('notifications.index') }}" class="sidebar-menu-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}" data-tooltip="Notifications & Rappels">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications & Rappels</span>
+                    <span id="sidebar-notif-badge" class="badge rounded-pill bg-danger ms-auto d-none" style="font-size: 0.65rem;">0</span>
                 </a>
             </li>
             @endif
@@ -1032,6 +1323,81 @@
         @yield('content')
     </main>
 
+    @if(auth()->check() && app(\App\Services\AdminNotificationService::class)->canAccessAdminNotifications(auth()->user()))
+    <!-- Global Quick Reminder Modal -->
+    <div class="modal fade" id="globalReminderModal" tabindex="-1" aria-labelledby="globalReminderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 text-white py-3 px-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-danger text-white" style="width: 32px; height: 32px;">
+                            <i class="fas fa-bell"></i>
+                        </span>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="globalReminderModalLabel" style="font-size: 1rem;">Nouveau Rappel / Échéance</h5>
+                            <div class="text-white-50" style="font-size: 0.72rem;">Crédit client, commande à suivre ou tâche importante</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <form id="globalReminderForm" onsubmit="return window.WinaNotifications?.submitReminder(event);">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label for="gr_title" class="form-label fw-semibold small text-dark mb-1">Titre du rappel <span class="text-danger">*</span></label>
+                            <input type="text" id="gr_title" name="title" class="form-control" maxlength="180" required placeholder="Ex: Relancer client Ahmed pour crédit 2 500 DH">
+                        </div>
+                        <div class="row g-2.5 mb-3">
+                            <div class="col-12 col-sm-6">
+                                <label for="gr_category" class="form-label fw-semibold small text-dark mb-1">Catégorie</label>
+                                <select id="gr_category" name="category" class="form-select">
+                                    <option value="credit">Crédit / Impayé</option>
+                                    <option value="order">Commande</option>
+                                    <option value="finance">Charge / Facture</option>
+                                    <option value="stock">Stock / Arrivage</option>
+                                    <option value="general" selected>Général</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <label for="gr_priority" class="form-label fw-semibold small text-dark mb-1">Priorité</label>
+                                <select id="gr_priority" name="priority" class="form-select">
+                                    <option value="critical">Critique / Urgent</option>
+                                    <option value="high" selected>Haute</option>
+                                    <option value="medium">Moyenne</option>
+                                    <option value="low">Basse</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gr_due_at" class="form-label fw-semibold small text-dark mb-1">Date & heure de rappel</label>
+                            <input type="datetime-local" id="gr_due_at" name="due_at" class="form-control mb-2">
+                            <div class="d-flex flex-wrap gap-1.5">
+                                <button type="button" class="btn btn-xs btn-light border rounded-pill px-2.5 py-1" style="font-size: 0.72rem;" onclick="window.WinaNotifications?.setReminderPreset('today17')">Aujourd'hui 17h</button>
+                                <button type="button" class="btn btn-xs btn-light border rounded-pill px-2.5 py-1" style="font-size: 0.72rem;" onclick="window.WinaNotifications?.setReminderPreset('tomorrow9')">Demain 09h</button>
+                                <button type="button" class="btn btn-xs btn-light border rounded-pill px-2.5 py-1" style="font-size: 0.72rem;" onclick="window.WinaNotifications?.setReminderPreset('3days')">Dans 3 jours</button>
+                                <button type="button" class="btn btn-xs btn-light border rounded-pill px-2.5 py-1" style="font-size: 0.72rem;" onclick="window.WinaNotifications?.setReminderPreset('7days')">Dans 7 jours</button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gr_notes" class="form-label fw-semibold small text-dark mb-1">Notes complémentaires</label>
+                            <textarea id="gr_notes" name="notes" rows="2" class="form-control" maxlength="1000" placeholder="Téléphone client, montant exact, détails..."></textarea>
+                        </div>
+                        <div>
+                            <label for="gr_related_url" class="form-label fw-semibold small text-dark mb-1">Lien associé (optionnel)</label>
+                            <input type="text" id="gr_related_url" name="related_url" class="form-control form-control-sm" maxlength="255" placeholder="Ex: /orders/123 ou /client-credits">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 bg-light px-4 py-3">
+                        <button type="button" class="btn btn-light border rounded-pill px-3" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" id="gr_submit_btn" class="btn btn-danger rounded-pill px-4 fw-semibold">
+                            <i class="fas fa-check me-1"></i> Enregistrer le rappel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- SweetAlert2 JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.all.min.js"></script>
     <!-- SweetAlert Helpers -->
@@ -1139,6 +1505,399 @@
         });
     })();
     </script>
+
+    @if(auth()->check() && app(\App\Services\AdminNotificationService::class)->canAccessAdminNotifications(auth()->user()))
+    <!-- Admin Real-Time Notifications & Reminders Engine -->
+    <script>
+    (function() {
+        if (window.WinaNotifications) return;
+
+        const ROUTES = {
+            feed: @json(route('notifications.feed')),
+            markRead: @json(route('notifications.read')),
+            markAllRead: @json(route('notifications.read-all')),
+            snooze: @json(route('notifications.snooze')),
+            dismiss: @json(route('notifications.dismiss')),
+            restore: @json(route('notifications.restore')),
+            remindersStore: @json(route('notifications.reminders.store')),
+            completeReminderBase: @json(url('/notifications/reminders')),
+            contactReadBase: @json(url('/notifications/contact')),
+            stockAckBase: @json(url('/notifications/stock-alert'))
+        };
+
+        const state = {
+            items: [],
+            counts: { unread: 0, critical: 0, total_active: 0 },
+            kpis: {},
+            activeTab: 'all',
+            loading: false,
+            toastShownKeys: new Set()
+        };
+
+        function csrfToken() {
+            return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        }
+
+        function escHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        async function postJson(url, payload = {}, method = 'POST') {
+            const res = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken(),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: method === 'DELETE' ? null : JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return await res.json();
+        }
+
+        function updateBadges(counts) {
+            state.counts = counts || state.counts;
+            const unread = parseInt(state.counts.unread || 0, 10);
+            const critical = parseInt(state.counts.critical || 0, 10);
+
+            const navBtn = document.getElementById('notif-menu-trigger');
+            const navBadge = document.getElementById('nav-notif-badge');
+            const headerPill = document.getElementById('nav-notif-header-pill');
+            const sidebarBadge = document.getElementById('sidebar-notif-badge');
+            const footerMeta = document.getElementById('nav-notif-footer-meta');
+
+            if (navBtn) {
+                navBtn.classList.toggle('has-critical', critical > 0);
+            }
+            if (navBadge) {
+                navBadge.textContent = unread > 99 ? '99+' : String(unread);
+                navBadge.classList.toggle('d-none', unread <= 0);
+            }
+            if (headerPill) {
+                headerPill.textContent = `${unread} non lu(s)` + (critical > 0 ? ` • ${critical} urgent(s)` : '');
+            }
+            if (sidebarBadge) {
+                sidebarBadge.textContent = unread > 99 ? '99+' : String(unread);
+                sidebarBadge.classList.toggle('d-none', unread <= 0);
+            }
+            if (footerMeta) {
+                const totalActive = parseInt(state.counts.total_active || 0, 10);
+                footerMeta.textContent = `${totalActive} alerte(s) active(s)`;
+            }
+        }
+
+        function filterByTab(items) {
+            if (state.activeTab === 'all') return items;
+            if (state.activeTab === 'other') {
+                return items.filter(i => !['credit', 'orders', 'reminders'].includes(i.category));
+            }
+            return items.filter(i => i.category === state.activeTab);
+        }
+
+        function renderDropdownList() {
+            const listEl = document.getElementById('nav-notif-list');
+            if (!listEl) return;
+
+            const visible = filterByTab(state.items).slice(0, 18);
+            if (!visible.length) {
+                listEl.innerHTML = `
+                    <div class="text-center py-4 px-3">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success-subtle text-success mb-2" style="width: 44px; height: 44px;">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="fw-bold text-dark small">Tout est à jour !</div>
+                        <div class="text-muted" style="font-size: 0.74rem;">Aucune alerte active dans cette catégorie.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = visible.map(item => {
+                const bgIcon = `${item.color}18`;
+                const prioBadge = item.priority === 'critical'
+                    ? `<span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.62rem;">URGENT</span>`
+                    : (item.due_label ? `<span class="badge bg-light text-dark border" style="font-size: 0.62rem;">${escHtml(item.due_label)}</span>` : '');
+                const safeKey = escHtml(item.key);
+                let quickBtn = '';
+                if (item.quick_action === 'complete_reminder' && item.reminder_id) {
+                    quickBtn = `<button type="button" class="notif-mini-action" onclick="window.WinaNotifications.completeReminder(${item.reminder_id})"><i class="fas fa-check"></i> Terminer</button>`;
+                } else if (item.quick_action === 'mark_contact_read' && item.target_id) {
+                    quickBtn = `<button type="button" class="notif-mini-action" onclick="window.WinaNotifications.markContactRead(${item.target_id}, '${safeKey}')"><i class="fas fa-envelope-open"></i> Lu</button>`;
+                } else if (item.quick_action === 'ack_stock_alert' && item.target_id) {
+                    quickBtn = `<button type="button" class="notif-mini-action" onclick="window.WinaNotifications.ackStockAlert(${item.target_id}, '${safeKey}')"><i class="fas fa-check"></i> Acquitter</button>`;
+                } else if (!item.is_read) {
+                    quickBtn = `<button type="button" class="notif-mini-action" onclick="window.WinaNotifications.markRead('${safeKey}', true)"><i class="fas fa-check"></i> Lu</button>`;
+                }
+
+                const linkHtml = item.url
+                    ? `<a href="${escHtml(item.url)}" class="notif-mini-action is-primary" onclick="window.WinaNotifications.openAlert('${safeKey}')">${escHtml(item.action_label || 'Voir')} →</a>`
+                    : '';
+
+                return `
+                    <div class="notif-drop-item ${item.is_read ? '' : 'is-unread'} priority-${escHtml(item.priority)}">
+                        <div class="notif-icon-box" style="background: ${escHtml(bgIcon)}; color: ${escHtml(item.color)};">
+                            <i class="${escHtml(item.icon)}"></i>
+                        </div>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex align-items-center justify-content-between gap-1 mb-0.5">
+                                <span class="text-truncate fw-bold text-dark" style="font-size: 0.78rem;" title="${escHtml(item.title)}">${escHtml(item.title)}</span>
+                                ${prioBadge}
+                            </div>
+                            <div class="text-secondary" style="font-size: 0.72rem; line-height: 1.35;">${escHtml(item.message)}</div>
+                            <div class="d-flex flex-wrap align-items-center gap-1 mt-1.5">
+                                ${linkHtml}
+                                ${quickBtn}
+                                <button type="button" class="notif-mini-action" onclick="window.WinaNotifications.snooze('${safeKey}', 'tomorrow')" title="Reporter à demain 09h">
+                                    <i class="far fa-clock"></i> Demain
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function maybeNotifyCritical(items) {
+            let newCritical = null;
+            try {
+                const seen = JSON.parse(sessionStorage.getItem('wina_seen_critical') || '[]');
+                seen.forEach(k => state.toastShownKeys.add(k));
+            } catch (e) {}
+
+            for (const item of items) {
+                if (item.priority === 'critical' && !item.is_read && !state.toastShownKeys.has(item.key)) {
+                    state.toastShownKeys.add(item.key);
+                    if (!newCritical) newCritical = item;
+                }
+            }
+
+            try {
+                sessionStorage.setItem('wina_seen_critical', JSON.stringify(Array.from(state.toastShownKeys).slice(-60)));
+            } catch (e) {}
+
+            if (newCritical && typeof Toast !== 'undefined') {
+                Toast.fire({
+                    icon: 'warning',
+                    title: `${newCritical.title} (${newCritical.due_label || 'Urgent'})`
+                });
+            }
+        }
+
+        async function refresh(silent = false) {
+            if (state.loading) return;
+            state.loading = true;
+            try {
+                const res = await fetch(ROUTES.feed, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                state.items = Array.isArray(data.items) ? data.items : [];
+                state.kpis = data.kpis || {};
+                updateBadges(data.counts);
+                renderDropdownList();
+                if (!silent) {
+                    maybeNotifyCritical(state.items);
+                }
+                document.dispatchEvent(new CustomEvent('wina:notifications-updated', { detail: data }));
+            } catch (e) {
+                // Keep quiet on transient network failures
+            } finally {
+                state.loading = false;
+            }
+        }
+
+        function closeDropdown() {
+            const trigger = document.getElementById('notif-menu-trigger');
+            if (trigger && typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+                bootstrap.Dropdown.getInstance(trigger)?.hide();
+            }
+        }
+
+        function formatLocalDatetimeInput(dt) {
+            const pad = n => String(n).padStart(2, '0');
+            return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+        }
+
+        window.WinaNotifications = {
+            refresh,
+            closeDropdown,
+            setTab(tab, btn) {
+                state.activeTab = tab;
+                document.querySelectorAll('#nav-notif-tabs .notif-tab-btn').forEach(b => b.classList.remove('active'));
+                if (btn) btn.classList.add('active');
+                renderDropdownList();
+            },
+            openAlert(alertKey) {
+                postJson(ROUTES.markRead, { alert_key: alertKey, read: true }).catch(() => {});
+                closeDropdown();
+            },
+            async markRead(alertKey, read = true) {
+                try {
+                    const data = await postJson(ROUTES.markRead, { alert_key: alertKey, read: read });
+                    updateBadges(data.counts);
+                    await refresh(true);
+                } catch (e) {}
+            },
+            async markAllRead() {
+                try {
+                    const data = await postJson(ROUTES.markAllRead, {});
+                    updateBadges(data.counts);
+                    await refresh(true);
+                    if (typeof Toast !== 'undefined') Toast.fire({ icon: 'success', title: 'Toutes les notifications marquées lues' });
+                } catch (e) {}
+            },
+            async snooze(alertKey, preset, customDate = null) {
+                try {
+                    const data = await postJson(ROUTES.snooze, { alert_key: alertKey, preset: preset, snoozed_until: customDate });
+                    updateBadges(data.counts);
+                    await refresh(true);
+                    if (typeof Toast !== 'undefined') Toast.fire({ icon: 'info', title: data.message || 'Rappel reporté' });
+                } catch (e) {}
+            },
+            async dismiss(alertKey) {
+                try {
+                    const data = await postJson(ROUTES.dismiss, { alert_key: alertKey });
+                    updateBadges(data.counts);
+                    await refresh(true);
+                } catch (e) {}
+            },
+            async restore(alertKey) {
+                try {
+                    const data = await postJson(ROUTES.restore, { alert_key: alertKey });
+                    updateBadges(data.counts);
+                    await refresh(true);
+                } catch (e) {}
+            },
+            async markContactRead(id, alertKey) {
+                try {
+                    const data = await postJson(`${ROUTES.contactReadBase}/${id}/read`, {});
+                    updateBadges(data.counts);
+                    await refresh(true);
+                    if (typeof Toast !== 'undefined') Toast.fire({ icon: 'success', title: 'Message marqué comme lu' });
+                } catch (e) {}
+            },
+            async ackStockAlert(id, alertKey) {
+                try {
+                    const data = await postJson(`${ROUTES.stockAckBase}/${id}/acknowledge`, {});
+                    updateBadges(data.counts);
+                    await refresh(true);
+                    if (typeof Toast !== 'undefined') Toast.fire({ icon: 'success', title: 'Alerte stock acquittée' });
+                } catch (e) {}
+            },
+            async completeReminder(id, completed = true) {
+                try {
+                    const data = await postJson(`${ROUTES.completeReminderBase}/${id}/complete`, { completed: completed });
+                    updateBadges(data.counts);
+                    await refresh(true);
+                    if (typeof Toast !== 'undefined') Toast.fire({ icon: 'success', title: data.message || 'Rappel mis à jour' });
+                } catch (e) {}
+            },
+            async destroyReminder(id) {
+                try {
+                    const data = await postJson(`${ROUTES.completeReminderBase}/${id}`, {}, 'DELETE');
+                    updateBadges(data.counts);
+                    await refresh(true);
+                    if (typeof Toast !== 'undefined') Toast.fire({ icon: 'success', title: 'Rappel supprimé' });
+                } catch (e) {}
+            },
+            openReminderModal(prefill = {}) {
+                closeDropdown();
+                const form = document.getElementById('globalReminderForm');
+                if (form) form.reset();
+                if (prefill.title && document.getElementById('gr_title')) document.getElementById('gr_title').value = prefill.title;
+                if (prefill.category && document.getElementById('gr_category')) document.getElementById('gr_category').value = prefill.category;
+                if (prefill.priority && document.getElementById('gr_priority')) document.getElementById('gr_priority').value = prefill.priority;
+                if (prefill.related_url && document.getElementById('gr_related_url')) document.getElementById('gr_related_url').value = prefill.related_url;
+
+                const modalEl = document.getElementById('globalReminderModal');
+                if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                }
+            },
+            setReminderPreset(preset) {
+                const input = document.getElementById('gr_due_at');
+                if (!input) return;
+                const d = new Date();
+                if (preset === 'today17') {
+                    d.setHours(17, 0, 0, 0);
+                } else if (preset === 'tomorrow9') {
+                    d.setDate(d.getDate() + 1);
+                    d.setHours(9, 0, 0, 0);
+                } else if (preset === '3days') {
+                    d.setDate(d.getDate() + 3);
+                    d.setHours(9, 0, 0, 0);
+                } else if (preset === '7days') {
+                    d.setDate(d.getDate() + 7);
+                    d.setHours(9, 0, 0, 0);
+                }
+                input.value = formatLocalDatetimeInput(d);
+            },
+            async submitReminder(e) {
+                if (e) e.preventDefault();
+                const form = document.getElementById('globalReminderForm');
+                const btn = document.getElementById('gr_submit_btn');
+                if (!form) return false;
+                if (btn) btn.disabled = true;
+
+                try {
+                    const payload = {
+                        title: document.getElementById('gr_title')?.value?.trim() || '',
+                        category: document.getElementById('gr_category')?.value || 'general',
+                        priority: document.getElementById('gr_priority')?.value || 'high',
+                        due_at: document.getElementById('gr_due_at')?.value || null,
+                        notes: document.getElementById('gr_notes')?.value?.trim() || null,
+                        related_url: document.getElementById('gr_related_url')?.value?.trim() || null
+                    };
+                    const data = await postJson(ROUTES.remindersStore, payload);
+                    updateBadges(data.counts);
+                    form.reset();
+                    const modalEl = document.getElementById('globalReminderModal');
+                    if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        bootstrap.Modal.getInstance(modalEl)?.hide();
+                    }
+                    await refresh(true);
+                    if (typeof Toast !== 'undefined') Toast.fire({ icon: 'success', title: data.message || 'Rappel ajouté !' });
+                    if (window.location.pathname.startsWith('/notifications')) {
+                        window.location.reload();
+                    }
+                } catch (err) {
+                    if (typeof Toast !== 'undefined') Toast.fire({ icon: 'error', title: 'Impossible d\'enregistrer le rappel.' });
+                } finally {
+                    if (btn) btn.disabled = false;
+                }
+                return false;
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.__winaNotifBooted) {
+                window.__winaNotifBooted = true;
+                const notifTrigger = document.getElementById('notif-menu-trigger');
+                if (notifTrigger && typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+                    bootstrap.Dropdown.getOrCreateInstance(notifTrigger);
+                }
+                refresh(false);
+                setInterval(function() {
+                    if (!document.hidden) refresh(true);
+                }, 60000);
+            }
+        });
+
+        document.addEventListener('spa:navigated', function() {
+            closeDropdown();
+            refresh(true);
+        });
+    })();
+    </script>
+    @endif
     <div id="spa-page-scripts">
         @stack('scripts')
     </div>

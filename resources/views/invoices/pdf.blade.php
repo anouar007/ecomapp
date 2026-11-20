@@ -450,9 +450,25 @@
                 <tr>
                     <td style="text-align:center; color:#94a3b8; font-size:8.5px;">{{ $i + 1 }}</td>
                     <td>
-                        <div class="item-name">{{ $item->displayName }}</div>
-                        @if($item->product_sku)
-                        <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                        @if($pdfImg = $item->pdf_product_image)
+                            <table style="width: 100%; border-collapse: collapse; margin: 0; padding: 0;">
+                                <tr style="background: transparent !important; border: none !important;">
+                                    <td style="width: 34px; border: none !important; padding: 0 6px 0 0 !important; background: transparent !important; vertical-align: middle;">
+                                        <img src="{{ $pdfImg }}" alt="" style="display: block; width: 28px; height: 28px; object-fit: contain; border: 1px solid #e2e8f0; border-radius: 4px; background: #ffffff; padding: 1px;">
+                                    </td>
+                                    <td style="border: none !important; padding: 0 !important; background: transparent !important; vertical-align: middle;">
+                                        <div class="item-name">{{ $item->displayName }}</div>
+                                        @if($item->product_sku)
+                                        <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </table>
+                        @else
+                            <div class="item-name">{{ $item->displayName }}</div>
+                            @if($item->product_sku)
+                            <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                            @endif
                         @endif
                     </td>
                     <td style="text-align:right;">{{ $item->formatted_unit_price_ht }}</td>

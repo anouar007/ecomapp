@@ -83,6 +83,68 @@
         $canActivityFeed = $isAdmin || ($authUser && $authUser->can('dashboard_activity_feed'));
     @endphp
 
+    @if(!empty($notificationSummary) && (($notificationSummary['counts']['unread'] ?? 0) > 0 || ($notificationSummary['counts']['critical'] ?? 0) > 0))
+    <!-- Rappels & Alertes Prioritaires Strip -->
+    @php
+        $topAlerts = array_slice($notificationSummary['items'] ?? [], 0, 3);
+        $nKpis = $notificationSummary['kpis'] ?? [];
+        $nCounts = $notificationSummary['counts'] ?? [];
+    @endphp
+    <div class="card border-0 rounded-4 shadow-sm mb-3.5 overflow-hidden" style="border: 1px solid #fecaca !important; background: linear-gradient(135deg, #fef2f2 0%, #ffffff 55%, #fffbeb 100%);">
+        <div class="card-body p-3 p-md-3.5">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2.5">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-danger text-white" style="width: 30px; height: 30px; font-size: 0.82rem;">
+                        <i class="fas fa-bell"></i>
+                    </span>
+                    <span class="fw-bold text-dark" style="font-size: 0.92rem;">Rappels & Alertes Prioritaires</span>
+                    @if(($nCounts['critical'] ?? 0) > 0)
+                        <span class="badge bg-danger text-white rounded-pill" style="font-size: 0.68rem;">{{ $nCounts['critical'] }} urgent(s)</span>
+                    @endif
+                    @if(($nKpis['credit_deadlines_count'] ?? 0) > 0)
+                        <a href="{{ route('notifications.index', ['category' => 'credit']) }}" class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill text-decoration-none" style="font-size: 0.68rem;">
+                            <i class="fas fa-hand-holding-dollar me-1"></i>{{ $nKpis['credit_deadlines_count'] }} crédit(s) à suivre
+                        </a>
+                    @endif
+                    @if(($nKpis['pending_orders_count'] ?? 0) > 0)
+                        <a href="{{ route('notifications.index', ['category' => 'orders']) }}" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill text-decoration-none" style="font-size: 0.68rem;">
+                            <i class="fas fa-clock me-1"></i>{{ $nKpis['pending_orders_count'] }} en attente
+                        </a>
+                    @endif
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1 fw-semibold" style="font-size: 0.74rem;" onclick="window.WinaNotifications?.openReminderModal()">
+                        <i class="fas fa-plus text-danger me-1"></i>Rappel
+                    </button>
+                    <a href="{{ route('notifications.index') }}" class="btn btn-sm btn-danger rounded-pill px-3 py-1 fw-semibold" style="font-size: 0.74rem;">
+                        Voir tout ({{ $nCounts['total_active'] ?? 0 }}) <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row g-2">
+                @foreach($topAlerts as $tAlert)
+                    <div class="col-12 col-md-4">
+                        <a href="{{ $tAlert['url'] ?? route('notifications.index') }}" class="d-flex align-items-start gap-2.5 p-2.5 rounded-3 bg-white border text-decoration-none h-100 shadow-2xs" style="transition: transform 0.15s ease;">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-2 flex-shrink-0" style="width: 30px; height: 30px; background: {{ $tAlert['color'] }}18; color: {{ $tAlert['color'] }}; font-size: 0.8rem;">
+                                <i class="{{ $tAlert['icon'] }}"></i>
+                            </span>
+                            <div class="min-w-0 flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between gap-1">
+                                    <span class="fw-bold text-dark text-truncate" style="font-size: 0.78rem;">{{ $tAlert['title'] }}</span>
+                                    @if(!empty($tAlert['due_label']))
+                                        <span class="badge bg-light text-dark border flex-shrink-0" style="font-size: 0.62rem;">{{ $tAlert['due_label'] }}</span>
+                                    @endif
+                                </div>
+                                <div class="text-muted text-truncate mt-0.5" style="font-size: 0.72rem;">{{ $tAlert['message'] }}</div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Synchronized Subnav Navigation Bar (Product Section Standard) -->
     <div class="subnav-pills-bar mb-3.5">
         <a href="#general" class="subnav-pill active" data-tab="general" onclick="switchDashboardTab('general', event)">
@@ -610,9 +672,22 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="brand-badge info px-2 py-0.5" style="font-size: 0.65rem;">
-                                            {{ $order->items_count }} {{ $order->items_count > 1 ? 'Articles' : 'Article' }}
-                                        </span>
+                                        @php
+                                            $dashFirstItem = $order->items->first();
+                                        @endphp
+                                        <div class="d-inline-flex align-items-center gap-1.5">
+                                            @if($dashFirstItem)
+                                                <img src="{{ $dashFirstItem->product_image }}" alt="{{ $dashFirstItem->product_name }}"
+                                                     width="28" height="28"
+                                                     class="rounded border flex-shrink-0"
+                                                     style="width: 28px; height: 28px; object-fit: contain; background: #ffffff; padding: 1px;"
+                                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                                     loading="lazy">
+                                            @endif
+                                            <span class="brand-badge info px-2 py-0.5" style="font-size: 0.65rem;">
+                                                {{ $order->items_count }} {{ $order->items_count > 1 ? 'Articles' : 'Article' }}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="text-center">
                                         @php
@@ -620,7 +695,8 @@
                                             $statusClass = match($st) {
                                                 'completed', 'livrée', 'payée', 'delivered' => 'success',
                                                 'pending', 'en attente' => 'warning',
-                                                'processing', 'en cours' => 'primary',
+                                                'en_demande', 'processing', 'en cours' => 'primary',
+                                                'reserved', 'réservé' => 'purple',
                                                 'shipped', 'expédiée' => 'info',
                                                 'cancelled', 'annulée' => 'danger',
                                                 default => 'secondary'
@@ -628,6 +704,8 @@
                                             $statusLabel = match($st) {
                                                 'completed' => 'Complétée',
                                                 'pending' => 'En attente',
+                                                'en_demande' => 'Sur Commande',
+                                                'reserved', 'réservé' => 'Réservé',
                                                 'processing' => 'En cours',
                                                 'shipped' => 'Expédiée',
                                                 'delivered', 'livrée' => 'Livrée',
@@ -665,13 +743,16 @@
                                 $statusClass = match($st) {
                                     'completed', 'livrée', 'payée', 'delivered' => 'success',
                                     'pending', 'en attente' => 'warning',
-                                    'processing', 'en cours', 'shipped' => 'info',
+                                    'en_demande', 'processing', 'en cours', 'shipped' => 'info',
+                                    'reserved', 'réservé' => 'purple',
                                     'cancelled', 'annulée' => 'danger',
                                     default => 'secondary'
                                 };
                                 $statusLabel = match($st) {
                                     'completed' => 'Complétée',
                                     'pending' => 'En attente',
+                                    'en_demande' => 'Sur Commande',
+                                    'reserved', 'réservé' => 'Réservé',
                                     'processing' => 'En cours',
                                     'shipped' => 'Expédiée',
                                     'delivered', 'livrée' => 'Livrée',
@@ -688,12 +769,22 @@
                                         {{ $statusLabel }}
                                     </span>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="fw-bold text-dark small">{{ $order->customer_name }}</div>
-                                        <div class="text-muted" style="font-size: 11px;">
-                                            <span>{{ $order->created_at->format('d/m/Y H:i') }}</span> &bull; 
-                                            <span>{{ $order->items_count }} art.</span>
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <div class="d-flex align-items-center gap-2 min-w-0">
+                                        @if($mobFirstDashItem = $order->items->first())
+                                            <img src="{{ $mobFirstDashItem->product_image }}" alt="{{ $mobFirstDashItem->product_name }}"
+                                                 width="32" height="32"
+                                                 class="rounded border flex-shrink-0"
+                                                 style="width: 32px; height: 32px; object-fit: contain; background: #ffffff; padding: 1px;"
+                                                 onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                                 loading="lazy">
+                                        @endif
+                                        <div class="min-w-0">
+                                            <div class="fw-bold text-dark small text-truncate">{{ $order->customer_name }}</div>
+                                            <div class="text-muted" style="font-size: 11px;">
+                                                <span>{{ $order->created_at->format('d/m/Y H:i') }}</span> &bull; 
+                                                <span>{{ $order->items_count }} art.</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="text-end">

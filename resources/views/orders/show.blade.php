@@ -183,7 +183,7 @@
 
     <!-- Stepper de progression de la commande -->
     @php
-        $steps = ['pending', 'en_demande', 'processing', 'shipped', 'delivered'];
+        $steps = ['pending', 'en_demande', 'reserved', 'processing', 'shipped', 'delivered'];
         $currentStatusIndex = array_search(strtolower($order->status), $steps);
         if (strtolower($order->status) === 'cancelled') $currentStatusIndex = -1;
     @endphp
@@ -200,14 +200,9 @@
         <div class="order-stepper-wrap mb-4">
             <div class="order-stepper">
                 @php
-                    $stepPercent = match($currentStatusIndex) {
-                        0 => 0,
-                        1 => 25,
-                        2 => 50,
-                        3 => 75,
-                        4 => 100,
-                        default => 0
-                    };
+                    $stepPercent = ($currentStatusIndex !== false && $currentStatusIndex >= 0 && count($steps) > 1)
+                        ? round(($currentStatusIndex / (count($steps) - 1)) * 100)
+                        : 0;
                 @endphp
                 <div class="order-stepper-track">
                     <div class="order-stepper-progress" style="width: {{ $stepPercent }}%;"></div>
@@ -217,6 +212,7 @@
                     $stepLabels = [
                         'pending' => ['name' => 'En attente', 'icon' => 'fa-clock'],
                         'en_demande' => ['name' => 'Sur Commande', 'icon' => 'fa-clipboard-list'],
+                        'reserved' => ['name' => 'Réservé', 'icon' => 'fa-bookmark'],
                         'processing' => ['name' => 'En préparation', 'icon' => 'fa-cog'],
                         'shipped' => ['name' => 'Expédiée', 'icon' => 'fa-truck-fast'],
                         'delivered' => ['name' => 'Livrée', 'icon' => 'fa-circle-check'],
@@ -417,7 +413,12 @@
                                         </form>
                                     </td>
                                     <td class="text-center py-3 fw-semibold text-secondary">
-                                        {{ currency($item->price) }}
+                                        @if($item->original_price && (float) $item->original_price > (float) $item->price)
+                                            <del class="text-muted small d-block">{{ currency($item->original_price) }}</del>
+                                            <span class="text-success fw-bold">{{ currency($item->price) }}</span>
+                                        @else
+                                            {{ currency($item->price) }}
+                                        @endif
                                     </td>
                                     <td class="text-center py-3">
                                         <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold" style="border-radius: 8px;">
@@ -425,7 +426,7 @@
                                         </span>
                                     </td>
                                     <td class="text-end pe-3 py-3 fw-bold text-dark font-heading">
-                                        {{ currency($item->price * $item->quantity) }}
+                                        {{ currency($item->subtotal ?? ($item->price * $item->quantity)) }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -500,10 +501,15 @@
                                     </form>
                                     <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                                         <span class="badge bg-white text-dark border px-2 py-1">
-                                            {{ currency($item->price) }} &times; {{ $item->quantity }}
+                                            @if($item->original_price && (float) $item->original_price > (float) $item->price)
+                                                <del class="text-muted me-1">{{ currency($item->original_price) }}</del>
+                                                <span class="text-success fw-bold">{{ currency($item->price) }}</span> &times; {{ $item->quantity }}
+                                            @else
+                                                {{ currency($item->price) }} &times; {{ $item->quantity }}
+                                            @endif
                                         </span>
                                         <span class="fw-bold text-dark font-heading">
-                                            {{ currency($item->price * $item->quantity) }}
+                                            {{ currency($item->subtotal ?? ($item->price * $item->quantity)) }}
                                         </span>
                                     </div>
                                 </div>
@@ -685,6 +691,7 @@
                         };
                         $payText = match($payLower) {
                             'paid' => 'Règlement Confirmé (Payé)',
+                            'partial' => 'Paiement Partiel',
                             'failed' => 'Paiement Échoué',
                             'refunded' => 'Commande Remboursée',
                             default => 'En attente de paiement'
@@ -806,8 +813,43 @@
                 <div class="d-flex flex-column gap-2.5 small">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="text-muted">Mode :</span>
-                        <span class="fw-bold text-dark text-capitalize">{{ str_replace('_', ' ', $order->payment_method ?: 'Non spécifié') }}</span>
+                        @php
+                            $orderMethodDisplay = match(strtolower((string) $order->payment_method)) {
+                                'cash' => 'Espèces',
+                                'card' => 'Carte bancaire',
+                                'virement' => 'Virement bancaire',
+                                'credit' => 'Crédit',
+                                'other' => 'Autre',
+                                default => ucfirst(str_replace('_', ' ', $order->payment_method ?: 'Non spécifié')),
+                            };
+                        @endphp
+                        <span class="fw-bold text-dark">{{ $orderMethodDisplay }}</span>
                     </div>
+
+                    @if($order->payment_status === 'partial' || (float) ($order->remaining_amount ?? 0) > 0)
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Payé :</span>
+                            <span class="fw-bold text-success">{{ currency($order->paid_amount ?? 0) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Reste à payer :</span>
+                            <span class="fw-bold text-danger">{{ currency($order->remaining_amount ?? 0) }}</span>
+                        </div>
+                        @if($order->payment_due_date)
+                            @php
+                                $isOverdue = $order->payment_due_date->isPast() && !$order->payment_due_date->isToday() && $order->payment_status !== 'paid';
+                            @endphp
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Échéance :</span>
+                                <span class="fw-bold {{ $isOverdue ? 'text-danger' : 'text-dark' }}">
+                                    {{ $order->payment_due_date->format('d/m/Y') }}
+                                    @if($isOverdue)
+                                        <span class="badge bg-danger-subtle text-danger ms-1" style="font-size: 0.68rem;">En retard</span>
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
+                    @endif
 
                     @if($order->transaction_id)
                         <div class="d-flex justify-content-between align-items-center">

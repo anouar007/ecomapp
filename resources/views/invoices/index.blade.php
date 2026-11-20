@@ -459,10 +459,19 @@
                             <div class="fw-bold text-dark invoice-amount-value">
                                 {{ $invoice->formatted_total_amount }}
                             </div>
-                            <div class="text-muted" style="font-size: 0.72rem; margin-top: 2px;">
+                            <div class="d-flex align-items-center justify-content-end gap-1.5 text-muted" style="font-size: 0.72rem; margin-top: 3px;">
                                 @if($invoice->payment_status === 'partial')
                                     <span class="text-danger fw-semibold">Reste : {{ $invoice->formatted_remaining_balance }}</span>
                                 @elseif($invoice->items && $invoice->items->count())
+                                    @php
+                                        $firstProdImg = $invoice->items->map(fn($it) => $it->product_image)->filter()->first();
+                                    @endphp
+                                    @if($firstProdImg)
+                                        <img src="{{ $firstProdImg }}" alt="" width="24" height="24"
+                                             class="rounded border flex-shrink-0"
+                                             style="width: 24px; height: 24px; object-fit: contain; background: #ffffff; padding: 1px;"
+                                             onerror="this.style.display='none';">
+                                    @endif
                                     <span>{{ $invoice->items->count() }} article{{ $invoice->items->count() > 1 ? 's' : '' }}</span>
                                 @endif
                             </div>

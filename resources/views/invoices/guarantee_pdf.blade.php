@@ -260,7 +260,20 @@
                         {{ $item->product_sku ?? ($item->product->sku ?? 'N/A') }}
                     </td>
                     <td>
-                        <strong style="color: #1e293b;">{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
+                        @if($pdfImg = $item->pdf_product_image)
+                            <table style="width: 100%; border-collapse: collapse; margin: 0; padding: 0;">
+                                <tr style="background: transparent !important; border: none !important;">
+                                    <td style="width: 32px; border: none !important; padding: 0 6px 0 0 !important; background: transparent !important; vertical-align: middle;">
+                                        <img src="{{ $pdfImg }}" alt="" style="display: block; width: 26px; height: 26px; object-fit: contain; border: 1px solid #e2e8f0; border-radius: 4px; background: #ffffff; padding: 1px;">
+                                    </td>
+                                    <td style="border: none !important; padding: 0 !important; background: transparent !important; vertical-align: middle;">
+                                        <strong style="color: #1e293b;">{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                        @else
+                            <strong style="color: #1e293b;">{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
+                        @endif
                     </td>
                     <td style="text-align: center; font-weight: bold;">{{ $item->quantity }}</td>
                     <td style="text-align: right; color: #059669; font-weight: bold;">

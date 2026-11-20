@@ -17,6 +17,8 @@ class CustomerDashboardController extends Controller
     {
         $user = Auth::user();
         $recentOrders = Order::where('user_id', $user->id)
+            ->with(['items.product.images', 'items.product.primaryImage', 'items.variant'])
+            ->withCount('items')
             ->latest()
             ->take(5)
             ->get();
@@ -32,6 +34,8 @@ class CustomerDashboardController extends Controller
     public function orders()
     {
         $orders = Order::where('user_id', Auth::id())
+            ->with(['items.product.images', 'items.product.primaryImage', 'items.variant'])
+            ->withCount('items')
             ->latest()
             ->paginate(10);
 
@@ -47,6 +51,8 @@ class CustomerDashboardController extends Controller
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
+
+        $order->load(['items.product.images', 'items.product.primaryImage', 'items.variant']);
 
         return view('frontend.dashboard.order-show', compact('order'));
     }

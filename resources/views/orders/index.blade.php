@@ -223,12 +223,22 @@
         color: #6d28d9;
     }
 
-    @media (min-width: 1200px) {
-        .row-cols-xl-7 > * {
-            flex: 0 0 auto;
-            width: 14.285714%;
-        }
+    .kpi-theme-reserved {
+        --kpi-accent: #9333ea;
+        --kpi-border: #e9d5ff;
+        --kpi-active-bg: #faf5ff;
+        --kpi-ring: rgba(147, 51, 234, 0.25);
     }
+    .kpi-theme-reserved .order-kpi-icon {
+        background: #f3e8ff;
+        color: #9333ea;
+    }
+    .kpi-theme-reserved .order-kpi-badge {
+        background: #f3e8ff;
+        color: #7e22ce;
+    }
+    .kpi-theme-reserved .order-kpi-value {
+        color: #7e22ce;
     }
     .kpi-theme-cancelled .order-kpi-badge {
         background: #fee2e2;
@@ -323,14 +333,15 @@
         $totalOrdersCount = $stats['total'] ?? 0;
         $pendingPct = $totalOrdersCount > 0 ? round(($stats['pending'] / $totalOrdersCount) * 100, 1) : 0;
         $enDemandePct = $totalOrdersCount > 0 ? round((($stats['en_demande'] ?? 0) / $totalOrdersCount) * 100, 1) : 0;
+        $reservedPct = $totalOrdersCount > 0 ? round((($stats['reserved'] ?? 0) / $totalOrdersCount) * 100, 1) : 0;
         $processingPct = $totalOrdersCount > 0 ? round(($stats['processing'] / $totalOrdersCount) * 100, 1) : 0;
         $shippedPct = $totalOrdersCount > 0 ? round(($stats['shipped'] / $totalOrdersCount) * 100, 1) : 0;
         $deliveredPct = $totalOrdersCount > 0 ? round(($stats['delivered'] / $totalOrdersCount) * 100, 1) : 0;
         $cancelledPct = $totalOrdersCount > 0 ? round(($stats['cancelled'] / $totalOrdersCount) * 100, 1) : 0;
     @endphp
 
-    <!-- 7 Delivery Status Cards (Interactive Filters with All Orders) -->
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-7 g-2.5 g-md-3 mb-4">
+    <!-- 8 Delivery Status Cards (Interactive Filters with All Orders) -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2.5 g-md-3 mb-4">
         <!-- 0. Toutes les commandes (All orders) -->
         <div class="col mb-2">
             <a href="{{ route($indexRoute, request()->except(['status', 'page'])) }}" 
@@ -396,6 +407,29 @@
                 </div>
                 <div class="order-kpi-footer">
                     <i class="fas fa-clock-rotate-left"></i> <span>Approvisionnement</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- 1c. Réservé (reserved) -->
+        <div class="col mb-2">
+            <a href="{{ request('status') === 'reserved' ? route($indexRoute, request()->except(['status', 'page'])) : route($indexRoute, array_merge(request()->except('page'), ['status' => 'reserved'])) }}"
+               class="order-kpi-card kpi-theme-reserved h-100 {{ request('status') === 'reserved' ? 'active-filter' : '' }}"
+               title="Filtrer : Commandes réservées">
+                <div>
+                    <div class="order-kpi-top">
+                        <span class="order-kpi-label" style="color: #7e22ce;">Réservé</span>
+                        <span class="order-kpi-badge" id="kpi-reserved-pct">{{ $reservedPct }}%</span>
+                    </div>
+                    <div class="order-kpi-body">
+                        <div class="order-kpi-value" id="kpi-reserved-orders">{{ number_format($stats['reserved'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="order-kpi-icon">
+                            <i class="fas fa-bookmark"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-kpi-footer">
+                    <i class="fas fa-bookmark"></i> <span>Mise de côté</span>
                 </div>
             </a>
         </div>
@@ -551,6 +585,7 @@
                                 $statusNames = [
                                     'pending' => '⏳ En attente',
                                     'en_demande' => '📋 Sur Commande',
+                                    'reserved' => '🔖 Réservé',
                                     'processing' => '⚙️ En cours',
                                     'shipped' => '🚚 Expédiée',
                                     'delivered' => '✅ Livrée',
@@ -570,6 +605,7 @@
                             @php
                                 $paymentStatusNames = [
                                     'pending' => '⏳ En attente',
+                                    'partial' => '⏳ Partiel',
                                     'paid' => '💳 Payé',
                                     'failed' => '⚠️ Échoué',
                                     'refunded' => '↩️ Remboursé'
@@ -669,6 +705,7 @@
                     $statusBadgeLabels = [
                         'pending' => 'En attente',
                         'en_demande' => 'Sur Commande',
+                        'reserved' => 'Réservé',
                         'processing' => 'En cours',
                         'shipped' => 'Expédiée',
                         'delivered' => 'Livrée',
@@ -684,6 +721,7 @@
                 @php
                     $payBadgeLabels = [
                         'pending' => 'En attente',
+                        'partial' => 'Partiel',
                         'paid' => 'Payé',
                         'failed' => 'Échoué',
                         'refunded' => 'Remboursé'
@@ -901,6 +939,18 @@
                         </td>
                         <td class="text-end fw-bold text-dark fs-6 font-heading">
                             {{ $order->formatted_total }}
+                            @if((float) ($order->remaining_amount ?? 0) > 0)
+                                <div class="mt-1">
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
+                                        Reste : {{ currency($order->remaining_amount) }}
+                                    </span>
+                                    @if($order->payment_due_date)
+                                        <div class="text-muted" style="font-size: 0.64rem;">
+                                            Éch. {{ $order->payment_due_date->format('d/m/Y') }}
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
                         </td>
                         <td class="text-center">
                             @php
@@ -909,6 +959,7 @@
                                     'delivered', 'livrée' => 'green',
                                     'shipped', 'expédiée' => 'teal',
                                     'processing', 'en cours', 'en_demande' => 'blue',
+                                    'reserved', 'réservé' => 'purple',
                                     'cancelled', 'annulée' => 'red',
                                     default => 'amber'
                                 };
@@ -917,6 +968,7 @@
                                     'cancelled', 'annulée' => 'danger',
                                     'shipped', 'expédiée' => 'info',
                                     'processing', 'en cours', 'en_demande' => 'primary',
+                                    'reserved', 'réservé' => 'purple',
                                     default => 'warning'
                                 };
                                 $statusText = match($stLower) {
@@ -924,6 +976,7 @@
                                     'shipped', 'expédiée' => 'Expédiée',
                                     'processing', 'en cours' => 'En cours',
                                     'en_demande' => 'Sur Commande',
+                                    'reserved', 'réservé' => 'Réservé',
                                     'pending' => 'En attente',
                                     'cancelled', 'annulée' => 'Annulée',
                                     default => ucfirst($order->status)
@@ -955,6 +1008,12 @@
                                         <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'en_demande' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'en_demande')">
                                             <span><span class="status-dot dot-blue me-1.5"></span> Sur Commande</span>
                                             @if($stLower === 'en_demande') <i class="fas fa-check text-primary small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ in_array($stLower, ['reserved', 'réservé']) ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'reserved')">
+                                            <span><span class="status-dot dot-purple me-1.5"></span> Réservé</span>
+                                            @if(in_array($stLower, ['reserved', 'réservé'])) <i class="fas fa-check text-purple small"></i> @endif
                                         </button>
                                     </li>
                                     <li>
@@ -996,6 +1055,7 @@
                                 };
                                 $pText = match($payStatus) {
                                     'paid', 'payé' => 'Payé',
+                                    'partial', 'partiel' => 'Partiel',
                                     'failed', 'échoué' => 'Échoué',
                                     'refunded', 'remboursé' => 'Remboursé',
                                     default => 'En attente'
@@ -1272,6 +1332,7 @@
         const stMap = {
             'pending': { label: 'En attente', dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobBg: '#fffbeb', mobColor: '#b45309', mobBorder: '#fde68a' },
             'en_demande': { label: 'Sur Commande', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eef2ff', mobColor: '#4338ca', mobBorder: '#c7d2fe' },
+            'reserved': { label: 'Réservé', dot: 'purple', badgeClass: 'purple', textClass: 'text-purple', mobBg: '#f5f3ff', mobColor: '#6d28d9', mobBorder: '#ddd6fe' },
             'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eff6ff', mobColor: '#1d4ed8', mobBorder: '#bfdbfe' },
             'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info', textClass: 'text-info', mobBg: 'rgb(192 246 255 / 53%)', mobColor: '#0093ac', mobBorder: '#0dcaf0' },
             'delivered': { label: 'Livrée', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobBg: '#ecfdf5', mobColor: '#047857', mobBorder: '#a7f3d0' },
@@ -1333,6 +1394,7 @@
         const pst = (order.payment_status || '').toLowerCase();
         const pstMap = {
             'paid': { label: 'Payé', icon: 'fa-check-circle', badgeClass: 'paid', textClass: 'text-success', mobClass: 'paid' },
+            'partial': { label: 'Partiel', icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' },
             'pending': { label: 'En attente', icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' },
             'failed': { label: 'Échoué', icon: 'fa-exclamation-circle', badgeClass: 'failed', textClass: 'text-danger', mobClass: 'failed' },
             'refunded': { label: 'Remboursé', icon: 'fa-undo', badgeClass: 'refunded', textClass: 'text-secondary', mobClass: 'refunded' }
@@ -1391,6 +1453,12 @@
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.en_demande);
             const pctEl = document.getElementById('kpi-en-demande-pct');
             if (pctEl) pctEl.textContent = calcPct(stats.en_demande);
+        }
+        if (stats.reserved !== undefined) {
+            const el = document.getElementById('kpi-reserved-orders');
+            if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.reserved);
+            const pctEl = document.getElementById('kpi-reserved-pct');
+            if (pctEl) pctEl.textContent = calcPct(stats.reserved);
         }
         if (stats.processing !== undefined) {
             const el = document.getElementById('kpi-processing-orders');

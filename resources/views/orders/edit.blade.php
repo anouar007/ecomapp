@@ -84,6 +84,7 @@
                             <select id="status" name="status" class="form-select @error('status') is-invalid @enderror" required>
                                 <option value="pending" {{ old('status', $order->status) == 'pending' ? 'selected' : '' }}>⏳ En attente</option>
                                 <option value="en_demande" {{ old('status', $order->status) == 'en_demande' ? 'selected' : '' }}>📋 Sur Commande</option>
+                                <option value="reserved" {{ old('status', $order->status) == 'reserved' ? 'selected' : '' }}>🔖 Réservé</option>
                                 <option value="processing" {{ old('status', $order->status) == 'processing' ? 'selected' : '' }}>⚙️ En préparation (En cours)</option>
                                 <option value="shipped" {{ old('status', $order->status) == 'shipped' ? 'selected' : '' }}>🚚 Expédiée</option>
                                 <option value="delivered" {{ old('status', $order->status) == 'delivered' ? 'selected' : '' }}>✅ Livrée (Déduire le stock)</option>
@@ -104,6 +105,7 @@
                             </label>
                             <select id="payment_status" name="payment_status" class="form-select @error('payment_status') is-invalid @enderror" required>
                                 <option value="pending" {{ old('payment_status', $order->payment_status) == 'pending' ? 'selected' : '' }}>⏳ En attente de règlement</option>
+                                <option value="partial" {{ old('payment_status', $order->payment_status) == 'partial' ? 'selected' : '' }}>🌗 Paiement partiel</option>
                                 <option value="paid" {{ old('payment_status', $order->payment_status) == 'paid' ? 'selected' : '' }}>💳 Payé / Encaissé</option>
                                 <option value="failed" {{ old('payment_status', $order->payment_status) == 'failed' ? 'selected' : '' }}>⚠️ Échoué / Refusé</option>
                                 <option value="refunded" {{ old('payment_status', $order->payment_status) == 'refunded' ? 'selected' : '' }}>↩️ Remboursé</option>

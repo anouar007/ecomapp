@@ -510,7 +510,16 @@
                                 {{ $item->product_sku ?: 'ART-' . str_pad($item->product_id ?? $item->id, 4, '0', STR_PAD_LEFT) }}
                             </td>
                             <td>
-                                <strong>{{ $item->displayName }}</strong>
+                                @if($item->product_image)
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <img src="{{ $item->product_image }}" alt="{{ $item->displayName }}"
+                                             style="width: 30px; height: 30px; object-fit: contain; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 5px; padding: 1px; flex-shrink: 0;"
+                                             onerror="this.style.display='none';">
+                                        <strong>{{ $item->displayName }}</strong>
+                                    </div>
+                                @else
+                                    <strong>{{ $item->displayName }}</strong>
+                                @endif
                             </td>
                             <td style="text-align: right; color: #334155; font-weight: 500;">{{ $item->formatted_unit_price_ht }}</td>
                             <td style="text-align: center; font-weight: 800; color: #0284c7;">{{ $item->quantity }}</td>

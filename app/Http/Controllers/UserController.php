@@ -673,7 +673,7 @@ class UserController extends Controller
 
         try {
             $oldRoles = $user->getRoleNames()->toArray();
-            $user->syncRoles($validated['roles'] ?? []);
+            $user->syncRoles($roleNames);
 
             $this->recordRoleAudit(
                 'updated',

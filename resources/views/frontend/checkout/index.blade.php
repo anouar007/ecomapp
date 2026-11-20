@@ -81,6 +81,31 @@
                                 </div>
 
                                 <div class="col-12 col-md-6">
+                                    <label for="customer_phone_confirmation" class="form-label fw-semibold text-dark mb-1.5">
+                                        {{ __('CONFIRM PHONE NUMBER') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group checkout-input-group">
+                                        <span class="input-group-text"><i class="fas fa-check-double text-muted"></i></span>
+                                        <input type="tel"
+                                               id="customer_phone_confirmation"
+                                               name="customer_phone_confirmation"
+                                               inputmode="tel"
+                                               autocomplete="off"
+                                               class="form-control checkout-input @error('customer_phone_confirmation') is-invalid @enderror"
+                                               placeholder="Ex: 06 12 34 56 78"
+                                               required
+                                               value="{{ old('customer_phone_confirmation', '') }}">
+                                    </div>
+                                    <div id="phone-confirm-validation-feedback" class="small mt-1 @error('customer_phone_confirmation') text-danger fw-semibold @else text-muted @enderror" style="font-size: 0.78rem;">
+                                        @error('customer_phone_confirmation')
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                        @else
+                                            {{ __('Retype your phone number to confirm') }}
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
                                     <label for="customer_email" class="form-label fw-semibold text-dark mb-1.5">
                                         E-MAIL <span class="text-muted fw-normal small">({{ __('optional') }})</span>
                                     </label>
@@ -95,23 +120,114 @@
                                     </div>
                                 </div>
 
+                                @php
+                                    $selectedDeliveryMethod = old('delivery_method', 'delivery');
+                                    $isPickupSelected = $selectedDeliveryMethod === 'pickup_casablanca';
+                                @endphp
                                 <div class="col-12">
-                                    <label for="shipping_address" class="form-label fw-semibold text-dark mb-1.5">
+                                    <label class="form-label fw-semibold text-dark mb-2">
+                                        {{ __('DELIVERY METHOD') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="row g-2">
+                                        <div class="col-12 col-sm-6">
+                                            <label class="delivery-option-card {{ !$isPickupSelected ? 'is-selected' : '' }}" for="delivery_method_home">
+                                                <input class="delivery-option-radio" type="radio" name="delivery_method" id="delivery_method_home" value="delivery" {{ !$isPickupSelected ? 'checked' : '' }}>
+                                                <span class="delivery-card-icon">
+                                                    <i class="fas fa-truck"></i>
+                                                </span>
+                                                <span class="delivery-card-body">
+                                                    <span class="delivery-card-title">{{ __('Home Delivery') }}</span>
+                                                    <span class="delivery-card-subtitle">{{ __('Delivery across Morocco') }}</span>
+                                                </span>
+                                                <span class="delivery-check-indicator" aria-hidden="true">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-12 col-sm-6">
+                                            <label class="delivery-option-card is-pickup {{ $isPickupSelected ? 'is-selected' : '' }}" for="delivery_method_pickup">
+                                                <input class="delivery-option-radio" type="radio" name="delivery_method" id="delivery_method_pickup" value="pickup_casablanca" {{ $isPickupSelected ? 'checked' : '' }}>
+                                                <span class="delivery-card-icon is-pickup">
+                                                    <i class="fas fa-store"></i>
+                                                </span>
+                                                <span class="delivery-card-body">
+                                                    <span class="delivery-card-title">{{ __('Pickup at Casablanca Store') }}</span>
+                                                    <span class="delivery-card-subtitle">{{ $pickupStore->name ?? 'Magasin Principal Casablanca' }}</span>
+                                                    <span class="delivery-free-badge">{{ __('Gratuit') }} • 0 {{ setting('currency_symbol', 'DH') }}</span>
+                                                </span>
+                                                <span class="delivery-check-indicator" aria-hidden="true">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 {{ $isPickupSelected ? '' : 'd-none' }}" id="pickup-store-info-box">
+                                    @php
+                                        $displayPickupPhone = $pickupPhone ?? ($pickupStore?->phone ?: '06 29 03 57 77');
+                                        $pickupTelHref = 'tel:' . preg_replace('/[^\d\+]/', '', $displayPickupPhone);
+                                        $displayPickupMapsUrl = $pickupMapsUrl ?? 'https://maps.app.goo.gl/NfQmJQ1xqXSydiUk6';
+                                    @endphp
+                                    <div class="pickup-store-info-card">
+                                        <div class="pickup-store-badge">
+                                            <i class="fas fa-store"></i>
+                                        </div>
+                                        <div class="pickup-store-content">
+                                            <div class="pickup-store-header">
+                                                <div class="pickup-store-title">
+                                                    {{ $pickupStore->name ?? 'Magasin Principal Casablanca' }} — {{ $pickupStore->city ?? 'Casablanca' }}
+                                                </div>
+                                                <span class="pickup-zero-fee-pill">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>{{ __('Store pickup — zero delivery fee') }}</span>
+                                                </span>
+                                            </div>
+                                            @if(!empty($pickupStore?->address))
+                                                <div class="pickup-store-address">
+                                                    <i class="fas fa-map-pin"></i>
+                                                    <span>{{ $pickupStore->address }}</span>
+                                                </div>
+                                            @endif
+                                            <div class="pickup-store-actions">
+                                                <a href="{{ $pickupTelHref }}" class="btn-pickup-phone">
+                                                    <i class="fas fa-phone-alt"></i>
+                                                    <span>{{ $displayPickupPhone }}</span>
+                                                </a>
+                                                <a href="{{ $displayPickupMapsUrl }}" target="_blank" rel="noopener noreferrer" class="btn-pickup-maps">
+                                                    <i class="fas fa-map-location-dot"></i>
+                                                    <span>{{ __('View location on Google Maps') }}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 home-delivery-field {{ $isPickupSelected ? 'd-none' : '' }}">
+                                    <label for="shipping_address" class="form-label fw-semibold text-dark">
                                         {{ __('ADDRESS') }} <span class="text-danger">*</span>
                                     </label>
-                                    <div class="input-group checkout-input-group">
+                                    <div class="input-group checkout-input-group checkout-address-group">
                                         <span class="input-group-text"><i class="fas fa-map-marker-alt text-muted"></i></span>
                                         <input type="text" 
                                                id="shipping_address" 
                                                name="shipping_address" 
                                                class="form-control checkout-input" 
-                                               required 
+                                               {{ $isPickupSelected ? '' : 'required' }}
                                                value="{{ old('shipping_address', auth()->user()->address ?? '') }}" 
                                                placeholder="....">
+                                        <button type="button"
+                                                id="btn-get-location"
+                                                class="btn-geo-locate"
+                                                title="{{ __('Use my current location') }}">
+                                            <i class="fas fa-location-crosshairs" id="geo-btn-icon"></i>
+                                            <span id="geo-btn-text" class="geo-btn-label">{{ __('Use my location') }}</span>
+                                        </button>
                                     </div>
+                                    <div id="geo-location-feedback" class="mt-2 d-none" aria-live="polite"></div>
                                 </div>
 
-                                <div class="col-12">
+                                <div class="col-12 home-delivery-field {{ $isPickupSelected ? 'd-none' : '' }}">
                                     <label for="shipping_city_input" class="form-label fw-semibold text-dark mb-1.5">
                                         {{ __('SHIPPING CITY') }} <span class="text-danger">*</span>
                                     </label>
@@ -124,7 +240,7 @@
                                                    class="form-control checkout-input fw-semibold" 
                                                    placeholder="...." 
                                                    autocomplete="off" 
-                                                   required
+                                                   {{ $isPickupSelected ? '' : 'required' }}
                                                    value="{{ old('shipping_city', auth()->user()->city ?? '') }}">
                                             <button class="btn btn-light border-0 text-muted px-3" type="button" id="city-clear-btn" style="display: none;" title="{{ __('Clear city') }}">
                                                 <i class="fas fa-times-circle"></i>
@@ -158,11 +274,9 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="me-3 position-relative">
                                 @php
-                                    $chkImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/'))) 
-                                        ? asset(ltrim($details['image'], '/')) 
-                                        : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
+                                    $chkImg = \App\Models\Product::resolveImageUrl($details['image'] ?? null);
                                 @endphp
-                                <img src="{{ $chkImg }}" alt="{{ $details['name'] }}" width="60" height="60" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <img src="{{ $chkImg }}" alt="{{ $details['name'] }}" width="60" height="60" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary tiny-badge">{{ $details['quantity'] }}</span>
                             </div>
                             <div class="flex-grow-1">
@@ -311,10 +425,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!cityInput || !subtotalEl) return;
 
+    const shippingAddressInput = document.getElementById('shipping_address');
+    const pickupInfoBox = document.getElementById('pickup-store-info-box');
+    const homeDeliveryFields = document.querySelectorAll('.home-delivery-field');
+    const deliveryRadios = document.querySelectorAll('input[name="delivery_method"]');
+
     const allCities = @json($cities);
     const subtotal = parseFloat(subtotalEl.getAttribute('data-subtotal')) || 0;
     let currentDiscount = parseFloat(subtotalEl.getAttribute('data-discount')) || 0;
     let isFreeShipping = subtotalEl.getAttribute('data-is-free-shipping') === '1';
+    let isStorePickup = document.querySelector('input[name="delivery_method"]:checked')?.value === 'pickup_casablanca';
     let currentShipping = null;
     const symbol = subtotalEl.getAttribute('data-currency-symbol') || 'DH';
     const decimals = parseInt(subtotalEl.getAttribute('data-currency-decimals')) || 2;
@@ -335,9 +455,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateSummary(price) {
         if (price !== undefined) currentShipping = price;
-        const effectiveShipping = isFreeShipping ? 0 : (currentShipping !== null && !isNaN(currentShipping) ? currentShipping : null);
+        const effectiveShipping = (isStorePickup || isFreeShipping)
+            ? 0
+            : (currentShipping !== null && !isNaN(currentShipping) ? currentShipping : null);
 
-        if (isFreeShipping) {
+        if (isStorePickup) {
+            shippingEl.innerHTML = `<span class="text-success fw-bold"><i class="fas fa-store me-1"></i>{{ __('Gratuit') }} (${formatCurrency(0)})</span>`;
+        } else if (isFreeShipping) {
             shippingEl.innerHTML = '<span class="text-success fw-bold"><i class="fas fa-gift me-1"></i>{{ __("Gratuit") }}</span>';
         } else if (effectiveShipping !== null) {
             shippingEl.innerHTML = '<span class="text-danger fw-bold">' + formatCurrency(effectiveShipping) + '</span>';
@@ -349,6 +473,41 @@ document.addEventListener('DOMContentLoaded', function() {
         totalEl.textContent = formatCurrency(grandTotal);
         if (btnTotalEl) btnTotalEl.textContent = formatCurrency(grandTotal);
     }
+
+    function syncDeliveryMethodUI(triggerSummary = true) {
+        isStorePickup = document.querySelector('input[name="delivery_method"]:checked')?.value === 'pickup_casablanca';
+
+        deliveryRadios.forEach(radio => {
+            const card = radio.closest('.delivery-option-card');
+            if (card) card.classList.toggle('is-selected', radio.checked);
+        });
+
+        homeDeliveryFields.forEach(el => el.classList.toggle('d-none', isStorePickup));
+        if (pickupInfoBox) pickupInfoBox.classList.toggle('d-none', !isStorePickup);
+
+        if (shippingAddressInput) shippingAddressInput.required = !isStorePickup;
+        if (cityInput) cityInput.required = !isStorePickup;
+
+        if (!triggerSummary) return;
+
+        if (isStorePickup) {
+            updateSummary(0);
+        } else {
+            const val = cityInput.value.trim();
+            if (val) {
+                selectManual(val);
+            } else {
+                hideStatus();
+                updateSummary(null);
+            }
+        }
+    }
+
+    deliveryRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            syncDeliveryMethodUI(true);
+        });
+    });
 
     // --- PROMO CODE LOGIC ---
     const btnApplyPromo = document.getElementById('btn-apply-promo');
@@ -737,9 +896,11 @@ document.addEventListener('DOMContentLoaded', function() {
         cityInput.focus();
     });
 
-    // Client-side phone validation before checkout submit
+    // Client-side phone & phone-confirmation validation before checkout submit
     const phoneInput = document.getElementById('customer_phone');
     const phoneFeedback = document.getElementById('phone-validation-feedback');
+    const phoneConfirmInput = document.getElementById('customer_phone_confirmation');
+    const phoneConfirmFeedback = document.getElementById('phone-confirm-validation-feedback');
 
     function validatePhoneValue(raw) {
         const trimmed = (raw || '').trim();
@@ -780,47 +941,103 @@ document.addEventListener('DOMContentLoaded', function() {
         return { valid: false, message: 'Numéro invalide. Exemple : 06 12 34 56 78 ou +212 6 12 34 56 78.' };
     }
 
-    function applyPhoneValidationUI(showError) {
-        if (!phoneInput) return true;
-        const result = validatePhoneValue(phoneInput.value);
-
-        if (result.valid) {
-            phoneInput.setCustomValidity('');
-            phoneInput.classList.remove('is-invalid');
-            phoneInput.classList.add('is-valid');
-            if (phoneFeedback) {
-                phoneFeedback.className = 'small mt-1 text-success fw-semibold';
-                phoneFeedback.innerHTML = '<i class="fas fa-check-circle me-1"></i>Numéro valide';
+    function setPhoneFieldState(inputEl, feedbackEl, isValid, showError, msg, defaultHint) {
+        if (!inputEl) return true;
+        if (isValid) {
+            inputEl.setCustomValidity('');
+            inputEl.classList.remove('is-invalid');
+            inputEl.classList.add('is-valid');
+            if (feedbackEl) {
+                feedbackEl.className = 'small mt-1 text-success fw-semibold';
+                feedbackEl.innerHTML = '<i class="fas fa-check-circle me-1"></i>' + msg;
             }
             return true;
         }
 
-        phoneInput.setCustomValidity(result.message);
-        phoneInput.classList.remove('is-valid');
+        inputEl.setCustomValidity(msg);
+        inputEl.classList.remove('is-valid');
         if (showError) {
-            phoneInput.classList.add('is-invalid');
-            if (phoneFeedback) {
-                phoneFeedback.className = 'small mt-1 text-danger fw-semibold';
-                phoneFeedback.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>' + result.message;
+            inputEl.classList.add('is-invalid');
+            if (feedbackEl) {
+                feedbackEl.className = 'small mt-1 text-danger fw-semibold';
+                feedbackEl.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>' + msg;
             }
         } else {
-            phoneInput.classList.remove('is-invalid');
-            if (phoneFeedback) {
-                phoneFeedback.className = 'small mt-1 text-muted';
-                phoneFeedback.textContent = 'Format accepté : 06 / 07 / 05 XX XX XX XX ou +212...';
+            inputEl.classList.remove('is-invalid');
+            if (feedbackEl) {
+                feedbackEl.className = 'small mt-1 text-muted';
+                feedbackEl.textContent = defaultHint;
             }
         }
         return false;
+    }
+
+    function applyPhoneValidationUI(showError) {
+        if (!phoneInput) return true;
+        const result = validatePhoneValue(phoneInput.value);
+        return setPhoneFieldState(
+            phoneInput,
+            phoneFeedback,
+            result.valid,
+            showError,
+            result.valid ? '{{ __("Valid number") }}' : result.message,
+            'Format accepté : 06 / 07 / 05 XX XX XX XX ou +212...'
+        );
+    }
+
+    function applyPhoneConfirmValidationUI(showError) {
+        if (!phoneConfirmInput) return true;
+        const defaultHint = '{{ __("Retype your phone number to confirm") }}';
+        const primary = validatePhoneValue(phoneInput ? phoneInput.value : '');
+        const confirm = validatePhoneValue(phoneConfirmInput.value);
+
+        if (!phoneConfirmInput.value.trim()) {
+            return setPhoneFieldState(
+                phoneConfirmInput,
+                phoneConfirmFeedback,
+                false,
+                showError,
+                'Veuillez confirmer votre numéro de téléphone.',
+                defaultHint
+            );
+        }
+
+        if (!confirm.valid) {
+            return setPhoneFieldState(
+                phoneConfirmInput,
+                phoneConfirmFeedback,
+                false,
+                showError,
+                confirm.message,
+                defaultHint
+            );
+        }
+
+        const matched = primary.valid && primary.normalized === confirm.normalized;
+        return setPhoneFieldState(
+            phoneConfirmInput,
+            phoneConfirmFeedback,
+            matched,
+            showError,
+            matched ? '{{ __("Valid number") }}' : '{{ __("Phone numbers do not match.") }}',
+            defaultHint
+        );
     }
 
     if (phoneInput) {
         phoneInput.addEventListener('input', function () {
             const digitsCount = (this.value || '').replace(/\D/g, '').length;
             applyPhoneValidationUI(digitsCount >= 10);
+            if (phoneConfirmInput && phoneConfirmInput.value.trim() !== '') {
+                applyPhoneConfirmValidationUI(digitsCount >= 10);
+            }
         });
         phoneInput.addEventListener('blur', function () {
             if (this.value.trim() !== '') {
                 applyPhoneValidationUI(true);
+            }
+            if (phoneConfirmInput && phoneConfirmInput.value.trim() !== '') {
+                applyPhoneConfirmValidationUI(true);
             }
         });
         if (phoneInput.value.trim() !== '') {
@@ -828,7 +1045,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Ensure manual city & phone are validated on form submit & show instant loading state
+    if (phoneConfirmInput) {
+        phoneConfirmInput.addEventListener('input', function () {
+            const digitsCount = (this.value || '').replace(/\D/g, '').length;
+            applyPhoneConfirmValidationUI(digitsCount >= 10);
+        });
+        phoneConfirmInput.addEventListener('blur', function () {
+            if (this.value.trim() !== '') {
+                applyPhoneConfirmValidationUI(true);
+            }
+        });
+        if (phoneConfirmInput.value.trim() !== '') {
+            applyPhoneConfirmValidationUI(false);
+        }
+    }
+
+    // Ensure delivery mode, manual city & both phone fields are validated on form submit
     const checkoutForm = document.getElementById('checkout-form');
     const submitBtn = document.getElementById('checkout-submit-btn');
     const progressBar = document.getElementById('checkout-progress-bar');
@@ -850,9 +1082,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
 
-            const val = cityInput.value.trim();
-            if (val) {
-                selectManual(val);
+            if (!applyPhoneConfirmValidationUI(true)) {
+                e.preventDefault();
+                if (phoneConfirmInput) {
+                    phoneConfirmInput.focus();
+                    phoneConfirmInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return false;
+            }
+
+            if (!isStorePickup) {
+                const val = cityInput.value.trim();
+                if (val) {
+                    selectManual(val);
+                }
             }
 
             if (checkoutForm.checkValidity()) {
@@ -871,10 +1114,105 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // If pre-filled on load (e.g. old form input)
-    if (cityInput.value.trim()) {
-        selectManual(cityInput.value.trim());
+    // Current location button for street address & city detection
+    const geoBtn = document.getElementById('btn-get-location');
+    const geoBtnIcon = document.getElementById('geo-btn-icon');
+    const geoBtnText = document.getElementById('geo-btn-text');
+    const geoFeedback = document.getElementById('geo-location-feedback');
+    const geoMessages = {
+        useLocation: @json(__('Use my location')),
+        locating: @json(__('Locating...')),
+        detected: @json(__('Location detected successfully')),
+        unsupported: @json(__('Geolocation is not supported by your browser.')),
+        denied: @json(__('Location permission denied. Please allow access or enter your address manually.')),
+        unavailable: @json(__('Unable to retrieve your location. Please enter your address manually.'))
+    };
+
+    function setGeoLoading(loading) {
+        if (!geoBtn) return;
+        geoBtn.disabled = loading;
+        geoBtn.classList.toggle('is-loading', loading);
+        if (loading) {
+            geoBtn.classList.remove('is-located');
+        }
+        if (geoBtnIcon) {
+            geoBtnIcon.className = loading ? 'fas fa-spinner fa-spin' : 'fas fa-location-crosshairs';
+        }
+        if (geoBtnText) {
+            geoBtnText.textContent = loading ? geoMessages.locating : geoMessages.useLocation;
+        }
     }
+
+    function showGeoFeedback(type, htmlContent) {
+        if (geoBtn) {
+            geoBtn.classList.toggle('is-located', type === 'success');
+        }
+        if (!geoFeedback) return;
+        const statusClass = type === 'error' ? 'is-error' : 'is-success';
+        geoFeedback.className = 'mt-2';
+        geoFeedback.innerHTML = `<div class="geo-status-pill ${statusClass}">${htmlContent}</div>`;
+    }
+
+    if (geoBtn) {
+        geoBtn.addEventListener('click', function() {
+            if (!navigator.geolocation) {
+                showGeoFeedback('error', `<i class="fas fa-exclamation-circle"></i><span>${escapeHtml(geoMessages.unsupported)}</span>`);
+                return;
+            }
+
+            setGeoLoading(true);
+            if (geoFeedback) geoFeedback.classList.add('d-none');
+
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    const lat = Number(pos.coords.latitude).toFixed(6);
+                    const lon = Number(pos.coords.longitude).toFixed(6);
+                    const fallbackMaps = `https://www.google.com/maps?q=${lat},${lon}`;
+
+                    fetch(`{{ route('checkout.reverseGeocode') }}?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`, {
+                        headers: { 'Accept': 'application/json' }
+                    })
+                    .then(res => res.ok ? res.json() : Promise.reject(new Error('HTTP ' + res.status)))
+                    .then(data => {
+                        if (shippingAddressInput && data?.address) {
+                            shippingAddressInput.value = data.address;
+                        } else if (shippingAddressInput) {
+                            shippingAddressInput.value = `Position GPS (${lat}, ${lon})`;
+                        }
+                        if (data?.city && !isStorePickup) {
+                            selectManual(data.city);
+                        }
+                        const safeMapsUrl = (data?.maps_url && data.maps_url.startsWith('https://')) ? data.maps_url : fallbackMaps;
+                        showGeoFeedback(
+                            'success',
+                            `<i class="fas fa-check-circle"></i><span>${escapeHtml(geoMessages.detected)}</span><a href="${escapeHtml(safeMapsUrl)}" target="_blank" rel="noopener noreferrer" class="geo-maps-link">Google Maps <i class="fas fa-arrow-up-right-from-square" style="font-size: 0.65rem;"></i></a>`
+                        );
+                    })
+                    .catch(() => {
+                        if (shippingAddressInput) {
+                            shippingAddressInput.value = `Position GPS (${lat}, ${lon})`;
+                        }
+                        showGeoFeedback(
+                            'success',
+                            `<i class="fas fa-check-circle"></i><span>${escapeHtml(geoMessages.detected)}</span><a href="${escapeHtml(fallbackMaps)}" target="_blank" rel="noopener noreferrer" class="geo-maps-link">Google Maps <i class="fas fa-arrow-up-right-from-square" style="font-size: 0.65rem;"></i></a>`
+                        );
+                    })
+                    .finally(() => {
+                        setGeoLoading(false);
+                    });
+                },
+                function(err) {
+                    setGeoLoading(false);
+                    const msg = (err && err.code === 1) ? geoMessages.denied : geoMessages.unavailable;
+                    showGeoFeedback('error', `<i class="fas fa-exclamation-circle"></i><span>${escapeHtml(msg)}</span>`);
+                },
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+            );
+        });
+    }
+
+    // Sync initial delivery mode & pre-filled city on page load
+    syncDeliveryMethodUI(true);
 });
 </script>
 @endpush
@@ -1335,6 +1673,426 @@ document.addEventListener('DOMContentLoaded', function() {
         padding: 6px 10px !important;
         font-size: 0.78rem !important;
         border-radius: 6px !important;
+    }
+}
+
+/* ================================================================
+   DELIVERY METHOD SELECTOR, STORE PICKUP CARD & GEOLOCATION UI
+   ================================================================ */
+.delivery-option-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 14px;
+    padding-inline-end: 36px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100%;
+    margin: 0;
+}
+
+.delivery-option-card:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.delivery-option-card .delivery-option-radio {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.delivery-option-card:has(.delivery-option-radio:focus-visible) {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+}
+
+.delivery-option-card.is-pickup:has(.delivery-option-radio:focus-visible) {
+    outline-color: #16a34a;
+}
+
+.delivery-card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.98rem;
+    background: #fef2f2;
+    color: #dc2626;
+    transition: all 0.2s ease;
+}
+
+.delivery-card-icon.is-pickup {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.delivery-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.delivery-card-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
+}
+
+.delivery-card-subtitle {
+    font-size: 0.77rem;
+    font-weight: 500;
+    color: #64748b;
+    line-height: 1.35;
+}
+
+.delivery-free-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 4px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.delivery-check-indicator {
+    position: absolute;
+    top: 11px;
+    inset-inline-end: 11px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    transition: all 0.2s ease;
+}
+
+.delivery-check-indicator i {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.18s ease;
+}
+
+.delivery-option-card.is-selected {
+    border-color: #dc2626;
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12), 0 0 0 3px rgba(220, 38, 38, 0.08);
+}
+
+.delivery-option-card.is-selected .delivery-card-icon {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.delivery-option-card.is-selected .delivery-check-indicator {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+.delivery-option-card.is-selected .delivery-check-indicator i {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.delivery-option-card.is-pickup.is-selected {
+    border-color: #16a34a;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.12), 0 0 0 3px rgba(22, 163, 74, 0.09);
+}
+
+.delivery-option-card.is-pickup.is-selected .delivery-card-icon {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.delivery-option-card.is-pickup.is-selected .delivery-check-indicator {
+    background: #16a34a;
+    border-color: #16a34a;
+}
+
+.pickup-store-info-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    border: 1.5px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 10px rgba(22, 163, 74, 0.06);
+}
+
+.pickup-store-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #16a34a;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.92rem;
+}
+
+.pickup-store-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.pickup-store-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 10px;
+}
+
+.pickup-store-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+}
+
+.pickup-zero-fee-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.pickup-store-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #475569;
+    line-height: 1.45;
+}
+
+.pickup-store-address i {
+    color: #16a34a;
+    margin-top: 3px;
+    font-size: 0.78rem;
+}
+
+.pickup-store-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-pickup-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.btn-pickup-phone:hover {
+    border-color: #0f172a;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.btn-pickup-maps {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #16a34a;
+    background: #16a34a;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.22);
+    transition: all 0.18s ease;
+}
+
+.btn-pickup-maps:hover {
+    background: #15803d;
+    border-color: #15803d;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.checkout-address-group {
+    align-items: center;
+    padding-inline-end: 6px;
+}
+
+.checkout-address-group .input-group-text {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+}
+
+.checkout-address-group .form-control.checkout-input {
+    min-width: 0;
+    border-radius: 0 !important;
+}
+
+.btn-geo-locate {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    margin: 0 !important;
+    border-radius: 7px !important;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 0.77rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.btn-geo-locate:hover:not(:disabled) {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+}
+
+.btn-geo-locate:disabled,
+.btn-geo-locate.is-loading {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+    cursor: wait;
+    opacity: 0.9;
+}
+
+.btn-geo-locate.is-located {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #15803d;
+}
+
+.btn-geo-locate.is-located:hover:not(:disabled) {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.22);
+}
+
+.btn-geo-locate:focus-visible {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+}
+
+.geo-status-pill {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.79rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.geo-status-pill.is-success {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.geo-status-pill.is-error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.geo-maps-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #ffffff;
+    border: 1px solid #86efac;
+    color: #15803d;
+    font-size: 0.73rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.16s ease;
+}
+
+.geo-maps-link:hover {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+}
+
+@media (max-width: 575.98px) {
+    .delivery-option-card {
+        padding: 11px 12px;
+        padding-inline-end: 34px;
+        gap: 10px;
+    }
+
+    .delivery-card-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+    }
+
+    .pickup-store-info-card {
+        padding: 12px 13px;
+        gap: 10px;
+    }
+
+    .checkout-address-group .btn-geo-locate {
+        padding: 6px 9px;
+        font-size: 0.73rem;
     }
 }
 </style>

@@ -1147,15 +1147,7 @@
                 @endphp
                 <div class="col-lg-6 pdp-image-panel">
                     @php
-                        $galleryItems = collect();
-                        if ($product->images && $product->images->count() > 0) {
-                            $galleryItems = $product->images->take(6);
-                        } else {
-                            $galleryItems->push((object)[
-                                'url' => $product->thumbnail,
-                                'image_padding_style' => $product->primary_image_padding_style,
-                            ]);
-                        }
+                        $galleryItems = $product->ordered_images->take(6);
                     @endphp
 
                     <div class="pdp-main-image-wrap product-card-tag-container" id="zoomWrap">

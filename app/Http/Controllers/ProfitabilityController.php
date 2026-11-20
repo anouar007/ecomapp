@@ -47,6 +47,18 @@ class ProfitabilityController extends Controller
             $marginFilter !== 'all' ? $marginFilter : null
         );
 
+        $benefitProductIds = $productBenefits->pluck('product_id')->filter()->unique()->values()->all();
+        $benefitProductsById = !empty($benefitProductIds)
+            ? Product::with(['images', 'primaryImage'])->whereIn('id', $benefitProductIds)->get()->keyBy('id')
+            : collect();
+
+        $productBenefits->each(function ($item) use ($benefitProductsById) {
+            $prod = $benefitProductsById->get($item->product_id);
+            $item->resolved_thumbnail = $prod
+                ? $prod->thumbnail
+                : Product::resolveImageUrl($item->product_image ?? null);
+        });
+
         $totalProductsCount = $productBenefits->count();
         $lastPage = max(1, (int) ceil($totalProductsCount / $perPage));
         $currentPage = min($currentPage, $lastPage);
@@ -59,12 +71,7 @@ class ProfitabilityController extends Controller
         );
 
         $productDataset = $productBenefits->map(function ($item) {
-            $imgSrc = '';
-            if (!empty($item->product_image)) {
-                $imgSrc = \Illuminate\Support\Str::startsWith($item->product_image, ['http://', 'https://', 'images/', '/'])
-                    ? asset(ltrim($item->product_image, '/'))
-                    : asset('storage/' . $item->product_image);
-            }
+            $imgSrc = $item->resolved_thumbnail ?? Product::resolveImageUrl($item->product_image ?? null);
             $isSold = (bool) ($item->is_sold ?? ($item->quantity_sold > 0));
             $isNeg = $item->has_cost && ($isSold ? $item->net_profit < 0 : $item->unit_margin < 0);
             $isLow = $item->has_cost && !$isNeg && $item->margin_percentage < 15;
@@ -165,7 +172,7 @@ class ProfitabilityController extends Controller
         $coveragePercent = $totalProducts > 0 ? round(($configuredCount / $totalProducts) * 100, 1) : 0;
 
         // Query products with filters
-        $query = Product::with(['category', 'brand']);
+        $query = Product::with(['category', 'brand', 'images', 'primaryImage']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

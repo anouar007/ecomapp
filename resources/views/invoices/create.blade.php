@@ -675,20 +675,28 @@
                 <div class="product-cell-container">
                     <!-- Mode Catalogue -->
                     <div class="catalog-mode-box">
-                        <select name="items[{index}][product_id]" class="form-select invoice-custom-select product-select" onchange="updateItem(this)">
-                            <option value="">-- Sélectionner un produit du catalogue --</option>
-                            <option value="custom" class="fw-bold text-primary">➕ Saisie libre / Article personnalisé...</option>
-                            @foreach($products as $product)
-                                @php
-                                    $taxRateVal = floatval(setting('tax_rate', 20)) / 100;
-                                    $pSellingPrice = $product->active_price;
-                                    $pPriceHt = $taxRateVal > 0 ? ($pSellingPrice / (1 + $taxRateVal)) : $pSellingPrice;
-                                @endphp
-                                <option value="{{ $product->id }}" data-price="{{ $pSellingPrice }}" data-price-ht="{{ round($pPriceHt, 2) }}">
-                                    {{ $product->name }} • {{ number_format(round($pPriceHt, 2), 2) }} DH HT
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="invoice-row-thumb d-none flex-shrink-0">
+                                <img src="" alt="" width="36" height="36"
+                                     class="rounded-2 border"
+                                     style="width: 36px; height: 36px; object-fit: contain; background: #ffffff; padding: 2px;"
+                                     onerror="this.closest('.invoice-row-thumb').classList.add('d-none');">
+                            </div>
+                            <select name="items[{index}][product_id]" class="form-select invoice-custom-select product-select" style="min-width: 0; flex: 1;" onchange="updateItem(this)">
+                                <option value="">-- Sélectionner un produit du catalogue --</option>
+                                <option value="custom" class="fw-bold text-primary">➕ Saisie libre / Article personnalisé...</option>
+                                @foreach($products as $product)
+                                    @php
+                                        $taxRateVal = floatval(setting('tax_rate', 20)) / 100;
+                                        $pSellingPrice = $product->active_price;
+                                        $pPriceHt = $taxRateVal > 0 ? ($pSellingPrice / (1 + $taxRateVal)) : $pSellingPrice;
+                                    @endphp
+                                    <option value="{{ $product->id }}" data-price="{{ $pSellingPrice }}" data-price-ht="{{ round($pPriceHt, 2) }}" data-thumb="{{ $product->thumbnail }}">
+                                        {{ $product->name }} • {{ number_format(round($pPriceHt, 2), 2) }} DH HT
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Mode Saisie Manuelle -->
@@ -889,6 +897,12 @@
         
         productSelect.value = '';
         productSelect.removeAttribute('required');
+        const thumbWrap = row.querySelector('.invoice-row-thumb');
+        if (thumbWrap) {
+            thumbWrap.classList.add('d-none');
+            const thumbImg = thumbWrap.querySelector('img');
+            if (thumbImg) thumbImg.removeAttribute('src');
+        }
 
         nameInput.setAttribute('required', 'required');
         nameInput.focus();
@@ -935,6 +949,19 @@
         const priceInput = row.querySelector('.unit-price-input');
         if (priceInput) {
             priceInput.value = priceHt > 0 ? priceHt.toFixed(2) : '0.00';
+        }
+
+        const thumbWrap = row.querySelector('.invoice-row-thumb');
+        const thumbImg = thumbWrap ? thumbWrap.querySelector('img') : null;
+        const thumbUrl = opt?.dataset?.thumb || '';
+        if (thumbWrap && thumbImg) {
+            if (select.value && thumbUrl) {
+                thumbImg.src = thumbUrl;
+                thumbWrap.classList.remove('d-none');
+            } else {
+                thumbImg.removeAttribute('src');
+                thumbWrap.classList.add('d-none');
+            }
         }
         updateTotals();
     }
@@ -1131,7 +1158,7 @@
                     altsSelectHtml = `
                         <div class="mt-1.5">
                             <select class="form-select form-select-sm smart-product-choice" style="font-size: 0.76rem;" onchange="smartRowChoiceChanged(${idx}, this)">
-                                <option value="${best.id}" selected>✓ ${escapeHtml(best.name)} (${best.price_ht} DH HT)</option>
+                                <option value="${best.id}" data-thumb="${best.thumbnail || ''}" selected>✓ ${escapeHtml(best.name)} (${best.price_ht} DH HT)</option>
                                 ${item.alternatives.map(alt => `
                                     <option value="${alt.id}" data-name="${escapeHtml(alt.name)}" data-price-ht="${alt.price_ht}" data-sku="${escapeHtml(alt.sku || '')}" data-stock="${alt.stock}" data-thumb="${alt.thumbnail || ''}">
                                         ↔ ${escapeHtml(alt.name)} (${alt.price_ht} DH HT)
@@ -1159,6 +1186,7 @@
                         </div>
                         ${altsSelectHtml}
                         <input type="hidden" class="smart-selected-product-id" value="${best.id}">
+                        <input type="hidden" class="smart-selected-thumb" value="${best.thumbnail || ''}">
                         <input type="hidden" class="smart-is-manual" value="0">
                     </div>
                 `;
@@ -1214,11 +1242,14 @@
         const priceInput = row.querySelector('.smart-row-price-ht');
         const isManualInput = row.querySelector('.smart-is-manual');
         const prodIdInput = row.querySelector('.smart-selected-product-id');
+        const thumbInput = row.querySelector('.smart-selected-thumb');
         const nameEl = row.querySelector('.smart-product-name');
+        const previewImg = row.querySelector('.smart-row-product-box img');
 
         if (val === 'manual') {
             isManualInput.value = '1';
             prodIdInput.value = '';
+            if (thumbInput) thumbInput.value = '';
             if (priceInput) priceInput.value = '0.00';
         } else {
             isManualInput.value = '0';
@@ -1229,6 +1260,13 @@
             }
             if (opt && opt.dataset.name && nameEl) {
                 nameEl.textContent = opt.dataset.name;
+            }
+            if (opt && opt.dataset.thumb !== undefined) {
+                if (thumbInput) thumbInput.value = opt.dataset.thumb;
+                if (previewImg && opt.dataset.thumb) {
+                    previewImg.src = opt.dataset.thumb;
+                    previewImg.style.display = '';
+                }
             }
         }
     }
@@ -1256,6 +1294,7 @@
 
             const isManual = row.querySelector('.smart-is-manual')?.value === '1';
             const productId = row.querySelector('.smart-selected-product-id')?.value;
+            const selectedThumb = row.querySelector('.smart-selected-thumb')?.value || '';
             const qty = parseInt(row.querySelector('.smart-row-qty')?.value || 1, 10);
             const priceHt = parseFloat(row.querySelector('.smart-row-price-ht')?.value || 0);
             const customTitle = row.querySelector('.smart-custom-title')?.value || row.querySelector('.smart-product-name')?.textContent || '';
@@ -1271,6 +1310,9 @@
                         opt.value = productId;
                         opt.textContent = customTitle;
                         opt.setAttribute('data-price-ht', priceHt);
+                        if (selectedThumb) {
+                            opt.setAttribute('data-thumb', selectedThumb);
+                        }
                         productSelect.appendChild(opt);
                         productSelect.value = productId;
                     }

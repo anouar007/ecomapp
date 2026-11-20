@@ -1227,6 +1227,7 @@
                                     <label class="form-label fw-bold small text-dark">Statut de commande par défaut</label>
                                     <select name="settings[default_order_status]" class="form-select rounded-3">
                                         <option value="pending" {{ setting('default_order_status') == 'pending' ? 'selected' : '' }}>En attente (Pending)</option>
+                                        <option value="reserved" {{ setting('default_order_status') == 'reserved' ? 'selected' : '' }}>Réservé (Reserved)</option>
                                         <option value="processing" {{ setting('default_order_status') == 'processing' ? 'selected' : '' }}>En traitement (Processing)</option>
                                         <option value="shipped" {{ setting('default_order_status') == 'shipped' ? 'selected' : '' }}>Expédiée (Shipped)</option>
                                     </select>

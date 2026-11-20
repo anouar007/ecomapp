@@ -185,7 +185,7 @@ class StoreController extends Controller
         $stores = Store::where('is_active', true)->orderBy('sort_order')->get();
         $categories = Category::orderBy('name')->get();
 
-        $query = Product::with(['productCategory', 'brand', 'storeStocks.store']);
+        $query = Product::with(['productCategory', 'brand', 'storeStocks.store', 'images', 'primaryImage']);
 
         // Search
         if ($request->filled('search')) {

@@ -106,8 +106,9 @@
                     <button type="button"
                             class="badge {{ $variant->stock <= 0 ? 'bg-danger-subtle text-danger' : 'bg-light text-secondary border' }} px-1.5 py-0.5"
                             style="font-size: 0.63rem;"
+                            data-mob-variant-btn="{{ $product->id }}-{{ $variant->id }}"
                             onclick="openAdjustModal({{ $product->id }}, {{ $selectedStoreId ? $selectedStoreId : 'null' }}, {{ $variant->id }})">
-                        {{ $variant->name }}: <strong class="text-dark">{{ $variant->stock }}</strong>
+                        {{ $variant->name }}: <strong class="text-dark" data-inv-variant-badge="{{ $product->id }}-{{ $variant->id }}">{{ $variant->stock }}</strong>
                     </button>
                 @endforeach
             </div>
@@ -119,7 +120,7 @@
                 <span class="fw-extrabold fs-6 text-dark font-heading" id="mob-stock-val-{{ $product->id }}">{{ $stock }}</span>
                 <span class="text-muted small" style="font-size: 0.68rem;">u.</span>
             </div>
-            <span class="brand-badge {{ $statusClass }} d-inline-flex align-items-center gap-1 py-0.5 px-1.5 mt-0.5" style="font-size: 0.65rem;">
+            <span class="brand-badge {{ $statusClass }} d-inline-flex align-items-center gap-1 py-0.5 px-1.5 mt-0.5" id="mob-stock-badge-{{ $product->id }}" style="font-size: 0.65rem;">
                 <span class="status-dot {{ $statusDot }}" style="width: 5px; height: 5px;"></span>
                 <span>{{ $statusLabel }}</span>
             </span>
@@ -128,7 +129,7 @@
 
     @if($isTracked)
     <div class="w-100 my-2" style="background: #f1f5f9; height: 4px; border-radius: 999px; overflow: hidden;">
-        <div style="width: {{ $percent }}%; height: 100%; background: {{ $barColor }}; border-radius: 999px; transition: width 0.3s ease;"></div>
+        <div id="mob-stock-bar-{{ $product->id }}" style="width: {{ $percent }}%; height: 100%; background: {{ $barColor }}; border-radius: 999px; transition: width 0.3s ease;"></div>
     </div>
     @endif
 
@@ -146,13 +147,12 @@
             <button type="button"
                     class="badge {{ $stBadge }} border d-inline-flex align-items-center gap-1 px-2 py-1"
                     style="font-size: 0.66rem;"
+                    data-mob-store-pill="{{ $product->id }}-{{ $st->id }}"
                     onclick="openAdjustModal({{ $product->id }}, {{ $st->id }})"
                     title="Gérer le stock sur {{ $st->name }}">
                 <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse' : 'fa-store' }}"></i>
-                <span>{{ $st->name }}: <strong>{{ $stQty }}</strong></span>
-                @if($stLoc)
-                    <span class="font-monospace opacity-75">({{ $stLoc }})</span>
-                @endif
+                <span>{{ $st->name }}: <strong data-mob-store-qty>{{ $stQty }}</strong></span>
+                <span class="font-monospace opacity-75 {{ $stLoc ? '' : 'd-none' }}" data-mob-store-loc>{{ $stLoc ? '(' . $stLoc . ')' : '' }}</span>
             </button>
         @endforeach
     </div>

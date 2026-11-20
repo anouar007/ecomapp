@@ -671,6 +671,7 @@ class ProductController extends Controller
             }
 
             DB::commit();
+            \App\Http\Middleware\FastGuestPageCache::flush();
 
             $returnUrl = $request->input('return_url');
             if ($returnUrl) {
@@ -1165,6 +1166,7 @@ class ProductController extends Controller
         }
 
         \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+        \App\Http\Middleware\FastGuestPageCache::flush();
 
         return response()->json([
             'success' => true,
@@ -1190,9 +1192,12 @@ class ProductController extends Controller
         // Keep product.image in sync
         $product->image = $image->image_path;
         $product->save();
+        $product->unsetRelation('primaryImage');
+        $product->unsetRelation('images');
 
         \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
         \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+        \App\Http\Middleware\FastGuestPageCache::flush();
 
         return response()->json([
             'success' => true,

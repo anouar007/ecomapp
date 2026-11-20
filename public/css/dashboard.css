@@ -2393,6 +2393,13 @@ body {
     border-color: #fecaca;
 }
 
+.brand-badge.purple,
+.brand-badge.delivery-reserved {
+    background: #f5f3ff;
+    color: #6d28d9;
+    border-color: #ddd6fe;
+}
+
 /* Payment Status Badges & Pills */
 .brand-badge.paid,
 .brand-badge.pay-badge-paid {
@@ -4892,6 +4899,15 @@ i.fa-sparkles:before {
 .dot-blue {
     background: #2563eb;
     box-shadow: 0 0 0 2.5px rgba(37, 99, 235, 0.22);
+}
+
+.dot-purple {
+    background: #7c3aed;
+    box-shadow: 0 0 0 2.5px rgba(124, 58, 237, 0.22);
+}
+
+.text-purple {
+    color: #7c3aed !important;
 }
 
 .dot-amber {

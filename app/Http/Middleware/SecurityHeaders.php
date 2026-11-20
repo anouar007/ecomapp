@@ -43,7 +43,7 @@ class SecurityHeaders
         
         // Permissions Policy (formerly Feature Policy)
         $response->headers->set('Permissions-Policy', 
-            'geolocation=(), microphone=(), camera=()'
+            'geolocation=(self), microphone=(), camera=()'
         );
 
         // Enforce HTTPS (HSTS) when served over TLS

@@ -22,7 +22,7 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Invoice::with(['items', 'creator', 'order']);
+        $query = Invoice::with(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
 
         // Search by invoice number or customer name
         if ($request->filled('search')) {
@@ -84,7 +84,7 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        $products = Product::where('status', 'active')->get();
+        $products = Product::with(['images', 'primaryImage'])->where('status', 'active')->get();
         $customers = \App\Models\Customer::all();
         return view('invoices.create', compact('products', 'customers'));
     }
@@ -251,7 +251,7 @@ class InvoiceController extends Controller
      */
     public function show(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order', 'payments']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order', 'payments']);
         
         $docType = $request->get('as', $request->get('type'));
         if ($docType && in_array(strtolower($docType), ['devis', 'quote'])) {
@@ -273,6 +273,8 @@ class InvoiceController extends Controller
             return redirect()->route('invoices.show', $invoice)
                 ->with('error', 'This invoice cannot be edited.');
         }
+
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant']);
 
         return view('invoices.edit', compact('invoice'));
     }
@@ -422,7 +424,7 @@ class InvoiceController extends Controller
      */
     public function download(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
         
         $docType = $request->get('as', $request->get('type'));
         if ($docType && in_array(strtolower($docType), ['devis', 'quote'])) {
@@ -458,7 +460,7 @@ class InvoiceController extends Controller
      */
     public function print(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
         
         $docType = $request->get('as', $request->get('type'));
         if ($docType && in_array(strtolower($docType), ['devis', 'quote'])) {
@@ -476,7 +478,7 @@ class InvoiceController extends Controller
      */
     public function guarantee(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
         return view('invoices.guarantee', compact('invoice', 'withStamp'));
     }
@@ -486,7 +488,7 @@ class InvoiceController extends Controller
      */
     public function downloadGuarantee(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
 
         try {
@@ -512,7 +514,7 @@ class InvoiceController extends Controller
      */
     public function printGuarantee(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
         return view('invoices.guarantee_print', compact('invoice', 'withStamp'));
     }
@@ -522,7 +524,7 @@ class InvoiceController extends Controller
      */
     public function deliveryNote(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
         return view('invoices.delivery_note', compact('invoice', 'withStamp'));
     }
@@ -532,7 +534,7 @@ class InvoiceController extends Controller
      */
     public function downloadDeliveryNote(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
 
         try {
@@ -558,7 +560,7 @@ class InvoiceController extends Controller
      */
     public function printDeliveryNote(Request $request, Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator', 'order']);
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'creator', 'order']);
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
         return view('invoices.delivery_note_print', compact('invoice', 'withStamp'));
     }
@@ -568,6 +570,7 @@ class InvoiceController extends Controller
      */
     public function email(Request $request, Invoice $invoice)
     {
+        $invoice->load(['items.product.images', 'items.product.primaryImage', 'items.variant']);
         $recipientEmail = trim($request->input('recipient_email', $invoice->customer_email ?? ''));
 
         if (empty($recipientEmail) || !filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
@@ -895,7 +898,7 @@ class InvoiceController extends Controller
             ]);
         }
 
-        $allProducts = Product::where('status', 'active')->get();
+        $allProducts = Product::with(['images', 'primaryImage'])->where('status', 'active')->get();
         $taxRate = floatval(setting('tax_rate', 20)) / 100;
 
         $accessoryTokens = ['cage', 'filtre', 'filter', 'batterie', 'battery', 'chargeur', 'charger', 'adaptateur', 'adapter', 'housse', 'sac', 'case', 'poignee', 'poignée', 'support', 'cable', 'câble', 'sangle', 'protection', 'parasoleil', 'bouchon', 'vis', 'plaque', 'fixation'];

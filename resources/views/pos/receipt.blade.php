@@ -121,12 +121,17 @@
             <div class="item-block">
                 <div class="bold">{{ $item->product_name }}</div>
                 <div class="row item-sub">
-                    <span>{{ $item->quantity }} × {{ currency($item->original_price ?? $item->price) }}</span>
+                    <span>
+                        {{ $item->quantity }} × {{ currency($item->original_price ?? $item->price) }}
+                        @if($item->original_price && (float) $item->original_price > (float) $item->price)
+                            → {{ currency($item->price) }}/u
+                        @endif
+                    </span>
                     <span class="bold" style="color: #0f172a;">{{ currency($item->subtotal) }}</span>
                 </div>
                 @if((float) ($item->discount_amount ?? 0) > 0)
                     <div class="row item-sub">
-                        <span>Remise article</span>
+                        <span>Remise</span>
                         <span>-{{ currency($item->discount_amount) }}</span>
                     </div>
                 @endif
@@ -152,10 +157,36 @@
             <span>TOTAL :</span>
             <span>{{ currency($order->total) }}</span>
         </div>
+        @php
+            $posMethodLabel = match(strtolower((string) $order->payment_method)) {
+                'cash' => 'ESPÈCES',
+                'card' => 'CARTE',
+                'virement' => 'VIREMENT',
+                'credit' => 'CRÉDIT',
+                'other' => 'AUTRE',
+                default => strtoupper((string) $order->payment_method),
+            };
+        @endphp
         <div class="row" style="margin-top: 4px;">
             <span>Paiement :</span>
-            <span class="bold">{{ strtoupper($order->payment_method) }}</span>
+            <span class="bold">{{ $posMethodLabel }}</span>
         </div>
+        @if((float) ($order->remaining_amount ?? 0) > 0)
+        <div class="row" style="margin-top: 4px;">
+            <span>Montant payé :</span>
+            <span class="bold">{{ currency($order->paid_amount ?? 0) }}</span>
+        </div>
+        <div class="row" style="margin-top: 2px;">
+            <span>Reste à payer :</span>
+            <span class="bold">{{ currency($order->remaining_amount) }}</span>
+        </div>
+        @if($order->payment_due_date)
+        <div class="row" style="margin-top: 2px;">
+            <span>Échéance :</span>
+            <span class="bold">{{ $order->payment_due_date->format('d/m/Y') }}</span>
+        </div>
+        @endif
+        @endif
 
         <div class="sep"></div>
 

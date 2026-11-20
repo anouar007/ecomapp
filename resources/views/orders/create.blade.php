@@ -236,7 +236,14 @@
                                 <label for="product_picker" class="form-label small fw-semibold text-dark mb-1">
                                     Choisir un produit du catalogue
                                 </label>
-                                <select id="product_picker" class="form-select" onchange="onProductPickerChange()">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div id="picker_thumb_preview" class="d-none flex-shrink-0">
+                                        <img src="" alt="" width="38" height="38"
+                                             class="rounded-2 border"
+                                             style="width: 38px; height: 38px; object-fit: contain; background: #ffffff; padding: 2px;"
+                                             onerror="this.closest('#picker_thumb_preview').classList.add('d-none');">
+                                    </div>
+                                    <select id="product_picker" class="form-select" style="min-width: 0; flex: 1;" onchange="onProductPickerChange()">
                                     <option value="">-- Sélectionnez un produit --</option>
                                     @foreach($products as $prod)
                                         @if($prod->variants && $prod->variants->isNotEmpty())
@@ -266,6 +273,7 @@
                                         @endif
                                     @endforeach
                                 </select>
+                                </div>
                             </div>
 
                             <div class="col-12 col-sm-6 col-md-3">
@@ -494,7 +502,21 @@
         const picker = document.getElementById('product_picker');
         const storePicker = document.getElementById('store_picker');
         const hint = document.getElementById('pickerStoreHint');
+        const thumbBox = document.getElementById('picker_thumb_preview');
+        const thumbImg = thumbBox ? thumbBox.querySelector('img') : null;
+        const selectedOpt = picker?.options?.[picker.selectedIndex] || null;
+        const thumbUrl = selectedOpt?.getAttribute('data-thumb') || '';
         const prodId = parseInt(picker?.value || 0);
+
+        if (thumbBox && thumbImg) {
+            if (prodId && thumbUrl) {
+                thumbImg.src = thumbUrl;
+                thumbBox.classList.remove('d-none');
+            } else {
+                thumbImg.removeAttribute('src');
+                thumbBox.classList.add('d-none');
+            }
+        }
 
         if (!storePicker) return;
 

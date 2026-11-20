@@ -3348,18 +3348,19 @@
         </div>
         <div class="offcanvas-body p-0 d-flex flex-column h-100">
             <div class="flex-grow-1 overflow-auto p-4" id="mini-cart-items">
-                @php $total = 0; @endphp
-                @forelse(session('cart', []) as $id => $details)
+                @php
+                    $total = 0;
+                    $miniCartItems = \App\Http\Controllers\CartController::hydrateCartImages(session('cart', []));
+                @endphp
+                @forelse($miniCartItems as $id => $details)
                     @php $total += $details['price'] * $details['quantity']; @endphp
                     <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $id }}">
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0 {{ app()->getLocale() === 'ar' ? 'ms-3' : 'me-3' }} position-relative">
                                 @php
-                                    $miniImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/'))) 
-                                        ? asset(ltrim($details['image'], '/')) 
-                                        : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
+                                    $miniImg = \App\Models\Product::resolveImageUrl($details['image'] ?? null);
                                 @endphp
-                                <img src="{{ $miniImg }}" alt="{{ $details['name'] }}" width="80" height="80" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
+                                <img src="{{ $miniImg }}" alt="{{ $details['name'] }}" width="80" height="80" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                 <span class="position-absolute top-0 {{ app()->getLocale() === 'ar' ? 'end-0' : 'start-0' }} translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
                             </div>
                             <div class="flex-grow-1 min-w-0 overflow-hidden">
@@ -4658,7 +4659,7 @@
 
                         html += `
                             <a href="${p.url}" class="search-result-item" data-index="${idx}">
-                                <img src="${p.image}" alt="${escapeHtml(p.name)}" width="44" height="44" class="search-result-thumb" loading="lazy">
+                                <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" width="44" height="44" class="search-result-thumb" loading="lazy" data-fallback="${escapeHtml(p.fallback_image || '')}" onerror="if(!this.dataset.triedFallback && this.dataset.fallback){this.dataset.triedFallback='1';this.src=this.dataset.fallback;}else{this.onerror=null;this.src='{{ asset('images/camera/cat_cameras.jpg') }}';}">
                                 <div class="search-result-info">
                                     <div class="search-result-cat d-flex align-items-center justify-content-between">
                                         <span>${escapeHtml(p.category)}</span>
@@ -5063,7 +5064,7 @@
 
                         html += `
                             <a href="${p.url}" class="pro-result-card">
-                                <img src="${p.image}" alt="${escapeHtml(p.name)}" width="62" height="62" class="pro-result-thumb" loading="lazy">
+                                <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" width="62" height="62" class="pro-result-thumb" loading="lazy" data-fallback="${escapeHtml(p.fallback_image || '')}" onerror="if(!this.dataset.triedFallback && this.dataset.fallback){this.dataset.triedFallback='1';this.src=this.dataset.fallback;}else{this.onerror=null;this.src='{{ asset('images/camera/cat_cameras.jpg') }}';}">
                                 <div class="pro-result-info">
                                     <div class="d-flex align-items-center justify-content-between mb-0.5">
                                         <span class="pro-result-cat">${escapeHtml(p.category)}</span>

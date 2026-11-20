@@ -37,27 +37,25 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:roles,name'],
-            'permissions' => ['array'],
-            'permissions.*' => ['exists:permissions,id']
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['integer', 'exists:permissions,id'],
         ]);
 
         DB::beginTransaction();
         try {
             $role = Role::create(['name' => $validated['name']]);
-            
-            if (!empty($validated['permissions'])) {
-                $role->syncPermissions($validated['permissions']);
-            }
+            $permissions = $this->resolveGuardPermissions($validated['permissions'] ?? [], $role->guard_name);
+            $role->syncPermissions($permissions);
 
             \App\Models\ActivityLog::create([
                 'user_id' => auth()->id(),
                 'event' => 'created',
-                'description' => "Création du rôle « {$role->name} » (" . count($validated['permissions'] ?? []) . " permissions)",
+                'description' => "Création du rôle « {$role->name} » (" . $permissions->count() . " permissions)",
                 'subject_type' => Role::class,
                 'subject_id' => $role->id,
                 'properties' => [
                     'role_name' => $role->name,
-                    'permissions_count' => count($validated['permissions'] ?? []),
+                    'permissions_count' => $permissions->count(),
                 ],
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
@@ -69,7 +67,7 @@ class RoleController extends Controller
                 ->with('success', 'Role created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to create role: ' . $e->getMessage());
+            return back()->with('error', 'Failed to create role: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -78,7 +76,7 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        abort_if($role->name === 'Admin' && !auth()->user()?->hasRole('Admin'), 403, 'Seul un Administrateur peut modifier le rôle Admin.');
+        abort_if($role->name === 'Admin' && !auth()->user()?->hasAnyRole(['Admin', 'Super Admin']), 403, 'Seul un Administrateur peut modifier le rôle Admin.');
 
         $permissions = Permission::all();
         $rolePermissions = $role->permissions->pluck('id')->toArray();
@@ -86,6 +84,20 @@ class RoleController extends Controller
         $permissionsByName = $permissions->keyBy('name');
 
         return view('roles.edit', compact('role', 'permissions', 'rolePermissions', 'permissionModules', 'permissionsByName'));
+    }
+
+    /**
+     * Resolve Permission models for the given IDs and guard name.
+     */
+    protected function resolveGuardPermissions(array $permissionIds, string $guardName)
+    {
+        $ids = array_map('intval', $permissionIds);
+
+        return empty($ids)
+            ? collect()
+            : Permission::whereIn('id', $ids)
+                ->where('guard_name', $guardName)
+                ->get();
     }
 
     /**
@@ -114,12 +126,12 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role)
     {
-        abort_if($role->name === 'Admin' && !auth()->user()?->hasRole('Admin'), 403, 'Seul un Administrateur peut modifier le rôle Admin.');
+        abort_if($role->name === 'Admin' && !auth()->user()?->hasAnyRole(['Admin', 'Super Admin']), 403, 'Seul un Administrateur peut modifier le rôle Admin.');
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:roles,name,' . $role->id],
-            'permissions' => ['array'],
-            'permissions.*' => ['exists:permissions,id']
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['integer', 'exists:permissions,id'],
         ]);
 
         if ($role->name === 'Admin') {
@@ -129,17 +141,18 @@ class RoleController extends Controller
         DB::beginTransaction();
         try {
             $role->update(['name' => $validated['name']]);
-            $role->syncPermissions($validated['permissions'] ?? []);
+            $permissions = $this->resolveGuardPermissions($validated['permissions'] ?? [], $role->guard_name);
+            $role->syncPermissions($permissions);
 
             \App\Models\ActivityLog::create([
                 'user_id' => auth()->id(),
                 'event' => 'updated',
-                'description' => "Mise à jour du rôle « {$role->name} » (" . count($validated['permissions'] ?? []) . " permissions)",
+                'description' => "Mise à jour du rôle « {$role->name} » (" . $permissions->count() . " permissions)",
                 'subject_type' => Role::class,
                 'subject_id' => $role->id,
                 'properties' => [
                     'role_name' => $role->name,
-                    'permissions_count' => count($validated['permissions'] ?? []),
+                    'permissions_count' => $permissions->count(),
                 ],
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
@@ -151,7 +164,7 @@ class RoleController extends Controller
                 ->with('success', 'Role updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to update role: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update role: ' . $e->getMessage())->withInput();
         }
     }
 

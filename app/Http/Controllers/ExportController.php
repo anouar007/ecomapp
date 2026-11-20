@@ -55,7 +55,7 @@ class ExportController extends Controller
      */
     protected function buildFilteredOrdersQuery(Request $request)
     {
-        $query = Order::with(['user', 'customer', 'items.store', 'items.product'])
+        $query = Order::with(['user', 'customer', 'items.store', 'items.product.images', 'items.product.primaryImage', 'items.variant'])
             ->orderByDesc('created_at');
 
         if ($request->input('channel') === 'pos') {
@@ -232,6 +232,8 @@ class ExportController extends Controller
      */
     public function ordersPdf(Request $request)
     {
+        @ini_set('memory_limit', '512M');
+
         $orders = $this->buildFilteredOrdersQuery($request)->get();
 
         $validOrders = $orders->where('status', '!=', 'cancelled');

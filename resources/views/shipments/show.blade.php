@@ -145,15 +145,9 @@
                     <tr class="hover-bg-light">
                         <td class="ps-3 py-3">
                             <div class="d-flex align-items-center gap-2.5">
-                                @if($item->product->image)
-                                    <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" 
-                                         class="shadow-xs" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0;"
-                                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                                @else
-                                    <div class="d-flex align-items-center justify-content-center text-muted" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                        <i class="fas fa-box"></i>
-                                    </div>
-                                @endif
+                                <img src="{{ $item->product->thumbnail }}" alt="{{ $item->product->name }}" 
+                                     class="shadow-xs" style="width: 40px; height: 40px; object-fit: contain; background: #fff; padding: 2px; border-radius: 8px; border: 1px solid #e2e8f0;"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                 <div class="min-w-0">
                                     <div class="fw-bold text-dark text-truncate" style="max-width: 280px;" title="{{ $item->product->name }}">
                                         {{ $item->product->name }}

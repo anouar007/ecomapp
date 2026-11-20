@@ -1360,6 +1360,121 @@ class Product extends Model
     }
 
     /**
+     * Resolve a raw product image path or URL to a browser-usable full asset URL.
+     */
+    public static function resolveImageUrl(?string $path): string
+    {
+        if (empty($path)) {
+            return asset('images/camera/cat_cameras.jpg');
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        if (str_starts_with($path, 'images/') || str_starts_with($path, '/images/')) {
+            return asset(ltrim($path, '/'));
+        }
+
+        if (str_starts_with($path, 'storage/') || str_starts_with($path, '/storage/')) {
+            return asset(ltrim($path, '/'));
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    }
+
+    /**
+     * Resolve a local product image path to a lightweight base64 JPEG Data URI for DomPDF.
+     * Flattens transparency onto white and converts WebP/PNG/GIF/JPG to JPEG so DomPDF renders cleanly.
+     */
+    public static function resolveImageDataUri(?string $rawPath, int $maxDim = 80): ?string
+    {
+        static $dataUriCache = [];
+
+        if (empty($rawPath)) {
+            return null;
+        }
+
+        $cacheKey = $rawPath . '|' . $maxDim;
+        if (array_key_exists($cacheKey, $dataUriCache)) {
+            return $dataUriCache[$cacheKey];
+        }
+
+        $sourceFile = \App\Services\ProductThumbnailService::resolveLocalFilePath($rawPath);
+        if (!$sourceFile) {
+            return $dataUriCache[$cacheKey] = null;
+        }
+
+        if (extension_loaded('gd') && function_exists('imagejpeg')) {
+            try {
+                $info = @getimagesize($sourceFile);
+                if ($info && !empty($info[0]) && !empty($info[1]) && $info[0] <= 5000 && $info[1] <= 5000) {
+                    [$origW, $origH, $type] = $info;
+                    $srcImg = match ($type) {
+                        IMAGETYPE_JPEG => @imagecreatefromjpeg($sourceFile),
+                        IMAGETYPE_PNG  => @imagecreatefrompng($sourceFile),
+                        IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($sourceFile) : false,
+                        IMAGETYPE_GIF  => @imagecreatefromgif($sourceFile),
+                        default        => false,
+                    };
+
+                    if ($srcImg) {
+                        if ($origW > $maxDim || $origH > $maxDim) {
+                            $ratio = min($maxDim / $origW, $maxDim / $origH);
+                            $targetW = max(1, (int) round($origW * $ratio));
+                            $targetH = max(1, (int) round($origH * $ratio));
+                        } else {
+                            $targetW = $origW;
+                            $targetH = $origH;
+                        }
+
+                        $dstImg = imagecreatetruecolor($targetW, $targetH);
+                        if ($dstImg) {
+                            $white = imagecolorallocate($dstImg, 255, 255, 255);
+                            imagefill($dstImg, 0, 0, $white);
+                            imagealphablending($dstImg, true);
+                            imagecopyresampled($dstImg, $srcImg, 0, 0, 0, 0, $targetW, $targetH, $origW, $origH);
+
+                            ob_start();
+                            $ok = @imagejpeg($dstImg, null, 82);
+                            $bin = ob_get_clean();
+
+                            unset($srcImg, $dstImg);
+
+                            if ($ok && is_string($bin) && $bin !== '') {
+                                return $dataUriCache[$cacheKey] = 'data:image/jpeg;base64,' . base64_encode($bin);
+                            }
+                        } else {
+                            unset($srcImg);
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Fall through to raw fallback below
+            }
+        }
+
+        $ext = strtolower(pathinfo($sourceFile, PATHINFO_EXTENSION));
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'], true) && @filesize($sourceFile) <= 500 * 1024) {
+            $raw = @file_get_contents($sourceFile);
+            if ($raw !== false) {
+                $mime = $ext === 'jpg' ? 'jpeg' : $ext;
+                return $dataUriCache[$cacheKey] = 'data:image/' . $mime . ';base64,' . base64_encode($raw);
+            }
+        }
+
+        return $dataUriCache[$cacheKey] = null;
+    }
+
+    /**
+     * Get the base64 JPEG Data URI of the main image for DomPDF documents.
+     */
+    public function getPdfImageDataUriAttribute(): ?string
+    {
+        return static::resolveImageDataUri($this->main_image);
+    }
+
+    /**
      * Get the main image path for the product.
      */
     public function getMainImageAttribute()
@@ -1389,7 +1504,7 @@ class Product extends Model
 
         // 1. Prioritize already-loaded 'images' relation in-memory (prevents N+1 queries)
         if ($this->relationLoaded('images') && $this->images && $this->images->count() > 0) {
-            $primary = $this->images->firstWhere('is_primary', 1);
+            $primary = $this->images->first(fn($img) => (bool) $img->is_primary);
             if ($primary && !$isGenericLogo($primary->image_path)) {
                 return $primary->image_path;
             }
@@ -1415,19 +1530,32 @@ class Product extends Model
             return $this->attributes['image'];
         }
 
-        // 4. Fallback to dynamic relation ONLY if neither 'images' nor 'primaryImage' was eager-loaded
-        if (!$this->relationLoaded('images') && !$this->relationLoaded('primaryImage')) {
+        // 4. Fallback to dynamic relations when not already eager-loaded
+        if (!$this->relationLoaded('primaryImage')) {
             if ($this->primaryImage && !$isGenericLogo($this->primaryImage->image_path)) {
                 return $this->primaryImage->image_path;
             }
+        }
 
+        if (!$this->relationLoaded('images')) {
             if ($this->images && $this->images->count() > 0) {
+                $primary = $this->images->first(fn($img) => (bool) $img->is_primary);
+                if ($primary && !$isGenericLogo($primary->image_path)) {
+                    return $primary->image_path;
+                }
                 $nonLogo = $this->images->first(fn($img) => !$isGenericLogo($img->image_path));
                 if ($nonLogo) {
                     return $nonLogo->image_path;
                 }
+                if ($primary) {
+                    return $primary->image_path;
+                }
                 return $this->images->first()->image_path;
             }
+        }
+
+        if ($this->primaryImage && !empty($this->primaryImage->image_path)) {
+            return $this->primaryImage->image_path;
         }
 
         if (!empty($this->attributes['image'])) {
@@ -1442,24 +1570,36 @@ class Product extends Model
      */
     public function getThumbnailAttribute()
     {
-        $img = $this->main_image;
-        if (!$img) {
-            return asset('images/camera/cat_cameras.jpg');
+        return static::resolveImageUrl($this->main_image);
+    }
+
+    /**
+     * Get gallery images ordered so the primary/main product image always comes first.
+     */
+    public function getOrderedImagesAttribute()
+    {
+        $imgs = $this->images;
+        if (!$imgs || $imgs->isEmpty()) {
+            return collect([(object) [
+                'id' => null,
+                'url' => $this->thumbnail,
+                'thumb_url' => $this->card_thumbnail,
+                'image_padding_style' => $this->primary_image_padding_style,
+                'is_primary' => true,
+            ]]);
         }
 
-        if (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) {
-            return $img;
+        $mainPath = $this->main_image;
+        $primary = null;
+        if ($mainPath) {
+            $primary = $imgs->first(fn($img) => $img->image_path === $mainPath && (bool) $img->is_primary)
+                ?? $imgs->first(fn($img) => $img->image_path === $mainPath);
         }
+        $primary = $primary ?? $imgs->first(fn($img) => (bool) $img->is_primary) ?? $imgs->first();
 
-        if (str_starts_with($img, 'images/') || str_starts_with($img, '/images/')) {
-            return asset(ltrim($img, '/'));
-        }
-
-        if (str_starts_with($img, 'storage/') || str_starts_with($img, '/storage/')) {
-            return asset(ltrim($img, '/'));
-        }
-
-        return asset('storage/' . ltrim($img, '/'));
+        return collect([$primary])
+            ->merge($imgs->reject(fn($img) => $img->id === $primary->id))
+            ->values();
     }
 
     /**
@@ -1524,7 +1664,7 @@ class Product extends Model
     {
         $primary = null;
         if ($this->relationLoaded('images')) {
-            $primary = $this->images->firstWhere('is_primary', 1) ?? $this->images->first();
+            $primary = $this->images->first(fn($img) => (bool) $img->is_primary) ?? $this->images->first();
         } elseif ($this->relationLoaded('primaryImage')) {
             $primary = $this->primaryImage;
         } else {

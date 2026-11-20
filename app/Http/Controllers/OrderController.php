@@ -187,11 +187,12 @@ class OrderController extends Controller
             'total' => (clone $statsQuery)->count(),
             'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
             'en_demande' => (clone $statsQuery)->where('status', 'en_demande')->count(),
+            'reserved' => (clone $statsQuery)->where('status', 'reserved')->count(),
             'processing' => (clone $statsQuery)->where('status', 'processing')->count(),
             'shipped' => (clone $statsQuery)->where('status', 'shipped')->count(),
             'delivered' => (clone $statsQuery)->where('status', 'delivered')->count(),
             'cancelled' => (clone $statsQuery)->where('status', 'cancelled')->count(),
-            'revenue' => (clone $statsQuery)->where('payment_status', 'paid')->sum('total'),
+            'revenue' => (float) (clone $statsQuery)->whereIn('payment_status', ['paid', 'partial'])->sum(DB::raw("CASE WHEN payment_status = 'paid' THEN total ELSE COALESCE(paid_amount, 0) END")),
             'date_from' => $dateFrom,
             'date_to' => $dateTo,
             'date_preset' => $datePreset,
@@ -212,7 +213,7 @@ class OrderController extends Controller
 
         $products = Product::where('status', 'active')
             ->where('stock', '>', 0)
-            ->with(['images', 'variants', 'storeStocks.store'])
+            ->with(['images', 'primaryImage', 'variants', 'storeStocks.store'])
             ->orderBy('name')
             ->get();
 
@@ -402,6 +403,7 @@ class OrderController extends Controller
         $valueLabels = [
             'pending' => 'En attente',
             'en_demande' => 'Sur Commande',
+            'reserved' => 'Réservé',
             'processing' => 'En cours',
             'shipped' => 'Expédiée',
             'delivered' => 'Livrée',
@@ -653,8 +655,8 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:pending,en_demande,processing,shipped,delivered,cancelled'],
-            'payment_status' => ['required', 'in:pending,paid,failed,refunded'],
+            'status' => ['required', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
+            'payment_status' => ['required', 'in:pending,partial,paid,failed,refunded'],
             'payment_method' => ['nullable', 'string', 'max:50'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -682,17 +684,26 @@ class OrderController extends Controller
                     $order->refresh();
                 }
 
-                $order->update([
+                $orderUpdateData = [
                     'status' => $validated['status'],
                     'payment_status' => $validated['payment_status'],
                     'payment_method' => $validated['payment_method'] ?? null,
                     'transaction_id' => $validated['transaction_id'] ?? null,
                     'notes' => $validated['notes'] ?? null,
-                ]);
+                ];
+                if ($validated['payment_status'] === 'paid') {
+                    $orderUpdateData['paid_amount'] = $order->total;
+                    $orderUpdateData['remaining_amount'] = 0;
+                }
+                $order->update($orderUpdateData);
 
                 // Auto-mark as paid on delivery
                 if ($validated['status'] === 'delivered') {
-                    $order->update(['payment_status' => 'paid']);
+                    $order->update([
+                        'payment_status' => 'paid',
+                        'paid_amount' => $order->total,
+                        'remaining_amount' => 0,
+                    ]);
                     if ($order->invoice) {
                         $order->invoice->update(['payment_status' => 'paid']);
                     }
@@ -823,8 +834,8 @@ class OrderController extends Controller
     public function quickUpdateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['nullable', 'in:pending,en_demande,processing,shipped,delivered,cancelled'],
-            'payment_status' => ['nullable', 'in:pending,paid,failed,refunded'],
+            'status' => ['nullable', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
+            'payment_status' => ['nullable', 'in:pending,partial,paid,failed,refunded'],
         ]);
 
         if (empty($validated['status']) && empty($validated['payment_status'])) {
@@ -842,6 +853,8 @@ class OrderController extends Controller
 
                 if ($newStatus === 'delivered') {
                     $order->payment_status = 'paid';
+                    $order->paid_amount = $order->total;
+                    $order->remaining_amount = 0;
                     $order->save();
                     if ($order->invoice) {
                         $order->invoice->update(['payment_status' => 'paid']);
@@ -864,6 +877,10 @@ class OrderController extends Controller
 
             if (isset($validated['payment_status'])) {
                 $order->payment_status = $validated['payment_status'];
+                if ($validated['payment_status'] === 'paid') {
+                    $order->paid_amount = $order->total;
+                    $order->remaining_amount = 0;
+                }
                 $order->save();
             }
         });
@@ -882,11 +899,12 @@ class OrderController extends Controller
             'total' => (clone $statsQuery)->count(),
             'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
             'en_demande' => (clone $statsQuery)->where('status', 'en_demande')->count(),
+            'reserved' => (clone $statsQuery)->where('status', 'reserved')->count(),
             'processing' => (clone $statsQuery)->where('status', 'processing')->count(),
             'shipped' => (clone $statsQuery)->where('status', 'shipped')->count(),
             'delivered' => (clone $statsQuery)->where('status', 'delivered')->count(),
             'cancelled' => (clone $statsQuery)->where('status', 'cancelled')->count(),
-            'revenue' => (clone $statsQuery)->where('payment_status', 'paid')->sum('total'),
+            'revenue' => (float) (clone $statsQuery)->whereIn('payment_status', ['paid', 'partial'])->sum(DB::raw("CASE WHEN payment_status = 'paid' THEN total ELSE COALESCE(paid_amount, 0) END")),
         ];
 
         return response()->json([
@@ -900,6 +918,7 @@ class OrderController extends Controller
                     'shipped' => 'Expédiée',
                     'processing' => 'En cours',
                     'en_demande' => 'Sur Commande',
+                    'reserved' => 'Réservé',
                     'pending' => 'En attente',
                     'cancelled' => 'Annulée',
                     default => ucfirst($order->status)
@@ -907,6 +926,7 @@ class OrderController extends Controller
                 'payment_status' => $order->payment_status,
                 'payment_status_label' => match ($order->payment_status) {
                     'paid' => 'Payé',
+                    'partial' => 'Partiel',
                     'failed' => 'Échoué',
                     'refunded' => 'Remboursé',
                     default => 'En attente'
@@ -916,6 +936,7 @@ class OrderController extends Controller
                 'total' => $stats['total'],
                 'pending' => $stats['pending'],
                 'en_demande' => $stats['en_demande'],
+                'reserved' => $stats['reserved'],
                 'processing' => $stats['processing'],
                 'shipped' => $stats['shipped'],
                 'delivered' => $stats['delivered'],

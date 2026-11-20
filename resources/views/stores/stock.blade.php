@@ -240,14 +240,10 @@
                         <!-- Product Info -->
                         <td class="ps-3 py-3">
                             <div class="d-flex align-items-center gap-2.5">
-                                @if($p->image)
-                                    <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="prod-thumb-matrix shadow-xs"
-                                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                                @else
-                                    <div class="prod-thumb-matrix d-flex align-items-center justify-content-center text-muted">
-                                        <i class="fas fa-box"></i>
-                                    </div>
-                                @endif
+                                <img src="{{ $p->thumbnail }}" alt="{{ $p->name }}" class="prod-thumb-matrix shadow-xs"
+                                     style="object-fit: contain; background: #fff; padding: 2px;"
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                 <div class="min-w-0">
                                     <div class="fw-bold text-dark" title="{{ $p->name }}">
                                         {{ $p->name }}
@@ -355,14 +351,10 @@
             @endphp
             <div class="stock-prod-card p-3">
                 <div class="d-flex align-items-start gap-2.5 mb-2.5">
-                    @if($p->image)
-                        <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="prod-thumb-matrix shadow-xs"
-                             onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                    @else
-                        <div class="prod-thumb-matrix d-flex align-items-center justify-content-center text-muted">
-                            <i class="fas fa-box"></i>
-                        </div>
-                    @endif
+                    <img src="{{ $p->thumbnail }}" alt="{{ $p->name }}" class="prod-thumb-matrix shadow-xs"
+                         style="object-fit: contain; background: #fff; padding: 2px;"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                     <div class="min-w-0 flex-grow-1">
                         <div class="d-flex align-items-center justify-content-between gap-1 mb-1">
                             <span class="badge {{ $totalUnits > $threshold ? 'bg-success-subtle text-success border border-success-subtle' : ($totalUnits > 0 ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle') }} rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">

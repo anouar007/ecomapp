@@ -362,14 +362,10 @@
                         <!-- Article info -->
                         <td class="ps-3 py-3">
                             <div class="d-flex align-items-center gap-2.5">
-                                @if($p->image)
-                                    <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="prod-thumb-cost shadow-xs"
-                                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                                @else
-                                    <div class="prod-thumb-cost d-flex align-items-center justify-content-center text-muted">
-                                        <i class="fas fa-box"></i>
-                                    </div>
-                                @endif
+                                <img src="{{ $p->thumbnail }}" alt="{{ $p->name }}" class="prod-thumb-cost shadow-xs"
+                                     style="object-fit: contain; background: #fff; padding: 2px;"
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                 <div class="min-w-0">
                                     <a href="{{ route('products.edit', $p->id) }}" class="fw-bold text-dark text-decoration-none hover-primary d-block text-truncate" title="{{ $p->name }}" style="max-width: 320px;">
                                         {{ $p->name }}
@@ -511,14 +507,10 @@
             @endphp
             <div class="cost-mobile-card p-3 bg-white" id="mob-card-{{ $p->id }}">
                 <div class="d-flex align-items-start gap-2.5 mb-2.5">
-                    @if($p->image)
-                        <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="prod-thumb-cost shadow-xs"
-                             onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                    @else
-                        <div class="prod-thumb-cost d-flex align-items-center justify-content-center text-muted">
-                            <i class="fas fa-box"></i>
-                        </div>
-                    @endif
+                    <img src="{{ $p->thumbnail }}" alt="{{ $p->name }}" class="prod-thumb-cost shadow-xs"
+                         style="object-fit: contain; background: #fff; padding: 2px;"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                     <div class="min-w-0 flex-grow-1">
                         <div class="d-flex align-items-center justify-content-between gap-1 mb-1">
                             <span class="badge bg-light text-secondary border font-monospace" style="font-size: 0.68rem;">{{ $p->sku ?? 'SANS SKU' }}</span>

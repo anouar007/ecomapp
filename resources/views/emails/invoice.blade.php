@@ -263,9 +263,25 @@
                         @foreach($invoice->items as $item)
                         <tr>
                             <td>
-                                <strong>{{ $item->product ? $item->product->name : ($item->product_name ?? $item->item_name) }}</strong>
-                                @if($item->product_sku)
-                                    <div style="font-size: 11px; color: #94a3b8;">Réf : {{ $item->product_sku }}</div>
+                                @if($emailImg = $item->email_product_image)
+                                    <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; width: 100%;">
+                                        <tr>
+                                            <td width="42" style="width: 42px; padding: 0 8px 0 0; border: none; vertical-align: middle;">
+                                                <img src="{{ $emailImg }}" alt="{{ $item->product ? $item->product->name : ($item->product_name ?? $item->item_name) }}" width="36" height="36" style="display: block; width: 36px; height: 36px; object-fit: contain; border: 1px solid #e2e8f0; border-radius: 6px; background: #ffffff; padding: 2px;">
+                                            </td>
+                                            <td style="padding: 0; border: none; vertical-align: middle;">
+                                                <strong>{{ $item->product ? $item->product->name : ($item->product_name ?? $item->item_name) }}</strong>
+                                                @if($item->product_sku)
+                                                    <div style="font-size: 11px; color: #94a3b8;">Réf : {{ $item->product_sku }}</div>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    </table>
+                                @else
+                                    <strong>{{ $item->product ? $item->product->name : ($item->product_name ?? $item->item_name) }}</strong>
+                                    @if($item->product_sku)
+                                        <div style="font-size: 11px; color: #94a3b8;">Réf : {{ $item->product_sku }}</div>
+                                    @endif
                                 @endif
                             </td>
                             <td style="text-align: right;">{{ $item->formatted_unit_price_ht }}</td>

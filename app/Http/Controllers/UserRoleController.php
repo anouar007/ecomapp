@@ -29,7 +29,9 @@ class UserRoleController extends Controller
         ]);
 
         try {
-            $user->syncRoles($validated['roles'] ?? []);
+            $roleIds = array_map('intval', $validated['roles'] ?? []);
+            $roles = empty($roleIds) ? collect() : Role::whereIn('id', $roleIds)->get();
+            $user->syncRoles($roles);
             
             return back()->with('success', 'User roles updated successfully.');
         } catch (\Exception $e) {

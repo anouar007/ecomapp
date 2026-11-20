@@ -82,6 +82,7 @@ Route::post('/cart/remove-coupon', [\App\Http\Controllers\CartController::class,
 // Checkout
 Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->middleware('throttle:20,1')->name('checkout.store');
+Route::get('/checkout/reverse-geocode', [\App\Http\Controllers\CheckoutController::class, 'reverseGeocode'])->middleware('throttle:30,1')->name('checkout.reverseGeocode');
 Route::get('/checkout/orders/{order}/live-status', [\App\Http\Controllers\CheckoutController::class, 'liveStatus'])->name('checkout.liveStatus');
 Route::get('/checkout/success/{order}/status', [\App\Http\Controllers\CheckoutController::class, 'liveStatus']);
 Route::get('/checkout/success/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');

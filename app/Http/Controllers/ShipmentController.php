@@ -129,6 +129,7 @@ class ShipmentController extends Controller
             $query->where('name', 'LIKE', "%{$q}%")
                   ->orWhere('sku', 'LIKE', "%{$q}%");
         })
+        ->with(['images', 'primaryImage'])
         ->take(25)
         ->get(['id', 'name', 'sku', 'price', 'sale_price', 'cost_price', 'stock', 'image'])
         ->map(function ($p) {
@@ -141,7 +142,7 @@ class ShipmentController extends Controller
                 'selling_price_formatted' => number_format($effectivePrice, 2, ',', ' ') . ' DH',
                 'current_cost' => (float) ($p->cost_price ?? 0),
                 'stock' => (int) ($p->stock ?? 0),
-                'image_url' => $p->image ? asset('storage/' . $p->image) : asset('images/camera/cat_cameras.jpg'),
+                'image_url' => $p->thumbnail,
             ];
         });
 
@@ -295,7 +296,7 @@ class ShipmentController extends Controller
     {
         $this->authorizeAdmin();
 
-        $shipment->load(['store', 'creator', 'items.product']);
+        $shipment->load(['store', 'creator', 'items.product.images', 'items.product.primaryImage']);
 
         return view('shipments.show', compact('shipment'));
     }

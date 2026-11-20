@@ -62,7 +62,7 @@ class HomeSectionController extends Controller
             }
 
             $products = Product::whereIn('id', $savedIds)
-                ->with(['images', 'productCategory', 'brand'])
+                ->with(['images', 'primaryImage', 'productCategory', 'brand'])
                 ->get();
 
             // Sort products according to the exact order of $savedIds
@@ -146,7 +146,7 @@ class HomeSectionController extends Controller
         if (empty($query)) {
             $products = Product::where('status', 'active')
                 ->when(!empty($excludeIds), fn($q) => $q->whereNotIn('id', $excludeIds))
-                ->with(['images', 'productCategory', 'brand'])
+                ->with(['images', 'primaryImage', 'productCategory', 'brand'])
                 ->latest()
                 ->take(60)
                 ->get();
@@ -241,7 +241,7 @@ class HomeSectionController extends Controller
 
         // Fetch products and preserve exact merged ranking
         $products = Product::whereIn('id', $mergedIds)
-            ->with(['images', 'productCategory', 'brand'])
+            ->with(['images', 'primaryImage', 'productCategory', 'brand'])
             ->get();
 
         $ordered = collect($mergedIds)

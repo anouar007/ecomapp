@@ -7,8 +7,10 @@ use App\Models\Category;
 use App\Models\Customer;
 use App\Models\InventoryMovement;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\Store;
@@ -80,7 +82,12 @@ class POSController extends Controller
         }
 
         $productsQuery = Product::where('status', 'active')
-            ->where('stock', '>', 0)
+            ->when($stockFilter === 'in_stock', function ($q) {
+                $q->where('stock', '>', 0);
+            })
+            ->when($stockFilter === 'low_stock', function ($q) {
+                $q->where('stock', '>', 0)->where('stock', '<=', 5);
+            })
             ->when($query !== '', function ($q) use ($query) {
                 $tokens = preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY);
                 $q->where(function ($sub) use ($query, $tokens) {
@@ -113,16 +120,16 @@ class POSController extends Controller
             ->when($brandId, function ($q) use ($brandId) {
                 $q->where('brand_id', $brandId);
             })
-            ->with(['images', 'productCategory', 'storeStocks.store']);
+            ->with(['images', 'primaryImage', 'productCategory', 'storeStocks.store']);
 
         if ($query !== '') {
             $lower = mb_strtolower($query);
             $productsQuery->orderByRaw(
-                'CASE WHEN LOWER(sku) = ? THEN 0 WHEN LOWER(sku) LIKE ? THEN 1 ELSE 2 END, name ASC',
+                'CASE WHEN LOWER(sku) = ? THEN 0 WHEN LOWER(sku) LIKE ? THEN 1 ELSE 2 END, CASE WHEN stock > 0 THEN 0 ELSE 1 END, name ASC',
                 [$lower, $lower . '%']
             );
         } else {
-            $productsQuery->orderBy('name');
+            $productsQuery->orderByRaw('CASE WHEN stock > 0 THEN 0 ELSE 1 END, name ASC');
         }
 
         $products = $productsQuery
@@ -136,24 +143,29 @@ class POSController extends Controller
                     $categoryName = $product->category;
                 }
 
-                $globalStock = (int) $product->stock;
-                $availableStock = $globalStock;
-                if ($storeId && $product->storeStocks->isNotEmpty()) {
-                    $storeRow = $product->storeStocks->firstWhere('store_id', $storeId);
-                    $availableStock = (int) ($storeRow?->quantity ?? 0);
-                }
+                $globalStock = max(0, (int) $product->stock);
+                if ($globalStock <= 0) {
+                    $availableStock = 0;
+                    $storesList = [];
+                } else {
+                    $availableStock = $globalStock;
+                    if ($storeId && $product->storeStocks->isNotEmpty()) {
+                        $storeRow = $product->storeStocks->firstWhere('store_id', $storeId);
+                        $availableStock = max(0, (int) ($storeRow?->quantity ?? 0));
+                    }
 
-                $storesList = $product->storeStocks
-                    ->filter(fn ($s) => $s->store && $s->store->is_active && (int) $s->quantity > 0)
-                    ->sortBy(fn ($s) => $s->store->sort_order ?? 999)
-                    ->map(fn ($s) => [
-                        'id' => (int) $s->store_id,
-                        'name' => $s->store->name,
-                        'code' => $s->store->code,
-                        'quantity' => (int) $s->quantity,
-                    ])
-                    ->values()
-                    ->all();
+                    $storesList = $product->storeStocks
+                        ->filter(fn ($s) => $s->store && $s->store->is_active && (int) $s->quantity > 0)
+                        ->sortBy(fn ($s) => $s->store->sort_order ?? 999)
+                        ->map(fn ($s) => [
+                            'id' => (int) $s->store_id,
+                            'name' => $s->store->name,
+                            'code' => $s->store->code,
+                            'quantity' => (int) $s->quantity,
+                        ])
+                        ->values()
+                        ->all();
+                }
 
                 return [
                     'id' => $product->id,
@@ -182,16 +194,26 @@ class POSController extends Controller
      */
     public function processOrder(Request $request)
     {
+        if ($request->filled('customer_phone')) {
+            $request->merge([
+                'customer_phone' => $this->normalizePhone10((string) $request->input('customer_phone')),
+            ]);
+        }
+
         $validated = $request->validate([
             'customer_id' => ['nullable', 'exists:customers,id'],
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_email' => ['nullable', 'email', 'max:255'],
-            'customer_phone' => ['nullable', 'string', 'max:30'],
+            'customer_phone' => ['nullable', 'regex:/^\d{10}$/'],
             'customer_city' => ['nullable', 'string', 'max:100'],
             'save_customer' => ['nullable', 'boolean'],
             'store_id' => ['nullable', 'exists:stores,id'],
             'payment_method' => ['required', 'string', 'max:50'],
             'amount_received' => ['nullable', 'numeric', 'min:0'],
+            'is_partial_payment' => ['nullable', 'boolean'],
+            'paid_amount' => ['nullable', 'numeric', 'min:0'],
+            'payment_due_date' => ['nullable', 'date'],
+            'status' => ['nullable', 'string', 'in:delivered,pending,en_demande,reserved,processing,shipped'],
             'notes' => ['nullable', 'string', 'max:500'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
             'discount_type' => ['nullable', 'string', 'in:percent,fixed'],
@@ -201,6 +223,9 @@ class POSController extends Controller
             'items.*.price' => ['required', 'numeric', 'min:0'],
             'items.*.discount_amount' => ['nullable', 'numeric', 'min:0'],
             'items.*.discount_type' => ['nullable', 'string', 'in:percent,fixed'],
+            'items.*.store_id' => ['nullable', 'exists:stores,id'],
+        ], [
+            'customer_phone.regex' => 'Le numéro de téléphone doit contenir exactement 10 chiffres.',
         ]);
 
         DB::beginTransaction();
@@ -227,22 +252,27 @@ class POSController extends Controller
                     ], 400);
                 }
 
-                $itemStoreId = $storeId;
-                $hasStoreAllocations = ProductStock::where('product_id', $product->id)->exists();
-                if ($hasStoreAllocations) {
-                    if ($explicitStoreId) {
+                $itemExplicitStoreId = !empty($item['store_id']) ? (int) $item['store_id'] : $explicitStoreId;
+                $itemStoreId = $itemExplicitStoreId ?? $storeId;
+                $hasPositiveStoreAllocations = ProductStock::where('product_id', $product->id)
+                    ->where('quantity', '>', 0)
+                    ->exists();
+                if ($hasPositiveStoreAllocations) {
+                    if ($itemExplicitStoreId) {
                         $storeStock = ProductStock::where('product_id', $product->id)
-                            ->where('store_id', $explicitStoreId)
+                            ->where('store_id', $itemExplicitStoreId)
                             ->lockForUpdate()
                             ->first();
                         $storeQty = (int) ($storeStock?->quantity ?? 0);
                         if ($storeQty < $qty) {
+                            $storeName = Store::where('id', $itemExplicitStoreId)->value('name') ?? 'ce dépôt';
                             DB::rollBack();
                             return response()->json([
                                 'success' => false,
-                                'message' => "Stock insuffisant dans ce dépôt pour {$product->name} ({$storeQty} disponible(s)).",
+                                'message' => "Stock insuffisant dans {$storeName} pour {$product->name} ({$storeQty} disponible(s)).",
                             ], 400);
                         }
+                        $itemStoreId = $itemExplicitStoreId;
                     } else {
                         $defaultStock = $fallbackStoreId
                             ? ProductStock::where('product_id', $product->id)->where('store_id', $fallbackStoreId)->lockForUpdate()->first()
@@ -301,7 +331,7 @@ class POSController extends Controller
             // Global order discount (applied after per-item discounts)
             $globalDiscount = 0.0;
             $discountAmount = (float) ($validated['discount_amount'] ?? 0);
-            $discountType = $validated['discount_type'] ?? 'percent';
+            $discountType = $validated['discount_type'] ?? 'fixed';
 
             if ($discountAmount > 0 && $itemsNetSubtotal > 0) {
                 if ($discountType === 'percent') {
@@ -310,6 +340,8 @@ class POSController extends Controller
                     $globalDiscount = round(min($discountAmount, $itemsNetSubtotal), 2);
                 }
             }
+
+            $orderItems = $this->allocateGlobalDiscountToItems($orderItems, $itemsNetSubtotal, $globalDiscount);
 
             $total = max(0.0, round($itemsNetSubtotal - $globalDiscount, 2));
             $totalDiscount = round($totalItemDiscounts + $globalDiscount, 2);
@@ -322,8 +354,53 @@ class POSController extends Controller
             $customerCity = !empty($validated['customer_city']) ? trim($validated['customer_city']) : null;
             $customerEmail = !empty($validated['customer_email']) ? trim($validated['customer_email']) : null;
             $saveCustomer = !empty($validated['save_customer']);
+            $isPartialPayment = !empty($validated['is_partial_payment']) && $validated['payment_method'] !== 'credit';
 
-            // Resolve existing or newly saved customer
+            if ($isPartialPayment) {
+                $selectedCustomerPhone = !empty($validated['customer_id'])
+                    ? ($this->normalizePhone10(Customer::where('id', $validated['customer_id'])->value('phone')) ?? '')
+                    : '';
+                $effectivePartialPhone = $customerPhone ?: ($selectedCustomerPhone !== '' ? $selectedCustomerPhone : null);
+                $isGenericWalkIn = $customerName === '' || in_array(mb_strtolower($customerName), ['client de passage', 'walk-in customer'], true);
+
+                if ($isGenericWalkIn || empty($effectivePartialPhone) || !preg_match('/^\d{10}$/', (string) $effectivePartialPhone)) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Le nom du client et un numéro de téléphone de 10 chiffres sont obligatoires pour un paiement partiel.',
+                    ], 422);
+                }
+
+                if (empty($validated['payment_due_date'])) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Veuillez indiquer la date limite (échéance) pour le reste à payer.',
+                    ], 422);
+                }
+
+                $paidNow = round((float) ($validated['paid_amount'] ?? 0), 2);
+                if ($paidNow >= $total) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Le montant payé maintenant doit être inférieur au total pour un paiement partiel.',
+                    ], 400);
+                }
+
+                $remainingAmount = max(0.0, round($total - $paidNow, 2));
+                $dueDate = $validated['payment_due_date'];
+            } elseif ($validated['payment_method'] === 'credit') {
+                $paidNow = 0.0;
+                $remainingAmount = $total;
+                $dueDate = now()->addDays(30)->toDateString();
+            } else {
+                $paidNow = $total;
+                $remainingAmount = 0.0;
+                $dueDate = null;
+            }
+
+            // Resolve existing or newly saved customer (required for credit & partial payment tracking)
             $customer = null;
             if (!empty($validated['customer_id'])) {
                 $customer = Customer::find($validated['customer_id']);
@@ -342,7 +419,7 @@ class POSController extends Controller
                         $customer->update($updates);
                     }
                 }
-            } elseif ($saveCustomer) {
+            } elseif ($saveCustomer || $isPartialPayment) {
                 if ($customerPhone) {
                     $customer = Customer::where('phone', $customerPhone)->first();
                 }
@@ -393,6 +470,12 @@ class POSController extends Controller
             }
 
             $notes = trim((string) ($validated['notes'] ?? ''));
+            $orderStatus = $validated['status'] ?? 'delivered';
+            $shouldDeductStock = $orderStatus === 'delivered';
+            $orderPaymentStatus = $isPartialPayment
+                ? ($paidNow > 0 ? 'partial' : 'pending')
+                : ($validated['payment_method'] === 'credit' ? 'pending' : 'paid');
+
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'customer_id' => $customer?->id,
@@ -408,10 +491,13 @@ class POSController extends Controller
                 'shipping_cost' => 0,
                 'discount' => $totalDiscount,
                 'total' => $total,
-                'status' => 'delivered',
-                'stock_deducted' => true,
-                'payment_status' => $validated['payment_method'] === 'credit' ? 'pending' : 'paid',
+                'paid_amount' => $paidNow,
+                'remaining_amount' => $remainingAmount,
+                'status' => $orderStatus,
+                'stock_deducted' => $shouldDeductStock,
+                'payment_status' => $orderPaymentStatus,
                 'payment_method' => $validated['payment_method'],
+                'payment_due_date' => $dueDate,
                 'notes' => $notes !== '' ? $notes : 'Vente POS',
             ]);
 
@@ -424,45 +510,47 @@ class POSController extends Controller
                     'store_id' => $targetStoreId,
                 ]));
 
-                $product = Product::find($itemData['product_id']);
-                $stockBefore = (int) ($product?->stock ?? 0);
-                $storeSumBefore = $product ? (int) $product->storeStocks()->sum('quantity') : 0;
+                if ($shouldDeductStock) {
+                    $product = Product::find($itemData['product_id']);
+                    $stockBefore = (int) ($product?->stock ?? 0);
+                    $storeSumBefore = $product ? (int) $product->storeStocks()->sum('quantity') : 0;
 
-                $storeBefore = null;
-                $storeAfter = null;
-                if ($targetStoreId && $product) {
-                    $storeStock = ProductStock::where('product_id', $itemData['product_id'])
-                        ->where('store_id', $targetStoreId)
-                        ->lockForUpdate()
-                        ->first();
-                    if ($storeStock && $storeStock->quantity > 0) {
-                        $storeBefore = (int) $storeStock->quantity;
-                        $deductQty = min($storeBefore, (int) $itemData['quantity']);
-                        $storeAfter = max(0, $storeBefore - $deductQty);
-                        $storeStock->update(['quantity' => $storeAfter]);
+                    $storeBefore = null;
+                    $storeAfter = null;
+                    if ($targetStoreId && $product) {
+                        $storeStock = ProductStock::where('product_id', $itemData['product_id'])
+                            ->where('store_id', $targetStoreId)
+                            ->lockForUpdate()
+                            ->first();
+                        if ($storeStock && $storeStock->quantity > 0) {
+                            $storeBefore = (int) $storeStock->quantity;
+                            $deductQty = min($storeBefore, (int) $itemData['quantity']);
+                            $storeAfter = max(0, $storeBefore - $deductQty);
+                            $storeStock->update(['quantity' => $storeAfter]);
+                        }
                     }
-                }
 
-                if ($product) {
-                    if ($product->storeStocks()->exists() && $stockBefore <= $storeSumBefore) {
-                        $product->syncStockFromStores();
-                    } else {
-                        $product->syncStockFields(max(0, $stockBefore - (int) $itemData['quantity']));
+                    if ($product) {
+                        if ($product->storeStocks()->exists() && $stockBefore <= $storeSumBefore) {
+                            $product->syncStockFromStores();
+                        } else {
+                            $product->syncStockFields(max(0, $stockBefore - (int) $itemData['quantity']));
+                        }
                     }
-                }
 
-                InventoryMovement::create([
-                    'product_id' => $itemData['product_id'],
-                    'type' => 'out',
-                    'quantity' => (int) $itemData['quantity'],
-                    'stock_before' => $storeBefore ?? $stockBefore,
-                    'stock_after' => $storeAfter ?? max(0, $stockBefore - (int) $itemData['quantity']),
-                    'reference_type' => 'order',
-                    'reference_id' => $order->id,
-                    'from_location_id' => $targetStoreId,
-                    'reason' => "Vente POS #{$order->order_number}",
-                    'created_by' => Auth::id(),
-                ]);
+                    InventoryMovement::create([
+                        'product_id' => $itemData['product_id'],
+                        'type' => 'out',
+                        'quantity' => (int) $itemData['quantity'],
+                        'stock_before' => $storeBefore ?? $stockBefore,
+                        'stock_after' => $storeAfter ?? max(0, $stockBefore - (int) $itemData['quantity']),
+                        'reference_type' => 'order',
+                        'reference_id' => $order->id,
+                        'from_location_id' => $targetStoreId,
+                        'reason' => "Vente POS #{$order->order_number}",
+                        'created_by' => Auth::id(),
+                    ]);
+                }
             }
 
             if ($customer && $validated['payment_method'] === 'credit') {
@@ -482,7 +570,7 @@ class POSController extends Controller
                     'payment_status' => 'unpaid',
                     'notes' => 'Vente POS à crédit',
                     'issued_at' => now(),
-                    'due_date' => now()->addDays(30),
+                    'due_date' => $dueDate,
                     'created_by' => Auth::id(),
                 ]);
 
@@ -500,6 +588,69 @@ class POSController extends Controller
                 } else {
                     $customer->applyBalanceDelta((float) $total);
                 }
+            } elseif ($customer && $isPartialPayment) {
+                $invoice = Invoice::create([
+                    'invoice_number' => Invoice::generateInvoiceNumber(),
+                    'order_id' => $order->id,
+                    'customer_name' => $customer->name,
+                    'customer_email' => $customer->email,
+                    'customer_phone' => $customer->phone,
+                    'subtotal' => $subtotalNet,
+                    'tax_amount' => $tax,
+                    'tax_rate' => floatval(setting('tax_rate', 20)),
+                    'ice' => $customer->ice ?? null,
+                    'discount_amount' => $totalDiscount,
+                    'total_amount' => $total,
+                    'payment_method' => $validated['payment_method'],
+                    'payment_status' => $paidNow > 0 ? 'partial' : 'unpaid',
+                    'stock_deducted' => $shouldDeductStock,
+                    'notes' => 'Vente POS paiement partiel (Acompte : ' . currency($paidNow) . ', Reste : ' . currency($remainingAmount) . ')',
+                    'issued_at' => now(),
+                    'due_date' => $dueDate,
+                    'created_by' => Auth::id(),
+                ]);
+
+                foreach ($orderItems as $itemData) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'product_id' => $itemData['product_id'],
+                        'product_name' => $itemData['product_name'],
+                        'product_sku' => $itemData['product_sku'] ?? null,
+                        'quantity' => $itemData['quantity'],
+                        'unit_price' => $itemData['price'],
+                        'total_price' => $itemData['subtotal'],
+                    ]);
+                }
+
+                if ($paidNow > 0) {
+                    Payment::create([
+                        'invoice_id' => $invoice->id,
+                        'amount' => $paidNow,
+                        'payment_method' => $validated['payment_method'],
+                        'status' => 'completed',
+                        'payment_date' => now()->toDateString(),
+                        'notes' => "Acompte POS #{$order->order_number}",
+                        'created_by' => Auth::id(),
+                    ]);
+                }
+
+                if ($remainingAmount > 0) {
+                    $formattedDue = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                    if (method_exists($customer, 'recordTransaction')) {
+                        $customer->recordTransaction([
+                            'type' => 'credit_given',
+                            'amount' => (float) $remainingAmount,
+                            'payment_method' => $validated['payment_method'],
+                            'order_id' => $order->id,
+                            'invoice_id' => $invoice->id,
+                            'store_id' => $storeId,
+                            'payment_date' => now(),
+                            'notes' => "Reste à payer POS #{$order->order_number} (Échéance : {$formattedDue})",
+                        ]);
+                    } else {
+                        $customer->applyBalanceDelta((float) $remainingAmount);
+                    }
+                }
             }
 
             if ($customer) {
@@ -516,7 +667,13 @@ class POSController extends Controller
                 'order' => [
                     'id' => $order->id,
                     'order_number' => $order->order_number,
+                    'status' => $order->status,
+                    'stock_deducted' => (bool) $order->stock_deducted,
                     'total' => (float) $order->total,
+                    'paid_amount' => (float) $order->paid_amount,
+                    'remaining_amount' => (float) $order->remaining_amount,
+                    'payment_status' => $order->payment_status,
+                    'payment_due_date' => $order->payment_due_date?->format('d/m/Y'),
                     'discount' => (float) $order->discount,
                     'payment_method' => $order->payment_method,
                     'show_url' => route('orders.show', $order),
@@ -540,6 +697,74 @@ class POSController extends Controller
                 'message' => 'Erreur lors du traitement : ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Normalize a phone number to a 10-digit local format when possible.
+     */
+    protected function normalizePhone10(?string $raw): string
+    {
+        $digits = preg_replace('/\D+/', '', (string) ($raw ?? ''));
+        if (str_starts_with($digits, '212') && strlen($digits) === 12) {
+            $digits = '0' . substr($digits, 3);
+        } elseif (str_starts_with($digits, '00212') && strlen($digits) === 14) {
+            $digits = '0' . substr($digits, 5);
+        }
+
+        return $digits;
+    }
+
+    /**
+     * Proportionally allocate global discount across eligible order items by price share.
+     */
+    protected function allocateGlobalDiscountToItems(array $orderItems, float $itemsNetSubtotal, float $globalDiscount): array
+    {
+        if ($globalDiscount <= 0 || $itemsNetSubtotal <= 0 || empty($orderItems)) {
+            return $orderItems;
+        }
+
+        $lastEligibleIdx = null;
+        foreach ($orderItems as $idx => $item) {
+            if ((float) ($item['subtotal'] ?? 0) > 0) {
+                $lastEligibleIdx = $idx;
+            }
+        }
+
+        if ($lastEligibleIdx === null) {
+            return $orderItems;
+        }
+
+        $allocated = 0.0;
+        foreach ($orderItems as $idx => $item) {
+            $lineNet = (float) ($item['subtotal'] ?? 0);
+            if ($lineNet <= 0) {
+                continue;
+            }
+
+            if ($idx === $lastEligibleIdx) {
+                $globalShare = round(min($lineNet, max(0.0, $globalDiscount - $allocated)), 2);
+            } else {
+                $globalShare = round(min($lineNet, $globalDiscount * ($lineNet / $itemsNetSubtotal)), 2);
+                $allocated = round($allocated + $globalShare, 2);
+            }
+
+            $combinedDiscount = round((float) ($item['discount_amount'] ?? 0) + $globalShare, 2);
+            $finalLineNet = max(0.0, round($lineNet - $globalShare, 2));
+            $qty = (int) ($item['quantity'] ?? 1);
+
+            $orderItems[$idx]['discount_amount'] = $combinedDiscount;
+            $orderItems[$idx]['subtotal'] = $finalLineNet;
+            $orderItems[$idx]['price'] = $qty > 0
+                ? round($finalLineNet / $qty, 2)
+                : (float) ($item['original_price'] ?? 0);
+
+            if ($orderItems[$idx]['discount_type'] === null && $globalShare > 0) {
+                $orderItems[$idx]['discount_type'] = 'fixed';
+                $orderItems[$idx]['discount_value'] = $globalShare;
+            }
+        }
+
+        return $orderItems;
     }
 
     /**

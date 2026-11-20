@@ -344,7 +344,16 @@
                                     {{ $item->product_sku ?? ($item->product->sku ?? 'N/A') }}
                                 </td>
                                 <td>
-                                    <strong style="color: #1e293b;">{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
+                                    @if($item->product_image)
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <img src="{{ $item->product_image }}" alt="{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}"
+                                                 style="width: 32px; height: 32px; object-fit: contain; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 2px; flex-shrink: 0;"
+                                                 onerror="this.style.display='none';">
+                                            <strong style="color: #1e293b;">{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
+                                        </div>
+                                    @else
+                                        <strong style="color: #1e293b;">{{ $item->product_name ?? ($item->product->name ?? 'Produit') }}</strong>
+                                    @endif
                                 </td>
                                 <td style="text-align: center; font-weight: 700; color: #1e293b;">{{ $item->quantity }}</td>
                                 <td style="text-align: right; color: #059669; font-weight: 700;">

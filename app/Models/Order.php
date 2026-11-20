@@ -31,10 +31,13 @@ class Order extends Model
         'coupon_id',
         'coupon_code',
         'total',
+        'paid_amount',
+        'remaining_amount',
         'status',
         'stock_deducted',
         'payment_status',
         'payment_method',
+        'payment_due_date',
         'transaction_id',
         'notes',
     ];
@@ -45,6 +48,9 @@ class Order extends Model
         'shipping_cost' => 'decimal:2',
         'discount' => 'decimal:2',
         'total' => 'decimal:2',
+        'paid_amount' => 'decimal:2',
+        'remaining_amount' => 'decimal:2',
+        'payment_due_date' => 'date',
         'stock_deducted' => 'boolean',
     ];
 
@@ -197,6 +203,8 @@ class Order extends Model
     {
         return match($this->status) {
             'pending' => 'badge-warning',
+            'en_demande' => 'badge-primary',
+            'reserved' => 'badge-primary',
             'processing' => 'badge-info',
             'shipped' => 'badge-primary',
             'delivered' => 'badge-success',

@@ -1412,15 +1412,27 @@
                         <tr>
                             <td style="text-align:center; color:#94a3b8; font-size:11px;">{{ $i + 1 }}</td>
                             <td>
-                                <div class="item-name">
-                                    {{ $item->product_name }}
-                                    @if($item->variant_name)
-                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 11px; font-weight: normal; vertical-align: middle;">{{ $item->variant_name }}</span>
+                                @php $itemImg = $item->product_image; @endphp
+                                <div class="d-flex align-items-center gap-2.5">
+                                    @if($itemImg)
+                                        <img src="{{ $itemImg }}" alt="{{ $item->product_name }}"
+                                             width="38" height="38"
+                                             class="rounded-2 border flex-shrink-0"
+                                             style="width: 38px; height: 38px; object-fit: contain; background: #ffffff; padding: 2px;"
+                                             onerror="this.style.display='none';">
                                     @endif
+                                    <div class="min-w-0">
+                                        <div class="item-name">
+                                            {{ $item->product_name }}
+                                            @if($item->variant_name)
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 11px; font-weight: normal; vertical-align: middle;">{{ $item->variant_name }}</span>
+                                            @endif
+                                        </div>
+                                        @if($item->product_sku)
+                                        <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @if($item->product_sku)
-                                <div class="item-sku">Réf : {{ $item->product_sku }}</div>
-                                @endif
                             </td>
                             <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price_ht }}</td>
                             <td style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>

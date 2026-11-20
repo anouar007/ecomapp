@@ -683,9 +683,23 @@
                         <tr>
                             <td style="text-align: center; color: #64748b; font-weight: 600;">{{ $idx + 1 }}</td>
                             <td>
-                                <div class="item-name">{{ $item->displayName }}</div>
-                                @if($item->product_sku)
-                                    <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                                @if($item->product_image)
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="{{ $item->product_image }}" alt="{{ $item->displayName }}"
+                                             style="width: 32px; height: 32px; object-fit: contain; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 2px; flex-shrink: 0;"
+                                             onerror="this.style.display='none';">
+                                        <div>
+                                            <div class="item-name">{{ $item->displayName }}</div>
+                                            @if($item->product_sku)
+                                                <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="item-name">{{ $item->displayName }}</div>
+                                    @if($item->product_sku)
+                                        <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                                    @endif
                                 @endif
                             </td>
                             <td style="text-align: right; color: #334155; font-weight: 500;">

@@ -147,10 +147,15 @@ class DashboardController extends Controller
         ];
         
         // Recent orders
-        $recentOrders = Order::with('user')->withCount('items')->latest()->take(6)->get();
+        $recentOrders = Order::with(['user', 'items.product.images', 'items.product.primaryImage', 'items.variant'])
+            ->withCount('items')
+            ->latest()
+            ->take(6)
+            ->get();
         
         // Low Stock Products (matching active tracked threshold)
         $lowStockProducts = Product::where('track_inventory', true)
+            ->with(['images', 'primaryImage'])
             ->whereRaw('stock <= COALESCE(low_stock_threshold, min_stock, 5)')
             ->orderBy('stock', 'asc')
             ->take(6)
@@ -196,7 +201,12 @@ class DashboardController extends Controller
             'recent_activities'     => $recentActivities,
         ];
 
-        return view('dashboard', compact('stats', 'quickStats', 'chartData', 'user', 'recentOrders', 'lowStockProducts', 'erpFinancials'));
+        $notifService = app(\App\Services\AdminNotificationService::class);
+        $notificationSummary = $notifService->canAccessAdminNotifications($user)
+            ? $notifService->getFeedForUser($user)
+            : null;
+
+        return view('dashboard', compact('stats', 'quickStats', 'chartData', 'user', 'recentOrders', 'lowStockProducts', 'erpFinancials', 'notificationSummary'));
     }
 
     /**

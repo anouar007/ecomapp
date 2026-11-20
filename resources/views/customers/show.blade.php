@@ -475,7 +475,20 @@
                             </a>
                         </td>
                         <td class="text-muted small">{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                        <td class="small">{{ $order->items->count() }} article(s)</td>
+                        <td class="small">
+                            @php $custFirstItem = $order->items->first(); @endphp
+                            <div class="d-flex align-items-center gap-2">
+                                @if($custFirstItem)
+                                    <img src="{{ $custFirstItem->product_image }}" alt="{{ $custFirstItem->product_name }}"
+                                         width="32" height="32"
+                                         class="rounded border flex-shrink-0"
+                                         style="width: 32px; height: 32px; object-fit: contain; background: #ffffff; padding: 1px;"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                         loading="lazy">
+                                @endif
+                                <span>{{ $order->items->count() }} article(s)</span>
+                            </div>
+                        </td>
                         <td class="text-end fw-bold text-dark">{{ currency($order->total) }}</td>
                         <td class="text-center">
                             <span class="badge bg-{{ $order->status_badge_class ?? 'secondary' }} rounded-pill px-2.5 py-1">
@@ -507,7 +520,17 @@
                         </span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center text-muted small mt-1">
-                        <span>{{ $order->created_at->format('d/m/Y') }} &bull; {{ $order->items->count() }} art.</span>
+                        <span class="d-inline-flex align-items-center gap-1.5">
+                            @if($custMobFirstItem = $order->items->first())
+                                <img src="{{ $custMobFirstItem->product_image }}" alt="{{ $custMobFirstItem->product_name }}"
+                                     width="24" height="24"
+                                     class="rounded border flex-shrink-0"
+                                     style="width: 24px; height: 24px; object-fit: contain; background: #ffffff; padding: 1px;"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                     loading="lazy">
+                            @endif
+                            <span>{{ $order->created_at->format('d/m/Y') }} &bull; {{ $order->items->count() }} art.</span>
+                        </span>
                         <strong class="text-dark fs-6">{{ currency($order->total) }}</strong>
                     </div>
                 </div>

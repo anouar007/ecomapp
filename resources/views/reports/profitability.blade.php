@@ -990,12 +990,7 @@
                         <tbody id="profProductsTbody">
                             @foreach($renderRows as $item)
                             @php
-                                $imgSrc = null;
-                                if ($item->product_image) {
-                                    $imgSrc = \Illuminate\Support\Str::startsWith($item->product_image, ['http://', 'https://', 'images/', '/'])
-                                        ? asset(ltrim($item->product_image, '/'))
-                                        : asset('storage/' . $item->product_image);
-                                }
+                                $imgSrc = $item->resolved_thumbnail ?? \App\Models\Product::resolveImageUrl($item->product_image ?? null);
                                 $isSold = (bool) ($item->is_sold ?? ($item->quantity_sold > 0));
                                 $isNeg = $item->has_cost && ($isSold ? $item->net_profit < 0 : $item->unit_margin < 0);
                                 $isLow = $item->has_cost && !$isNeg && $item->margin_percentage < 15;
