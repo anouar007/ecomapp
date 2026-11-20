@@ -1459,7 +1459,7 @@
                     </div>
                     <div class="dropdown d-inline-block flex-shrink-0">
                         <button type="button"
-                                class="brand-badge brand-badge-btn success dropdown-toggle"
+                                class="brand-badge brand-badge-btn success status-pill-delivered dropdown-toggle"
                                 data-bs-toggle="dropdown"
                                 data-bs-auto-close="true"
                                 data-bs-boundary="viewport"
@@ -1469,7 +1469,7 @@
                                 title="Changer le statut de livraison">
                             <span class="status-dot dot-green" id="posStatusDot"></span>
                             <span id="posStatusLabel">Livrée</span>
-                            <i class="fas fa-chevron-down opacity-50 ms-0.5" style="font-size: 0.6rem;"></i>
+                            <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.6rem;"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="posStatusPill" id="posStatusMenu">
                             <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de livraison</li>
@@ -2754,12 +2754,12 @@ function updateTotals() {
 }
 
 window.POS_ORDER_STATUS_META = {
-    pending:    { label: 'En attente',   dot: 'amber',  badgeClass: 'warning', textClass: 'text-warning' },
-    en_demande: { label: 'Sur Commande', dot: 'blue',   badgeClass: 'primary', textClass: 'text-primary' },
-    reserved:   { label: 'Réservé',      dot: 'purple', badgeClass: 'purple',  textClass: 'text-purple' },
-    processing: { label: 'En cours',     dot: 'blue',   badgeClass: 'primary', textClass: 'text-primary' },
-    shipped:    { label: 'Expédiée',     dot: 'teal',  badgeClass: 'info',    textClass: 'text-info' },
-    delivered:  { label: 'Livrée',       dot: 'green', badgeClass: 'success', textClass: 'text-success' }
+    pending:    { label: 'En attente',   dot: 'amber',  badgeClass: 'warning status-pill-pending',    textClass: 'text-warning' },
+    en_demande: { label: 'Sur Commande', dot: 'indigo', badgeClass: 'indigo status-pill-en_demande',  textClass: 'text-primary' },
+    reserved:   { label: 'Réservé',      dot: 'purple', badgeClass: 'purple status-pill-reserved',   textClass: 'text-purple' },
+    processing: { label: 'En cours',     dot: 'blue',   badgeClass: 'primary status-pill-processing', textClass: 'text-primary' },
+    shipped:    { label: 'Expédiée',     dot: 'teal',   badgeClass: 'info status-pill-shipped',      textClass: 'text-info' },
+    delivered:  { label: 'Livrée',       dot: 'green',  badgeClass: 'success status-pill-delivered', textClass: 'text-success' }
 };
 
 window.formatPosStatusBadgeHtml = function(statusVal) {

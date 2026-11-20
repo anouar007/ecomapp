@@ -4814,6 +4814,12 @@ i.fa-sparkles:before {
     font-weight: 700;
 }
 
+.brand-badge.indigo {
+    background: #eef2ff;
+    color: #4338ca;
+    border-color: #c7d2fe;
+}
+
 .brand-badge-btn {
     cursor: pointer;
     transition: all 0.15s ease;
@@ -4826,10 +4832,70 @@ i.fa-sparkles:before {
     font-weight: 700;
 }
 
+.brand-badge-btn.dropdown-toggle::after,
+.mobile-order-badge.dropdown-toggle::after,
+.mobile-order-pay-pill.dropdown-toggle::after {
+    display: none !important;
+}
+
 .brand-badge-btn:hover {
-    filter: brightness(0.96);
+    filter: brightness(0.95);
     transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Solid status-colored dropdown trigger pills for Orders / POS */
+.brand-badge-btn.status-pill-pending {
+    background: #d97706 !important;
+    color: #ffffff !important;
+    border-color: #b45309 !important;
+}
+.brand-badge-btn.status-pill-en_demande {
+    background: #4338ca !important;
+    color: #ffffff !important;
+    border-color: #3730a3 !important;
+}
+.brand-badge-btn.status-pill-reserved {
+    background: #7c3aed !important;
+    color: #ffffff !important;
+    border-color: #6d28d9 !important;
+}
+.brand-badge-btn.status-pill-processing {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #1d4ed8 !important;
+}
+.brand-badge-btn.status-pill-shipped {
+    background: #0093ac !important;
+    color: #ffffff !important;
+    border-color: #0e7490 !important;
+}
+.brand-badge-btn.status-pill-delivered {
+    background: #059669 !important;
+    color: #ffffff !important;
+    border-color: #047857 !important;
+}
+.brand-badge-btn.status-pill-cancelled {
+    background: #dc2626 !important;
+    color: #ffffff !important;
+    border-color: #b91c1c !important;
+}
+
+.brand-badge-btn[class*="status-pill-"] .status-dot,
+.mobile-order-badge.dropdown-toggle .status-dot {
+    background: #ffffff !important;
+    box-shadow: 0 0 0 2.5px rgba(255, 255, 255, 0.32) !important;
+}
+
+.brand-badge-btn[class*="status-pill-"] i.fa-chevron-down,
+.mobile-order-badge.dropdown-toggle i.fa-chevron-down {
+    color: #ffffff !important;
+    opacity: 0.9 !important;
+}
+
+.dot-indigo {
+    background: #4338ca;
+    box-shadow: 0 0 0 2.5px rgba(67, 56, 202, 0.22);
 }
 
 .mobile-order-badge.dropdown-toggle {

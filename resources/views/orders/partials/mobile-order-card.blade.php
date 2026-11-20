@@ -145,14 +145,23 @@
 
         @php
             $stLower = strtolower($order->status);
-            $statusStyle = match($stLower) {
-                'delivered', 'livrée' => ['bg' => '#ecfdf5', 'color' => '#047857', 'border' => '#a7f3d0', 'dot' => 'dot-green', 'text' => 'Livrée'],
-                'shipped', 'expédiée' => ['bg' => 'rgb(192 246 255 / 53%)', 'color' => '#0093ac', 'border' => '#0dcaf0', 'dot' => 'dot-teal', 'text' => 'Expédiée'],
-                'processing', 'en cours' => ['bg' => '#eff6ff', 'color' => '#1d4ed8', 'border' => '#bfdbfe', 'dot' => 'dot-blue', 'text' => 'En cours'],
-                'en_demande' => ['bg' => '#eef2ff', 'color' => '#4338ca', 'border' => '#c7d2fe', 'dot' => 'dot-blue', 'text' => 'Sur Commande'],
-                'reserved', 'réservé' => ['bg' => '#f5f3ff', 'color' => '#6d28d9', 'border' => '#ddd6fe', 'dot' => 'dot-purple', 'text' => 'Réservé'],
-                'cancelled', 'annulée' => ['bg' => '#fef2f2', 'color' => '#b91c1c', 'border' => '#fecaca', 'dot' => 'dot-red', 'text' => 'Annulée'],
-                default => ['bg' => '#fffbeb', 'color' => '#b45309', 'border' => '#fde68a', 'dot' => 'dot-amber', 'text' => 'En attente']
+            $normalizedStatus = match($stLower) {
+                'delivered', 'livrée' => 'delivered',
+                'shipped', 'expédiée' => 'shipped',
+                'processing', 'en cours' => 'processing',
+                'en_demande' => 'en_demande',
+                'reserved', 'réservé' => 'reserved',
+                'cancelled', 'annulée' => 'cancelled',
+                default => 'pending'
+            };
+            $statusStyle = match($normalizedStatus) {
+                'delivered' => ['bg' => '#059669', 'color' => '#ffffff', 'border' => '#047857', 'dot' => 'dot-green', 'text' => 'Livrée'],
+                'shipped' => ['bg' => '#0093ac', 'color' => '#ffffff', 'border' => '#0e7490', 'dot' => 'dot-teal', 'text' => 'Expédiée'],
+                'processing' => ['bg' => '#2563eb', 'color' => '#ffffff', 'border' => '#1d4ed8', 'dot' => 'dot-blue', 'text' => 'En cours'],
+                'en_demande' => ['bg' => '#4338ca', 'color' => '#ffffff', 'border' => '#3730a3', 'dot' => 'dot-indigo', 'text' => 'Sur Commande'],
+                'reserved' => ['bg' => '#7c3aed', 'color' => '#ffffff', 'border' => '#6d28d9', 'dot' => 'dot-purple', 'text' => 'Réservé'],
+                'cancelled' => ['bg' => '#dc2626', 'color' => '#ffffff', 'border' => '#b91c1c', 'dot' => 'dot-red', 'text' => 'Annulée'],
+                default => ['bg' => '#d97706', 'color' => '#ffffff', 'border' => '#b45309', 'dot' => 'dot-amber', 'text' => 'En attente']
             };
         @endphp
 
@@ -166,54 +175,54 @@
                     data-bs-popper-config='{"strategy":"fixed"}'
                     aria-expanded="false"
                     id="mob-status-pill-{{ $order->id }}"
-                    style="background: {{ $statusStyle['bg'] }}; color: {{ $statusStyle['color'] }}; border: 1px solid {{ $statusStyle['border'] }}; cursor: pointer;"
+                    style="background: {{ $statusStyle['bg'] }}; color: {{ $statusStyle['color'] }}; border: 1px solid {{ $statusStyle['border'] }} !important; cursor: pointer;"
                     title="Changer le statut de livraison">
                 <span class="status-dot {{ $statusStyle['dot'] }}" id="mob-status-dot-{{ $order->id }}"></span>
                 <span id="mob-status-label-{{ $order->id }}">{{ $statusStyle['text'] }}</span>
-                <i class="fas fa-chevron-down opacity-50 ms-0.5" style="font-size: 0.55rem;"></i>
+                <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.55rem;"></i>
             </button>
             <ul class="dropdown-menu shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="mob-status-pill-{{ $order->id }}">
                 <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de livraison</li>
                 <li>
-                    <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'pending')">
+                    <button type="button" data-status="pending" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'pending')">
                         <span><span class="status-dot dot-amber me-1.5"></span> En attente</span>
-                        @if($stLower === 'pending') <i class="fas fa-check text-warning small"></i> @endif
+                        @if($normalizedStatus === 'pending') <i class="fas fa-check text-warning small"></i> @endif
                     </button>
                 </li>
                 <li>
-                    <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'en_demande' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'en_demande')">
+                    <button type="button" data-status="en_demande" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'en_demande' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'en_demande')">
                         <span><span class="status-dot dot-blue me-1.5"></span> Sur Commande</span>
-                        @if($stLower === 'en_demande') <i class="fas fa-check text-primary small"></i> @endif
+                        @if($normalizedStatus === 'en_demande') <i class="fas fa-check text-primary small"></i> @endif
                     </button>
                 </li>
                 <li>
-                    <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ in_array($stLower, ['reserved', 'réservé']) ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'reserved')">
+                    <button type="button" data-status="reserved" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'reserved' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'reserved')">
                         <span><span class="status-dot dot-purple me-1.5"></span> Réservé</span>
-                        @if(in_array($stLower, ['reserved', 'réservé'])) <i class="fas fa-check text-purple small"></i> @endif
+                        @if($normalizedStatus === 'reserved') <i class="fas fa-check text-purple small"></i> @endif
                     </button>
                 </li>
                 <li>
-                    <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'processing' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'processing')">
+                    <button type="button" data-status="processing" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'processing' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'processing')">
                         <span><span class="status-dot dot-blue me-1.5"></span> En cours</span>
-                        @if($stLower === 'processing') <i class="fas fa-check text-primary small"></i> @endif
+                        @if($normalizedStatus === 'processing') <i class="fas fa-check text-primary small"></i> @endif
                     </button>
                 </li>
                 <li>
-                    <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'shipped' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'shipped')">
+                    <button type="button" data-status="shipped" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'shipped' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'shipped')">
                         <span><span class="status-dot dot-teal me-1.5"></span> Expédiée</span>
-                        @if($stLower === 'shipped') <i class="fas fa-check text-info small"></i> @endif
+                        @if($normalizedStatus === 'shipped') <i class="fas fa-check text-info small"></i> @endif
                     </button>
                 </li>
                 <li>
-                    <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'delivered' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'delivered')">
+                    <button type="button" data-status="delivered" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'delivered' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'delivered')">
                         <span><span class="status-dot dot-green me-1.5"></span> Livrée</span>
-                        @if($stLower === 'delivered') <i class="fas fa-check text-success small"></i> @endif
+                        @if($normalizedStatus === 'delivered') <i class="fas fa-check text-success small"></i> @endif
                     </button>
                 </li>
                 <li>
-                    <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between text-danger {{ $stLower === 'cancelled' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'cancelled')">
+                    <button type="button" data-status="cancelled" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between text-danger {{ $normalizedStatus === 'cancelled' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'cancelled')">
                         <span><span class="status-dot dot-red me-1.5"></span> Annulée</span>
-                        @if($stLower === 'cancelled') <i class="fas fa-check text-danger small"></i> @endif
+                        @if($normalizedStatus === 'cancelled') <i class="fas fa-check text-danger small"></i> @endif
                     </button>
                 </li>
             </ul>

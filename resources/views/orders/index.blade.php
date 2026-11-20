@@ -579,7 +579,7 @@
                 <div class="row g-2 align-items-center">
                     <!-- Statut de livraison -->
                     <div class="col-6 col-md-auto">
-                        <select name="status" class="form-select form-select-sm" style="min-width: 160px;">
+                        <select name="status" id="orderStatusFilterSelect" class="form-select form-select-sm fw-semibold" style="min-width: 160px;">
                             <option value="">Tous les statuts</option>
                             @php
                                 $statusNames = [
@@ -955,36 +955,46 @@
                         <td class="text-center">
                             @php
                                 $stLower = strtolower($order->status);
-                                $statusDot = match($stLower) {
-                                    'delivered', 'livrée' => 'green',
-                                    'shipped', 'expédiée' => 'teal',
-                                    'processing', 'en cours', 'en_demande' => 'blue',
-                                    'reserved', 'réservé' => 'purple',
-                                    'cancelled', 'annulée' => 'red',
+                                $normalizedStatus = match($stLower) {
+                                    'delivered', 'livrée' => 'delivered',
+                                    'shipped', 'expédiée' => 'shipped',
+                                    'processing', 'en cours' => 'processing',
+                                    'en_demande' => 'en_demande',
+                                    'reserved', 'réservé' => 'reserved',
+                                    'cancelled', 'annulée' => 'cancelled',
+                                    default => 'pending'
+                                };
+                                $statusDot = match($normalizedStatus) {
+                                    'delivered' => 'green',
+                                    'shipped' => 'teal',
+                                    'processing' => 'blue',
+                                    'en_demande' => 'indigo',
+                                    'reserved' => 'purple',
+                                    'cancelled' => 'red',
                                     default => 'amber'
                                 };
-                                $statusClass = match($stLower) {
-                                    'delivered', 'livrée' => 'success',
-                                    'cancelled', 'annulée' => 'danger',
-                                    'shipped', 'expédiée' => 'info',
-                                    'processing', 'en cours', 'en_demande' => 'primary',
-                                    'reserved', 'réservé' => 'purple',
+                                $statusClass = match($normalizedStatus) {
+                                    'delivered' => 'success',
+                                    'cancelled' => 'danger',
+                                    'shipped' => 'info',
+                                    'processing' => 'primary',
+                                    'en_demande' => 'indigo',
+                                    'reserved' => 'purple',
                                     default => 'warning'
                                 };
-                                $statusText = match($stLower) {
-                                    'delivered', 'livrée' => 'Livrée',
-                                    'shipped', 'expédiée' => 'Expédiée',
-                                    'processing', 'en cours' => 'En cours',
+                                $statusText = match($normalizedStatus) {
+                                    'delivered' => 'Livrée',
+                                    'shipped' => 'Expédiée',
+                                    'processing' => 'En cours',
                                     'en_demande' => 'Sur Commande',
-                                    'reserved', 'réservé' => 'Réservé',
-                                    'pending' => 'En attente',
-                                    'cancelled', 'annulée' => 'Annulée',
-                                    default => ucfirst($order->status)
+                                    'reserved' => 'Réservé',
+                                    'cancelled' => 'Annulée',
+                                    default => 'En attente'
                                 };
                             @endphp
                             <div class="dropdown d-inline-block">
                                 <button type="button" 
-                                        class="brand-badge brand-badge-btn {{ $statusClass }} dropdown-toggle" 
+                                        class="brand-badge brand-badge-btn {{ $statusClass }} status-pill-{{ $normalizedStatus }} dropdown-toggle" 
                                         data-bs-toggle="dropdown" 
                                         data-bs-auto-close="true"
                                         data-bs-boundary="viewport"
@@ -994,50 +1004,50 @@
                                         title="Changer le statut de livraison">
                                     <span class="status-dot dot-{{ $statusDot }}" id="dt-status-dot-{{ $order->id }}"></span>
                                     <span id="dt-status-label-{{ $order->id }}">{{ $statusText }}</span>
-                                    <i class="fas fa-chevron-down opacity-50 ms-0.5" style="font-size: 0.6rem;"></i>
+                                    <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.6rem;"></i>
                                 </button>
                                 <ul class="dropdown-menu shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="dt-status-pill-{{ $order->id }}">
                                     <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de livraison</li>
                                     <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'pending')">
+                                        <button type="button" data-status="pending" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'pending')">
                                             <span><span class="status-dot dot-amber me-1.5"></span> En attente</span>
-                                            @if($stLower === 'pending') <i class="fas fa-check text-warning small"></i> @endif
+                                            @if($normalizedStatus === 'pending') <i class="fas fa-check text-warning small"></i> @endif
                                         </button>
                                     </li>
                                     <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'en_demande' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'en_demande')">
+                                        <button type="button" data-status="en_demande" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'en_demande' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'en_demande')">
                                             <span><span class="status-dot dot-blue me-1.5"></span> Sur Commande</span>
-                                            @if($stLower === 'en_demande') <i class="fas fa-check text-primary small"></i> @endif
+                                            @if($normalizedStatus === 'en_demande') <i class="fas fa-check text-primary small"></i> @endif
                                         </button>
                                     </li>
                                     <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ in_array($stLower, ['reserved', 'réservé']) ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'reserved')">
+                                        <button type="button" data-status="reserved" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'reserved' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'reserved')">
                                             <span><span class="status-dot dot-purple me-1.5"></span> Réservé</span>
-                                            @if(in_array($stLower, ['reserved', 'réservé'])) <i class="fas fa-check text-purple small"></i> @endif
+                                            @if($normalizedStatus === 'reserved') <i class="fas fa-check text-purple small"></i> @endif
                                         </button>
                                     </li>
                                     <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ in_array($stLower, ['processing', 'en cours']) ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'processing')">
+                                        <button type="button" data-status="processing" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'processing' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'processing')">
                                             <span><span class="status-dot dot-blue me-1.5"></span> En cours</span>
-                                            @if(in_array($stLower, ['processing', 'en cours'])) <i class="fas fa-check text-primary small"></i> @endif
+                                            @if($normalizedStatus === 'processing') <i class="fas fa-check text-primary small"></i> @endif
                                         </button>
                                     </li>
                                     <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ in_array($stLower, ['shipped', 'expédiée']) ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'shipped')">
+                                        <button type="button" data-status="shipped" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'shipped' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'shipped')">
                                             <span><span class="status-dot dot-teal me-1.5"></span> Expédiée</span>
-                                            @if(in_array($stLower, ['shipped', 'expédiée'])) <i class="fas fa-check text-info small"></i> @endif
+                                            @if($normalizedStatus === 'shipped') <i class="fas fa-check text-info small"></i> @endif
                                         </button>
                                     </li>
                                     <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ in_array($stLower, ['delivered', 'livrée']) ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'delivered')">
+                                        <button type="button" data-status="delivered" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedStatus === 'delivered' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'delivered')">
                                             <span><span class="status-dot dot-green me-1.5"></span> Livrée</span>
-                                            @if(in_array($stLower, ['delivered', 'livrée'])) <i class="fas fa-check text-success small"></i> @endif
+                                            @if($normalizedStatus === 'delivered') <i class="fas fa-check text-success small"></i> @endif
                                         </button>
                                     </li>
                                     <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between text-danger {{ in_array($stLower, ['cancelled', 'annulée']) ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'cancelled')">
+                                        <button type="button" data-status="cancelled" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between text-danger {{ $normalizedStatus === 'cancelled' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'cancelled')">
                                             <span><span class="status-dot dot-red me-1.5"></span> Annulée</span>
-                                            @if(in_array($stLower, ['cancelled', 'annulée'])) <i class="fas fa-check text-danger small"></i> @endif
+                                            @if($normalizedStatus === 'cancelled') <i class="fas fa-check text-danger small"></i> @endif
                                         </button>
                                     </li>
                                 </ul>
@@ -1330,15 +1340,15 @@
         // --- Delivery Status ---
         const st = (order.status || '').toLowerCase();
         const stMap = {
-            'pending': { label: 'En attente', dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobBg: '#fffbeb', mobColor: '#b45309', mobBorder: '#fde68a' },
-            'en_demande': { label: 'Sur Commande', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eef2ff', mobColor: '#4338ca', mobBorder: '#c7d2fe' },
-            'reserved': { label: 'Réservé', dot: 'purple', badgeClass: 'purple', textClass: 'text-purple', mobBg: '#f5f3ff', mobColor: '#6d28d9', mobBorder: '#ddd6fe' },
-            'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eff6ff', mobColor: '#1d4ed8', mobBorder: '#bfdbfe' },
-            'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info', textClass: 'text-info', mobBg: 'rgb(192 246 255 / 53%)', mobColor: '#0093ac', mobBorder: '#0dcaf0' },
-            'delivered': { label: 'Livrée', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobBg: '#ecfdf5', mobColor: '#047857', mobBorder: '#a7f3d0' },
-            'cancelled': { label: 'Annulée', dot: 'red', badgeClass: 'danger', textClass: 'text-danger', mobBg: '#fef2f2', mobColor: '#b91c1c', mobBorder: '#fecaca' }
+            'pending': { label: 'En attente', dot: 'amber', badgeClass: 'warning status-pill-pending', textClass: 'text-warning', mobBg: '#d97706', mobColor: '#ffffff', mobBorder: '#b45309' },
+            'en_demande': { label: 'Sur Commande', dot: 'indigo', badgeClass: 'indigo status-pill-en_demande', textClass: 'text-primary', mobBg: '#4338ca', mobColor: '#ffffff', mobBorder: '#3730a3' },
+            'reserved': { label: 'Réservé', dot: 'purple', badgeClass: 'purple status-pill-reserved', textClass: 'text-purple', mobBg: '#7c3aed', mobColor: '#ffffff', mobBorder: '#6d28d9' },
+            'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary status-pill-processing', textClass: 'text-primary', mobBg: '#2563eb', mobColor: '#ffffff', mobBorder: '#1d4ed8' },
+            'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info status-pill-shipped', textClass: 'text-info', mobBg: '#0093ac', mobColor: '#ffffff', mobBorder: '#0e7490' },
+            'delivered': { label: 'Livrée', dot: 'green', badgeClass: 'success status-pill-delivered', textClass: 'text-success', mobBg: '#059669', mobColor: '#ffffff', mobBorder: '#047857' },
+            'cancelled': { label: 'Annulée', dot: 'red', badgeClass: 'danger status-pill-cancelled', textClass: 'text-danger', mobBg: '#dc2626', mobColor: '#ffffff', mobBorder: '#b91c1c' }
         };
-        const sInfo = stMap[st] || { label: order.status_label || st, dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobBg: '#fffbeb', mobColor: '#b45309', mobBorder: '#fde68a' };
+        const sInfo = stMap[st] || { label: order.status_label || st, dot: 'amber', badgeClass: 'warning status-pill-pending', textClass: 'text-warning', mobBg: '#d97706', mobColor: '#ffffff', mobBorder: '#b45309' };
 
         // Desktop Delivery Badge
         const dtStatusPill = document.getElementById(`dt-status-pill-${orderId}`);
@@ -1545,8 +1555,49 @@
         }
     });
 
+    function syncOrderStatusFilterColor() {
+        const sel = document.getElementById('orderStatusFilterSelect');
+        if (!sel) return;
+        const themeMap = {
+            'pending':    { bg: '#d97706', border: '#b45309', color: '#ffffff' },
+            'en_demande': { bg: '#4338ca', border: '#3730a3', color: '#ffffff' },
+            'reserved':   { bg: '#7c3aed', border: '#6d28d9', color: '#ffffff' },
+            'processing': { bg: '#2563eb', border: '#1d4ed8', color: '#ffffff' },
+            'shipped':    { bg: '#0093ac', border: '#0e7490', color: '#ffffff' },
+            'delivered':  { bg: '#059669', border: '#047857', color: '#ffffff' },
+            'cancelled':  { bg: '#dc2626', border: '#b91c1c', color: '#ffffff' }
+        };
+        const theme = themeMap[sel.value] || null;
+        if (theme) {
+            sel.style.backgroundColor = theme.bg;
+            sel.style.borderColor = theme.border;
+            sel.style.color = theme.color;
+        } else {
+            sel.style.removeProperty('background-color');
+            sel.style.removeProperty('border-color');
+            sel.style.removeProperty('color');
+        }
+    }
+
+    (function () {
+        function initOrdersIndexView() {
+            initStatusDropdowns();
+            const statusFilterSel = document.getElementById('orderStatusFilterSelect');
+            if (statusFilterSel) {
+                syncOrderStatusFilterColor();
+                statusFilterSel.addEventListener('change', syncOrderStatusFilterColor);
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initOrdersIndexView);
+        } else {
+            initOrdersIndexView();
+        }
+    })();
+
     document.addEventListener('DOMContentLoaded', function() {
         initStatusDropdowns();
+        syncOrderStatusFilterColor();
 
         // Auto-handle Date Preset Selection
         const datePresetSelect = document.getElementById('orderDatePreset');

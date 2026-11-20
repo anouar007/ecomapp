@@ -81,7 +81,7 @@
                             <label for="status" class="form-label fw-semibold text-dark">
                                 Statut de livraison <span class="text-danger">*</span>
                             </label>
-                            <select id="status" name="status" class="form-select @error('status') is-invalid @enderror" required>
+                            <select id="status" name="status" class="form-select fw-bold @error('status') is-invalid @enderror" required>
                                 <option value="pending" {{ old('status', $order->status) == 'pending' ? 'selected' : '' }}>⏳ En attente</option>
                                 <option value="en_demande" {{ old('status', $order->status) == 'en_demande' ? 'selected' : '' }}>📋 Sur Commande</option>
                                 <option value="reserved" {{ old('status', $order->status) == 'reserved' ? 'selected' : '' }}>🔖 Réservé</option>
@@ -349,17 +349,45 @@ function applyBulkStoreEdit() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const statusSelect = document.getElementById('status');
-    const paySelect = document.getElementById('payment_status');
-    if (statusSelect && paySelect) {
+function syncOrderEditStatusColor(sel) {
+    if (!sel) return;
+    const themeMap = {
+        'pending':    { bg: '#d97706', border: '#b45309', color: '#ffffff' },
+        'en_demande': { bg: '#4338ca', border: '#3730a3', color: '#ffffff' },
+        'reserved':   { bg: '#7c3aed', border: '#6d28d9', color: '#ffffff' },
+        'processing': { bg: '#2563eb', border: '#1d4ed8', color: '#ffffff' },
+        'shipped':    { bg: '#0093ac', border: '#0e7490', color: '#ffffff' },
+        'delivered':  { bg: '#059669', border: '#047857', color: '#ffffff' },
+        'cancelled':  { bg: '#dc2626', border: '#b91c1c', color: '#ffffff' }
+    };
+    const theme = themeMap[(sel.value || '').toLowerCase()] || themeMap.pending;
+    sel.style.backgroundColor = theme.bg;
+    sel.style.borderColor = theme.border;
+    sel.style.color = theme.color;
+}
+
+(function () {
+    function initOrderEditStatusSelect() {
+        const statusSelect = document.getElementById('status');
+        const paySelect = document.getElementById('payment_status');
+        if (!statusSelect || statusSelect.dataset.statusBound === '1') return;
+        statusSelect.dataset.statusBound = '1';
+
+        syncOrderEditStatusColor(statusSelect);
         statusSelect.addEventListener('change', function() {
-            if (this.value === 'delivered') {
+            syncOrderEditStatusColor(this);
+            if (this.value === 'delivered' && paySelect) {
                 paySelect.value = 'paid';
             }
         });
     }
-});
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initOrderEditStatusSelect);
+    } else {
+        initOrderEditStatusSelect();
+    }
+})();
 </script>
 @endpush
 @endsection
