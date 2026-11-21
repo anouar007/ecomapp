@@ -5038,7 +5038,7 @@ i.fa-sparkles:before {
     box-shadow: 0 0 0 2.5px rgba(234, 88, 12, 0.22);
 }
 
-/* Delivery Type Tag Pills (Store / Our Team / Ozon) */
+/* Delivery Type Tag Pills (Store / Livreur / Ozon / Autre) */
 .delivery-type-pill {
     display: inline-flex;
     align-items: center;
@@ -5068,9 +5068,9 @@ i.fa-sparkles:before {
 }
 
 .delivery-type-pill.delivery-type-store {
-    background: #f1f5f9 !important;
-    color: #0f172a !important;
-    border-color: #94a3b8 !important;
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border-color: #fca5a5 !important;
 }
 
 .delivery-type-pill.delivery-type-our_team {
@@ -5085,14 +5085,20 @@ i.fa-sparkles:before {
     border-color: #fcd34d !important;
 }
 
+.delivery-type-pill.delivery-type-autre {
+    background: #f5f3ff !important;
+    color: #6d28d9 !important;
+    border-color: #c4b5fd !important;
+}
+
 .delivery-type-pill i.fa-chevron-down {
     font-size: 0.55rem;
     opacity: 0.85;
 }
 
 .delivery-dot-store {
-    background: #0f172a;
-    box-shadow: 0 0 0 2.5px rgba(15, 23, 42, 0.2);
+    background: #dc2626;
+    box-shadow: 0 0 0 2.5px rgba(220, 38, 38, 0.22);
 }
 
 .delivery-dot-our_team {
@@ -5103,6 +5109,11 @@ i.fa-sparkles:before {
 .delivery-dot-ozon {
     background: #d97706;
     box-shadow: 0 0 0 2.5px rgba(217, 119, 6, 0.22);
+}
+
+.delivery-dot-autre {
+    background: #7c3aed;
+    box-shadow: 0 0 0 2.5px rgba(124, 58, 237, 0.22);
 }
 
 /* Staff Attribution Chips (Confirmed By / POS Created By) */
@@ -6683,8 +6694,10 @@ dt,
 
 /* Smooth anchor scrolling for Order Detail sections */
 .order-show-page #orderItemsSection,
+.order-show-page #orderNotesSection,
 .order-show-page #orderSummarySection,
 .order-show-page #orderClientSection,
+.order-show-page #orderPaymentSection,
 .order-show-page #orderHistorySection {
     scroll-margin-top: 120px;
 }
@@ -7017,6 +7030,40 @@ dt,
         font-weight: 700 !important;
         font-size: 0.96rem !important;
     }
+
+    /* Mobile / Tablet vertical priority: Articles -> Client -> Notes -> Résumé -> Paiement -> Historique (last) */
+    .order-show-page .order-show-layout-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        --bs-gutter-x: 0;
+        --bs-gutter-y: 0;
+    }
+
+    .order-show-page .order-show-main-col,
+    .order-show-page .order-show-side-col,
+    .order-show-page .order-show-sidebar {
+        display: contents !important;
+    }
+
+    .order-show-page #orderItemsSection,
+    .order-show-page #orderClientSection,
+    .order-show-page #orderNotesSection,
+    .order-show-page #orderSummarySection,
+    .order-show-page #orderPaymentSection,
+    .order-show-page #orderHistorySection {
+        width: 100%;
+        margin-bottom: 0 !important;
+    }
+
+    .order-show-page #orderItemsSection { order: 1; }
+    .order-show-page #orderClientSection { order: 2; }
+    .order-show-page #orderNotesSection { order: 3; }
+    .order-show-page #orderSummarySection { order: 4; }
+    .order-show-page #orderPaymentSection { order: 5; }
+    .order-show-page #orderHistorySection { order: 6; }
 }
 
 @media (max-width: 767.98px) {
@@ -7025,9 +7072,34 @@ dt,
         overflow-x: clip !important;
     }
 
+    .order-show-page .order-show-hero {
+        margin-bottom: 10px;
+        border-radius: 14px !important;
+    }
+
     .order-show-page .order-show-hero-top {
         padding: 12px !important;
-        gap: 0.65rem;
+        gap: 0.5rem;
+    }
+
+    .order-show-page .order-mobile-hero-total {
+        margin-top: 8px;
+        padding: 9px 12px;
+    }
+
+    .order-show-page .product-form-card {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .order-show-page .product-form-card-header {
+        margin-bottom: 12px !important;
+        padding-bottom: 10px !important;
+    }
+
+    .order-show-page .order-mobile-item-card {
+        padding: 12px !important;
+        border-radius: 12px !important;
     }
 
     .order-show-page .order-hero-pills {
@@ -7035,15 +7107,15 @@ dt,
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
     }
 
     .order-show-page .order-hero-pills .brand-badge-btn,
     .order-show-page .order-hero-pills .tax-mode-pill,
     .order-show-page .order-hero-pills .delivery-type-pill {
-        min-height: 34px;
-        padding: 0.36rem 0.85rem !important;
-        font-size: 0.78rem !important;
+        min-height: 32px;
+        padding: 0.32rem 0.78rem !important;
+        font-size: 0.75rem !important;
         font-weight: 700 !important;
         border-radius: 9999px !important;
     }
@@ -7053,11 +7125,11 @@ dt,
     }
 
     .order-show-page .order-show-kpi-item {
-        padding: 9px 11px !important;
+        padding: 8px 11px !important;
     }
 
     .order-show-page .order-show-kpi-value {
-        font-size: 1rem !important;
+        font-size: 0.98rem !important;
     }
 
     .order-show-page .order-scroll-pills {
@@ -7076,51 +7148,91 @@ dt,
     .order-show-page .order-scroll-pills .order-history-filter-pill {
         flex-shrink: 0;
         white-space: nowrap;
-        min-height: 32px;
-        padding: 4px 12px;
+        min-height: 30px;
+        padding: 4px 11px;
+        font-size: 0.72rem;
     }
 
-    /* Single-row horizontal snap rail for 8 Status KPI cards on /orders mobile */
+    .order-show-page .order-history-item {
+        padding-bottom: 0.85rem;
+    }
+
+    .order-show-page .order-history-card {
+        padding: 0.72rem 0.85rem;
+        border-radius: 10px;
+    }
+
+    /* 4-per-row compact status KPI grid (2 rows x 4 cards, all visible at once) on /orders mobile */
     .orders-kpi-grid {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        scroll-snap-type: x proximity;
-        gap: 8px !important;
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        overflow: visible !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
-        padding: 2px 1px 8px;
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .orders-kpi-grid::-webkit-scrollbar {
-        display: none;
+        padding: 2px 0 4px !important;
     }
 
     .orders-kpi-grid > .col {
-        flex: 0 0 132px !important;
-        width: 132px !important;
-        max-width: 132px !important;
+        flex: initial !important;
+        width: 100% !important;
+        max-width: 100% !important;
         padding: 0 !important;
-        margin-bottom: 0 !important;
-        scroll-snap-align: start;
+        margin: 0 !important;
     }
 
     .orders-kpi-grid .order-kpi-card {
-        min-height: 76px !important;
-        padding: 9px 11px !important;
-        border-radius: 12px !important;
+        min-height: 52px !important;
+        padding: 6px 7px !important;
+        border-radius: 10px !important;
+        align-items: stretch !important;
+        justify-content: center !important;
+        text-align: left !important;
+    }
+
+    .orders-kpi-grid .order-kpi-card > div {
+        width: 100%;
+        display: block !important;
+    }
+
+    .orders-kpi-grid .order-kpi-top {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        margin-bottom: 3px !important;
+    }
+
+    .orders-kpi-grid .order-kpi-label {
+        font-size: 0.61rem !important;
+        line-height: 1.15 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .orders-kpi-grid .order-kpi-body {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 3px !important;
+        width: 100% !important;
     }
 
     .orders-kpi-grid .order-kpi-value {
-        font-size: 1.2rem !important;
+        font-size: 1.02rem !important;
+        line-height: 1.05 !important;
     }
 
-    .orders-kpi-grid .order-kpi-icon {
-        width: 28px !important;
-        height: 28px !important;
-        font-size: 0.8rem !important;
+    .orders-kpi-grid .order-kpi-badge {
+        display: inline-block !important;
+        font-size: 0.58rem !important;
+        font-weight: 700 !important;
+        padding: 1.5px 5px !important;
+        border-radius: 9999px !important;
+        line-height: 1.15 !important;
+        flex-shrink: 0 !important;
+        font-variant-numeric: tabular-nums;
     }
 
     .mobile-order-card .mobile-order-items-pill,
@@ -7617,8 +7729,8 @@ dt,
 
 @media (min-width: 768px) {
     .orders-index-page .orders-kpi-grid .order-kpi-card {
-        min-height: 84px;
-        padding: 11px 14px;
+        min-height: 74px;
+        padding: 12px 14px;
     }
 
     .orders-index-page .orders-kpi-grid .order-kpi-value {
@@ -7673,14 +7785,14 @@ dt,
     }
 
     .orders-index-page .orders-kpi-grid > .col {
-        flex: 0 0 124px !important;
-        width: 124px !important;
-        max-width: 124px !important;
+        flex: initial !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
     .orders-index-page .orders-kpi-grid .order-kpi-card {
-        min-height: 70px !important;
-        padding: 8px 10px !important;
+        min-height: 52px !important;
+        padding: 6px 7px !important;
     }
 
     .orders-index-page .orders-toolbar-card {

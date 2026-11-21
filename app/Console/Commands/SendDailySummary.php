@@ -17,35 +17,9 @@ class SendDailySummary extends Command
 
     public function handle()
     {
-        $summary = [
-            'orders_today' => Order::whereDate('created_at', today())->count(),
-            'revenue_today' => Order::whereDate('created_at', today())
-                ->where('status', '!=', 'cancelled')
-                ->sum('total'),
-            'new_customers_today' => Customer::whereDate('created_at', today())->count(),
-            'pending_orders' => Order::where('status', 'pending')->count(),
-            'low_stock_products' => Product::where('track_inventory', true)
-                ->whereRaw('stock <= COALESCE(low_stock_threshold, min_stock, 5)')
-                ->count(),
-            'pending_reviews' => \App\Models\ProductReview::pending()->count(),
-            'pending_returns' => \App\Models\ReturnOrder::pending()->count(),
-        ];
+        // Automatic admin emails are restricted strictly to new website orders.
+        $this->info('Daily summary email dispatch is disabled (website new-order emails only).');
 
-        $admins = User::whereHas('roles', function($q) {
-            $q->where('name', 'admin');
-        })->get();
-
-        foreach ($admins as $admin) {
-            $settings = \App\Models\NotificationSetting::forUser($admin->id);
-            if ($settings->isEnabled('daily_summary')) {
-                // Send email with summary
-                // Implementation would use Laravel's mail system
-                $this->info("Sent daily summary to {$admin->email}");
-            }
-        }
-
-        $this->info("Daily summary sent to " . $admins->count() . " administrators.");
-        
         return 0;
     }
 }

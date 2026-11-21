@@ -149,8 +149,9 @@
             'cash' => 'Espèces',
             'card' => 'Carte bancaire',
             'virement', 'bank_transfer' => 'Virement bancaire',
+            'cheque', 'chèque' => 'Chèque',
             'credit' => 'Crédit client',
-            'cod', 'cash_on_delivery' => 'Paiement à la livraison',
+            'cod', 'cash_on_delivery' => 'COD (À la livraison)',
             'other' => 'Autre',
             default => ucfirst(str_replace('_', ' ', $order->payment_method ?: 'Non spécifié')),
         };
@@ -331,6 +332,7 @@
                                 $showDeliveryIcon = match ($showDeliveryType) {
                                     'our_team' => 'fa-people-carry-box',
                                     'ozon' => 'fa-box-open',
+                                    'autre' => 'fa-truck-arrow-right',
                                     default => 'fa-store',
                                 };
                             @endphp
@@ -352,12 +354,12 @@
                                         <li>
                                             <button type="button" data-delivery-type="store" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $showDeliveryType === 'store' ? 'active' : '' }}" onclick="quickUpdateShowDeliveryType({{ $order->id }}, 'store')">
                                                 <span><span class="status-dot delivery-dot-store me-1.5"></span> Store</span>
-                                                @if($showDeliveryType === 'store') <i class="fas fa-check text-dark small"></i> @endif
+                                                @if($showDeliveryType === 'store') <i class="fas fa-check text-danger small"></i> @endif
                                             </button>
                                         </li>
                                         <li>
                                             <button type="button" data-delivery-type="our_team" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $showDeliveryType === 'our_team' ? 'active' : '' }}" onclick="quickUpdateShowDeliveryType({{ $order->id }}, 'our_team')">
-                                                <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Our Team</span>
+                                                <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Livreur</span>
                                                 @if($showDeliveryType === 'our_team') <i class="fas fa-check text-primary small"></i> @endif
                                             </button>
                                         </li>
@@ -365,6 +367,12 @@
                                             <button type="button" data-delivery-type="ozon" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $showDeliveryType === 'ozon' ? 'active' : '' }}" onclick="quickUpdateShowDeliveryType({{ $order->id }}, 'ozon')">
                                                 <span><span class="status-dot delivery-dot-ozon me-1.5"></span> Ozon</span>
                                                 @if($showDeliveryType === 'ozon') <i class="fas fa-check text-warning small"></i> @endif
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-delivery-type="autre" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $showDeliveryType === 'autre' ? 'active' : '' }}" onclick="quickUpdateShowDeliveryType({{ $order->id }}, 'autre')">
+                                                <span><span class="status-dot delivery-dot-autre me-1.5"></span> Autre</span>
+                                                @if($showDeliveryType === 'autre') <i class="fas fa-check text-purple small"></i> @endif
                                             </button>
                                         </li>
                                     </ul>
@@ -647,13 +655,13 @@
             <i class="fas fa-box-open text-danger"></i>
             <span>Articles ({{ $order->items->count() }})</span>
         </a>
-        <a href="#orderSummarySection" class="order-mobile-jump-pill">
-            <i class="fas fa-calculator text-success"></i>
-            <span>Résumé &amp; Docs</span>
-        </a>
         <a href="#orderClientSection" class="order-mobile-jump-pill">
             <i class="fas fa-user text-primary"></i>
-            <span>Client</span>
+            <span>Client &amp; Livraison</span>
+        </a>
+        <a href="#orderSummarySection" class="order-mobile-jump-pill">
+            <i class="fas fa-calculator text-success"></i>
+            <span>Résumé &amp; Paiement</span>
         </a>
         <a href="#orderHistorySection" class="order-mobile-jump-pill">
             <i class="fas fa-clock-rotate-left text-secondary"></i>
@@ -681,9 +689,9 @@
         </div>
     @endif
 
-    <div class="row g-4">
+    <div class="row g-3 g-lg-4 order-show-layout-row">
         <!-- Colonne Principale (Gauche) : Articles et Notes -->
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-lg-8 order-show-main-col">
             <!-- Articles commandés -->
             <div class="product-form-card mb-4" id="orderItemsSection">
                 <div class="product-form-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -705,7 +713,7 @@
                         @endif
                     </div>
 
-                    @if(isset($stores) && $stores->isNotEmpty() && $order->items->isNotEmpty())
+                    @if(isset($stores) && $stores->isNotEmpty() && $order->items->count() > 1)
                         <form action="{{ route('orders.update-stores', $order) }}" method="POST" class="d-flex align-items-center gap-1.5 m-0 w-100 w-sm-auto justify-content-end">
                             @csrf
                             <input type="hidden" name="apply_all" value="1">
@@ -900,11 +908,11 @@
                             $itemStoreStocks = $item->product ? $item->product->storeStocks->keyBy('store_id') : collect();
                             $hasItemStoreAllocations = $itemStoreStocks->isNotEmpty();
                         @endphp
-                        <div class="order-mobile-item-card mb-2.5">
+                        <div class="order-mobile-item-card {{ !$loop->last ? 'mb-2.5' : '' }}">
                             <div class="d-flex align-items-start gap-2.5">
-                                <div class="order-item-thumb-box" style="width: 56px; height: 56px;">
-                                    <img src="{{ $item->product_image }}" 
-                                         alt="{{ $item->clean_product_name }}" 
+                                <div class="order-item-thumb-box" style="width: 52px; height: 52px;">
+                                    <img src="{{ $item->product_image }}"
+                                         alt="{{ $item->clean_product_name }}"
                                          style="width: 100%; height: 100%; object-fit: contain;"
                                          onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
                                          loading="lazy">
@@ -920,81 +928,84 @@
                                         </div>
                                     @endif
                                     <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1">
-                                        <span class="text-muted small font-monospace">SKU: {{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}</span>
+                                        <span class="text-muted font-monospace" style="font-size: 0.72rem;">SKU: {{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}</span>
                                         @if($item->variant_name)
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal" style="font-size: 0.7rem;">
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal" style="font-size: 0.68rem;">
                                                 <i class="fas fa-layer-group me-1"></i>{{ $item->variant_name }}
                                             </span>
                                         @endif
                                         @if($item->isForcedOutOfStock())
-                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle font-normal" style="font-size: 0.7rem;">
-                                                <i class="fas fa-triangle-exclamation text-warning me-1"></i>Hors stock réel (Forcé)
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle font-normal" style="font-size: 0.68rem;">
+                                                <i class="fas fa-triangle-exclamation text-warning me-1"></i>Hors stock réel
                                             </span>
                                         @endif
                                     </div>
-                                    <form action="{{ route('orders.items.update-store', [$order, $item]) }}"
-                                          method="POST"
-                                          class="item-store-form mt-2.5 m-0"
-                                          data-item-id="{{ $item->id }}">
-                                        @csrf
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-white text-primary px-2.5"><i class="fas fa-warehouse"></i></span>
-                                            <select name="store_id" class="form-select item-store-select" style="min-height: 40px; font-size: 0.84rem;" aria-label="Dépôt pour {{ $item->clean_product_name }}">
-                                                <option value="">— Non assigné —</option>
-                                                @foreach($stores ?? [] as $st)
-                                                    @php
-                                                        $stStock = $itemStoreStocks->get($st->id);
-                                                        $stQty = $stStock ? (int) $stStock->quantity : 0;
-                                                        $stLoc = $stStock?->location_code ? ' [' . $stStock->location_code . ']' : '';
-                                                        $stLabel = $st->name . ($hasItemStoreAllocations ? " — {$stQty} dispo{$stLoc}" : '');
-                                                    @endphp
-                                                    <option value="{{ $st->id }}" {{ (int) $item->store_id === (int) $st->id ? 'selected' : '' }}>
-                                                        {{ $stLabel }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <button type="submit" class="btn btn-outline-primary px-3" style="min-height: 40px;" title="Enregistrer">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        </div>
-                                    </form>
-                                    <div class="order-mobile-item-pricebar tabular-nums">
-                                        <span class="badge bg-white text-dark border px-2 py-1">
-                                            @if($item->original_price && (float) $item->original_price > (float) $item->price)
-                                                <del class="text-muted me-1">{{ currency($item->original_price) }}</del>
-                                                <span class="text-success order-money-strong">{{ currency($item->price) }}</span> &times; {{ $item->quantity }}
-                                            @else
-                                                {{ currency($item->price) }} &times; {{ $item->quantity }}
-                                            @endif
-                                        </span>
-                                        <span class="order-money-strong text-dark" style="font-size: 0.96rem;">
-                                            {{ currency($item->subtotal ?? ($item->price * $item->quantity)) }}
-                                        </span>
-                                    </div>
-                                    @if(strtolower((string) $order->status) !== 'cancelled' && (auth()->user()?->can('manage_orders') || auth()->user()?->can('edit_orders')))
-                                        <div class="mt-2">
-                                            <button type="button"
-                                                    class="btn btn-sm btn-outline-primary w-100 fw-semibold replace-item-trigger"
-                                                    style="font-size: 0.78rem; min-height: 38px;"
-                                                    onclick="openReplaceItemModal(this)"
-                                                    data-item-id="{{ $item->id }}"
-                                                    data-replace-url="{{ route('orders.items.replace', [$order, $item]) }}"
-                                                    data-product-id="{{ $item->product_id }}"
-                                                    data-product-name="{{ $item->clean_product_name }}"
-                                                    data-product-sku="{{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}"
-                                                    data-variant-name="{{ $item->variant_name ?? '' }}"
-                                                    data-product-image="{{ $item->product_image }}"
-                                                    data-store-id="{{ $item->store_id ?? '' }}"
-                                                    data-store-name="{{ $item->store?->name ?? 'Non assigné' }}"
-                                                    data-price="{{ (float) $item->price }}"
-                                                    data-quantity="{{ (int) $item->quantity }}"
-                                                    data-subtotal="{{ (float) ($item->subtotal ?? ($item->price * $item->quantity)) }}">
-                                                <i class="fas fa-right-left me-1.5"></i>Changer produit / Stock
-                                            </button>
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
+
+                            <div class="order-mobile-item-pricebar tabular-nums">
+                                <span class="badge bg-white text-dark border px-2 py-1">
+                                    @if($item->original_price && (float) $item->original_price > (float) $item->price)
+                                        <del class="text-muted me-1">{{ currency($item->original_price) }}</del>
+                                        <span class="text-success order-money-strong">{{ currency($item->price) }}</span> &times; {{ $item->quantity }}
+                                    @else
+                                        {{ currency($item->price) }} &times; {{ $item->quantity }}
+                                    @endif
+                                </span>
+                                <span class="order-money-strong text-dark" style="font-size: 0.96rem;">
+                                    {{ currency($item->subtotal ?? ($item->price * $item->quantity)) }}
+                                </span>
+                            </div>
+
+                            <form action="{{ route('orders.items.update-store', [$order, $item]) }}"
+                                  method="POST"
+                                  class="item-store-form mt-2 m-0"
+                                  data-item-id="{{ $item->id }}">
+                                @csrf
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white text-primary px-2.5"><i class="fas fa-warehouse"></i></span>
+                                    <select name="store_id" class="form-select item-store-select" style="min-height: 38px; font-size: 0.82rem;" aria-label="Dépôt pour {{ $item->clean_product_name }}">
+                                        <option value="">— Non assigné —</option>
+                                        @foreach($stores ?? [] as $st)
+                                            @php
+                                                $stStock = $itemStoreStocks->get($st->id);
+                                                $stQty = $stStock ? (int) $stStock->quantity : 0;
+                                                $stLoc = $stStock?->location_code ? ' [' . $stStock->location_code . ']' : '';
+                                                $stLabel = $st->name . ($hasItemStoreAllocations ? " — {$stQty} dispo{$stLoc}" : '');
+                                            @endphp
+                                            <option value="{{ $st->id }}" {{ (int) $item->store_id === (int) $st->id ? 'selected' : '' }}>
+                                                {{ $stLabel }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <button type="submit" class="btn btn-outline-primary px-3" style="min-height: 38px;" title="Enregistrer">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </form>
+
+                            @if(strtolower((string) $order->status) !== 'cancelled' && (auth()->user()?->can('manage_orders') || auth()->user()?->can('edit_orders')))
+                                <div class="mt-2">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-primary w-100 fw-semibold replace-item-trigger"
+                                            style="font-size: 0.78rem; min-height: 36px; border-radius: 9px;"
+                                            onclick="openReplaceItemModal(this)"
+                                            data-item-id="{{ $item->id }}"
+                                            data-replace-url="{{ route('orders.items.replace', [$order, $item]) }}"
+                                            data-product-id="{{ $item->product_id }}"
+                                            data-product-name="{{ $item->clean_product_name }}"
+                                            data-product-sku="{{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}"
+                                            data-variant-name="{{ $item->variant_name ?? '' }}"
+                                            data-product-image="{{ $item->product_image }}"
+                                            data-store-id="{{ $item->store_id ?? '' }}"
+                                            data-store-name="{{ $item->store?->name ?? 'Non assigné' }}"
+                                            data-price="{{ (float) $item->price }}"
+                                            data-quantity="{{ (int) $item->quantity }}"
+                                            data-subtotal="{{ (float) ($item->subtotal ?? ($item->price * $item->quantity)) }}">
+                                        <i class="fas fa-right-left me-1.5"></i>Changer produit / Stock
+                                    </button>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>
@@ -1002,7 +1013,7 @@
 
             <!-- Notes de la commande -->
             @if($order->notes)
-                <div class="product-form-card mb-4">
+                <div class="product-form-card mb-4" id="orderNotesSection">
                     <div class="product-form-card-header">
                         <h2 class="product-form-card-title">
                             <i class="fas fa-comment-dots text-warning"></i> Notes & Remarques
@@ -1124,7 +1135,7 @@
         </div>
 
         <!-- Colonne Latérale (Droite) : Récapitulatif, Client & Paiement -->
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-4 order-show-side-col">
             <div class="order-show-sidebar">
             <!-- Récapitulatif Financier -->
             <div class="product-form-card mb-4" id="orderSummarySection">
@@ -1296,11 +1307,13 @@
                         $tileDeliveryColor = match ($order->effective_delivery_type) {
                             'our_team' => '#1d4ed8',
                             'ozon' => '#b45309',
-                            default => '#0f172a',
+                            'autre' => '#6d28d9',
+                            default => '#dc2626',
                         };
                         $tileDeliveryIcon = match ($order->effective_delivery_type) {
                             'our_team' => 'fa-people-carry-box',
                             'ozon' => 'fa-box-open',
+                            'autre' => 'fa-truck-arrow-right',
                             default => 'fa-store',
                         };
                     @endphp
@@ -1368,7 +1381,7 @@
             </div>
 
             <!-- Détails du Règlement -->
-            <div class="product-form-card">
+            <div class="product-form-card" id="orderPaymentSection">
                 <div class="product-form-card-header">
                     <h2 class="product-form-card-title">
                         <i class="fas fa-money-check-dollar text-secondary"></i> Modalités de Paiement
@@ -1382,7 +1395,9 @@
                             $orderMethodDisplay = match(strtolower((string) $order->payment_method)) {
                                 'cash' => 'Espèces',
                                 'card' => 'Carte bancaire',
-                                'virement' => 'Virement bancaire',
+                                'virement', 'bank_transfer' => 'Virement bancaire',
+                                'cheque', 'chèque' => 'Chèque',
+                                'cod', 'cash_on_delivery' => 'COD (À la livraison)',
                                 'credit' => 'Crédit',
                                 'other' => 'Autre',
                                 default => ucfirst(str_replace('_', ' ', $order->payment_method ?: 'Non spécifié')),
@@ -1427,6 +1442,38 @@
                         <span class="text-muted">Date d'enregistrement :</span>
                         <span class="text-dark">{{ $order->created_at->format('d/m/Y à H:i') }}</span>
                     </div>
+
+                    @php $orderPaymentAttachments = $order->payment_attachments_list; @endphp
+                    @if(!empty($orderPaymentAttachments))
+                        <div class="pt-2.5 mt-1 border-top">
+                            <div class="text-muted mb-2 d-flex align-items-center justify-content-between">
+                                <span><i class="fas fa-paperclip me-1"></i> Justificatifs / Documents ({{ count($orderPaymentAttachments) }})</span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach($orderPaymentAttachments as $att)
+                                    <a href="{{ $att['url'] }}"
+                                       target="_blank"
+                                       rel="noopener"
+                                       class="d-inline-flex align-items-center gap-2 p-1.5 pe-2.5 rounded-3 border bg-light text-decoration-none text-dark"
+                                       style="max-width: 100%;"
+                                       title="Ouvrir {{ $att['name'] }}">
+                                        @if($att['is_image'])
+                                            <img src="{{ $att['url'] }}"
+                                                 alt="{{ $att['name'] }}"
+                                                 style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; flex-shrink: 0;">
+                                        @else
+                                            <span class="d-inline-flex align-items-center justify-content-center rounded-2 bg-danger-subtle text-danger"
+                                                  style="width: 36px; height: 36px; flex-shrink: 0;">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </span>
+                                        @endif
+                                        <span class="text-truncate small fw-semibold" style="max-width: 150px;">{{ $att['name'] }}</span>
+                                        <i class="fas fa-external-link-alt text-muted" style="font-size: 0.7rem;"></i>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     @if($order->payment_status !== 'paid' && $order->customer_id)
                         <div class="pt-2.5 mt-1 border-top">
@@ -2002,9 +2049,10 @@ window.quickUpdateShowDeliveryType = async function(orderId, value) {
         }
 
         const metaMap = {
-            store: { label: 'Store', icon: 'fa-store', checkClass: 'text-dark', color: '#0f172a' },
-            our_team: { label: 'Our Team', icon: 'fa-people-carry-box', checkClass: 'text-primary', color: '#1d4ed8' },
+            store: { label: 'Store', icon: 'fa-store', checkClass: 'text-danger', color: '#dc2626' },
+            our_team: { label: 'Livreur', icon: 'fa-people-carry-box', checkClass: 'text-primary', color: '#1d4ed8' },
             ozon: { label: 'Ozon', icon: 'fa-box-open', checkClass: 'text-warning', color: '#b45309' },
+            autre: { label: 'Autre', icon: 'fa-truck-arrow-right', checkClass: 'text-purple', color: '#6d28d9' },
         };
         const dt = metaMap[data.order.delivery_type] ? data.order.delivery_type : 'ozon';
         const info = metaMap[dt];

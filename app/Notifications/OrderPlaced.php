@@ -20,7 +20,8 @@ class OrderPlaced extends Notification
 
     public function via($notifiable)
     {
-        return ['mail'];
+        // Admin automatic emails are restricted strictly to new website orders (via CheckoutController Mailable).
+        return [];
     }
 
     public function toMail($notifiable)

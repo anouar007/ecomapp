@@ -77,19 +77,87 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        // Hard-block any stock-alert or non-order notification emails at the mail transport layer
+        // Hard-block all Notification mail channel dispatches
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Notifications\Events\NotificationSending::class, function ($event) {
+            if (($event->channel ?? null) === 'mail') {
+                return false;
+            }
+        });
+
+        // Strict transport-level firewall: admin/store addresses only ever receive New Website Order notifications
         \Illuminate\Support\Facades\Event::listen(\Illuminate\Mail\Events\MessageSending::class, function (\Illuminate\Mail\Events\MessageSending $event) {
-            $notification = $event->data['__laravel_notification'] ?? null;
-            if (
-                $notification === \App\Notifications\LowStockAlert::class
-                || $notification instanceof \App\Notifications\LowStockAlert
-            ) {
+            if (!empty($event->data['__laravel_notification'])) {
                 return false;
             }
 
-            $subject = strtolower((string) $event->message->getSubject());
-            if (str_contains($subject, 'low stock alert') || str_contains($subject, 'stock alert')) {
+            $subject = mb_strtolower((string) $event->message->getSubject());
+            foreach (['low stock', 'stock alert', 'rupture de stock', 'stock faible', 'daily summary'] as $blockedKeyword) {
+                if (str_contains($subject, $blockedKeyword)) {
+                    return false;
+                }
+            }
+
+            $orderObj = $event->data['order'] ?? null;
+            if ($orderObj instanceof \App\Models\Order && $orderObj->isPosOrder()) {
                 return false;
+            }
+
+            $protectedEmails = [];
+            $collectEmails = function ($raw) use (&$protectedEmails) {
+                foreach (preg_split('/[,;]+/', (string) $raw) as $candidate) {
+                    $clean = mb_strtolower(trim($candidate));
+                    if ($clean !== '' && filter_var($clean, FILTER_VALIDATE_EMAIL)) {
+                        $protectedEmails[$clean] = true;
+                    }
+                }
+            };
+
+            try {
+                foreach (\App\Services\MailConfigService::getOrderNotificationRecipients() as $rec) {
+                    $collectEmails($rec);
+                }
+                $collectEmails(\App\Models\Setting::get('contact_email'));
+                $collectEmails(\App\Models\Setting::get('company_email'));
+                $collectEmails(config('mail.from.address'));
+
+                foreach (\App\Models\User::whereNotNull('email')->pluck('email') as $userEmail) {
+                    $collectEmails($userEmail);
+                }
+                foreach (\App\Models\NotificationSetting::whereNotNull('notification_email')->pluck('notification_email') as $notifEmail) {
+                    $collectEmails($notifEmail);
+                }
+            } catch (\Throwable $e) {
+                // Fail closed only on what we could resolve during early boot/migrations
+            }
+
+            $allRecipients = array_merge(
+                $event->message->getTo() ?? [],
+                $event->message->getCc() ?? [],
+                $event->message->getBcc() ?? []
+            );
+
+            $targetsProtectedAdmin = false;
+            foreach ($allRecipients as $address) {
+                $addr = mb_strtolower(trim((string) $address->getAddress()));
+                if ($addr !== '' && isset($protectedEmails[$addr])) {
+                    $targetsProtectedAdmin = true;
+                    break;
+                }
+            }
+
+            if ($targetsProtectedAdmin) {
+                $typeHeader = $event->message->getHeaders()->get('X-Wina-Mail-Type');
+                $mailType = $typeHeader && method_exists($typeHeader, 'getBodyAsString')
+                    ? mb_strtolower(trim((string) $typeHeader->getBodyAsString()))
+                    : '';
+
+                $isWebsiteNewOrder = $mailType === 'website-new-order'
+                    || str_contains($subject, 'nouvelle commande #')
+                    || str_contains($subject, 'new order');
+
+                if (!$isWebsiteNewOrder) {
+                    return false;
+                }
             }
         });
 

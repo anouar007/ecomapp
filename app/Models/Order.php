@@ -13,8 +13,9 @@ class Order extends Model
 
     public const DELIVERY_TYPES = [
         'store' => 'Store',
-        'our_team' => 'Our Team',
+        'our_team' => 'Livreur',
         'ozon' => 'Ozon',
+        'autre' => 'Autre',
     ];
 
     protected $fillable = [
@@ -49,6 +50,7 @@ class Order extends Model
         'payment_status',
         'payment_method',
         'payment_due_date',
+        'payment_attachments',
         'transaction_id',
         'notes',
     ];
@@ -62,6 +64,7 @@ class Order extends Model
         'paid_amount' => 'decimal:2',
         'remaining_amount' => 'decimal:2',
         'payment_due_date' => 'date',
+        'payment_attachments' => 'array',
         'confirmed_at' => 'datetime',
         'stock_deducted' => 'boolean',
     ];
@@ -257,17 +260,29 @@ class Order extends Model
     }
 
     /**
-     * Normalize POS / order delivery type ('store', 'our_team', 'ozon', or null).
+     * Normalize any external/alias delivery type input ('livreur' -> 'our_team')
+     * to a canonical key in DELIVERY_TYPES, or null if invalid.
      */
-    public function getNormalizedDeliveryTypeAttribute(): ?string
+    public static function normalizeDeliveryType(?string $value): ?string
     {
-        $val = strtolower(trim((string) $this->delivery_type));
+        $val = strtolower(trim((string) $value));
+        if ($val === 'livreur') {
+            return 'our_team';
+        }
 
         return array_key_exists($val, self::DELIVERY_TYPES) ? $val : null;
     }
 
     /**
-     * Human-readable label for the delivery type ('Store', 'Our Team', 'Ozon', or null).
+     * Normalize POS / order delivery type ('store', 'our_team' [Livreur], 'ozon', 'autre', or null).
+     */
+    public function getNormalizedDeliveryTypeAttribute(): ?string
+    {
+        return self::normalizeDeliveryType($this->delivery_type);
+    }
+
+    /**
+     * Human-readable label for the delivery type ('Store', 'Livreur', 'Ozon', 'Autre', or null).
      */
     public function getDeliveryTypeLabelAttribute(): ?string
     {
@@ -300,7 +315,7 @@ class Order extends Model
     }
 
     /**
-     * Effective human-readable label for delivery type ('Store', 'Our Team', or 'Ozon').
+     * Effective human-readable label for delivery type ('Store', 'Livreur', 'Ozon', or 'Autre').
      */
     public function getEffectiveDeliveryTypeLabelAttribute(): string
     {
@@ -1078,5 +1093,47 @@ class Order extends Model
     public function forcedOutOfStockItems()
     {
         return $this->items->filter(fn (OrderItem $item) => $item->isForcedOutOfStock())->values();
+    }
+
+    /**
+     * Normalized list of payment attachments (cheque photos, transfer slips, PDFs, etc.).
+     */
+    public function getPaymentAttachmentsListAttribute(): array
+    {
+        $raw = $this->payment_attachments;
+        if (!is_array($raw) || empty($raw)) {
+            return [];
+        }
+
+        $items = [];
+        foreach ($raw as $entry) {
+            $path = is_array($entry) ? ($entry['path'] ?? '') : (is_string($entry) ? $entry : '');
+            $path = ltrim(trim((string) $path), '/');
+            if ($path === '') {
+                continue;
+            }
+
+            $name = is_array($entry) && !empty($entry['name'])
+                ? (string) $entry['name']
+                : basename($path);
+            $mime = is_array($entry) ? (string) ($entry['mime'] ?? '') : '';
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $isImage = ($mime !== '' && str_starts_with(strtolower($mime), 'image/'))
+                || in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true);
+
+            $url = (str_starts_with($path, 'http://') || str_starts_with($path, 'https://'))
+                ? $path
+                : asset('storage/' . $path);
+
+            $items[] = [
+                'path' => $path,
+                'url' => $url,
+                'name' => $name,
+                'mime' => $mime,
+                'is_image' => $isImage,
+            ];
+        }
+
+        return $items;
     }
 }

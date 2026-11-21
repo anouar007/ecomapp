@@ -5,16 +5,16 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        background: #ffffff;
+        justify-content: center;
+        background: var(--kpi-bg, #ffffff);
         border-radius: 14px;
-        padding: 14px 16px;
-        border: 1px solid #e2e8f0;
+        padding: 12px 14px;
+        border: 1.5px solid var(--kpi-border, #e2e8f0);
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         text-decoration: none !important;
         overflow: hidden;
-        min-height: 98px;
+        min-height: 74px;
     }
     .order-kpi-card::before {
         content: '';
@@ -23,63 +23,67 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: var(--kpi-accent, #3b82f6);
-        opacity: 0.85;
+        background: var(--kpi-accent, #0f172a);
+        opacity: 0.9;
         transition: height 0.2s ease, opacity 0.2s ease;
     }
     .order-kpi-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-        border-color: var(--kpi-border, #cbd5e1);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.1), 0 4px 8px -4px rgba(15, 23, 42, 0.04);
+        border-color: var(--kpi-accent, #0f172a);
     }
     .order-kpi-card:hover::before {
         height: 4px;
         opacity: 1;
     }
     .order-kpi-card.active-filter {
-        border-color: var(--kpi-accent, #2563eb) !important;
-        background: var(--kpi-active-bg, #f8fafc) !important;
-        box-shadow: 0 0 0 2px var(--kpi-ring, rgba(37, 99, 235, 0.18)), 0 6px 16px -2px rgba(15, 23, 42, 0.08) !important;
+        border: 2px solid var(--kpi-active-border, #0f172a) !important;
+        background: var(--kpi-accent, #0f172a) !important;
+        box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--kpi-accent, #0f172a), 0 6px 14px -2px var(--kpi-ring, rgba(15, 23, 42, 0.28)) !important;
+        transform: translateY(-1px);
     }
     .order-kpi-card.active-filter::before {
-        height: 4px;
-        opacity: 1;
+        height: 0;
+        opacity: 0;
     }
     .order-kpi-top {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: 6px;
+        justify-content: flex-start;
+        margin-bottom: 4px;
     }
-    .order-kpi-label {
+    .order-kpi-card .order-kpi-label {
         font-size: 0.76rem;
-        font-weight: 700;
+        font-weight: 700 !important;
         letter-spacing: 0.02em;
-        color: #64748b;
+        color: var(--kpi-text, #475569);
         text-transform: capitalize;
         line-height: 1.2;
     }
     .order-kpi-badge {
         font-size: 0.68rem;
-        font-weight: 700;
+        font-weight: 700 !important;
         padding: 2px 7px;
         border-radius: 9999px;
         line-height: 1.2;
         letter-spacing: 0.02em;
+        flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
     }
     .order-kpi-body {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
+        width: 100%;
     }
-    .order-kpi-value {
+    .order-kpi-card .order-kpi-value {
         font-family: var(--font-heading, 'Outfit', sans-serif);
         font-size: 1.55rem;
-        font-weight: 800;
+        font-weight: 800 !important;
         line-height: 1.15;
         letter-spacing: -0.02em;
-        color: #0f172a;
+        color: var(--kpi-text, #0f172a);
         font-variant-numeric: tabular-nums;
     }
     .order-kpi-icon {
@@ -102,32 +106,49 @@
         gap: 5px;
         font-size: 0.7rem;
         font-weight: 500;
-        color: #94a3b8;
+        color: #64748b;
         margin-top: 6px;
         line-height: 1.2;
     }
+    .order-kpi-card.active-filter .order-kpi-label,
+    .order-kpi-card.active-filter .order-kpi-value,
+    .order-kpi-card.active-filter .order-kpi-footer {
+        color: #ffffff !important;
+    }
+    .order-kpi-card.active-filter .order-kpi-badge {
+        background: rgba(255, 255, 255, 0.22) !important;
+        color: #ffffff !important;
+    }
+    .order-kpi-card.active-filter .order-kpi-icon {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: #ffffff !important;
+    }
 
-    /* Status Color Themes */
+    /* Status Color Themes (matched to status badges & mobile order cards) */
     .kpi-theme-all {
-        --kpi-accent: #2563eb;
-        --kpi-border: #bfdbfe;
-        --kpi-active-bg: #eff6ff;
-        --kpi-ring: rgba(37, 99, 235, 0.25);
+        --kpi-accent: #0f172a;
+        --kpi-active-border: #0f172a;
+        --kpi-bg: #f8fafc;
+        --kpi-border: #cbd5e1;
+        --kpi-text: #0f172a;
+        --kpi-ring: rgba(15, 23, 42, 0.25);
     }
     .kpi-theme-all .order-kpi-icon {
-        background: #eff6ff;
-        color: #2563eb;
+        background: #e2e8f0;
+        color: #0f172a;
     }
     .kpi-theme-all .order-kpi-badge {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: #e2e8f0;
+        color: #0f172a;
     }
 
     .kpi-theme-pending {
         --kpi-accent: #d97706;
-        --kpi-border: #fde68a;
-        --kpi-active-bg: #fffbeb;
-        --kpi-ring: rgba(217, 119, 6, 0.25);
+        --kpi-active-border: #b45309;
+        --kpi-bg: #fef9ee;
+        --kpi-border: #f59e0b;
+        --kpi-text: #b45309;
+        --kpi-ring: rgba(217, 119, 6, 0.28);
     }
     .kpi-theme-pending .order-kpi-icon {
         background: #fef3c7;
@@ -137,51 +158,82 @@
         background: #fef3c7;
         color: #b45309;
     }
-    .kpi-theme-pending .order-kpi-value {
-        color: #b45309;
+
+    .kpi-theme-en-demande {
+        --kpi-accent: #4338ca;
+        --kpi-active-border: #3730a3;
+        --kpi-bg: #f4f4fe;
+        --kpi-border: #818cf8;
+        --kpi-text: #4338ca;
+        --kpi-ring: rgba(67, 56, 202, 0.28);
+    }
+    .kpi-theme-en-demande .order-kpi-icon {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+    .kpi-theme-en-demande .order-kpi-badge {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+
+    .kpi-theme-reserved {
+        --kpi-accent: #7c3aed;
+        --kpi-active-border: #6d28d9;
+        --kpi-bg: #f8f5ff;
+        --kpi-border: #a78bfa;
+        --kpi-text: #6d28d9;
+        --kpi-ring: rgba(124, 58, 237, 0.28);
+    }
+    .kpi-theme-reserved .order-kpi-icon {
+        background: #ede9fe;
+        color: #7c3aed;
+    }
+    .kpi-theme-reserved .order-kpi-badge {
+        background: #ede9fe;
+        color: #6d28d9;
     }
 
     .kpi-theme-processing {
-        --kpi-accent: #0284c7;
-        --kpi-border: #bae6fd;
-        --kpi-active-bg: #f0f9ff;
-        --kpi-ring: rgba(2, 132, 199, 0.25);
+        --kpi-accent: #2563eb;
+        --kpi-active-border: #1d4ed8;
+        --kpi-bg: #f2f7ff;
+        --kpi-border: #60a5fa;
+        --kpi-text: #1d4ed8;
+        --kpi-ring: rgba(37, 99, 235, 0.28);
     }
     .kpi-theme-processing .order-kpi-icon {
-        background: #e0f2fe;
-        color: #0284c7;
+        background: #dbeafe;
+        color: #2563eb;
     }
     .kpi-theme-processing .order-kpi-badge {
-        background: #e0f2fe;
-        color: #0369a1;
-    }
-    .kpi-theme-processing .order-kpi-value {
-        color: #0369a1;
+        background: #dbeafe;
+        color: #1d4ed8;
     }
 
     .kpi-theme-shipped {
-        --kpi-accent: #6366f1;
-        --kpi-border: #ddd6fe;
-        --kpi-active-bg: #f5f3ff;
-        --kpi-ring: rgba(99, 102, 241, 0.25);
+        --kpi-accent: #0093ac;
+        --kpi-active-border: #0e7490;
+        --kpi-bg: #f0fafc;
+        --kpi-border: #38bdf8;
+        --kpi-text: #0e7490;
+        --kpi-ring: rgba(0, 147, 172, 0.28);
     }
     .kpi-theme-shipped .order-kpi-icon {
-        background: #ede9fe;
-        color: #6366f1;
+        background: #cffafe;
+        color: #0093ac;
     }
     .kpi-theme-shipped .order-kpi-badge {
-        background: #ede9fe;
-        color: #4f46e5;
-    }
-    .kpi-theme-shipped .order-kpi-value {
-        color: #4f46e5;
+        background: #cffafe;
+        color: #0e7490;
     }
 
     .kpi-theme-delivered {
-        --kpi-accent: #10b981;
-        --kpi-border: #a7f3d0;
-        --kpi-active-bg: #ecfdf5;
-        --kpi-ring: rgba(16, 185, 129, 0.25);
+        --kpi-accent: #059669;
+        --kpi-active-border: #047857;
+        --kpi-bg: #f0fbf6;
+        --kpi-border: #34d399;
+        --kpi-text: #047857;
+        --kpi-ring: rgba(5, 150, 105, 0.28);
     }
     .kpi-theme-delivered .order-kpi-icon {
         background: #d1fae5;
@@ -191,81 +243,70 @@
         background: #d1fae5;
         color: #047857;
     }
-    .kpi-theme-delivered .order-kpi-value {
-        color: #047857;
-    }
 
     .kpi-theme-cancelled {
-        --kpi-accent: #ef4444;
-        --kpi-border: #fecaca;
-        --kpi-active-bg: #fef2f2;
-        --kpi-ring: rgba(239, 68, 68, 0.25);
+        --kpi-accent: #dc2626;
+        --kpi-active-border: #b91c1c;
+        --kpi-bg: #fef4f4;
+        --kpi-border: #f87171;
+        --kpi-text: #b91c1c;
+        --kpi-ring: rgba(220, 38, 38, 0.28);
     }
     .kpi-theme-cancelled .order-kpi-icon {
         background: #fee2e2;
         color: #dc2626;
     }
-
-    .kpi-theme-en-demande {
-        --kpi-accent: #8b5cf6;
-        --kpi-border: #ddd6fe;
-        --kpi-active-bg: #f5f3ff;
-        --kpi-ring: rgba(139, 92, 246, 0.25);
-    }
-    .kpi-theme-en-demande .order-kpi-icon {
-        background: #ede9fe;
-        color: #7c3aed;
-    }
-    .kpi-theme-en-demande .order-kpi-badge {
-        background: #ede9fe;
-        color: #6d28d9;
-    }
-    .kpi-theme-en-demande .order-kpi-value {
-        color: #6d28d9;
-    }
-
-    .kpi-theme-reserved {
-        --kpi-accent: #9333ea;
-        --kpi-border: #e9d5ff;
-        --kpi-active-bg: #faf5ff;
-        --kpi-ring: rgba(147, 51, 234, 0.25);
-    }
-    .kpi-theme-reserved .order-kpi-icon {
-        background: #f3e8ff;
-        color: #9333ea;
-    }
-    .kpi-theme-reserved .order-kpi-badge {
-        background: #f3e8ff;
-        color: #7e22ce;
-    }
-    .kpi-theme-reserved .order-kpi-value {
-        color: #7e22ce;
-    }
     .kpi-theme-cancelled .order-kpi-badge {
         background: #fee2e2;
         color: #b91c1c;
     }
-    .kpi-theme-cancelled .order-kpi-value {
-        color: #dc2626;
-    }
 
     @media (max-width: 767.98px) {
         .order-kpi-card {
-            padding: 9px 11px;
-            min-height: 76px;
-            border-radius: 12px;
+            padding: 6px 7px;
+            min-height: 52px;
+            border-radius: 10px;
+            align-items: stretch;
+            justify-content: center;
+            text-align: left;
         }
-        .order-kpi-value {
-            font-size: 1.2rem;
+        .order-kpi-card > div {
+            width: 100%;
+            display: block;
         }
-        .order-kpi-icon {
-            width: 28px;
-            height: 28px;
-            font-size: 0.8rem;
-            border-radius: 8px;
+        .order-kpi-top {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 3px;
         }
-        .order-kpi-footer {
-            display: none;
+        .order-kpi-card .order-kpi-label {
+            font-size: 0.61rem;
+            line-height: 1.15;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        .order-kpi-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3px;
+            width: 100%;
+        }
+        .order-kpi-card .order-kpi-value {
+            font-size: 1.02rem;
+            line-height: 1.05;
+        }
+        .order-kpi-card .order-kpi-badge {
+            display: inline-block !important;
+            font-size: 0.58rem;
+            font-weight: 700;
+            padding: 1.5px 5px;
+            border-radius: 9999px;
+            line-height: 1.15;
+            flex-shrink: 0;
         }
     }
 </style>
@@ -364,7 +405,7 @@
         $cancelledPct = $totalOrdersCount > 0 ? round(($stats['cancelled'] / $totalOrdersCount) * 100, 1) : 0;
     @endphp
 
-    <!-- 8 Delivery Status Cards (Single-row swipe rail on Mobile, 4-col KPI grid on Desktop) -->
+    <!-- 8 Delivery Status Cards (4 per row on Mobile & Desktop) -->
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2.5 g-md-3 mb-3 mb-md-4 orders-kpi-grid">
         <!-- 0. Toutes les commandes (All orders) -->
         <div class="col mb-2">
@@ -374,17 +415,11 @@
                 <div>
                     <div class="order-kpi-top">
                         <span class="order-kpi-label">Total</span>
-                        <span class="order-kpi-badge" id="kpi-all-orders-pct">100%</span>
                     </div>
                     <div class="order-kpi-body">
                         <div class="order-kpi-value" id="kpi-all-orders-card">{{ number_format($stats['total'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="order-kpi-icon">
-                            <i class="fas fa-boxes-stacked"></i>
-                        </div>
+                        <span class="order-kpi-badge" id="kpi-all-orders-pct">100%</span>
                     </div>
-                </div>
-                <div class="order-kpi-footer">
-                    <i class="fas fa-layer-group"></i> <span>Toutes les commandes</span>
                 </div>
             </a>
         </div>
@@ -396,18 +431,12 @@
                title="Filtrer : Commandes en attente">
                 <div>
                     <div class="order-kpi-top">
-                        <span class="order-kpi-label" style="color: #d97706;">En attente</span>
-                        <span class="order-kpi-badge" id="kpi-pending-pct">{{ $pendingPct }}%</span>
+                        <span class="order-kpi-label">En attente</span>
                     </div>
                     <div class="order-kpi-body">
                         <div class="order-kpi-value" id="kpi-pending-orders">{{ number_format($stats['pending'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="order-kpi-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
+                        <span class="order-kpi-badge" id="kpi-pending-pct">{{ $pendingPct }}%</span>
                     </div>
-                </div>
-                <div class="order-kpi-footer">
-                    <i class="fas fa-hourglass-half"></i> <span>À traiter</span>
                 </div>
             </a>
         </div>
@@ -419,18 +448,12 @@
                title="Filtrer : Commandes sur commande">
                 <div>
                     <div class="order-kpi-top">
-                        <span class="order-kpi-label" style="color: #6d28d9;">Sur Commande</span>
-                        <span class="order-kpi-badge" id="kpi-en-demande-pct">{{ $enDemandePct }}%</span>
+                        <span class="order-kpi-label">Sur Commande</span>
                     </div>
                     <div class="order-kpi-body">
                         <div class="order-kpi-value" id="kpi-en-demande-orders">{{ number_format($stats['en_demande'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="order-kpi-icon">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
+                        <span class="order-kpi-badge" id="kpi-en-demande-pct">{{ $enDemandePct }}%</span>
                     </div>
-                </div>
-                <div class="order-kpi-footer">
-                    <i class="fas fa-clock-rotate-left"></i> <span>Approvisionnement</span>
                 </div>
             </a>
         </div>
@@ -442,18 +465,12 @@
                title="Filtrer : Commandes réservées">
                 <div>
                     <div class="order-kpi-top">
-                        <span class="order-kpi-label" style="color: #7e22ce;">Réservé</span>
-                        <span class="order-kpi-badge" id="kpi-reserved-pct">{{ $reservedPct }}%</span>
+                        <span class="order-kpi-label">Réservé</span>
                     </div>
                     <div class="order-kpi-body">
                         <div class="order-kpi-value" id="kpi-reserved-orders">{{ number_format($stats['reserved'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="order-kpi-icon">
-                            <i class="fas fa-bookmark"></i>
-                        </div>
+                        <span class="order-kpi-badge" id="kpi-reserved-pct">{{ $reservedPct }}%</span>
                     </div>
-                </div>
-                <div class="order-kpi-footer">
-                    <i class="fas fa-bookmark"></i> <span>Mise de côté</span>
                 </div>
             </a>
         </div>
@@ -465,18 +482,12 @@
                title="Filtrer : Commandes en cours de préparation">
                 <div>
                     <div class="order-kpi-top">
-                        <span class="order-kpi-label" style="color: #0284c7;">En cours</span>
-                        <span class="order-kpi-badge" id="kpi-processing-pct">{{ $processingPct }}%</span>
+                        <span class="order-kpi-label">En cours</span>
                     </div>
                     <div class="order-kpi-body">
                         <div class="order-kpi-value" id="kpi-processing-orders">{{ number_format($stats['processing'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="order-kpi-icon">
-                            <i class="fas fa-box-open"></i>
-                        </div>
+                        <span class="order-kpi-badge" id="kpi-processing-pct">{{ $processingPct }}%</span>
                     </div>
-                </div>
-                <div class="order-kpi-footer">
-                    <i class="fas fa-dolly"></i> <span>En préparation</span>
                 </div>
             </a>
         </div>
@@ -488,18 +499,12 @@
                title="Filtrer : Commandes expédiées en acheminement">
                 <div>
                     <div class="order-kpi-top">
-                        <span class="order-kpi-label" style="color: #6366f1;">Expédiée</span>
-                        <span class="order-kpi-badge" id="kpi-shipped-pct">{{ $shippedPct }}%</span>
+                        <span class="order-kpi-label">Expédiée</span>
                     </div>
                     <div class="order-kpi-body">
                         <div class="order-kpi-value" id="kpi-shipped-orders">{{ number_format($stats['shipped'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="order-kpi-icon">
-                            <i class="fas fa-truck-fast"></i>
-                        </div>
+                        <span class="order-kpi-badge" id="kpi-shipped-pct">{{ $shippedPct }}%</span>
                     </div>
-                </div>
-                <div class="order-kpi-footer">
-                    <i class="fas fa-route"></i> <span>En livraison</span>
                 </div>
             </a>
         </div>
@@ -511,18 +516,12 @@
                title="Filtrer : Commandes livrées avec succès">
                 <div>
                     <div class="order-kpi-top">
-                        <span class="order-kpi-label" style="color: #059669;">Livrée</span>
-                        <span class="order-kpi-badge" id="kpi-delivered-pct">{{ $deliveredPct }}%</span>
+                        <span class="order-kpi-label">Livrée</span>
                     </div>
                     <div class="order-kpi-body">
                         <div class="order-kpi-value" id="kpi-delivered-orders">{{ number_format($stats['delivered'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="order-kpi-icon">
-                            <i class="fas fa-circle-check"></i>
-                        </div>
+                        <span class="order-kpi-badge" id="kpi-delivered-pct">{{ $deliveredPct }}%</span>
                     </div>
-                </div>
-                <div class="order-kpi-footer">
-                    <i class="fas fa-clipboard-check"></i> <span>Finalisée</span>
                 </div>
             </a>
         </div>
@@ -534,18 +533,12 @@
                title="Filtrer : Commandes annulées ou rejetées">
                 <div>
                     <div class="order-kpi-top">
-                        <span class="order-kpi-label" style="color: #dc2626;">Annulée</span>
-                        <span class="order-kpi-badge" id="kpi-cancelled-pct">{{ $cancelledPct }}%</span>
+                        <span class="order-kpi-label">Annulée</span>
                     </div>
                     <div class="order-kpi-body">
                         <div class="order-kpi-value" id="kpi-cancelled-orders">{{ number_format($stats['cancelled'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="order-kpi-icon">
-                            <i class="fas fa-circle-xmark"></i>
-                        </div>
+                        <span class="order-kpi-badge" id="kpi-cancelled-pct">{{ $cancelledPct }}%</span>
                     </div>
-                </div>
-                <div class="order-kpi-footer">
-                    <i class="fas fa-ban"></i> <span>Non aboutie</span>
                 </div>
             </a>
         </div>
@@ -632,11 +625,15 @@
                 </a>
                 <a href="{{ $quickDeliv === 'our_team' ? request()->fullUrlWithQuery(['delivery_type' => null, 'page' => null]) : request()->fullUrlWithQuery(['delivery_type' => 'our_team', 'page' => null]) }}"
                    class="orders-quick-chip {{ $quickDeliv === 'our_team' ? 'active' : '' }}">
-                    <i class="fas fa-people-carry-box"></i><span>Our Team</span>
+                    <i class="fas fa-people-carry-box"></i><span>Livreur</span>
                 </a>
                 <a href="{{ $quickDeliv === 'store' ? request()->fullUrlWithQuery(['delivery_type' => null, 'page' => null]) : request()->fullUrlWithQuery(['delivery_type' => 'store', 'page' => null]) }}"
                    class="orders-quick-chip {{ $quickDeliv === 'store' ? 'active' : '' }}">
                     <i class="fas fa-store"></i><span>Store</span>
+                </a>
+                <a href="{{ $quickDeliv === 'autre' ? request()->fullUrlWithQuery(['delivery_type' => null, 'page' => null]) : request()->fullUrlWithQuery(['delivery_type' => 'autre', 'page' => null]) }}"
+                   class="orders-quick-chip {{ $quickDeliv === 'autre' ? 'active' : '' }}">
+                    <i class="fas fa-truck-arrow-right"></i><span>Autre</span>
                 </a>
             </div>
 
@@ -701,15 +698,16 @@
                         </div>
                     </div>
 
-                    <!-- Type de livraison (Store / Our Team / Ozon) -->
+                    <!-- Type de livraison (Store / Livreur / Ozon / Autre) -->
                     <div class="col-6 col-md-4 col-xl-2">
                         <div class="orders-filter-field">
                             <span class="orders-filter-label">Livraison</span>
                             <select name="delivery_type" class="form-select form-select-sm fw-semibold">
                                 <option value="">Toutes livraisons</option>
                                 <option value="store" {{ strtolower((string) request('delivery_type')) === 'store' ? 'selected' : '' }}>Store</option>
-                                <option value="our_team" {{ strtolower((string) request('delivery_type')) === 'our_team' ? 'selected' : '' }}>Our Team</option>
+                                <option value="our_team" {{ in_array(strtolower((string) request('delivery_type')), ['our_team', 'livreur'], true) ? 'selected' : '' }}>Livreur</option>
                                 <option value="ozon" {{ strtolower((string) request('delivery_type')) === 'ozon' ? 'selected' : '' }}>Ozon</option>
+                                <option value="autre" {{ strtolower((string) request('delivery_type')) === 'autre' ? 'selected' : '' }}>Autre</option>
                             </select>
                         </div>
                     </div>
@@ -1278,6 +1276,7 @@
                                 $orderDeliveryIcon = match ($orderDeliveryType) {
                                     'our_team' => 'fa-people-carry-box',
                                     'ozon' => 'fa-box-open',
+                                    'autre' => 'fa-truck-arrow-right',
                                     default => 'fa-store',
                                 };
                             @endphp
@@ -1301,12 +1300,12 @@
                                         <li>
                                             <button type="button" data-delivery-type="store" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $orderDeliveryType === 'store' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'store')">
                                                 <span><span class="status-dot delivery-dot-store me-1.5"></span> Store</span>
-                                                @if($orderDeliveryType === 'store') <i class="fas fa-check text-dark small"></i> @endif
+                                                @if($orderDeliveryType === 'store') <i class="fas fa-check text-danger small"></i> @endif
                                             </button>
                                         </li>
                                         <li>
                                             <button type="button" data-delivery-type="our_team" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $orderDeliveryType === 'our_team' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'our_team')">
-                                                <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Our Team</span>
+                                                <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Livreur</span>
                                                 @if($orderDeliveryType === 'our_team') <i class="fas fa-check text-primary small"></i> @endif
                                             </button>
                                         </li>
@@ -1314,6 +1313,12 @@
                                             <button type="button" data-delivery-type="ozon" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $orderDeliveryType === 'ozon' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'ozon')">
                                                 <span><span class="status-dot delivery-dot-ozon me-1.5"></span> Ozon</span>
                                                 @if($orderDeliveryType === 'ozon') <i class="fas fa-check text-warning small"></i> @endif
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-delivery-type="autre" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $orderDeliveryType === 'autre' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'autre')">
+                                                <span><span class="status-dot delivery-dot-autre me-1.5"></span> Autre</span>
+                                                @if($orderDeliveryType === 'autre') <i class="fas fa-check text-purple small"></i> @endif
                                             </button>
                                         </li>
                                     </ul>
@@ -1788,12 +1793,13 @@
             }
         }
 
-        // --- Delivery Type Tag (Store / Our Team / Ozon) ---
+        // --- Delivery Type Tag (Store / Livreur / Ozon / Autre) ---
         if (order.delivery_type) {
             const delivMetaMap = {
-                store: { label: 'Store', icon: 'fa-store', checkClass: 'text-dark' },
-                our_team: { label: 'Our Team', icon: 'fa-people-carry-box', checkClass: 'text-primary' },
-                ozon: { label: 'Ozon', icon: 'fa-box-open', checkClass: 'text-warning' }
+                store: { label: 'Store', icon: 'fa-store', checkClass: 'text-danger' },
+                our_team: { label: 'Livreur', icon: 'fa-people-carry-box', checkClass: 'text-primary' },
+                ozon: { label: 'Ozon', icon: 'fa-box-open', checkClass: 'text-warning' },
+                autre: { label: 'Autre', icon: 'fa-truck-arrow-right', checkClass: 'text-purple' }
             };
             const dt = delivMetaMap[order.delivery_type] ? order.delivery_type : 'ozon';
             const dInfo = delivMetaMap[dt];
@@ -2000,12 +2006,6 @@
             if (statusFilterSel) {
                 syncOrderStatusFilterColor();
                 statusFilterSel.addEventListener('change', syncOrderStatusFilterColor);
-            }
-            if (window.innerWidth < 768) {
-                const activeKpiCard = document.querySelector('.orders-kpi-grid .order-kpi-card.active-filter');
-                if (activeKpiCard) {
-                    activeKpiCard.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
-                }
             }
         }
         if (document.readyState === 'loading') {

@@ -57,19 +57,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Restrict automatic email notifications strictly to order events;
-     * block legacy or pre-queued stock/invoice notifications at mail routing time.
+     * Disable Laravel Notification mail routing for all user accounts;
+     * automatic admin emails are sent exclusively for new website orders via NewOrderNotification Mailable.
      */
     public function routeNotificationForMail($notification = null)
     {
-        if (
-            $notification instanceof \App\Notifications\LowStockAlert
-            || $notification instanceof \App\Notifications\InvoiceGenerated
-        ) {
-            return null;
-        }
-
-        return $this->email;
+        return null;
     }
 
     /**

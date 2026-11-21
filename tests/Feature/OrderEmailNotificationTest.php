@@ -283,8 +283,9 @@ class OrderEmailNotificationTest extends TestCase
         $this->assertNotNull($alert);
         $lowStockNotification = new LowStockAlert($alert);
         $this->assertSame([], $lowStockNotification->via($admin));
+        $this->assertSame([], (new \App\Notifications\OrderPlaced(new Order()))->via($admin));
         $this->assertNull($admin->routeNotificationFor('mail', $lowStockNotification));
-        $this->assertSame($admin->email, $admin->routeNotificationFor('mail'));
+        $this->assertNull($admin->routeNotificationFor('mail'));
 
         // Simulate a pre-queued job passing directly into MailChannel::send() (bypassing via())
         app(\Illuminate\Notifications\Channels\MailChannel::class)->send($admin, $lowStockNotification);
@@ -391,19 +392,56 @@ class OrderEmailNotificationTest extends TestCase
         });
         Notification::assertNothingSent();
 
-        // 4. Transport-level MessageSending firewall blocks stock-alert messages but allows website order emails
-        $blockedEmail = (new \Symfony\Component\Mime\Email())
+        // 4. Transport-level NotificationSending & MessageSending firewall block ALL non-website-order emails to admin/store addresses
+        $this->assertFalse(\Illuminate\Support\Facades\Event::until(
+            new \Illuminate\Notifications\Events\NotificationSending($admin, $lowStockNotification, 'mail')
+        ));
+
+        $blockedStockEmail = (new \Symfony\Component\Mime\Email())
             ->to($admin->email)
             ->subject('Low Stock Alert - ' . $productA->name)
             ->text('Blocked stock alert');
         $this->assertFalse(\Illuminate\Support\Facades\Event::until(
-            new \Illuminate\Mail\Events\MessageSending($blockedEmail, ['__laravel_notification' => LowStockAlert::class])
+            new \Illuminate\Mail\Events\MessageSending($blockedStockEmail, ['__laravel_notification' => LowStockAlert::class])
+        ));
+
+        $blockedArbitraryAdminEmail = (new \Symfony\Component\Mime\Email())
+            ->to('orders-alert@winashop.ma')
+            ->subject('Facture #FAC-2026-001')
+            ->text('Non-website-order email');
+        $this->assertFalse(\Illuminate\Support\Facades\Event::until(
+            new \Illuminate\Mail\Events\MessageSending($blockedArbitraryAdminEmail, [])
+        ));
+
+        $posOrder = Order::create([
+            'order_number' => 'ORD-POS-BLOCKED-' . strtoupper(uniqid()),
+            'customer_name' => 'POS Client',
+            'customer_phone' => '0611223344',
+            'shipping_city' => 'En boutique',
+            'shipping_address' => 'Vente en boutique (POS)',
+            'shipping_zip' => '00000',
+            'subtotal' => 500,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'total' => 500,
+            'status' => 'delivered',
+            'payment_status' => 'paid',
+            'payment_method' => 'cash',
+        ]);
+        $blockedPosEmail = (new \Symfony\Component\Mime\Email())
+            ->to('orders-alert@winashop.ma')
+            ->subject('🔔 [Wina Shop] Nouvelle Commande #' . $posOrder->order_number)
+            ->text('Blocked POS email');
+        $blockedPosEmail->getHeaders()->addTextHeader('X-Wina-Mail-Type', 'website-new-order');
+        $this->assertFalse(\Illuminate\Support\Facades\Event::until(
+            new \Illuminate\Mail\Events\MessageSending($blockedPosEmail, ['order' => $posOrder])
         ));
 
         $allowedOrderEmail = (new \Symfony\Component\Mime\Email())
             ->to('orders-alert@winashop.ma')
             ->subject('🔔 [Wina Shop] Nouvelle Commande #ORD-TEST (2 420,00 DH)')
             ->text('Website order alert');
+        $allowedOrderEmail->getHeaders()->addTextHeader('X-Wina-Mail-Type', 'website-new-order');
         $this->assertNotFalse(\Illuminate\Support\Facades\Event::until(
             new \Illuminate\Mail\Events\MessageSending($allowedOrderEmail, [])
         ));

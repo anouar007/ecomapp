@@ -146,8 +146,9 @@
                                 @php $editDeliveryType = old('delivery_type', $order->normalized_delivery_type); @endphp
                                 <option value="" {{ empty($editDeliveryType) ? 'selected' : '' }}>— Non spécifié —</option>
                                 <option value="store" {{ $editDeliveryType === 'store' ? 'selected' : '' }}>Store</option>
-                                <option value="our_team" {{ $editDeliveryType === 'our_team' ? 'selected' : '' }}>Our Team</option>
+                                <option value="our_team" {{ $editDeliveryType === 'our_team' ? 'selected' : '' }}>Livreur</option>
                                 <option value="ozon" {{ $editDeliveryType === 'ozon' ? 'selected' : '' }}>Ozon</option>
+                                <option value="autre" {{ $editDeliveryType === 'autre' ? 'selected' : '' }}>Autre</option>
                             </select>
                             <div class="form-text small text-muted mt-1.5">
                                 Canal d'expédition ou de remise (POS / Boutique).

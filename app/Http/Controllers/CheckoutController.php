@@ -550,13 +550,18 @@ class CheckoutController extends Controller
                     return;
                 }
 
+                if ($freshOrder->isPosOrder()) {
+                    return;
+                }
+
                 MailConfigService::applyConfig();
 
+                $adminRecipients = array_map('strtolower', MailConfigService::getOrderNotificationRecipients());
                 $customerEmail = !empty($freshOrder->customer_email) ? trim(strtolower((string)$freshOrder->customer_email)) : null;
                 $itemsAudit = $freshOrder->items->map(fn($item) => $item->product_name . ' x' . $item->quantity)->values()->all();
 
-                // 1. Customer confirmation email
-                if (!empty($customerEmail) && filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+                // 1. Customer confirmation email (never duplicate to admin notification addresses)
+                if (!empty($customerEmail) && filter_var($customerEmail, FILTER_VALIDATE_EMAIL) && !in_array($customerEmail, $adminRecipients, true)) {
                     Log::info("Sending order confirmation email to {$customerEmail} for order #{$freshOrder->order_number}", [
                         'order_id' => $freshOrder->id,
                         'order_number' => $freshOrder->order_number,
@@ -568,7 +573,7 @@ class CheckoutController extends Controller
                     ]);
                     Mail::to($customerEmail)->send(new OrderConfirmation($freshOrder));
                     Log::info("Order confirmation email successfully sent to {$customerEmail} for order #{$freshOrder->order_number}");
-                } else {
+                } elseif (empty($customerEmail) || !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
                     Log::warning("Skipped customer confirmation email for order #{$freshOrder->order_number}: invalid or empty email '{$freshOrder->customer_email}'");
                 }
 

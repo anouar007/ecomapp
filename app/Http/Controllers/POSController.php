@@ -13,10 +13,12 @@ use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\ProductStock;
+use App\Models\StockAlert;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class POSController extends Controller
 {
@@ -88,6 +90,9 @@ class POSController extends Controller
             ->when($stockFilter === 'low_stock', function ($q) {
                 $q->where('stock', '>', 0)->where('stock', '<=', 5);
             })
+            ->when($stockFilter === 'out_of_stock' && !$storeId, function ($q) {
+                $q->where('stock', '<=', 0);
+            })
             ->when($query !== '', function ($q) use ($query) {
                 $tokens = preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY);
                 $q->where(function ($sub) use ($query, $tokens) {
@@ -133,59 +138,141 @@ class POSController extends Controller
         }
 
         $products = $productsQuery
-            ->limit(60)
+            ->limit(250)
             ->get()
-            ->map(function ($product) use ($storeId) {
-                $categoryName = null;
-                if ($product->productCategory) {
-                    $categoryName = $product->productCategory->name;
-                } elseif (isset($product->category) && is_string($product->category)) {
-                    $categoryName = $product->category;
-                }
-
-                $globalStock = max(0, (int) $product->stock);
-                if ($globalStock <= 0) {
-                    $availableStock = 0;
-                    $storesList = [];
-                } else {
-                    $availableStock = $globalStock;
-                    if ($storeId && $product->storeStocks->isNotEmpty()) {
-                        $storeRow = $product->storeStocks->firstWhere('store_id', $storeId);
-                        $availableStock = max(0, (int) ($storeRow?->quantity ?? 0));
-                    }
-
-                    $storesList = $product->storeStocks
-                        ->filter(fn ($s) => $s->store && $s->store->is_active && (int) $s->quantity > 0)
-                        ->sortBy(fn ($s) => $s->store->sort_order ?? 999)
-                        ->map(fn ($s) => [
-                            'id' => (int) $s->store_id,
-                            'name' => $s->store->name,
-                            'code' => $s->store->code,
-                            'quantity' => (int) $s->quantity,
-                        ])
-                        ->values()
-                        ->all();
-                }
-
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'sku' => $product->sku,
-                    'price' => (float) $product->active_price,
-                    'regular_price' => (float) $product->price,
-                    'sale_price' => $product->sale_price !== null ? (float) $product->sale_price : null,
-                    'stock' => $availableStock,
-                    'global_stock' => $globalStock,
-                    'stores' => $storesList,
-                    'category' => $categoryName,
-                    'image' => $product->thumbnail,
-                ];
-            })
+            ->map(fn ($product) => $this->formatPosProduct($product, $storeId))
             ->when($stockFilter === 'in_stock', fn ($col) => $col->filter(fn ($p) => $p['stock'] > 0))
             ->when($stockFilter === 'low_stock', fn ($col) => $col->filter(fn ($p) => $p['stock'] > 0 && $p['stock'] <= 5))
+            ->when($stockFilter === 'out_of_stock', fn ($col) => $col->filter(fn ($p) => $p['stock'] <= 0))
             ->values();
 
         return response()->json($products);
+    }
+
+    /**
+     * Format a Product model into the normalized POS catalog payload.
+     */
+    protected function formatPosProduct(Product $product, ?int $storeId = null): array
+    {
+        $product->loadMissing(['images', 'primaryImage', 'productCategory', 'storeStocks.store']);
+
+        $categoryName = null;
+        if ($product->productCategory) {
+            $categoryName = $product->productCategory->name;
+        } elseif (isset($product->category) && is_string($product->category)) {
+            $categoryName = $product->category;
+        }
+
+        $globalStock = max(0, (int) $product->stock);
+        if ($globalStock <= 0) {
+            $availableStock = 0;
+            $storesList = [];
+        } else {
+            $availableStock = $globalStock;
+            if ($storeId && $product->storeStocks->isNotEmpty()) {
+                $storeRow = $product->storeStocks->firstWhere('store_id', $storeId);
+                $availableStock = max(0, (int) ($storeRow?->quantity ?? 0));
+            }
+
+            $storesList = $product->storeStocks
+                ->filter(fn ($s) => $s->store && $s->store->is_active && (int) $s->quantity > 0)
+                ->sortBy(fn ($s) => $s->store->sort_order ?? 999)
+                ->map(fn ($s) => [
+                    'id' => (int) $s->store_id,
+                    'name' => $s->store->name,
+                    'code' => $s->store->code,
+                    'quantity' => (int) $s->quantity,
+                ])
+                ->values()
+                ->all();
+        }
+
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'price' => (float) $product->active_price,
+            'regular_price' => (float) $product->price,
+            'sale_price' => $product->sale_price !== null ? (float) $product->sale_price : null,
+            'stock' => $availableStock,
+            'global_stock' => $globalStock,
+            'stores' => $storesList,
+            'category' => $categoryName,
+            'image' => $product->thumbnail,
+        ];
+    }
+
+    /**
+     * Quickly add stock to a product (in the chosen store or default store) directly from POS.
+     */
+    public function quickRestock(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:99999'],
+            'store_id' => ['nullable', 'integer', 'exists:stores,id'],
+            'active_store_id' => ['nullable', 'integer', 'exists:stores,id'],
+        ], [
+            'quantity.min' => 'La quantité ajoutée doit être d\'au moins 1.',
+        ]);
+
+        $product = Product::findOrFail((int) $validated['product_id']);
+        $qty = (int) $validated['quantity'];
+        $targetStoreId = !empty($validated['store_id'])
+            ? (int) $validated['store_id']
+            : Product::defaultStoreId();
+        $activeStoreId = !empty($validated['active_store_id'])
+            ? (int) $validated['active_store_id']
+            : null;
+
+        $adjusted = $product->adjustStock($qty, 'in', Auth::id(), [
+            'store_id' => $targetStoreId,
+            'reference_type' => 'pos_restock',
+            'reason' => 'Approvisionnement rapide depuis la caisse POS',
+        ]);
+
+        if (!$adjusted) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Impossible d\'ajouter le stock pour ce produit.',
+            ], 422);
+        }
+
+        $product->refresh();
+        $product->syncStockFields((int) $product->stock, true);
+
+        if ((int) $product->stock > 0) {
+            StockAlert::where('product_id', $product->id)
+                ->where('alert_type', 'out_of_stock')
+                ->whereNull('acknowledged_at')
+                ->update([
+                    'acknowledged_at' => now(),
+                    'acknowledged_by' => Auth::id(),
+                    'notes' => 'Réapprovisionné depuis la caisse POS',
+                ]);
+        }
+
+        if ((int) $product->stock > $product->getEffectiveThreshold()) {
+            StockAlert::where('product_id', $product->id)
+                ->where('alert_type', 'low_stock')
+                ->whereNull('acknowledged_at')
+                ->update([
+                    'acknowledged_at' => now(),
+                    'acknowledged_by' => Auth::id(),
+                    'notes' => 'Réapprovisionné depuis la caisse POS',
+                ]);
+        }
+
+        $formatted = $this->formatPosProduct($product->fresh(), $activeStoreId);
+        $storeName = $targetStoreId ? (Store::whereKey($targetStoreId)->value('name') ?: null) : null;
+
+        return response()->json([
+            'success' => true,
+            'message' => "+{$qty} unité(s) ajoutée(s)" . ($storeName ? " dans {$storeName}" : '') . '.',
+            'store_id' => $targetStoreId,
+            'added_quantity' => $qty,
+            'product' => $formatted,
+        ]);
     }
 
     /**
@@ -198,6 +285,22 @@ class POSController extends Controller
             $request->merge([
                 'customer_phone' => $this->normalizePhone10((string) $request->input('customer_phone')),
             ]);
+        }
+
+        if (is_string($request->input('items'))) {
+            $decodedItems = json_decode($request->input('items'), true);
+            if (is_array($decodedItems)) {
+                $request->merge(['items' => $decodedItems]);
+            }
+        }
+
+        foreach (['save_customer', 'is_partial_payment'] as $boolField) {
+            if ($request->has($boolField) && is_string($request->input($boolField))) {
+                $parsedBool = filter_var($request->input($boolField), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                if ($parsedBool !== null) {
+                    $request->merge([$boolField => $parsedBool]);
+                }
+            }
         }
 
         $validated = $request->validate([
@@ -214,11 +317,13 @@ class POSController extends Controller
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
             'payment_due_date' => ['nullable', 'date'],
             'status' => ['nullable', 'string', 'in:delivered,pending,en_demande,reserved,processing,shipped'],
-            'delivery_type' => ['nullable', 'string', 'in:store,our_team,ozon'],
+            'delivery_type' => ['nullable', 'string', 'in:store,our_team,livreur,ozon,autre'],
             'tax_mode' => ['nullable', 'string', 'in:ttc,ht'],
             'notes' => ['nullable', 'string', 'max:500'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
             'discount_type' => ['nullable', 'string', 'in:percent,fixed'],
+            'payment_attachments' => ['nullable', 'array', 'max:10'],
+            'payment_attachments.*' => ['file', 'mimes:jpg,jpeg,png,webp,gif,pdf', 'max:10240'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
@@ -228,8 +333,11 @@ class POSController extends Controller
             'items.*.store_id' => ['nullable', 'exists:stores,id'],
         ], [
             'customer_phone.regex' => 'Le numéro de téléphone doit contenir exactement 10 chiffres.',
+            'payment_attachments.*.mimes' => 'Format non supporté (JPG, PNG, WEBP, GIF ou PDF uniquement).',
+            'payment_attachments.*.max' => 'Chaque document ne doit pas dépasser 10 Mo.',
         ]);
 
+        $storedAttachments = [];
         DB::beginTransaction();
         try {
             $explicitStoreId = !empty($validated['store_id']) ? (int) $validated['store_id'] : null;
@@ -473,13 +581,29 @@ class POSController extends Controller
 
             $notes = trim((string) ($validated['notes'] ?? ''));
             $orderStatus = $validated['status'] ?? 'delivered';
-            $rawDeliveryType = strtolower((string) ($validated['delivery_type'] ?? 'store'));
-            $orderDeliveryType = array_key_exists($rawDeliveryType, Order::DELIVERY_TYPES) ? $rawDeliveryType : 'store';
+            $orderDeliveryType = Order::normalizeDeliveryType($validated['delivery_type'] ?? 'store') ?? 'store';
             $orderTaxMode = strtolower((string) ($validated['tax_mode'] ?? 'ht')) === 'ttc' ? 'ttc' : 'ht';
             $shouldDeductStock = $orderStatus === 'delivered';
             $orderPaymentStatus = $isPartialPayment
                 ? ($paidNow > 0 ? 'partial' : 'pending')
                 : ($validated['payment_method'] === 'credit' ? 'pending' : 'paid');
+
+            $uploadedFiles = $request->file('payment_attachments', []);
+            if (!is_array($uploadedFiles)) {
+                $uploadedFiles = $uploadedFiles ? [$uploadedFiles] : [];
+            }
+            foreach ($uploadedFiles as $file) {
+                if ($file && $file->isValid()) {
+                    $path = $file->store('orders/payment-documents', 'public');
+                    $storedAttachments[] = [
+                        'path' => $path,
+                        'name' => $file->getClientOriginalName(),
+                        'mime' => $file->getClientMimeType(),
+                        'size' => $file->getSize(),
+                        'uploaded_at' => now()->toIso8601String(),
+                    ];
+                }
+            }
 
             $order = Order::create([
                 'user_id' => Auth::id(),
@@ -506,6 +630,7 @@ class POSController extends Controller
                 'payment_status' => $orderPaymentStatus,
                 'payment_method' => $validated['payment_method'],
                 'payment_due_date' => $dueDate,
+                'payment_attachments' => !empty($storedAttachments) ? $storedAttachments : null,
                 'notes' => $notes !== '' ? $notes : 'Vente POS',
             ]);
 
@@ -591,6 +716,7 @@ class POSController extends Controller
                         'invoice_id' => $invoice->id,
                         'store_id' => $storeId,
                         'payment_date' => now(),
+                        'proof_image_path' => $storedAttachments[0]['path'] ?? null,
                         'notes' => "Vente POS à crédit #{$order->order_number}",
                     ]);
                 } else {
@@ -653,6 +779,7 @@ class POSController extends Controller
                             'invoice_id' => $invoice->id,
                             'store_id' => $storeId,
                             'payment_date' => now(),
+                            'proof_image_path' => $storedAttachments[0]['path'] ?? null,
                             'notes' => "Reste à payer POS #{$order->order_number} (Échéance : {$formattedDue})",
                         ]);
                     } else {
@@ -688,6 +815,7 @@ class POSController extends Controller
                     'payment_due_date' => $order->payment_due_date?->format('d/m/Y'),
                     'discount' => (float) $order->discount,
                     'payment_method' => $order->payment_method,
+                    'payment_attachments' => $order->payment_attachments_list,
                     'created_by' => $order->created_by,
                     'created_by_name' => Auth::user()?->name,
                     'show_url' => route('orders.show', $order),
@@ -706,6 +834,11 @@ class POSController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            foreach ($storedAttachments as $att) {
+                if (!empty($att['path'])) {
+                    Storage::disk('public')->delete($att['path']);
+                }
+            }
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors du traitement : ' . $e->getMessage(),

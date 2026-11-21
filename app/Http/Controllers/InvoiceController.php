@@ -603,13 +603,7 @@ class InvoiceController extends Controller
 
             $mailer = \Illuminate\Support\Facades\Mail::to($recipientEmail);
 
-            if ($sendCopy) {
-                $copyEmail = setting('company_email', config('mail.from.address'));
-                if ($copyEmail && filter_var($copyEmail, FILTER_VALIDATE_EMAIL)) {
-                    $mailer->cc($copyEmail);
-                }
-            }
-
+            // Never CC company/admin email addresses so admins only receive new website order emails.
             $mailer->send($mail);
 
             $docLabel = $as === 'devis' ? 'Le devis' : 'La facture';

@@ -90,9 +90,9 @@ class OrderController extends Controller
             $query->where('tax_mode', $taxModeFilter);
         }
 
-        // Filter by Delivery Type tag (store / our_team / ozon)
-        $deliveryTypeFilter = strtolower((string) $request->input('delivery_type', ''));
-        if (in_array($deliveryTypeFilter, ['store', 'our_team', 'ozon'], true)) {
+        // Filter by Delivery Type tag (store / our_team [Livreur] / ozon / autre)
+        $deliveryTypeFilter = Order::normalizeDeliveryType($request->input('delivery_type'));
+        if ($deliveryTypeFilter !== null) {
             $query->where('delivery_type', $deliveryTypeFilter);
         }
 
@@ -213,7 +213,7 @@ class OrderController extends Controller
         if (in_array($taxModeFilter, ['ttc', 'ht'], true)) {
             $statsQuery->where('tax_mode', $taxModeFilter);
         }
-        if (in_array($deliveryTypeFilter, ['store', 'our_team', 'ozon'], true)) {
+        if ($deliveryTypeFilter !== null) {
             $statsQuery->where('delivery_type', $deliveryTypeFilter);
         }
         if ($staffFilter !== '') {
@@ -308,7 +308,7 @@ class OrderController extends Controller
             'discount' => ['nullable', 'numeric', 'min:0'],
             'payment_method' => ['nullable', 'string', 'max:50'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
-            'delivery_type' => ['nullable', 'in:store,our_team,ozon'],
+            'delivery_type' => ['nullable', 'in:store,our_team,livreur,ozon,autre'],
             'default_store_id' => ['nullable', 'exists:stores,id'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
@@ -396,7 +396,7 @@ class OrderController extends Controller
                 'discount' => $validated['discount'] ?? 0,
                 'total' => $total,
                 'tax_mode' => $validated['tax_mode'] ?? 'ht',
-                'delivery_type' => $validated['delivery_type'] ?? 'ozon',
+                'delivery_type' => Order::normalizeDeliveryType($validated['delivery_type'] ?? 'ozon') ?? 'ozon',
                 'status' => 'pending',
                 'stock_deducted' => false,
                 'payment_method' => $validated['payment_method'] ?? null,
@@ -491,14 +491,18 @@ class OrderController extends Controller
             'refunded' => 'Remboursé',
             'cash' => 'Espèces',
             'card' => 'Carte',
+            'virement' => 'Virement',
             'bank_transfer' => 'Virement',
+            'cheque' => 'Chèque',
+            'chèque' => 'Chèque',
             'credit' => 'Crédit client',
-            'cod' => 'Paiement à la livraison',
+            'cod' => 'COD',
             'ttc' => 'TTC',
             'ht' => 'HT',
             'store' => 'Store',
-            'our_team' => 'Our Team',
+            'our_team' => 'Livreur',
             'ozon' => 'Ozon',
+            'autre' => 'Autre',
         ];
 
         $formatValue = function ($key, $val) use ($storeNames, $valueLabels) {
@@ -744,7 +748,7 @@ class OrderController extends Controller
             'status' => ['required', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
             'payment_status' => ['required', 'in:pending,partial,paid,failed,refunded'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
-            'delivery_type' => ['nullable', 'in:store,our_team,ozon'],
+            'delivery_type' => ['nullable', 'in:store,our_team,livreur,ozon,autre'],
             'payment_method' => ['nullable', 'string', 'max:50'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -777,7 +781,7 @@ class OrderController extends Controller
                     'payment_status' => $validated['payment_status'],
                     'tax_mode' => $validated['tax_mode'] ?? $order->normalized_tax_mode,
                     'delivery_type' => array_key_exists('delivery_type', $validated)
-                        ? ($validated['delivery_type'] ?: null)
+                        ? Order::normalizeDeliveryType($validated['delivery_type'])
                         : $order->delivery_type,
                     'payment_method' => $validated['payment_method'] ?? null,
                     'transaction_id' => $validated['transaction_id'] ?? null,
@@ -1074,7 +1078,7 @@ class OrderController extends Controller
             'status' => ['nullable', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
             'payment_status' => ['nullable', 'in:pending,partial,paid,failed,refunded'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
-            'delivery_type' => ['nullable', 'in:store,our_team,ozon'],
+            'delivery_type' => ['nullable', 'in:store,our_team,livreur,ozon,autre'],
         ]);
 
         if (empty($validated['status']) && empty($validated['payment_status']) && empty($validated['tax_mode']) && empty($validated['delivery_type'])) {
@@ -1128,8 +1132,11 @@ class OrderController extends Controller
                 $order->save();
             }
 
-            if (isset($validated['delivery_type']) && $validated['delivery_type'] !== $order->delivery_type) {
-                $order->delivery_type = $validated['delivery_type'];
+            $normalizedDeliveryType = !empty($validated['delivery_type'])
+                ? Order::normalizeDeliveryType($validated['delivery_type'])
+                : null;
+            if ($normalizedDeliveryType !== null && $normalizedDeliveryType !== $order->delivery_type) {
+                $order->delivery_type = $normalizedDeliveryType;
                 $order->save();
             }
         });
@@ -1148,8 +1155,8 @@ class OrderController extends Controller
         if (in_array($filterTaxMode, ['ttc', 'ht'], true)) {
             $statsQuery->where('tax_mode', $filterTaxMode);
         }
-        $filterDeliveryType = strtolower((string) $request->input('filter_delivery_type', ''));
-        if (in_array($filterDeliveryType, ['store', 'our_team', 'ozon'], true)) {
+        $filterDeliveryType = Order::normalizeDeliveryType($request->input('filter_delivery_type'));
+        if ($filterDeliveryType !== null) {
             $statsQuery->where('delivery_type', $filterDeliveryType);
         }
         $filterStaffId = trim((string) $request->input('filter_staff_id', ''));

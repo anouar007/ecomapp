@@ -298,6 +298,7 @@
             $mobDeliveryIcon = match ($mobDeliveryType) {
                 'our_team' => 'fa-people-carry-box',
                 'ozon' => 'fa-box-open',
+                'autre' => 'fa-truck-arrow-right',
                 default => 'fa-store',
             };
         @endphp
@@ -320,12 +321,12 @@
                 <li>
                     <button type="button" data-delivery-type="store" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobDeliveryType === 'store' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'store')">
                         <span><span class="status-dot delivery-dot-store me-1.5"></span> Store</span>
-                        @if($mobDeliveryType === 'store') <i class="fas fa-check text-dark small"></i> @endif
+                        @if($mobDeliveryType === 'store') <i class="fas fa-check text-danger small"></i> @endif
                     </button>
                 </li>
                 <li>
                     <button type="button" data-delivery-type="our_team" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobDeliveryType === 'our_team' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'our_team')">
-                        <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Our Team</span>
+                        <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Livreur</span>
                         @if($mobDeliveryType === 'our_team') <i class="fas fa-check text-primary small"></i> @endif
                     </button>
                 </li>
@@ -335,16 +336,23 @@
                         @if($mobDeliveryType === 'ozon') <i class="fas fa-check text-warning small"></i> @endif
                     </button>
                 </li>
+                <li>
+                    <button type="button" data-delivery-type="autre" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobDeliveryType === 'autre' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'autre')">
+                        <span><span class="status-dot delivery-dot-autre me-1.5"></span> Autre</span>
+                        @if($mobDeliveryType === 'autre') <i class="fas fa-check text-purple small"></i> @endif
+                    </button>
+                </li>
             </ul>
         </div>
 
         @if($order->payment_method)
             @php
                 $mobPayMethodLabel = match(strtolower((string) $order->payment_method)) {
-                    'cod', 'cash_on_delivery' => 'À la livraison',
+                    'cod', 'cash_on_delivery' => 'COD',
                     'cash' => 'Espèces',
                     'card' => 'Carte',
                     'virement', 'bank_transfer' => 'Virement',
+                    'cheque', 'chèque' => 'Chèque',
                     'credit' => 'Crédit',
                     'other' => 'Autre',
                     default => ucfirst(str_replace('_', ' ', (string) $order->payment_method)),

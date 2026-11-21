@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:access_pos|manage_orders')->group(function () {
         Route::get('/pos', [\App\Http\Controllers\POSController::class, 'index'])->name('pos.index');
         Route::get('/pos/search', [\App\Http\Controllers\POSController::class, 'search'])->name('pos.search');
+        Route::post('/pos/quick-restock', [\App\Http\Controllers\POSController::class, 'quickRestock'])->name('pos.quick-restock');
         Route::post('/pos/order', [\App\Http\Controllers\POSController::class, 'processOrder'])->name('pos.order');
         Route::get('/pos/receipt/{order}', [\App\Http\Controllers\POSController::class, 'receipt'])->name('pos.receipt');
     });

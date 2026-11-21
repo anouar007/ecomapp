@@ -554,14 +554,16 @@
 }
 
 .pos-product-card.out-of-stock-card {
-    opacity: 0.58;
-    cursor: not-allowed;
+    opacity: 1;
+    cursor: pointer;
+    border-color: #fecaca;
+    background: #fffafb;
 }
 
 .pos-product-card.out-of-stock-card:hover {
-    transform: none;
-    border-color: #e2e8f0;
-    box-shadow: none;
+    transform: translateY(-2px);
+    border-color: #dc2626;
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.12);
 }
 
 .card-img-wrapper {
@@ -596,6 +598,70 @@
     justify-content: center;
     opacity: 0;
     transition: opacity 0.15s;
+}
+
+.overlay-add.is-restock {
+    background: rgba(185, 28, 28, 0.88);
+    flex-direction: column;
+    gap: 4px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px;
+}
+
+.pos-restock-card-btn {
+    width: 100%;
+    margin-top: 7px;
+    padding: 5px 8px;
+    border-radius: 7px;
+    border: 1px solid #fca5a5;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1.2;
+}
+
+.pos-restock-card-btn:hover,
+.pos-product-card.out-of-stock-card:hover .pos-restock-card-btn {
+    background: #dc2626;
+    border-color: #b91c1c;
+    color: #ffffff;
+}
+
+.pos-quick-restock-presets {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.pos-quick-restock-preset {
+    flex: 1;
+    min-width: 44px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.pos-quick-restock-preset:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
 }
 
 .pos-product-card:hover .overlay-add {
@@ -1061,20 +1127,28 @@
 
 .payment-pills {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
 }
 
 .payment-pill {
-    padding: 7px 6px;
+    padding: 4px 4px;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 6px;
     background: #f8fafc;
     color: #334155;
-    font-size: 11.5px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     cursor: pointer;
     text-align: center;
+    line-height: 1.15;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: all 0.15s;
 }
 
@@ -1092,6 +1166,93 @@
 .payment-pill:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+}
+
+.pos-docs-box {
+    margin-top: 6px;
+    padding: 6px 8px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    transition: all 0.15s ease;
+}
+
+.pos-docs-box.is-recommended {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.pos-docs-trigger {
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pos-docs-trigger:hover {
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+.pos-docs-previews {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.pos-doc-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 3px 20px 3px 4px;
+    max-width: 145px;
+    font-size: 10.5px;
+    color: #0f172a;
+}
+
+.pos-doc-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+
+.pos-doc-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pos-doc-remove {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #dc2626;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0 2px;
 }
 
 #posStatusPill.dropdown-toggle::after {
@@ -1140,8 +1301,8 @@
 
 .pos-delivery-toggle-group {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 3px;
     background: #f1f5f9;
     border: 1px solid #cbd5e1;
     border-radius: 10px;
@@ -1152,15 +1313,15 @@
     border: none;
     background: transparent;
     color: #475569;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
-    padding: 6px 6px;
+    padding: 6px 4px;
     border-radius: 7px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     white-space: nowrap;
     transition: all 0.15s ease;
     line-height: 1.2;
@@ -1172,9 +1333,9 @@
 }
 
 .pos-delivery-toggle-btn.active[data-delivery-type="store"] {
-    background: #0f172a;
+    background: #dc2626;
     color: #ffffff;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.35);
 }
 
 .pos-delivery-toggle-btn.active[data-delivery-type="our_team"] {
@@ -1187,6 +1348,12 @@
     background: #d97706;
     color: #ffffff;
     box-shadow: 0 1px 3px rgba(217, 119, 6, 0.32);
+}
+
+.pos-delivery-toggle-btn.active[data-delivery-type="autre"] {
+    background: #7c3aed;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(124, 58, 237, 0.32);
 }
 
 .order-totals {
@@ -1322,6 +1489,16 @@
                     </select>
                 </div>
                 @endif
+
+                <div class="pos-store-picker" title="Filtrer par état de stock">
+                    <i class="fas fa-boxes-stacked"></i>
+                    <select id="stockFilter" class="pos-store-select">
+                        <option value="all" selected>Tous les stocks</option>
+                        <option value="in_stock">En stock</option>
+                        <option value="out_of_stock">En rupture (0)</option>
+                        <option value="low_stock">Stock faible (≤ 5)</option>
+                    </select>
+                </div>
 
             </div>
 
@@ -1493,7 +1670,38 @@
                     <button type="button" class="payment-pill active" data-method="cash" onclick="selectPaymentMethod('cash', this)">💵 Espèces</button>
                     <button type="button" class="payment-pill" data-method="card" onclick="selectPaymentMethod('card', this)">💳 Carte</button>
                     <button type="button" class="payment-pill" data-method="virement" onclick="selectPaymentMethod('virement', this)">🏛️ Virement</button>
+                    <button type="button" class="payment-pill" data-method="cheque" onclick="selectPaymentMethod('cheque', this)">🧾 Chèque</button>
+                    <button type="button" class="payment-pill" data-method="cod" onclick="selectPaymentMethod('cod', this)">🚚 COD</button>
                     <button type="button" class="payment-pill" data-method="other" onclick="selectPaymentMethod('other', this)">⚪ Autre</button>
+                </div>
+
+                <!-- Upload justificatif / Chèque / Document -->
+                <div class="pos-docs-box" id="posPaymentDocsBox">
+                    <input type="file"
+                           id="posPaymentAttachmentsInput"
+                           class="d-none"
+                           multiple
+                           accept="image/*,.pdf"
+                           onchange="handlePosPaymentFiles(this)">
+                    <button type="button"
+                            class="pos-docs-trigger"
+                            id="posPaymentDocsBtn"
+                            onclick="document.getElementById('posPaymentAttachmentsInput')?.click()">
+                        <span>
+                            <i class="fas fa-paperclip text-danger me-1"></i>
+                            <span id="posPaymentDocsBtnLabel">Joindre image (Chèque / Document)</span>
+                        </span>
+                        <span class="badge bg-light text-secondary border" id="posPaymentDocsCount" style="font-size: 10px;">0</span>
+                    </button>
+                    <div id="posPaymentAttachmentsList" class="pos-docs-previews d-none"></div>
+                    <div id="posPaymentDocsClearWrap" class="text-end mt-1 d-none">
+                        <button type="button"
+                                class="btn btn-link btn-sm p-0 text-danger text-decoration-none"
+                                style="font-size: 10.5px; font-weight: 600;"
+                                onclick="clearPosPaymentAttachments()">
+                            <i class="fas fa-trash-alt me-1"></i>Tout effacer
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Paiement Partiel (Acompte + Échéance) -->
@@ -1532,7 +1740,7 @@
                     </div>
                 </div>
 
-                <div id="cashTenderedBox" class="mt-2 pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                <div id="cashTenderedBox" class="mt-2 pt-2 border-top d-none" style="display: none !important; border-color: #f1f5f9 !important;" aria-hidden="true">
                     <div class="d-flex align-items-center justify-content-between gap-2">
                         <label for="amountReceived" style="font-size: 11.5px; color: #64748b; font-weight: 600; white-space: nowrap;">Montant reçu :</label>
                         <input type="number" id="amountReceived" class="compact-input" placeholder="0.00" min="0" step="0.01" style="width: 120px; text-align: right; font-weight: 700;">
@@ -1623,11 +1831,15 @@
                         </button>
                         <button type="button" class="pos-delivery-toggle-btn" data-delivery-type="our_team" onclick="setPosDeliveryType('our_team')">
                             <i class="fas fa-people-carry-box"></i>
-                            <span>Our Team</span>
+                            <span>Livreur</span>
                         </button>
                         <button type="button" class="pos-delivery-toggle-btn" data-delivery-type="ozon" onclick="setPosDeliveryType('ozon')">
                             <i class="fas fa-box-open"></i>
                             <span>Ozon</span>
+                        </button>
+                        <button type="button" class="pos-delivery-toggle-btn" data-delivery-type="autre" onclick="setPosDeliveryType('autre')">
+                            <i class="fas fa-truck-arrow-right"></i>
+                            <span>Autre</span>
                         </button>
                     </div>
                 </div>
@@ -1740,7 +1952,8 @@ window.posState = {
     currentTotal: 0,
     todayCount: {{ (int) ($todayPosCount ?? 0) }},
     todayTotal: {{ (float) ($todayPosTotal ?? 0) }},
-    saveCustomerManualOverride: false
+    saveCustomerManualOverride: false,
+    paymentAttachments: []
 };
 
 window.POS_HELD_STORAGE_KEY = 'wina_pos_held_orders_v1';
@@ -2518,16 +2731,23 @@ function renderProducts() {
             storeTagsHtml = `<div class="card-stores-tags"><span class="store-tag-pill global-fallback" title="Stock global non réparti par dépôt"><i class="fas fa-cubes" style="font-size:8px;"></i> Stock global (${product.global_stock})</span></div>`;
         }
 
+        const restockBtnHtml = isOut
+            ? `<button type="button" class="pos-restock-card-btn" onclick="event.stopPropagation(); openPosQuickRestock(${product.id})">
+                    <i class="fas fa-plus-circle"></i> + Stock &amp; Panier
+               </button>`
+            : '';
+
         return `
             <div class="pos-product-card ${isOut ? 'out-of-stock-card' : ''}"
-                 onclick="${isOut ? '' : `addToCart(${product.id})`}"
-                 aria-disabled="${isOut ? 'true' : 'false'}"
-                 title="${escapeHtml(product.name)}${isOut ? ' — Rupture de stock' : ''}">
+                 onclick="${isOut ? `openPosQuickRestock(${product.id})` : `addToCart(${product.id})`}"
+                 title="${escapeHtml(product.name)}${isOut ? ' — Cliquez pour ajouter au stock & panier' : ''}">
                 ${qtyBadge}
                 ${saleBadge}
                 <div class="card-img-wrapper">
                     <img src="${imgSrc}" class="card-img" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackSrc}';">
-                    ${!isOut ? `<div class="overlay-add"><i class="fas fa-plus"></i></div>` : ''}
+                    ${isOut
+                        ? `<div class="overlay-add is-restock"><i class="fas fa-boxes-stacked" style="font-size: 20px;"></i><span>+ Stock &amp; Panier</span></div>`
+                        : `<div class="overlay-add"><i class="fas fa-plus"></i></div>`}
                 </div>
                 ${stockBadge}
                 <div class="card-content">
@@ -2535,6 +2755,7 @@ function renderProducts() {
                     ${product.sku ? `<div class="card-sku">${escapeHtml(product.sku)}</div>` : ''}
                     ${storeTagsHtml}
                     <div class="card-footer">${priceHtml}</div>
+                    ${restockBtnHtml}
                 </div>
             </div>
         `;
@@ -2581,6 +2802,179 @@ window.addToCart = function(productId) {
 
     renderCart();
     renderProducts();
+};
+
+window.setQuickRestockPreset = function(qty) {
+    const qtyInput = document.getElementById('posQuickRestockQty');
+    if (qtyInput) {
+        qtyInput.value = String(Math.max(1, parseInt(qty, 10) || 1));
+    }
+};
+
+window.openPosQuickRestock = function(productId) {
+    const product = window.posState.products.find(p => p.id === productId);
+    if (!product) return;
+
+    const allStores = window.posStores || [];
+    const activeFilterStoreId = document.getElementById('posStoreSelect')?.value || '';
+    const defaultStoreObj = allStores.find(s => s.is_default) || allStores[0] || null;
+    const preselectedStoreId = activeFilterStoreId
+        ? Number(activeFilterStoreId)
+        : (defaultStoreObj ? Number(defaultStoreObj.id) : '');
+
+    const storeOptionsHtml = allStores.length > 0
+        ? allStores.map(st => `<option value="${st.id}" ${Number(st.id) === Number(preselectedStoreId) ? 'selected' : ''}>${escapeHtml(st.name)}${st.code ? ' (' + escapeHtml(st.code) + ')' : ''}</option>`).join('')
+        : '<option value="">Stock global (aucun dépôt)</option>';
+
+    Swal.fire({
+        title: 'Réapprovisionner & Ajouter au panier',
+        html: `
+            <div class="text-start" style="font-size: 13px;">
+                <div class="p-2.5 mb-3 rounded-3 border bg-light d-flex align-items-center justify-content-between gap-2">
+                    <div style="min-width: 0;">
+                        <div class="fw-bold text-dark text-truncate">${escapeHtml(product.name)}</div>
+                        <div class="text-muted" style="font-size: 11px;">
+                            ${product.sku ? 'SKU : ' + escapeHtml(product.sku) + ' • ' : ''}Prix : <strong class="text-danger">${formatCurrency(product.price)}</strong>
+                        </div>
+                    </div>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle flex-shrink-0">Rupture (0)</span>
+                </div>
+
+                <div class="mb-2.5">
+                    <label for="posQuickRestockStore" class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                        <i class="fas fa-warehouse text-danger me-1"></i> Dépôt / Magasin cible
+                    </label>
+                    <select id="posQuickRestockStore" class="form-select form-select-sm fw-semibold">
+                        ${storeOptionsHtml}
+                    </select>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label for="posQuickRestockQty" class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                            <i class="fas fa-boxes-stacked text-success me-1"></i> Quantité à ajouter au stock
+                        </label>
+                        <input type="number" id="posQuickRestockQty" class="form-control form-control-sm fw-bold" value="1" min="1" max="99999">
+                    </div>
+                    <div class="col-6">
+                        <label for="posQuickRestockCartQty" class="form-label fw-bold text-dark mb-1" style="font-size: 12px;">
+                            <i class="fas fa-cart-plus text-primary me-1"></i> Quantité dans le panier
+                        </label>
+                        <input type="number" id="posQuickRestockCartQty" class="form-control form-control-sm fw-bold" value="1" min="0" max="99999">
+                    </div>
+                </div>
+
+                <div class="pos-quick-restock-presets">
+                    <button type="button" class="pos-quick-restock-preset" onclick="setQuickRestockPreset(1)">+1</button>
+                    <button type="button" class="pos-quick-restock-preset" onclick="setQuickRestockPreset(2)">+2</button>
+                    <button type="button" class="pos-quick-restock-preset" onclick="setQuickRestockPreset(5)">+5</button>
+                    <button type="button" class="pos-quick-restock-preset" onclick="setQuickRestockPreset(10)">+10</button>
+                    <button type="button" class="pos-quick-restock-preset" onclick="setQuickRestockPreset(20)">+20</button>
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: '<i class="fas fa-check me-1"></i> Ajouter stock & panier',
+        cancelButtonText: 'Annuler',
+        focusConfirm: false,
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+            const storeVal = document.getElementById('posQuickRestockStore')?.value || '';
+            const addQty = parseInt(document.getElementById('posQuickRestockQty')?.value || '0', 10);
+            const cartQty = parseInt(document.getElementById('posQuickRestockCartQty')?.value || '0', 10);
+
+            if (!addQty || addQty < 1) {
+                Swal.showValidationMessage('Veuillez saisir une quantité valide à ajouter au stock (minimum 1).');
+                return false;
+            }
+            if (isNaN(cartQty) || cartQty < 0) {
+                Swal.showValidationMessage('La quantité pour le panier doit être positive ou nulle.');
+                return false;
+            }
+
+            return fetch('{{ route("pos.quick-restock") }}', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    product_id: product.id,
+                    quantity: addQty,
+                    store_id: storeVal ? Number(storeVal) : null,
+                    active_store_id: activeFilterStoreId ? Number(activeFilterStoreId) : null
+                })
+            })
+            .then(async res => {
+                const payload = await res.json().catch(() => ({}));
+                if (!res.ok || !payload.success || !payload.product) {
+                    throw new Error(payload.message || 'Impossible de mettre à jour le stock.');
+                }
+                return { payload, cartQty };
+            })
+            .catch(err => {
+                Swal.showValidationMessage(err.message || 'Erreur lors de la mise à jour du stock.');
+            });
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(result => {
+        if (!result.isConfirmed || !result.value) return;
+
+        const { payload, cartQty } = result.value;
+        const updatedProduct = payload.product;
+        const idx = window.posState.products.findIndex(p => p.id === updatedProduct.id);
+        if (idx !== -1) {
+            window.posState.products[idx] = updatedProduct;
+        } else {
+            window.posState.products.unshift(updatedProduct);
+        }
+
+        if (cartQty > 0) {
+            const targetStoreId = payload.store_id ? Number(payload.store_id) : resolveDefaultItemStoreId(updatedProduct);
+            const existing = window.posState.cart.find(i => i.product_id === updatedProduct.id);
+            if (existing) {
+                existing.stores = Array.isArray(updatedProduct.stores) ? updatedProduct.stores.map(s => ({ ...s })) : (existing.stores || []);
+                existing.global_stock = parseInt(updatedProduct.global_stock ?? updatedProduct.stock, 10) || existing.global_stock || 0;
+                if (targetStoreId) existing.store_id = targetStoreId;
+                const maxStock = getItemMaxStock(existing);
+                existing.stock = maxStock;
+                existing.quantity = maxStock > 0 ? Math.min(maxStock, (existing.quantity || 0) + cartQty) : (existing.quantity || 0) + cartQty;
+            } else {
+                const newItem = {
+                    product_id: updatedProduct.id,
+                    name: updatedProduct.name,
+                    image: updatedProduct.image || '',
+                    price: parseFloat(updatedProduct.price),
+                    custom_price: null,
+                    quantity: 1,
+                    stock: 0,
+                    global_stock: parseInt(updatedProduct.global_stock ?? updatedProduct.stock, 10) || 0,
+                    stores: Array.isArray(updatedProduct.stores) ? updatedProduct.stores.map(s => ({ ...s })) : [],
+                    store_id: targetStoreId,
+                    discount_amount: 0,
+                    discount_type: 'fixed'
+                };
+                const maxStock = getItemMaxStock(newItem);
+                newItem.stock = maxStock;
+                newItem.quantity = maxStock > 0 ? Math.min(maxStock, cartQty) : cartQty;
+                window.posState.cart.push(newItem);
+            }
+            renderCart();
+        }
+
+        renderProducts();
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Stock mis à jour',
+            text: payload.message + (cartQty > 0 ? ' Article ajouté au panier.' : ''),
+            timer: 1500,
+            showConfirmButton: false
+        });
+    });
 };
 
 window.updateQuantity = function(productId, delta) {
@@ -2919,9 +3313,10 @@ window.formatPosTaxBadgeHtml = function(taxMode) {
 };
 
 window.POS_DELIVERY_TYPE_META = {
-    store:    { label: 'Store',    icon: 'fa-store',            bg: '#f1f5f9', color: '#0f172a', border: '#cbd5e1' },
-    our_team: { label: 'Our Team', icon: 'fa-people-carry-box', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
-    ozon:     { label: 'Ozon',     icon: 'fa-box-open',         bg: '#fffbeb', color: '#b45309', border: '#fde68a' }
+    store:    { label: 'Store',   icon: 'fa-store',             bg: '#fef2f2', color: '#dc2626', border: '#fecaca' },
+    our_team: { label: 'Livreur', icon: 'fa-people-carry-box',  bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+    ozon:     { label: 'Ozon',    icon: 'fa-box-open',          bg: '#fffbeb', color: '#b45309', border: '#fde68a' },
+    autre:    { label: 'Autre',   icon: 'fa-truck-arrow-right', bg: '#f5f3ff', color: '#6d28d9', border: '#ddd6fe' }
 };
 
 window.formatPosDeliveryBadgeHtml = function(deliveryType) {
@@ -3033,7 +3428,7 @@ window.togglePartialPaymentBox = function() {
     const isPartial = !!toggle?.checked && method !== 'credit';
 
     if (fields) fields.style.display = isPartial ? 'block' : 'none';
-    if (cashBox) cashBox.style.display = (method === 'cash' && !isPartial) ? 'block' : 'none';
+    if (cashBox) cashBox.style.display = 'none';
 
     updateCashChange();
     updatePartialPaymentSummary();
@@ -3140,10 +3535,133 @@ function updateCashChange() {
     }
 }
 
+window.handlePosPaymentFiles = function(input) {
+    const files = Array.from(input?.files || []);
+    if (!files.length) return;
+
+    const existing = window.posState.paymentAttachments || [];
+    const maxFiles = 10;
+    const maxBytes = 10 * 1024 * 1024;
+    const allowedExt = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf'];
+    const rejected = [];
+
+    files.forEach(file => {
+        if (existing.length >= maxFiles) {
+            rejected.push(`${file.name} (limite 10 fichiers)`);
+            return;
+        }
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        const isAllowedType = (file.type && (file.type.startsWith('image/') || file.type === 'application/pdf')) || allowedExt.includes(ext);
+        if (!isAllowedType) {
+            rejected.push(`${file.name} (format non supporté)`);
+            return;
+        }
+        if (file.size > maxBytes) {
+            rejected.push(`${file.name} (> 10 Mo)`);
+            return;
+        }
+        const dup = existing.some(it => it.file.name === file.name && it.file.size === file.size && it.file.lastModified === file.lastModified);
+        if (!dup) {
+            const isImage = (file.type && file.type.startsWith('image/')) || ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext);
+            existing.push({
+                file,
+                name: file.name,
+                isImage,
+                previewUrl: isImage ? URL.createObjectURL(file) : null
+            });
+        }
+    });
+
+    window.posState.paymentAttachments = existing;
+    if (input) input.value = '';
+    renderPosPaymentAttachments();
+
+    if (rejected.length > 0 && typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Fichier ignoré',
+            text: rejected.join(', ')
+        });
+    }
+};
+
+window.removePosPaymentAttachment = function(index) {
+    const list = window.posState.paymentAttachments || [];
+    const target = list[index];
+    if (target?.previewUrl) {
+        URL.revokeObjectURL(target.previewUrl);
+    }
+    list.splice(index, 1);
+    window.posState.paymentAttachments = list;
+    renderPosPaymentAttachments();
+};
+
+window.clearPosPaymentAttachments = function() {
+    (window.posState.paymentAttachments || []).forEach(item => {
+        if (item?.previewUrl) {
+            URL.revokeObjectURL(item.previewUrl);
+        }
+    });
+    window.posState.paymentAttachments = [];
+    const input = document.getElementById('posPaymentAttachmentsInput');
+    if (input) input.value = '';
+    renderPosPaymentAttachments();
+};
+
+window.renderPosPaymentAttachments = function() {
+    const list = window.posState.paymentAttachments || [];
+    const container = document.getElementById('posPaymentAttachmentsList');
+    const countEl = document.getElementById('posPaymentDocsCount');
+    const clearWrap = document.getElementById('posPaymentDocsClearWrap');
+
+    if (countEl) {
+        countEl.textContent = String(list.length);
+        countEl.className = list.length > 0
+            ? 'badge bg-danger text-white'
+            : 'badge bg-light text-secondary border';
+    }
+
+    if (clearWrap) {
+        clearWrap.classList.toggle('d-none', list.length === 0);
+    }
+
+    if (!container) return;
+    if (list.length === 0) {
+        container.classList.add('d-none');
+        container.innerHTML = '';
+        return;
+    }
+
+    container.classList.remove('d-none');
+    container.innerHTML = list.map((item, idx) => {
+        const thumbHtml = item.isImage && item.previewUrl
+            ? `<img src="${item.previewUrl}" class="pos-doc-thumb" alt="">`
+            : `<span class="pos-doc-thumb d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger"><i class="fas fa-file-pdf"></i></span>`;
+        return `
+            <div class="pos-doc-chip" title="${escapeHtml(item.name)}">
+                ${thumbHtml}
+                <span class="pos-doc-name">${escapeHtml(item.name)}</span>
+                <button type="button" class="pos-doc-remove" onclick="removePosPaymentAttachment(${idx})" title="Supprimer">&times;</button>
+            </div>
+        `;
+    }).join('');
+};
+
 window.selectPaymentMethod = function(method, btn) {
     document.getElementById('paymentMethod').value = method;
     document.querySelectorAll('.payment-pill').forEach(p => p.classList.remove('active'));
     btn?.classList.add('active');
+
+    const docsBox = document.getElementById('posPaymentDocsBox');
+    const docsLabel = document.getElementById('posPaymentDocsBtnLabel');
+    if (docsBox) {
+        docsBox.classList.toggle('is-recommended', method === 'cheque' || method === 'virement');
+    }
+    if (docsLabel) {
+        docsLabel.textContent = method === 'cheque'
+            ? 'Joindre photo du chèque / Document'
+            : (method === 'virement' ? 'Joindre reçu de virement / Document' : 'Joindre image (Chèque / Document)');
+    }
 
     const partialWrap = document.getElementById('partialPaymentToggleWrap');
     const partialToggle = document.getElementById('isPartialPayment');
@@ -3158,7 +3676,7 @@ window.selectPaymentMethod = function(method, btn) {
 
     const isPartial = !!partialToggle?.checked && method !== 'credit';
     const cashBox = document.getElementById('cashTenderedBox');
-    if (cashBox) cashBox.style.display = (method === 'cash' && !isPartial) ? 'block' : 'none';
+    if (cashBox) cashBox.style.display = 'none';
     updateCashChange();
     updatePartialPaymentSummary();
     updateMobileBottomBar();
@@ -3298,15 +3816,42 @@ window.checkout = function() {
         }))
     };
 
+    const attachments = window.posState.paymentAttachments || [];
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    const fetchHeaders = {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': csrfToken
+    };
+    let fetchBody;
+
+    if (attachments.length > 0) {
+        const formData = new FormData();
+        Object.entries(payload).forEach(([key, val]) => {
+            if (val === null || val === undefined || val === '') return;
+            if (key === 'items') {
+                formData.append('items', JSON.stringify(val));
+            } else if (typeof val === 'boolean') {
+                formData.append(key, val ? '1' : '0');
+            } else {
+                formData.append(key, String(val));
+            }
+        });
+        attachments.forEach(item => {
+            if (item?.file) {
+                formData.append('payment_attachments[]', item.file, item.name || item.file.name);
+            }
+        });
+        fetchBody = formData;
+    } else {
+        fetchHeaders['Content-Type'] = 'application/json';
+        fetchBody = JSON.stringify(payload);
+    }
+
     fetch(`{{ route('pos.order') }}`, {
         method: 'POST',
         credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify(payload)
+        headers: fetchHeaders,
+        body: fetchBody
     })
     .then(async res => {
         const data = await res.json().catch(() => ({}));
@@ -3361,6 +3906,10 @@ window.checkout = function() {
         const savedClientHtml = (saveCustomer && data.customer)
             ? `<p class="mb-0 text-success small"><i class="fas fa-user-check me-1"></i>Client enregistré : <strong>${escapeHtml(data.customer.name)}</strong></p>`
             : '';
+        const attachedDocs = Array.isArray(data.order.payment_attachments) ? data.order.payment_attachments : [];
+        const attachedDocsHtml = attachedDocs.length > 0
+            ? `<p class="mb-1 small"><strong>Justificatifs (${attachedDocs.length}) :</strong> ${attachedDocs.map(doc => `<a href="${escapeHtml(doc.url)}" target="_blank" rel="noopener" class="text-primary text-decoration-underline me-1">${escapeHtml(doc.name)}</a>`).join(', ')}</p>`
+            : '';
 
         Swal.fire({
             icon: 'success',
@@ -3374,6 +3923,7 @@ window.checkout = function() {
                     <p class="mb-1"><strong>Total commande :</strong> <strong class="text-danger">${formatCurrency(data.order.total)}</strong></p>
                     ${partialOrderHtml}
                     ${changeHtml}
+                    ${attachedDocsHtml}
                     ${savedClientHtml}
                 </div>
                 ${data.order.receipt_url ? `<a href="${data.order.receipt_url}" target="_blank" class="btn btn-sm btn-outline-dark w-100"><i class="fas fa-print me-1"></i> Imprimer Ticket 80mm</a>` : ''}
@@ -3396,6 +3946,7 @@ window.checkout = function() {
             if (document.getElementById('partialPaidAmount')) document.getElementById('partialPaidAmount').value = '';
             if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
             togglePartialPaymentBox();
+            clearPosPaymentAttachments();
             setPosOrderStatus('delivered');
             setPosDeliveryType('store');
             setPosTaxMode('ht');
@@ -3439,13 +3990,7 @@ function initPosTerminal() {
                 searchInput.value = '';
                 loadProducts();
             } else if (targetProduct && targetProduct.stock <= 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Rupture de stock',
-                    text: `${targetProduct.name} est actuellement en rupture de stock.`,
-                    timer: 1600,
-                    showConfirmButton: false
-                });
+                openPosQuickRestock(targetProduct.id);
             } else {
                 loadProducts();
             }

@@ -35,6 +35,7 @@ class NewOrderNotification extends Mailable
             text: [
                 'X-Order-Number' => $orderNumber,
                 'X-Entity-Ref-ID' => $orderNumber,
+                'X-Wina-Mail-Type' => 'website-new-order',
             ],
         );
     }

@@ -36,8 +36,9 @@ class PosDeliveryTypeTest extends TestCase
             ->assertSee('id="orderDeliveryType"', false)
             ->assertSee('id="posDeliveryTypeGroup"', false)
             ->assertSee('Store')
-            ->assertSee('Our Team')
-            ->assertSee('Ozon');
+            ->assertSee('Livreur')
+            ->assertSee('Ozon')
+            ->assertSee('Autre');
     }
 
     public function test_pos_checkout_defaults_to_store_and_persists_our_team_or_ozon(): void
@@ -77,7 +78,7 @@ class PosDeliveryTypeTest extends TestCase
             ->assertJsonPath('order.delivery_type_label', 'Store');
 
         $teamRes = $this->actingAs($admin)->postJson(route('pos.order'), [
-            'customer_name' => 'Client Our Team',
+            'customer_name' => 'Client Livreur',
             'store_id' => $store->id,
             'payment_method' => 'cash',
             'delivery_type' => 'our_team',
@@ -92,7 +93,25 @@ class PosDeliveryTypeTest extends TestCase
 
         $teamRes->assertStatus(200)
             ->assertJsonPath('order.delivery_type', 'our_team')
-            ->assertJsonPath('order.delivery_type_label', 'Our Team');
+            ->assertJsonPath('order.delivery_type_label', 'Livreur');
+
+        $livreurAliasRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Livreur Alias',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'livreur',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $livreurAliasRes->assertStatus(200)
+            ->assertJsonPath('order.delivery_type', 'our_team')
+            ->assertJsonPath('order.delivery_type_label', 'Livreur');
 
         $ozonRes = $this->actingAs($admin)->postJson(route('pos.order'), [
             'customer_name' => 'Client Ozon',
@@ -115,6 +134,28 @@ class PosDeliveryTypeTest extends TestCase
         $ozonOrder = Order::findOrFail($ozonRes->json('order.id'));
         $this->assertSame('ozon', $ozonOrder->normalized_delivery_type);
         $this->assertSame('Ozon', $ozonOrder->delivery_type_label);
+
+        $autreRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Autre Delivery',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'autre',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $autreRes->assertStatus(200)
+            ->assertJsonPath('order.delivery_type', 'autre')
+            ->assertJsonPath('order.delivery_type_label', 'Autre');
+
+        $autreOrder = Order::findOrFail($autreRes->json('order.id'));
+        $this->assertSame('autre', $autreOrder->normalized_delivery_type);
+        $this->assertSame('Autre', $autreOrder->delivery_type_label);
 
         $invalidRes = $this->actingAs($admin)->postJson(route('pos.order'), [
             'customer_name' => 'Client Invalid Delivery',
@@ -179,7 +220,21 @@ class PosDeliveryTypeTest extends TestCase
 
         $order->refresh();
         $this->assertSame('our_team', $order->normalized_delivery_type);
-        $this->assertSame('Our Team', $order->delivery_type_label);
+        $this->assertSame('Livreur', $order->delivery_type_label);
+
+        $this->actingAs($admin)
+            ->put(route('orders.update', $order), [
+                'status' => 'delivered',
+                'payment_status' => 'paid',
+                'tax_mode' => 'ht',
+                'delivery_type' => 'autre',
+                'payment_method' => 'cash',
+            ])
+            ->assertRedirect(route('orders.show', $order));
+
+        $order->refresh();
+        $this->assertSame('autre', $order->normalized_delivery_type);
+        $this->assertSame('Autre', $order->delivery_type_label);
     }
 
     public function test_website_checkout_defaults_delivery_type_to_ozon_for_delivery_and_store_for_pickup(): void
@@ -287,6 +342,25 @@ class PosDeliveryTypeTest extends TestCase
             'payment_method' => 'cod',
         ]);
 
+        $webAutre = Order::create([
+            'customer_name' => 'Web Autre Client',
+            'shipping_address' => '33 Bd Anfa',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 700,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'discount' => 0,
+            'total' => 700,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'autre',
+            'status' => 'processing',
+            'stock_deducted' => false,
+            'payment_status' => 'pending',
+            'payment_method' => 'cod',
+        ]);
+
         // Renders interactive desktop, mobile & detail pills on website orders + detail page
         $this->actingAs($admin)
             ->get(route('orders.index'))
@@ -294,14 +368,23 @@ class PosDeliveryTypeTest extends TestCase
             ->assertSee('id="dt-delivery-pill-' . $webOzon->id . '"', false)
             ->assertSee('id="mob-delivery-pill-' . $webOzon->id . '"', false)
             ->assertSee('Ozon')
-            ->assertSee('Our Team');
+            ->assertSee('Livreur')
+            ->assertSee('Autre');
 
-        // Filtering website orders by delivery_type works accurately
+        // Filtering website orders by delivery_type works accurately (our_team & autre)
         $this->actingAs($admin)
             ->get(route('orders.index', ['delivery_type' => 'our_team']))
             ->assertStatus(200)
             ->assertSee('Web Team Client')
-            ->assertDontSee('Web Ozon Client');
+            ->assertDontSee('Web Ozon Client')
+            ->assertDontSee('Web Autre Client');
+
+        $this->actingAs($admin)
+            ->get(route('orders.index', ['delivery_type' => 'autre']))
+            ->assertStatus(200)
+            ->assertSee('Web Autre Client')
+            ->assertDontSee('Web Ozon Client')
+            ->assertDontSee('Web Team Client');
 
         // Quick-status updates delivery_type cleanly without changing order status or tax_mode
         $quickRes = $this->actingAs($admin)->postJson(route('orders.quick-status', $webOzon), [
@@ -314,10 +397,20 @@ class PosDeliveryTypeTest extends TestCase
             ->assertJsonPath('order.status', 'pending')
             ->assertJsonPath('order.tax_mode', 'ht')
             ->assertJsonPath('order.delivery_type', 'our_team')
-            ->assertJsonPath('order.delivery_type_label', 'Our Team');
+            ->assertJsonPath('order.delivery_type_label', 'Livreur');
+
+        $quickAutreRes = $this->actingAs($admin)->postJson(route('orders.quick-status', $webOzon), [
+            'delivery_type' => 'autre',
+            'channel' => 'website',
+        ]);
+
+        $quickAutreRes->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('order.delivery_type', 'autre')
+            ->assertJsonPath('order.delivery_type_label', 'Autre');
 
         $webOzon->refresh();
-        $this->assertSame('our_team', $webOzon->normalized_delivery_type);
+        $this->assertSame('autre', $webOzon->normalized_delivery_type);
         $this->assertSame('pending', $webOzon->status);
 
         // Order detail page renders interactive show-delivery-pill and tile
@@ -325,6 +418,7 @@ class PosDeliveryTypeTest extends TestCase
             ->get(route('orders.show', $webOzon))
             ->assertStatus(200)
             ->assertSee('id="show-delivery-pill-' . $webOzon->id . '"', false)
-            ->assertSee('Our Team');
+            ->assertSee('Livreur')
+            ->assertSee('Autre');
     }
 }

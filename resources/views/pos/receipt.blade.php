@@ -162,6 +162,8 @@
                 'cash' => 'ESPÈCES',
                 'card' => 'CARTE',
                 'virement' => 'VIREMENT',
+                'cheque', 'chèque' => 'CHÈQUE',
+                'cod', 'cash_on_delivery' => 'COD',
                 'credit' => 'CRÉDIT',
                 'other' => 'AUTRE',
                 default => strtoupper((string) $order->payment_method),
