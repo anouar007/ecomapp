@@ -381,6 +381,7 @@ class CheckoutController extends Controller
                         'coupon_id' => $coupon?->id,
                         'coupon_code' => $coupon?->code,
                         'total' => $total,
+                        'tax_mode' => 'ht',
                         'status' => 'pending',
                         'stock_deducted' => true,
                         'payment_status' => 'pending',

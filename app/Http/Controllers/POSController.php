@@ -214,6 +214,7 @@ class POSController extends Controller
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
             'payment_due_date' => ['nullable', 'date'],
             'status' => ['nullable', 'string', 'in:delivered,pending,en_demande,reserved,processing,shipped'],
+            'tax_mode' => ['nullable', 'string', 'in:ttc,ht'],
             'notes' => ['nullable', 'string', 'max:500'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
             'discount_type' => ['nullable', 'string', 'in:percent,fixed'],
@@ -471,6 +472,7 @@ class POSController extends Controller
 
             $notes = trim((string) ($validated['notes'] ?? ''));
             $orderStatus = $validated['status'] ?? 'delivered';
+            $orderTaxMode = strtolower((string) ($validated['tax_mode'] ?? 'ht')) === 'ttc' ? 'ttc' : 'ht';
             $shouldDeductStock = $orderStatus === 'delivered';
             $orderPaymentStatus = $isPartialPayment
                 ? ($paidNow > 0 ? 'partial' : 'pending')
@@ -491,6 +493,7 @@ class POSController extends Controller
                 'shipping_cost' => 0,
                 'discount' => $totalDiscount,
                 'total' => $total,
+                'tax_mode' => $orderTaxMode,
                 'paid_amount' => $paidNow,
                 'remaining_amount' => $remainingAmount,
                 'status' => $orderStatus,
@@ -668,6 +671,8 @@ class POSController extends Controller
                     'id' => $order->id,
                     'order_number' => $order->order_number,
                     'status' => $order->status,
+                    'tax_mode' => $order->normalized_tax_mode,
+                    'tax_mode_label' => $order->tax_mode_label,
                     'stock_deducted' => (bool) $order->stock_deducted,
                     'total' => (float) $order->total,
                     'paid_amount' => (float) $order->paid_amount,

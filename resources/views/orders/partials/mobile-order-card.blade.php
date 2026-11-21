@@ -49,9 +49,39 @@
             </div>
         </div>
 
-        <div class="mobile-order-price-wrap">
+        <div class="mobile-order-price-wrap tabular-nums">
             <div class="mobile-order-price">
                 {{ $order->formatted_total }}
+            </div>
+            @php $mobTaxMode = $order->normalized_tax_mode; @endphp
+            <div class="dropdown d-inline-block mt-1">
+                <button type="button"
+                        class="tax-mode-pill tax-mode-{{ $mobTaxMode }} dropdown-toggle mt-1"
+                        data-bs-toggle="dropdown"
+                        data-bs-auto-close="true"
+                        data-bs-boundary="viewport"
+                        data-bs-popper-config='{"strategy":"fixed"}'
+                        aria-expanded="false"
+                        id="mob-tax-pill-{{ $order->id }}"
+                        title="Changer le régime TTC / HT">
+                    <span id="mob-tax-label-{{ $order->id }}">{{ $order->tax_mode_label }}</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu text-start" aria-labelledby="mob-tax-pill-{{ $order->id }}">
+                    <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Régime fiscal</li>
+                    <li>
+                        <button type="button" data-tax-mode="ttc" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobTaxMode === 'ttc' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'tax_mode', 'ttc')">
+                            <span><span class="status-dot tax-dot-ttc me-1.5"></span> TTC</span>
+                            @if($mobTaxMode === 'ttc') <i class="fas fa-check text-primary small"></i> @endif
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" data-tax-mode="ht" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobTaxMode === 'ht' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'tax_mode', 'ht')">
+                            <span><span class="status-dot tax-dot-ht me-1.5"></span> HT</span>
+                            @if($mobTaxMode === 'ht') <i class="fas fa-check text-warning small"></i> @endif
+                        </button>
+                    </li>
+                </ul>
             </div>
             @php
                 $payStatus = strtolower($order->payment_status);
@@ -84,6 +114,15 @@
     </div>
 
     <!-- Customer Info Row -->
+    @php
+        $mobCleanPhone = '';
+        if ($order->customer_phone) {
+            $mobCleanPhone = preg_replace('/[^0-9]/', '', (string) $order->customer_phone);
+            if (str_starts_with($mobCleanPhone, '0')) {
+                $mobCleanPhone = '212' . substr($mobCleanPhone, 1);
+            }
+        }
+    @endphp
     <div class="mobile-order-customer">
         <div class="mobile-order-cust-avatar" style="{{ $order->is_blacklisted ? 'background: #fee2e2; color: #dc2626; border-color: #fca5a5;' : '' }}">
             @if($order->is_blacklisted)
@@ -109,20 +148,34 @@
             </div>
             <div class="mobile-order-cust-sub text-truncate d-flex align-items-center gap-2">
                 <span>
-                    <i class="far fa-envelope me-1 opacity-75"></i>{{ $order->customer_email ?: ($order->customer_phone ?: 'Aucun contact') }}
+                    <i class="fas fa-{{ $order->customer_phone ? 'phone' : 'envelope' }} me-1 opacity-75"></i>{{ $order->customer_phone ?: ($order->customer_email ?: 'Aucun contact') }}
                 </span>
                 @if($order->shipping_city)
                     <span class="text-muted opacity-75">
                         <i class="fas fa-map-marker-alt text-danger me-0.5"></i>{{ $order->shipping_city }}
                     </span>
                 @endif
-                @if($order->customer_record)
-                    <a href="{{ route('customers.show', $order->customer_record) }}" class="text-primary text-decoration-none ms-auto" title="Voir fiche client">
-                        <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+        @if($order->customer_phone || $order->customer_record)
+            <div class="d-flex align-items-center gap-1.5 flex-shrink-0 ms-1">
+                @if($order->customer_phone)
+                    <a href="tel:{{ $order->customer_phone }}" class="mobile-order-quick-btn is-call" title="Appeler {{ $order->customer_name ?: 'le client' }}">
+                        <i class="fas fa-phone-alt"></i>
+                    </a>
+                @endif
+                @if($mobCleanPhone)
+                    <a href="https://wa.me/{{ $mobCleanPhone }}" target="_blank" rel="noopener" class="mobile-order-quick-btn is-whatsapp" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                @endif
+                @if($order->customer_record && !$order->customer_phone)
+                    <a href="{{ route('customers.show', $order->customer_record) }}" class="mobile-order-quick-btn is-call" title="Voir fiche client">
+                        <i class="fas fa-user"></i>
                     </a>
                 @endif
             </div>
-        </div>
+        @endif
     </div>
 
     <!-- Order Items Preview Snippet -->
@@ -132,7 +185,7 @@
     @endphp
     @if($firstItem)
         <div class="mobile-order-item-snippet">
-            <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 46px; height: 46px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
                 <img src="{{ $firstItem->product_image }}" 
                      alt="{{ $firstItem->product_name }}" 
                      style="width: 100%; height: 100%; object-fit: contain;"
@@ -140,7 +193,7 @@
                      loading="lazy">
             </div>
             <div class="min-w-0 flex-grow-1">
-                <div class="mobile-order-item-name text-truncate">
+                <div class="mobile-order-item-name-clamp">
                     {{ $firstItem->product_name }}
                     @if($firstItem->variant_name)
                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal ms-1" style="font-size: 0.65rem;">{{ $firstItem->variant_name }}</span>
@@ -273,6 +326,7 @@
             <!-- Voir -->
             <a href="{{ route('orders.show', $order) }}" class="mobile-act-btn mobile-act-view" title="Consulter la commande">
                 <i class="fas fa-eye"></i>
+                <span>Détails</span>
             </a>
 
             <!-- Modifier -->

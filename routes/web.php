@@ -122,11 +122,13 @@ Route::middleware('auth')->group(function () {
         Route::post('orders', [\App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
     });
     Route::middleware('permission:manage_orders|edit_orders')->group(function () {
+        Route::get('orders/products/search', [\App\Http\Controllers\OrderController::class, 'searchReplacementProducts'])->name('orders.products.search');
         Route::get('orders/{order}/edit', [\App\Http\Controllers\OrderController::class, 'edit'])->name('orders.edit');
         Route::put('orders/{order}', [\App\Http\Controllers\OrderController::class, 'update'])->name('orders.update');
         Route::patch('orders/{order}', [\App\Http\Controllers\OrderController::class, 'update']);
         Route::post('orders/{order}/quick-status', [\App\Http\Controllers\OrderController::class, 'quickUpdateStatus'])->name('orders.quick-status');
         Route::post('orders/{order}/items/{item}/store', [\App\Http\Controllers\OrderController::class, 'updateItemStore'])->name('orders.items.update-store');
+        Route::post('orders/{order}/items/{item}/replace', [\App\Http\Controllers\OrderController::class, 'replaceItem'])->name('orders.items.replace');
         Route::post('orders/{order}/stores', [\App\Http\Controllers\OrderController::class, 'updateItemStores'])->name('orders.update-stores');
     });
     Route::middleware('permission:manage_orders|delete_orders')->group(function () {

@@ -80,6 +80,12 @@ class OrderController extends Controller
             $query->where('payment_status', $request->payment_status);
         }
 
+        // Filter by TTC / HT tag
+        $taxModeFilter = strtolower((string) $request->input('tax_mode', ''));
+        if (in_array($taxModeFilter, ['ttc', 'ht'], true)) {
+            $query->where('tax_mode', $taxModeFilter);
+        }
+
         // Filter by fulfilling Store / Magasin / Dépôt on items
         $applyStoreFilter = function ($q) use ($storeFilter) {
             if ($storeFilter === 'unassigned') {
@@ -176,6 +182,9 @@ class OrderController extends Controller
         if ($request->filled('payment_status')) {
             $statsQuery->where('payment_status', $request->payment_status);
         }
+        if (in_array($taxModeFilter, ['ttc', 'ht'], true)) {
+            $statsQuery->where('tax_mode', $taxModeFilter);
+        }
         if (!empty($storeFilter)) {
             $applyStoreFilter($statsQuery);
         }
@@ -244,6 +253,7 @@ class OrderController extends Controller
             'shipping_cost' => ['nullable', 'numeric', 'min:0'],
             'discount' => ['nullable', 'numeric', 'min:0'],
             'payment_method' => ['nullable', 'string', 'max:50'],
+            'tax_mode' => ['nullable', 'in:ttc,ht'],
             'default_store_id' => ['nullable', 'exists:stores,id'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
@@ -329,6 +339,7 @@ class OrderController extends Controller
                 'shipping_cost' => $validated['shipping_cost'] ?? 0,
                 'discount' => $validated['discount'] ?? 0,
                 'total' => $total,
+                'tax_mode' => $validated['tax_mode'] ?? 'ht',
                 'status' => 'pending',
                 'stock_deducted' => false,
                 'payment_method' => $validated['payment_method'] ?? null,
@@ -391,6 +402,10 @@ class OrderController extends Controller
             'shipping_cost' => 'Frais de livraison',
             'discount' => 'Remise',
             'total' => 'Total',
+            'tax_mode' => 'Régime (TTC/HT)',
+            'product_name' => 'Produit',
+            'quantity' => 'Quantité',
+            'price' => 'Prix unitaire',
             'notes' => 'Notes',
             'stock_deducted' => 'Stock déduit',
             'customer_name' => 'Nom client',
@@ -416,6 +431,8 @@ class OrderController extends Controller
             'bank_transfer' => 'Virement',
             'credit' => 'Crédit client',
             'cod' => 'Paiement à la livraison',
+            'ttc' => 'TTC',
+            'ht' => 'HT',
         ];
 
         $formatValue = function ($key, $val) use ($storeNames, $valueLabels) {
@@ -563,7 +580,7 @@ class OrderController extends Controller
 
         // 2. Inventory Movements linked to this order
         $movements = InventoryMovement::with(['product', 'variant', 'fromStore', 'toStore', 'creator'])
-            ->where('reference_type', Order::class)
+            ->whereIn('reference_type', [Order::class, 'order'])
             ->where('reference_id', $order->id)
             ->orderByDesc('created_at')
             ->orderByDesc('id')
@@ -657,6 +674,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'status' => ['required', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
             'payment_status' => ['required', 'in:pending,partial,paid,failed,refunded'],
+            'tax_mode' => ['nullable', 'in:ttc,ht'],
             'payment_method' => ['nullable', 'string', 'max:50'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -687,6 +705,7 @@ class OrderController extends Controller
                 $orderUpdateData = [
                     'status' => $validated['status'],
                     'payment_status' => $validated['payment_status'],
+                    'tax_mode' => $validated['tax_mode'] ?? $order->normalized_tax_mode,
                     'payment_method' => $validated['payment_method'] ?? null,
                     'transaction_id' => $validated['transaction_id'] ?? null,
                     'notes' => $validated['notes'] ?? null,
@@ -829,17 +848,163 @@ class OrderController extends Controller
     }
 
     /**
-     * Quick update order delivery or payment status via AJAX.
+     * Search active catalog products with variants and per-store stock levels for order item replacement.
+     */
+    public function searchReplacementProducts(Request $request)
+    {
+        $query = trim((string) $request->input('q', ''));
+
+        $productsQuery = Product::where('status', 'active')
+            ->when($query !== '', function ($q) use ($query) {
+                $tokens = preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY);
+                $q->where(function ($sub) use ($query, $tokens) {
+                    $sub->where('name', 'like', "%{$query}%")
+                        ->orWhere('sku', 'like', "%{$query}%")
+                        ->orWhereHas('variants', function ($vq) use ($query) {
+                            $vq->where('sku', 'like', "%{$query}%")
+                                ->orWhere('name', 'like', "%{$query}%");
+                        });
+
+                    if (count($tokens) > 1) {
+                        $sub->orWhere(function ($tokenGroup) use ($tokens) {
+                            foreach ($tokens as $token) {
+                                $tokenGroup->where(function ($tSub) use ($token) {
+                                    $tSub->where('name', 'like', "%{$token}%")
+                                        ->orWhere('sku', 'like', "%{$token}%");
+                                });
+                            }
+                        });
+                    }
+                });
+            })
+            ->with(['images', 'primaryImage', 'variants', 'storeStocks.store']);
+
+        if ($query !== '') {
+            $lower = mb_strtolower($query);
+            $productsQuery->orderByRaw(
+                'CASE WHEN LOWER(sku) = ? THEN 0 WHEN LOWER(sku) LIKE ? THEN 1 ELSE 2 END, CASE WHEN stock > 0 THEN 0 ELSE 1 END, name ASC',
+                [$lower, $lower . '%']
+            );
+        } else {
+            $productsQuery->orderByRaw('CASE WHEN stock > 0 THEN 0 ELSE 1 END, name ASC');
+        }
+
+        $products = $productsQuery->limit(30)->get()->map(function (Product $product) {
+            return [
+                'id' => (int) $product->id,
+                'name' => $product->name,
+                'sku' => $product->sku ?: 'N/A',
+                'price' => round((float) $product->active_price, 2),
+                'regular_price' => round((float) $product->price, 2),
+                'sale_price' => $product->sale_price !== null ? round((float) $product->sale_price, 2) : null,
+                'stock' => (int) ($product->stock ?? 0),
+                'track_inventory' => (bool) ($product->track_inventory ?? true),
+                'force_in_stock' => (bool) ($product->force_in_stock ?? false),
+                'has_variants' => (bool) $product->has_variants && $product->variants->isNotEmpty(),
+                'image' => $product->thumbnail,
+                'variants' => $product->variants->map(fn ($v) => [
+                    'id' => (int) $v->id,
+                    'name' => $v->name,
+                    'sku' => $v->sku ?: ($product->sku ?: 'N/A'),
+                    'price' => round((float) $v->price, 2),
+                    'stock' => (int) ($v->stock ?? 0),
+                ])->values()->all(),
+                'store_stocks' => $product->storeStocks
+                    ->filter(fn ($ss) => $ss->store && $ss->store->is_active)
+                    ->sortBy(fn ($ss) => $ss->store->sort_order ?? 999)
+                    ->map(fn ($ss) => [
+                        'store_id' => (int) $ss->store_id,
+                        'store_name' => $ss->store->name,
+                        'store_code' => $ss->store->code,
+                        'quantity' => (int) $ss->quantity,
+                        'location_code' => $ss->location_code,
+                    ])->values()->all(),
+            ];
+        })->values();
+
+        return response()->json([
+            'success' => true,
+            'products' => $products,
+        ]);
+    }
+
+    /**
+     * Replace an existing order item with another product/variant, store stock, quantity, and price.
+     */
+    public function replaceItem(Request $request, Order $order, OrderItem $item)
+    {
+        $validated = $request->validate([
+            'product_id' => ['required', 'exists:products,id'],
+            'variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
+            'store_id' => ['nullable', 'integer', 'exists:stores,id'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:9999'],
+            'price' => ['nullable', 'numeric', 'min:0'],
+        ], [
+            'product_id.required' => 'Veuillez sélectionner un produit de remplacement.',
+            'product_id.exists' => 'Le produit sélectionné est introuvable.',
+            'quantity.min' => 'La quantité doit être d\'au moins 1.',
+        ]);
+
+        try {
+            $result = $order->replaceItem($item, $validated, Auth::id());
+        } catch (\InvalidArgumentException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+            return back()->with('error', $e->getMessage());
+        }
+
+        $updatedOrder = $result['order'];
+        $updatedItem = $result['item'];
+        $message = "Produit remplacé : {$result['old_label']} → {$result['new_label']}.";
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'order' => [
+                    'id' => $updatedOrder->id,
+                    'subtotal' => (float) $updatedOrder->subtotal,
+                    'tax' => (float) $updatedOrder->tax,
+                    'total' => (float) $updatedOrder->total,
+                    'formatted_total' => $updatedOrder->formatted_total,
+                    'paid_amount' => (float) ($updatedOrder->paid_amount ?? 0),
+                    'remaining_amount' => (float) ($updatedOrder->remaining_amount ?? 0),
+                ],
+                'item' => [
+                    'id' => $updatedItem->id,
+                    'product_id' => $updatedItem->product_id,
+                    'variant_id' => $updatedItem->variant_id,
+                    'store_id' => $updatedItem->store_id,
+                    'product_name' => $updatedItem->product_name,
+                    'variant_name' => $updatedItem->variant_name,
+                    'product_sku' => $updatedItem->product_sku,
+                    'price' => (float) $updatedItem->price,
+                    'quantity' => (int) $updatedItem->quantity,
+                    'subtotal' => (float) $updatedItem->subtotal,
+                ],
+            ]);
+        }
+
+        return redirect()->route('orders.show', $order)->with('success', $message);
+    }
+
+    /**
+     * Quick update order delivery, payment status, or TTC/HT tax mode tag via AJAX.
      */
     public function quickUpdateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
             'status' => ['nullable', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
             'payment_status' => ['nullable', 'in:pending,partial,paid,failed,refunded'],
+            'tax_mode' => ['nullable', 'in:ttc,ht'],
         ]);
 
-        if (empty($validated['status']) && empty($validated['payment_status'])) {
-            return response()->json(['success' => false, 'message' => 'Aucun statut spécifié.'], 422);
+        if (empty($validated['status']) && empty($validated['payment_status']) && empty($validated['tax_mode'])) {
+            return response()->json(['success' => false, 'message' => 'Aucun statut ou régime spécifié.'], 422);
         }
 
         $order->load('items.product');
@@ -883,11 +1048,26 @@ class OrderController extends Controller
                 }
                 $order->save();
             }
+
+            if (isset($validated['tax_mode']) && $validated['tax_mode'] !== $order->tax_mode) {
+                $order->tax_mode = $validated['tax_mode'];
+                $order->save();
+            }
         });
 
         $order->refresh();
 
         $statsQuery = Order::query();
+        $channel = $request->input('channel');
+        if ($channel === 'pos') {
+            $statsQuery->pos();
+        } elseif ($channel === 'website') {
+            $statsQuery->website();
+        }
+        $filterTaxMode = strtolower((string) $request->input('filter_tax_mode', ''));
+        if (in_array($filterTaxMode, ['ttc', 'ht'], true)) {
+            $statsQuery->where('tax_mode', $filterTaxMode);
+        }
         if ($request->filled('date_from')) {
             $statsQuery->whereDate('created_at', '>=', $request->date_from);
         }
@@ -931,6 +1111,8 @@ class OrderController extends Controller
                     'refunded' => 'Remboursé',
                     default => 'En attente'
                 },
+                'tax_mode' => $order->normalized_tax_mode,
+                'tax_mode_label' => $order->tax_mode_label,
             ],
             'stats' => [
                 'total' => $stats['total'],

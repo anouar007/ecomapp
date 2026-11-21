@@ -362,6 +362,16 @@
                             </select>
                         </div>
 
+                        <div class="col-12 col-sm-6">
+                            <label for="tax_mode" class="form-label fw-semibold text-dark">
+                                Régime (TTC / HT)
+                            </label>
+                            <select id="tax_mode" name="tax_mode" class="form-select fw-bold">
+                                <option value="ht" {{ old('tax_mode', 'ht') === 'ht' ? 'selected' : '' }}>HT — Hors Taxes</option>
+                                <option value="ttc" {{ old('tax_mode', 'ht') === 'ttc' ? 'selected' : '' }}>TTC — Toutes Taxes Comprises</option>
+                            </select>
+                        </div>
+
                         <div class="col-12">
                             <label for="notes" class="form-label fw-semibold text-dark">
                                 Notes ou instructions spéciales

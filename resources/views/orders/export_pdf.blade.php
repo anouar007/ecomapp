@@ -113,6 +113,8 @@
         .badge-info { background: #dbeafe; color: #1e40af; }
         .badge-danger { background: #fee2e2; color: #991b1b; }
         .badge-gray { background: #e2e8f0; color: #334155; }
+        .badge-ttc { background: #1e40af; color: #ffffff; }
+        .badge-ht { background: #ea580c; color: #ffffff; }
 
         .info-grid {
             width: 100%;
@@ -254,6 +256,7 @@
                     <tr>
                         <td>
                             <span class="order-num">#{{ $order->order_number }}</span>
+                            <span class="badge {{ $order->isHt() ? 'badge-ht' : 'badge-ttc' }}" style="margin-left: 4px;">{{ $order->tax_mode_label }}</span>
                             <span style="color: #64748b; font-size: 8px; margin-left: 6px;">
                                 {{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '' }}
                             </span>

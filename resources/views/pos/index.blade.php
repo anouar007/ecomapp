@@ -1098,6 +1098,46 @@
     display: none !important;
 }
 
+.pos-tax-toggle-group {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 2px;
+    gap: 2px;
+}
+
+.pos-tax-toggle-btn {
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1.25;
+}
+
+.pos-tax-toggle-btn:hover {
+    color: #0f172a;
+}
+
+.pos-tax-toggle-btn.active[data-tax-mode="ttc"] {
+    background: #1e40af;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(30, 64, 175, 0.35);
+}
+
+.pos-tax-toggle-btn.active[data-tax-mode="ht"] {
+    background: #ea580c;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(234, 88, 12, 0.35);
+}
+
 .order-totals {
     background: #ffffff;
     padding: 10px 14px 12px;
@@ -1518,6 +1558,17 @@
                     </div>
                 </div>
 
+                <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-color: #f1f5f9 !important;">
+                    <input type="hidden" id="orderTaxMode" value="ht">
+                    <div style="font-size: 11.5px; color: #334155; font-weight: 700;">
+                        <i class="fas fa-tags me-1 text-danger"></i> Régime (TTC / HT)
+                    </div>
+                    <div class="pos-tax-toggle-group" id="posTaxModeGroup" role="group" aria-label="Régime TTC ou HT">
+                        <button type="button" class="pos-tax-toggle-btn" data-tax-mode="ttc" onclick="setPosTaxMode('ttc')">TTC</button>
+                        <button type="button" class="pos-tax-toggle-btn active" data-tax-mode="ht" onclick="setPosTaxMode('ht')">HT</button>
+                    </div>
+                </div>
+
                 <input type="text" id="orderNotes" class="compact-input mt-2" placeholder="Note interne (optionnel)">
             </div>
 
@@ -1678,6 +1729,7 @@ window.holdCurrentCart = function() {
         partialPaidAmount: document.getElementById('partialPaidAmount')?.value || '',
         paymentDueDate: document.getElementById('paymentDueDate')?.value || '',
         orderStatus: document.getElementById('orderStatus')?.value || 'delivered',
+        taxMode: document.getElementById('orderTaxMode')?.value || 'ht',
         notes: document.getElementById('orderNotes')?.value || '',
         total: window.posState.currentTotal,
         cart: window.posState.cart
@@ -1692,6 +1744,7 @@ window.holdCurrentCart = function() {
     if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
     togglePartialPaymentBox();
     setPosOrderStatus('delivered');
+    setPosTaxMode('ht');
     document.getElementById('orderNotes').value = '';
     resetCustomerFields();
     renderCart();
@@ -1765,6 +1818,7 @@ window.resumeHeldOrder = function(idx) {
     if (document.getElementById('paymentDueDate') && held.paymentDueDate) document.getElementById('paymentDueDate').value = held.paymentDueDate;
     togglePartialPaymentBox();
     setPosOrderStatus(held.orderStatus || 'delivered');
+    setPosTaxMode(held.taxMode || 'ht');
     document.getElementById('orderNotes').value = held.notes || '';
     renderCart();
     renderProducts();
@@ -1927,6 +1981,8 @@ function renderMobileConfirmSummary() {
     const partialDueDate = (document.getElementById('paymentDueDate')?.value || '').trim();
     const orderStatus = document.getElementById('orderStatus')?.value || 'delivered';
     const orderStatusBadgeHtml = formatPosStatusBadgeHtml(orderStatus);
+    const orderTaxMode = document.getElementById('orderTaxMode')?.value || 'ht';
+    const orderTaxBadgeHtml = formatPosTaxBadgeHtml(orderTaxMode);
     const notes = (document.getElementById('orderNotes')?.value || '').trim();
     const received = parseFloat(document.getElementById('amountReceived')?.value);
     const pricing = computeCartPricing();
@@ -1989,7 +2045,7 @@ function renderMobileConfirmSummary() {
                 <button type="button" onclick="goToMobileStep(4)" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px;">Modifier</button>
             </div>
             <div class="fw-bold text-dark">${methodLabels[method] || method}</div>
-            <div class="small mt-1 d-flex align-items-center gap-1.5" style="color:#334155;"><span>Statut :</span> ${orderStatusBadgeHtml}</div>
+            <div class="small mt-1 d-flex align-items-center gap-1.5 flex-wrap" style="color:#334155;"><span>Statut :</span> ${orderStatusBadgeHtml} <span class="ms-1">Régime :</span> ${orderTaxBadgeHtml}</div>
             ${partialHtml}
             ${changeHtml}
             ${notes ? `<div class="text-muted small mt-1"><i class="fas fa-sticky-note me-1"></i>${escapeHtml(notes)}</div>` : ''}
@@ -2777,6 +2833,26 @@ window.formatPosStatusBadgeHtml = function(statusVal) {
     return `<span class="brand-badge ${meta.badgeClass}" style="padding: 2px 9px; font-size: 11px;"><span class="status-dot dot-${meta.dot}"></span> ${escapeHtml(meta.label)}</span>`;
 };
 
+window.formatPosTaxBadgeHtml = function(taxMode) {
+    const mode = String(taxMode || 'ht').toLowerCase() === 'ttc' ? 'ttc' : 'ht';
+    const label = mode === 'ht' ? 'HT' : 'TTC';
+    return `<span class="tax-mode-pill tax-mode-${mode}">${label}</span>`;
+};
+
+window.setPosTaxMode = function(mode) {
+    const nextMode = String(mode || 'ht').toLowerCase() === 'ttc' ? 'ttc' : 'ht';
+    const inputEl = document.getElementById('orderTaxMode');
+    if (inputEl) {
+        inputEl.value = nextMode;
+    }
+    document.querySelectorAll('#posTaxModeGroup .pos-tax-toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.taxMode === nextMode);
+    });
+    if (window.posState?.mobileStep === 5 && typeof renderMobileConfirmSummary === 'function') {
+        renderMobileConfirmSummary();
+    }
+};
+
 window.updateOrderStatusHint = function() {
     const raw = document.getElementById('orderStatus')?.value || 'delivered';
     const status = window.POS_ORDER_STATUS_META[raw] ? raw : 'delivered';
@@ -3101,6 +3177,7 @@ window.checkout = function() {
         paid_amount: isPartialPayment ? partialPaidAmount : null,
         payment_due_date: isPartialPayment ? paymentDueDate : null,
         status: document.getElementById('orderStatus')?.value || 'delivered',
+        tax_mode: document.getElementById('orderTaxMode')?.value || 'ht',
         notes: document.getElementById('orderNotes')?.value || null,
         discount_amount: parseFloat(document.getElementById('discountAmount')?.value) || 0,
         discount_type: document.getElementById('discountType')?.value || 'fixed',
@@ -3172,6 +3249,7 @@ window.checkout = function() {
                ${data.order.payment_due_date ? `<p class="mb-1"><strong>Échéance :</strong> ${escapeHtml(data.order.payment_due_date)}</p>` : ''}`
             : '';
         const statusLabelHtml = formatPosStatusBadgeHtml(data.order.status || 'delivered');
+        const taxModeBadgeHtml = formatPosTaxBadgeHtml(data.order.tax_mode || 'ht');
         const savedClientHtml = (saveCustomer && data.customer)
             ? `<p class="mb-0 text-success small"><i class="fas fa-user-check me-1"></i>Client enregistré : <strong>${escapeHtml(data.customer.name)}</strong></p>`
             : '';
@@ -3183,6 +3261,7 @@ window.checkout = function() {
                 <div class="text-start p-2 rounded bg-light border mb-2">
                     <p class="mb-1"><strong>Commande :</strong> #${escapeHtml(data.order.order_number)}</p>
                     <p class="mb-1"><strong>Statut :</strong> ${statusLabelHtml}</p>
+                    <p class="mb-1"><strong>Régime :</strong> ${taxModeBadgeHtml}</p>
                     <p class="mb-1"><strong>Total commande :</strong> <strong class="text-danger">${formatCurrency(data.order.total)}</strong></p>
                     ${partialOrderHtml}
                     ${changeHtml}
@@ -3209,6 +3288,7 @@ window.checkout = function() {
             if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
             togglePartialPaymentBox();
             setPosOrderStatus('delivered');
+            setPosTaxMode('ht');
             document.getElementById('orderNotes').value = '';
             resetCustomerFields();
             renderCart();

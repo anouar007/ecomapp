@@ -18,8 +18,9 @@
                     <span class="text-secondary fw-semibold">Modifier</span>
                 </div>
                 <h1 class="brand-title">Modifier : <span class="font-monospace">#{{ $order->order_number }}</span></h1>
-                <p class="brand-subtitle">
-                    Client : <strong>{{ $order->customer_name ?: 'Client invité' }}</strong> &bull; Total : <strong>{{ $order->formatted_total }}</strong>
+                <p class="brand-subtitle d-flex align-items-center gap-2 flex-wrap">
+                    <span>Client : <strong>{{ $order->customer_name ?: 'Client invité' }}</strong> &bull; Total : <strong>{{ $order->formatted_total }}</strong></span>
+                    <span class="tax-mode-pill tax-mode-{{ $order->normalized_tax_mode }}">{{ $order->tax_mode_label }}</span>
                 </p>
             </div>
         </div>
@@ -114,6 +115,24 @@
                                 Met à jour la facturation et les reçus associés.
                             </div>
                             @error('payment_status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Régime Fiscal (TTC / HT) -->
+                        <div class="col-12 col-sm-6">
+                            <label for="tax_mode" class="form-label fw-semibold text-dark">
+                                Régime (TTC / HT)
+                            </label>
+                            <select id="tax_mode" name="tax_mode" class="form-select fw-bold @error('tax_mode') is-invalid @enderror">
+                                @php $editTaxMode = old('tax_mode', $order->normalized_tax_mode); @endphp
+                                <option value="ttc" {{ $editTaxMode === 'ttc' ? 'selected' : '' }}>TTC — Toutes Taxes Comprises</option>
+                                <option value="ht" {{ $editTaxMode === 'ht' ? 'selected' : '' }}>HT — Hors Taxes</option>
+                            </select>
+                            <div class="form-text small text-muted mt-1.5">
+                                Étiquette visible dans le tableau et les cartes des commandes.
+                            </div>
+                            @error('tax_mode')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

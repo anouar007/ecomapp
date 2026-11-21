@@ -79,6 +79,10 @@ class ExportController extends Controller
         if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->input('payment_status'));
         }
+        $taxMode = strtolower((string) $request->input('tax_mode', ''));
+        if (in_array($taxMode, ['ttc', 'ht'], true)) {
+            $query->where('tax_mode', $taxMode);
+        }
         if ($request->filled('payment_method')) {
             $query->where('payment_method', $request->input('payment_method'));
         }
@@ -115,6 +119,7 @@ class ExportController extends Controller
         fputcsv($handle, [
             'ID Commande',
             'N° Commande',
+            'Régime (TTC/HT)',
             'Date Commande',
             'Statut Commande',
             'Statut Paiement',
@@ -161,6 +166,7 @@ class ExportController extends Controller
             $baseOrderCols = [
                 $order->id,
                 $order->order_number,
+                $order->tax_mode_label,
                 $order->created_at ? $order->created_at->format('Y-m-d H:i:s') : '',
                 $order->status,
                 $order->payment_status,
@@ -251,6 +257,7 @@ class ExportController extends Controller
             'Au' => $request->input('date_to') ?: $request->input('end_date'),
             'Statut' => $request->input('status'),
             'Paiement' => $request->input('payment_status'),
+            'Régime' => $request->filled('tax_mode') ? strtoupper((string) $request->input('tax_mode')) : null,
             'Recherche' => $request->input('search'),
         ]);
 

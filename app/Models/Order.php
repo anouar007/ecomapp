@@ -31,6 +31,7 @@ class Order extends Model
         'coupon_id',
         'coupon_code',
         'total',
+        'tax_mode',
         'paid_amount',
         'remaining_amount',
         'status',
@@ -194,6 +195,30 @@ class Order extends Model
     public function getFormattedTotalAttribute()
     {
         return currency($this->total);
+    }
+
+    /**
+     * Normalize order fiscal regime tag to 'ht' or 'ttc' (defaulting to 'ht').
+     */
+    public function getNormalizedTaxModeAttribute(): string
+    {
+        return strtolower((string) ($this->tax_mode ?: 'ht')) === 'ttc' ? 'ttc' : 'ht';
+    }
+
+    /**
+     * Human-readable uppercase label ('TTC' or 'HT').
+     */
+    public function getTaxModeLabelAttribute(): string
+    {
+        return $this->normalized_tax_mode === 'ht' ? 'HT' : 'TTC';
+    }
+
+    /**
+     * Determine whether the order is tagged as Hors Taxes (HT).
+     */
+    public function isHt(): bool
+    {
+        return $this->normalized_tax_mode === 'ht';
     }
 
     /**
@@ -550,6 +575,366 @@ class Order extends Model
                 'store_id' => $newStoreId,
                 'store_name' => $newStore?->name,
                 'stock_deducted' => (bool) $this->stock_deducted,
+            ];
+        });
+    }
+
+    /**
+     * Atomically replace an order item with another product/variant/store/qty/price,
+     * restoring/deducting stock when stock_deducted is true and recalculating order,
+     * payment balances, linked invoices/quotes, and customer metrics.
+     */
+    public function replaceItem(OrderItem $item, array $data, ?int $userId = null): array
+    {
+        if ((int) $item->order_id !== (int) $this->id) {
+            throw new \InvalidArgumentException("Cet article n'appartient pas à cette commande.");
+        }
+
+        if (strtolower((string) $this->status) === 'cancelled') {
+            throw new \InvalidArgumentException("Impossible de modifier les produits d'une commande annulée.");
+        }
+
+        return DB::transaction(function () use ($item, $data, $userId) {
+            $uid = $userId ?? Auth::id();
+
+            // 1. Capture old item & financial snapshot before mutating anything
+            $oldProductId = $item->product_id ? (int) $item->product_id : null;
+            $oldVariantId = $item->variant_id ? (int) $item->variant_id : null;
+            $oldStoreId = $item->store_id ? (int) $item->store_id : null;
+            $oldQty = max(0, (int) $item->quantity);
+            $oldProductName = (string) $item->product_name;
+            $oldVariantName = $item->variant_name;
+            $oldPrice = round((float) $item->price, 2);
+            $oldStore = $oldStoreId ? Store::find($oldStoreId) : null;
+
+            $this->load('items');
+            $oldItemsSum = round((float) $this->items->sum(
+                fn (OrderItem $it) => $it->subtotal !== null
+                    ? (float) $it->subtotal
+                    : ((float) $it->price * (int) $it->quantity)
+            ), 2);
+            $oldOrderTotal = round((float) $this->total, 2);
+            $shippingCost = round((float) ($this->shipping_cost ?? 0), 2);
+            $orderDiscount = round((float) ($this->discount ?? 0), 2);
+            $discountBakedInItems = $orderDiscount > 0 && abs(($oldItemsSum + $shippingCost) - $oldOrderTotal) < 0.05;
+
+            $newProductId = (int) $data['product_id'];
+            $newVariantId = !empty($data['variant_id']) ? (int) $data['variant_id'] : null;
+            $newStoreId = !empty($data['store_id']) ? (int) $data['store_id'] : null;
+            $newQuantity = max(1, (int) ($data['quantity'] ?? ($oldQty ?: 1)));
+            $newStore = $newStoreId ? Store::findOrFail($newStoreId) : null;
+
+            // 2. Restore old item stock FIRST if stock was already deducted
+            if ($this->stock_deducted && $oldQty > 0 && $oldProductId) {
+                $oldProduct = Product::whereKey($oldProductId)->lockForUpdate()->first();
+                if ($oldProduct) {
+                    if ($oldVariantId) {
+                        $oldVariant = ProductVariant::whereKey($oldVariantId)->lockForUpdate()->first();
+                        $varBefore = (int) ($oldVariant?->stock ?? 0);
+                        if ($oldVariant) {
+                            $oldVariant->increment('stock', $oldQty);
+                            $oldVariant->syncParentProductStock();
+                        }
+
+                        $storeRes = $oldStoreId ? $this->adjustStoreStockDelta($oldProduct->id, $oldStoreId, $oldQty) : null;
+                        InventoryMovement::create([
+                            'product_id' => $oldProduct->id,
+                            'variant_id' => $oldVariantId,
+                            'type' => 'return',
+                            'quantity' => $oldQty,
+                            'stock_before' => $storeRes ? $storeRes['before'] : $varBefore,
+                            'stock_after' => $storeRes ? $storeRes['after'] : ($varBefore + $oldQty),
+                            'reference_type' => 'order',
+                            'reference_id' => $this->id,
+                            'to_location_id' => $oldStoreId,
+                            'reason' => "Remplacement produit commande #{$this->order_number} (retour {$oldProductName})",
+                            'created_by' => $uid,
+                        ]);
+                    } elseif ((bool) ($oldProduct->track_inventory ?? true)) {
+                        $globalBefore = (int) ($oldProduct->stock ?? 0);
+                        $newGlobal = $globalBefore + $oldQty;
+                        $oldProduct->update([
+                            'stock' => $newGlobal,
+                            'stock_quantity' => $newGlobal,
+                        ]);
+
+                        $storeRes = $oldStoreId ? $this->adjustStoreStockDelta($oldProduct->id, $oldStoreId, $oldQty) : null;
+                        InventoryMovement::create([
+                            'product_id' => $oldProduct->id,
+                            'variant_id' => null,
+                            'type' => 'return',
+                            'quantity' => $oldQty,
+                            'stock_before' => $storeRes ? $storeRes['before'] : $globalBefore,
+                            'stock_after' => $storeRes ? $storeRes['after'] : $newGlobal,
+                            'reference_type' => 'order',
+                            'reference_id' => $this->id,
+                            'to_location_id' => $oldStoreId,
+                            'reason' => "Remplacement produit commande #{$this->order_number} (retour {$oldProductName})",
+                            'created_by' => $uid,
+                        ]);
+
+                        $oldProduct->checkStockLevel();
+                    }
+                }
+            }
+
+            // 3. Lock & validate new product, variant & store stock
+            $newProduct = Product::with('variants')->whereKey($newProductId)->lockForUpdate()->firstOrFail();
+            $newVariant = null;
+            if ($newVariantId) {
+                $newVariant = ProductVariant::where('product_id', $newProduct->id)
+                    ->whereKey($newVariantId)
+                    ->lockForUpdate()
+                    ->first();
+                if (!$newVariant) {
+                    throw new \InvalidArgumentException('La variante sélectionnée est introuvable pour ce produit.');
+                }
+            } elseif ($newProduct->has_variants && $newProduct->variants->isNotEmpty()) {
+                throw new \InvalidArgumentException('Veuillez sélectionner une variante pour ce produit.');
+            }
+
+            $newTrackInventory = (bool) ($newProduct->track_inventory ?? true);
+            $newForceInStock = (bool) ($newProduct->force_in_stock ?? false);
+
+            if ($newTrackInventory && !$newForceInStock) {
+                if ($newVariant) {
+                    if ((int) ($newVariant->stock ?? 0) < $newQuantity) {
+                        throw new \InvalidArgumentException(
+                            "Stock insuffisant pour {$newProduct->name} ({$newVariant->name}) : " . (int) ($newVariant->stock ?? 0) . " disponible(s), {$newQuantity} requis."
+                        );
+                    }
+                } elseif ((int) ($newProduct->stock ?? 0) < $newQuantity) {
+                    throw new \InvalidArgumentException(
+                        "Stock insuffisant pour {$newProduct->name} : " . (int) ($newProduct->stock ?? 0) . " disponible(s), {$newQuantity} requis."
+                    );
+                }
+
+                if ($newStoreId) {
+                    $hasStoreAllocations = ProductStock::where('product_id', $newProduct->id)->exists();
+                    if ($hasStoreAllocations) {
+                        $targetStock = ProductStock::where('product_id', $newProduct->id)
+                            ->where('store_id', $newStoreId)
+                            ->lockForUpdate()
+                            ->first();
+                        $available = (int) ($targetStock?->quantity ?? 0);
+                        if ($available < $newQuantity) {
+                            throw new \InvalidArgumentException(
+                                "Stock insuffisant dans « {$newStore->name} » pour {$newProduct->name} ({$available} disponible(s), {$newQuantity} requis)."
+                            );
+                        }
+                    }
+                }
+            }
+
+            // 4. Deduct new item stock when order already deducted stock
+            if ($this->stock_deducted) {
+                if ($newVariant) {
+                    $varBefore = (int) ($newVariant->stock ?? 0);
+                    $deductVar = min($varBefore, $newQuantity);
+                    if ($deductVar > 0) {
+                        $newVariant->decrement('stock', $deductVar);
+                    }
+                    $newVariant->syncParentProductStock();
+
+                    $storeRes = $newStoreId ? $this->adjustStoreStockDelta($newProduct->id, $newStoreId, -$newQuantity) : null;
+                    InventoryMovement::create([
+                        'product_id' => $newProduct->id,
+                        'variant_id' => $newVariant->id,
+                        'type' => 'out',
+                        'quantity' => $newQuantity,
+                        'stock_before' => $storeRes ? $storeRes['before'] : $varBefore,
+                        'stock_after' => $storeRes ? $storeRes['after'] : max(0, $varBefore - $newQuantity),
+                        'reference_type' => 'order',
+                        'reference_id' => $this->id,
+                        'from_location_id' => $newStoreId,
+                        'reason' => "Remplacement produit commande #{$this->order_number} (sortie {$newProduct->name})",
+                        'created_by' => $uid,
+                    ]);
+                } elseif ($newTrackInventory) {
+                    $globalBefore = (int) ($newProduct->stock ?? 0);
+                    $newGlobal = max(0, $globalBefore - $newQuantity);
+                    $newProduct->update([
+                        'stock' => $newGlobal,
+                        'stock_quantity' => $newGlobal,
+                    ]);
+
+                    $storeRes = $newStoreId ? $this->adjustStoreStockDelta($newProduct->id, $newStoreId, -$newQuantity) : null;
+                    InventoryMovement::create([
+                        'product_id' => $newProduct->id,
+                        'variant_id' => null,
+                        'type' => 'out',
+                        'quantity' => $newQuantity,
+                        'stock_before' => $storeRes ? $storeRes['before'] : $globalBefore,
+                        'stock_after' => $storeRes ? $storeRes['after'] : $newGlobal,
+                        'reference_type' => 'order',
+                        'reference_id' => $this->id,
+                        'from_location_id' => $newStoreId,
+                        'reason' => "Remplacement produit commande #{$this->order_number} (sortie {$newProduct->name})",
+                        'created_by' => $uid,
+                    ]);
+
+                    $newProduct->checkStockLevel();
+                }
+            }
+
+            // 5. Update the OrderItem record (product, variant, store, SKU, price, discount, qty, subtotal)
+            $catalogPrice = round($newVariant ? (float) $newVariant->price : (float) $newProduct->active_price, 2);
+            $newUnitPrice = (isset($data['price']) && $data['price'] !== '' && $data['price'] !== null)
+                ? round((float) $data['price'], 2)
+                : $catalogPrice;
+            $newSubtotal = round($newUnitPrice * $newQuantity, 2);
+            $newSku = ($newVariant && !empty($newVariant->sku))
+                ? $newVariant->sku
+                : ($newProduct->sku ?: 'N/A');
+
+            $perUnitDiscount = max(0.0, round($catalogPrice - $newUnitPrice, 2));
+
+            $item->update([
+                'product_id' => $newProduct->id,
+                'variant_id' => $newVariant?->id,
+                'store_id' => $newStoreId,
+                'product_name' => $newProduct->name,
+                'variant_name' => $newVariant?->name,
+                'product_sku' => $newSku,
+                'price' => $newUnitPrice,
+                'original_price' => $perUnitDiscount > 0 ? $catalogPrice : null,
+                'discount_amount' => $perUnitDiscount > 0 ? round($perUnitDiscount * $newQuantity, 2) : 0,
+                'discount_type' => $perUnitDiscount > 0 ? 'fixed' : null,
+                'discount_value' => $perUnitDiscount > 0 ? $perUnitDiscount : 0,
+                'quantity' => $newQuantity,
+                'subtotal' => $newSubtotal,
+            ]);
+
+            // 6. Recalculate Order subtotal, tax, total & payment amounts
+            $this->load('items');
+            $newItemsSum = round((float) $this->items->sum(
+                fn (OrderItem $it) => $it->subtotal !== null
+                    ? (float) $it->subtotal
+                    : ((float) $it->price * (int) $it->quantity)
+            ), 2);
+            $newTotal = $discountBakedInItems
+                ? max(0.0, round($newItemsSum + $shippingCost, 2))
+                : max(0.0, round($newItemsSum + $shippingCost - $orderDiscount, 2));
+
+            if ($this->isPosOrder() && (float) $this->tax == 0.0) {
+                $newTax = 0.0;
+                $newSubtotalNet = $newTotal;
+            } else {
+                $taxRate = floatval(setting('tax_rate', 20)) / 100;
+                $newTax = $taxRate > 0 ? round($newItemsSum - ($newItemsSum / (1 + $taxRate)), 2) : 0.0;
+                $newSubtotalNet = round($newItemsSum - $newTax, 2);
+            }
+
+            $orderUpdates = [
+                'subtotal' => $newSubtotalNet,
+                'tax' => $newTax,
+                'total' => $newTotal,
+            ];
+
+            if ($this->payment_status === 'paid') {
+                $orderUpdates['paid_amount'] = $newTotal;
+                $orderUpdates['remaining_amount'] = 0;
+            } elseif ($this->payment_status === 'partial' || (float) ($this->paid_amount ?? 0) > 0) {
+                $paidNow = round((float) ($this->paid_amount ?? 0), 2);
+                if ($paidNow >= $newTotal) {
+                    $orderUpdates['payment_status'] = 'paid';
+                    $orderUpdates['paid_amount'] = $newTotal;
+                    $orderUpdates['remaining_amount'] = 0;
+                } else {
+                    $orderUpdates['remaining_amount'] = round($newTotal - $paidNow, 2);
+                }
+            } elseif ((float) ($this->remaining_amount ?? 0) > 0) {
+                $orderUpdates['remaining_amount'] = $newTotal;
+            }
+
+            $this->update($orderUpdates);
+
+            // 7. Synchronize linked Invoices / Quotes (if any exist for this order)
+            $linkedDocs = Invoice::where('order_id', $this->id)->with('items')->get();
+            foreach ($linkedDocs as $doc) {
+                $matchedInvItem = $doc->items->first(function (InvoiceItem $invItem) use ($oldProductId, $oldVariantId, $oldProductName) {
+                    if ($oldProductId && (int) $invItem->product_id === $oldProductId) {
+                        return (int) ($invItem->variant_id ?? 0) === (int) ($oldVariantId ?? 0);
+                    }
+                    return $invItem->product_name === $oldProductName;
+                });
+
+                if (!$matchedInvItem) {
+                    $matchedInvItem = $doc->items->first(fn (InvoiceItem $invItem) => $invItem->product_name === $oldProductName);
+                }
+
+                if ($matchedInvItem) {
+                    $matchedInvItem->update([
+                        'product_id' => $newProduct->id,
+                        'variant_id' => $newVariant?->id,
+                        'product_name' => $newProduct->name,
+                        'variant_name' => $newVariant?->name,
+                        'product_sku' => $newSku,
+                        'quantity' => $newQuantity,
+                        'unit_price' => $newUnitPrice,
+                        'total_price' => $newSubtotal,
+                    ]);
+
+                    $doc->load('items');
+                    $invItemsSum = round((float) $doc->items->sum(
+                        fn (InvoiceItem $it) => $it->total_price !== null
+                            ? (float) $it->total_price
+                            : ((float) $it->unit_price * (int) $it->quantity)
+                    ), 2);
+                    $docShipping = round((float) ($doc->getRawOriginal('shipping_cost') ?? $doc->shipping_cost ?? 0), 2);
+                    $docDiscount = round((float) ($doc->discount_amount ?? 0), 2);
+                    $docRate = floatval($doc->getRawOriginal('tax_rate') ?? $doc->tax_rate ?? 20);
+                    $docTotal = max(0.0, round($invItemsSum + $docShipping - $docDiscount, 2));
+                    $docSubtotalNet = $docRate > 0 ? round($invItemsSum / (1 + ($docRate / 100)), 2) : $invItemsSum;
+                    $docTax = round($invItemsSum - $docSubtotalNet, 2);
+
+                    $doc->update([
+                        'subtotal' => $docSubtotalNet,
+                        'tax_amount' => $docTax,
+                        'total_amount' => $docTotal,
+                    ]);
+                }
+            }
+
+            // 8. Refresh linked customer lifetime totals
+            if ($this->customer_id && ($customer = Customer::find($this->customer_id))) {
+                $customer->recalculateMetrics();
+            }
+
+            // 9. Record explicit replacement entry in ActivityLog
+            $oldLabel = $oldProductName . ($oldVariantName ? " ({$oldVariantName})" : '');
+            $newLabel = $newProduct->name . ($newVariant ? " ({$newVariant->name})" : '');
+            if (class_exists(ActivityLog::class)) {
+                ActivityLog::log(
+                    'updated',
+                    $this,
+                    [
+                        'old' => [
+                            'product_name' => $oldLabel,
+                            'quantity' => $oldQty,
+                            'price' => $oldPrice,
+                            'store_id' => $oldStoreId,
+                            'total' => $oldOrderTotal,
+                        ],
+                        'new' => [
+                            'product_name' => $newLabel,
+                            'quantity' => $newQuantity,
+                            'price' => $newUnitPrice,
+                            'store_id' => $newStoreId,
+                            'total' => $newTotal,
+                        ],
+                    ],
+                    "Remplacement produit (Commande #{$this->order_number}) : « {$oldLabel} » (x{$oldQty}, " . ($oldStore?->name ?? 'Non assigné') . ") → « {$newLabel} » (x{$newQuantity}, " . ($newStore?->name ?? 'Non assigné') . ')'
+                );
+            }
+
+            return [
+                'old_label' => $oldLabel,
+                'new_label' => $newLabel,
+                'old_total' => $oldOrderTotal,
+                'new_total' => $newTotal,
+                'item' => $item->fresh(['product', 'variant', 'store']),
+                'order' => $this->fresh(['items.product', 'items.variant', 'items.store']),
             ];
         });
     }
