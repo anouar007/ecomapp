@@ -77,6 +77,22 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
+        // Hard-block any stock-alert or non-order notification emails at the mail transport layer
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Mail\Events\MessageSending::class, function (\Illuminate\Mail\Events\MessageSending $event) {
+            $notification = $event->data['__laravel_notification'] ?? null;
+            if (
+                $notification === \App\Notifications\LowStockAlert::class
+                || $notification instanceof \App\Notifications\LowStockAlert
+            ) {
+                return false;
+            }
+
+            $subject = strtolower((string) $event->message->getSubject());
+            if (str_contains($subject, 'low stock alert') || str_contains($subject, 'stock alert')) {
+                return false;
+            }
+        });
+
         try {
             // Override App Name
             if ($appName = \App\Models\Setting::get('app_name')) {

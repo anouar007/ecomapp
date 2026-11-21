@@ -48,9 +48,14 @@ class NotificationSetting extends Model
 
     /**
      * Check if a specific notification is enabled.
+     * Automatic admin emails are restricted strictly to new website orders ('order_placed').
      */
     public function isEnabled(string $notificationType): bool
     {
-        return $this->{$notificationType} ?? false;
+        if ($notificationType !== 'order_placed') {
+            return false;
+        }
+
+        return (bool) ($this->{$notificationType} ?? false);
     }
 }

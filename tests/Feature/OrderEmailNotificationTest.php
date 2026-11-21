@@ -246,8 +246,11 @@ class OrderEmailNotificationTest extends TestCase
         $this->assertFalse($notifSettings->customer_registered);
         $this->assertFalse($notifSettings->daily_summary);
 
-        // Even if explicitly enabled in DB, LowStockAlert & InvoiceGenerated do not route via mail
+        // Even if explicitly enabled in DB, isEnabled(), LowStockAlert, InvoiceGenerated, and mail routing block emails
         $notifSettings->update(['low_stock_alert' => true, 'invoice_generated' => true]);
+        $this->assertFalse($notifSettings->fresh()->isEnabled('low_stock_alert'));
+        $this->assertFalse($notifSettings->fresh()->isEnabled('invoice_generated'));
+        $this->assertTrue($notifSettings->fresh()->isEnabled('order_placed'));
 
         $productA = Product::factory()->create([
             'name' => 'Low Stock Change Probe A ' . uniqid(),
@@ -278,7 +281,14 @@ class OrderEmailNotificationTest extends TestCase
 
         $alert = StockAlert::where('product_id', $productA->id)->latest('id')->first();
         $this->assertNotNull($alert);
-        $this->assertSame([], (new LowStockAlert($alert))->via($admin));
+        $lowStockNotification = new LowStockAlert($alert);
+        $this->assertSame([], $lowStockNotification->via($admin));
+        $this->assertNull($admin->routeNotificationFor('mail', $lowStockNotification));
+        $this->assertSame($admin->email, $admin->routeNotificationFor('mail'));
+
+        // Simulate a pre-queued job passing directly into MailChannel::send() (bypassing via())
+        app(\Illuminate\Notifications\Channels\MailChannel::class)->send($admin, $lowStockNotification);
+        Mail::assertNothingSent();
 
         // 2. Admin order status change (triggers deductStock & checkStockLevel) + item replacement send zero emails/notifications
         $existingOrder = Order::create([
@@ -380,6 +390,23 @@ class OrderEmailNotificationTest extends TestCase
             return $mail->hasTo('buyer@example.test');
         });
         Notification::assertNothingSent();
+
+        // 4. Transport-level MessageSending firewall blocks stock-alert messages but allows website order emails
+        $blockedEmail = (new \Symfony\Component\Mime\Email())
+            ->to($admin->email)
+            ->subject('Low Stock Alert - ' . $productA->name)
+            ->text('Blocked stock alert');
+        $this->assertFalse(\Illuminate\Support\Facades\Event::until(
+            new \Illuminate\Mail\Events\MessageSending($blockedEmail, ['__laravel_notification' => LowStockAlert::class])
+        ));
+
+        $allowedOrderEmail = (new \Symfony\Component\Mime\Email())
+            ->to('orders-alert@winashop.ma')
+            ->subject('🔔 [Wina Shop] Nouvelle Commande #ORD-TEST (2 420,00 DH)')
+            ->text('Website order alert');
+        $this->assertNotFalse(\Illuminate\Support\Facades\Event::until(
+            new \Illuminate\Mail\Events\MessageSending($allowedOrderEmail, [])
+        ));
     }
 }
 

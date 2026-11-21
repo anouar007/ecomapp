@@ -57,6 +57,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Restrict automatic email notifications strictly to order events;
+     * block legacy or pre-queued stock/invoice notifications at mail routing time.
+     */
+    public function routeNotificationForMail($notification = null)
+    {
+        if (
+            $notification instanceof \App\Notifications\LowStockAlert
+            || $notification instanceof \App\Notifications\InvoiceGenerated
+        ) {
+            return null;
+        }
+
+        return $this->email;
+    }
+
+    /**
      * Determine if the user is active.
      */
     public function isActive(): bool
