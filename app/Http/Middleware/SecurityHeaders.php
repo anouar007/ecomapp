@@ -54,10 +54,68 @@ class SecurityHeaders
         // Hide server/PHP version header
         $response->headers->remove('X-Powered-By');
 
+        // Enforce strict HTTP / LiteSpeed / CDN cache isolation for cookies & dynamic responses
+        $this->applyCacheIsolationHeaders($request, $response);
+
         // Optimize and GZIP-compress eligible text/HTML/JSON/XML responses for instant transfer speed
         $this->optimizeAndCompressResponse($request, $response);
 
         return $response;
+    }
+
+    /**
+     * Prevent HTTP proxies, Hostinger CDN, or LiteSpeed Cache from caching or sharing
+     * any response that sets session/XSRF cookies or serves dynamic user/cart/checkout state.
+     */
+    protected function applyCacheIsolationHeaders(Request $request, Response $response): void
+    {
+        $hasCookies = count($response->headers->getCookies()) > 0 || $response->headers->has('Set-Cookie');
+        $isMutatingMethod = !in_array(strtoupper($request->method()), ['GET', 'HEAD'], true);
+        $isSensitivePath = $request->is(
+            'cart', 'cart/*',
+            'checkout', 'checkout/*',
+            'my-account', 'my-account/*',
+            'login', 'register', 'logout', 'password/*',
+            'dashboard', 'dashboard/*',
+            'orders', 'orders/*',
+            'pos', 'pos/*',
+            'invoices', 'invoices/*',
+            'customers', 'customers/*',
+            'inventory', 'inventory/*',
+            'settings', 'settings/*',
+            'notifications', 'notifications/*',
+            'profile', 'profile/*',
+            'users', 'users/*',
+            'roles', 'roles/*',
+            'permissions', 'permissions/*'
+        );
+
+        $cacheControl = strtolower((string) $response->headers->get('Cache-Control', ''));
+        $isExplicitPublicCookieless = !$hasCookies
+            && !$isMutatingMethod
+            && !$isSensitivePath
+            && str_contains($cacheControl, 'public');
+
+        if ($isExplicitPublicCookieless) {
+            return;
+        }
+
+        if (
+            $response instanceof StreamedResponse
+            && str_contains(strtolower((string) $response->headers->get('Content-Disposition', '')), 'attachment')
+        ) {
+            $response->headers->set('X-LiteSpeed-Cache-Control', 'no-cache');
+            $response->headers->set('CDN-Cache-Control', 'no-store');
+            $response->headers->set('Surrogate-Control', 'no-store');
+            return;
+        }
+
+        $response->headers->set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        $response->headers->set('X-LiteSpeed-Cache-Control', 'no-cache');
+        $response->headers->set('CDN-Cache-Control', 'no-store');
+        $response->headers->set('Surrogate-Control', 'no-store');
     }
 
     /**

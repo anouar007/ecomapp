@@ -77,7 +77,7 @@
         </p>
 
         <p style="text-align: center; margin-top: 30px;">
-            <a href="{{ \App\Models\OrderItem::normalizePublicSecureUrl(route('checkout.success', $order->id)) }}" class="btn">View Order Details</a>
+            <a href="{{ \App\Models\OrderItem::normalizePublicSecureUrl(route('checkout.success', $order->order_number)) }}" class="btn">View Order Details</a>
         </p>
 
         <div class="footer">

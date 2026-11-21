@@ -4,10 +4,10 @@ namespace App\Mail;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
 class OrderConfirmation extends Mailable
@@ -21,7 +21,22 @@ class OrderConfirmation extends Mailable
      */
     public function __construct(Order $order)
     {
-        $this->order = $order;
+        $this->order = $order->loadMissing(['items.product.images', 'items.product.primaryImage', 'items.variant']);
+    }
+
+    /**
+     * Get the message headers so email clients keep each order in its own thread.
+     */
+    public function headers(): Headers
+    {
+        $orderNumber = (string) ($this->order->order_number ?? $this->order->id);
+
+        return new Headers(
+            text: [
+                'X-Order-Number' => $orderNumber,
+                'X-Entity-Ref-ID' => $orderNumber,
+            ],
+        );
     }
 
     /**

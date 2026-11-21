@@ -13,6 +13,7 @@ use App\Services\MailConfigService;
 use App\Mail\OrderConfirmation;
 use App\Mail\NewOrderNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -102,7 +103,55 @@ class CheckoutController extends Controller
         $pickupMapsUrl = self::CASABLANCA_PICKUP_MAPS_URL;
         $pickupPhone = $pickupStore?->phone ?: self::CASABLANCA_PICKUP_PHONE;
 
-        return view('frontend.checkout.index', compact('cart', 'subtotal', 'discount', 'appliedCoupon', 'total', 'cities', 'pickupStore', 'pickupAddress', 'pickupMapsUrl', 'pickupPhone'));
+        $checkoutCartHash = $this->computeCartHash($cart);
+        $checkoutSubmitToken = Str::random(40);
+        session()->put('checkout_cart_hash', $checkoutCartHash);
+        session()->put('checkout_submit_token', $checkoutSubmitToken);
+
+        return view('frontend.checkout.index', compact(
+            'cart',
+            'subtotal',
+            'discount',
+            'appliedCoupon',
+            'total',
+            'cities',
+            'pickupStore',
+            'pickupAddress',
+            'pickupMapsUrl',
+            'pickupPhone',
+            'checkoutCartHash',
+            'checkoutSubmitToken'
+        ));
+    }
+
+    /**
+     * Compute a deterministic integrity hash for the current cart items so checkout submission
+     * cannot silently confirm a different cart than what was rendered to the customer.
+     */
+    protected function computeCartHash(array $cart): string
+    {
+        $normalized = [];
+
+        foreach ($cart as $id => $details) {
+            $productId = (int) ($details['product_id'] ?? explode('_', (string) $id)[0]);
+            $variantId = isset($details['variant_id']) && $details['variant_id'] !== ''
+                ? (int) $details['variant_id']
+                : null;
+
+            $normalized[] = [
+                'product_id' => $productId,
+                'variant_id' => $variantId,
+                'quantity' => (int) ($details['quantity'] ?? 0),
+                'price' => number_format((float) ($details['price'] ?? 0), 2, '.', ''),
+            ];
+        }
+
+        usort($normalized, function (array $a, array $b): int {
+            return [$a['product_id'], $a['variant_id'] ?? 0, $a['price'], $a['quantity']]
+                <=> [$b['product_id'], $b['variant_id'] ?? 0, $b['price'], $b['quantity']];
+        });
+
+        return hash('sha256', (string) json_encode($normalized));
     }
 
     /**
@@ -203,6 +252,57 @@ class CheckoutController extends Controller
             return redirect()->route('shop.index')->with('error', 'Votre panier est vide.');
         }
 
+        // Verify cart snapshot hash so stale/cached pages or cross-tab mutations never confirm the wrong items
+        $currentCartHash = $this->computeCartHash($cart);
+        $submittedCartHash = trim((string) $request->input('checkout_cart_hash', ''));
+        $sessionCartHash = (string) session()->get('checkout_cart_hash', '');
+
+        if ($submittedCartHash !== '' && !hash_equals($currentCartHash, $submittedCartHash)) {
+            Log::warning('Checkout aborted due to cart snapshot hash mismatch (submitted vs session)', [
+                'session_prefix' => substr((string) session()->getId(), 0, 8),
+                'submitted_hash' => $submittedCartHash,
+                'current_hash' => $currentCartHash,
+                'customer_email' => $cleanEmail,
+            ]);
+            return redirect()->route('checkout.index')
+                ->withInput()
+                ->with('error', 'Votre panier a été modifié entre-temps. Veuillez vérifier vos articles avant de confirmer votre commande.');
+        }
+
+        if ($submittedCartHash === '' && $sessionCartHash !== '' && !hash_equals($currentCartHash, $sessionCartHash)) {
+            Log::warning('Checkout aborted due to missing/stale cart snapshot hash against active session hash', [
+                'session_prefix' => substr((string) session()->getId(), 0, 8),
+                'session_hash' => $sessionCartHash,
+                'current_hash' => $currentCartHash,
+                'customer_email' => $cleanEmail,
+            ]);
+            return redirect()->route('checkout.index')
+                ->withInput()
+                ->with('error', 'Votre panier a été modifié entre-temps. Veuillez vérifier vos articles avant de confirmer votre commande.');
+        }
+
+        // Enforce single-use submission token and atomic file lock to stop duplicate/concurrent submissions
+        $submittedToken = trim((string) $request->input('checkout_submit_token', ''));
+        $sessionToken = (string) session()->get('checkout_submit_token', '');
+        $submitLock = null;
+
+        if ($submittedToken !== '') {
+            if ($sessionToken !== '' && !hash_equals($sessionToken, $submittedToken)) {
+                Log::warning('Checkout aborted due to stale/replayed submission token', [
+                    'session_prefix' => substr((string) session()->getId(), 0, 8),
+                    'customer_email' => $cleanEmail,
+                ]);
+                return redirect()->route('checkout.index')
+                    ->with('error', 'Cette page de commande a expiré ou a déjà été soumise. Veuillez vérifier votre panier.');
+            }
+
+            $submitLock = Cache::store('file')->lock('checkout_submit_' . hash('sha256', $submittedToken), 15);
+            if (!$submitLock->get()) {
+                return redirect()->route('checkout.index')
+                    ->with('error', 'Votre commande est déjà en cours de traitement. Veuillez patienter quelques secondes.');
+            }
+        }
+
         // Validate stock availability before processing
         foreach ($cart as $id => $details) {
             $productId = $details['product_id'] ?? explode('_', (string)$id)[0];
@@ -257,77 +357,130 @@ class CheckoutController extends Controller
         $subtotalNet = $subtotal - $tax;
         $total = max(0, $subtotal + $shippingCost - $discount); // Total TTC including shipping minus discount
 
+        $order = null;
         try {
-            $order = DB::transaction(function () use ($request, $cleanPhone, $cleanEmail, $shippingAddress, $cityName, $isStorePickup, $pickupStore, $subtotalNet, $tax, $shippingCost, $discount, $coupon, $total, $cart, $subtotal) {
-                // Create Order
-                $order = Order::create([
-                    'order_number' => 'ORD-' . strtoupper(Str::random(10)),
-                    'user_id' => auth()->id(), // Link to user if logged in
-                    'customer_name' => $request->customer_name,
-                    'customer_email' => $cleanEmail,
-                    'customer_phone' => $cleanPhone ?: $request->customer_phone,
-                    'ice' => $request->ice,
-                    'shipping_address' => $shippingAddress,
-                    'shipping_city' => $cityName,
-                    'shipping_state' => $request->shipping_state,
-                    'shipping_zip' => 'N/A',
-                    'shipping_country' => 'Morocco',
-                    'subtotal' => $subtotalNet,
-                    'tax' => $tax,
-                    'shipping_cost' => $shippingCost,
-                    'discount' => $discount,
-                    'coupon_id' => $coupon?->id,
-                    'coupon_code' => $coupon?->code,
-                    'total' => $total,
-                    'status' => 'pending',
-                    'stock_deducted' => true,
-                    'payment_status' => 'pending',
-                    'payment_method' => 'cod',
-                ]);
-
-                // Create Order Items and Update Stock
-                foreach ($cart as $id => $details) {
-                    $productId = $details['product_id'] ?? explode('_', (string)$id)[0];
-                    $variantId = $details['variant_id'] ?? null;
-                    $variantName = $details['variant_name'] ?? null;
-                    $product = Product::find($productId);
-                    $price = (float)$details['price'];
-                    $qty = (int)$details['quantity'];
-
-                    $variantObj = $variantId ? \App\Models\ProductVariant::find($variantId) : null;
-                    $itemSku = $variantObj && !empty($variantObj->sku) ? $variantObj->sku : ($product && !empty($product->sku) ? $product->sku : 'N/A');
-
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'product_id' => $productId,
-                        'variant_id' => $variantId,
-                        'variant_name' => $variantName,
-                        'product_sku' => $itemSku,
-                        'product_name' => $details['name'],
-                        'price' => $price,
-                        'quantity' => $qty,
-                        'subtotal' => $price * $qty,
+            try {
+                $order = DB::transaction(function () use ($request, $cleanPhone, $cleanEmail, $shippingAddress, $cityName, $isStorePickup, $pickupStore, $subtotalNet, $tax, $shippingCost, $discount, $coupon, $total, $cart, $subtotal) {
+                    // Create Order
+                    $order = Order::create([
+                        'order_number' => 'ORD-' . strtoupper(Str::random(10)),
+                        'user_id' => auth()->id(), // Link to user if logged in
+                        'customer_name' => $request->customer_name,
+                        'customer_email' => $cleanEmail,
+                        'customer_phone' => $cleanPhone ?: $request->customer_phone,
+                        'ice' => $request->ice,
+                        'shipping_address' => $shippingAddress,
+                        'shipping_city' => $cityName,
+                        'shipping_state' => $request->shipping_state,
+                        'shipping_zip' => 'N/A',
+                        'shipping_country' => 'Morocco',
+                        'subtotal' => $subtotalNet,
+                        'tax' => $tax,
+                        'shipping_cost' => $shippingCost,
+                        'discount' => $discount,
+                        'coupon_id' => $coupon?->id,
+                        'coupon_code' => $coupon?->code,
+                        'total' => $total,
+                        'status' => 'pending',
+                        'stock_deducted' => true,
+                        'payment_status' => 'pending',
+                        'payment_method' => 'cod',
                     ]);
 
-                    // Decrement Stock (variant + per-store + global stock & stock_quantity + audit movement)
-                    $usedStoreId = null;
-                    if ($variantId) {
-                        $variant = \App\Models\ProductVariant::find($variantId);
-                        if ($variant) {
-                            $stockBefore = (int) ($variant->stock ?? 0);
-                            $deductVar = min($stockBefore, $qty);
-                            $variant->stock = max(0, $stockBefore - $deductVar);
-                            $variant->save();
-                            $variant->syncParentProductStock();
+                    // Create Order Items and Update Stock
+                    foreach ($cart as $id => $details) {
+                        $productId = $details['product_id'] ?? explode('_', (string)$id)[0];
+                        $variantId = $details['variant_id'] ?? null;
+                        $variantName = $details['variant_name'] ?? null;
+                        $product = Product::find($productId);
+                        $price = (float)$details['price'];
+                        $qty = (int)$details['quantity'];
+
+                        $variantObj = $variantId ? \App\Models\ProductVariant::find($variantId) : null;
+                        $itemSku = $variantObj && !empty($variantObj->sku) ? $variantObj->sku : ($product && !empty($product->sku) ? $product->sku : 'N/A');
+
+                        OrderItem::create([
+                            'order_id' => $order->id,
+                            'product_id' => $productId,
+                            'variant_id' => $variantId,
+                            'variant_name' => $variantName,
+                            'product_sku' => $itemSku,
+                            'product_name' => $details['name'],
+                            'price' => $price,
+                            'quantity' => $qty,
+                            'subtotal' => $price * $qty,
+                        ]);
+
+                        // Decrement Stock (variant + per-store + global stock & stock_quantity + audit movement)
+                        $usedStoreId = null;
+                        if ($variantId) {
+                            $variant = \App\Models\ProductVariant::find($variantId);
+                            if ($variant) {
+                                $stockBefore = (int) ($variant->stock ?? 0);
+                                $deductVar = min($stockBefore, $qty);
+                                $variant->stock = max(0, $stockBefore - $deductVar);
+                                $variant->save();
+                                $variant->syncParentProductStock();
+                                $actorId = auth()->id() ?? $order->user_id ?? \App\Models\User::value('id');
+                                if ($actorId) {
+                                    \App\Models\InventoryMovement::create([
+                                        'product_id' => $variant->product_id,
+                                        'variant_id' => $variant->id,
+                                        'type' => 'out',
+                                        'quantity' => $qty,
+                                        'stock_before' => $stockBefore,
+                                        'stock_after' => (int) $variant->stock,
+                                        'reference_type' => 'order',
+                                        'reference_id' => $order->id,
+                                        'reason' => "Commande en ligne #{$order->order_number}",
+                                        'created_by' => $actorId,
+                                    ]);
+                                }
+                            }
+                        } elseif ($product && $product->track_inventory) {
+                            $stockBefore = (int) ($product->stock ?? 0);
+                            $defaultStoreId = ($isStorePickup && $pickupStore) ? $pickupStore->id : Product::defaultStoreId();
+                            $remaining = $qty;
+                            $storeStocks = \App\Models\ProductStock::where('product_id', $product->id)
+                                ->where('quantity', '>', 0)
+                                ->orderByRaw($defaultStoreId ? "CASE WHEN store_id = {$defaultStoreId} THEN 0 ELSE 1 END" : 'store_id')
+                                ->orderByDesc('quantity')
+                                ->lockForUpdate()
+                                ->get();
+
+                            foreach ($storeStocks as $ss) {
+                                if ($remaining <= 0) {
+                                    break;
+                                }
+                                $take = min($remaining, (int) $ss->quantity);
+                                if ($take > 0) {
+                                    if ($usedStoreId === null) {
+                                        $usedStoreId = (int) $ss->store_id;
+                                    }
+                                    $ss->update(['quantity' => (int) $ss->quantity - $take]);
+                                    $remaining -= $take;
+                                }
+                            }
+
+                            if ($usedStoreId) {
+                                \App\Models\OrderItem::where('order_id', $order->id)
+                                    ->where('product_id', $product->id)
+                                    ->whereNull('store_id')
+                                    ->orderByDesc('id')
+                                    ->limit(1)
+                                    ->update(['store_id' => $usedStoreId]);
+                            }
+
+                            $newGlobal = $product->syncStockFromStores(-$qty);
                             $actorId = auth()->id() ?? $order->user_id ?? \App\Models\User::value('id');
                             if ($actorId) {
                                 \App\Models\InventoryMovement::create([
-                                    'product_id' => $variant->product_id,
-                                    'variant_id' => $variant->id,
+                                    'product_id' => $product->id,
                                     'type' => 'out',
                                     'quantity' => $qty,
                                     'stock_before' => $stockBefore,
-                                    'stock_after' => (int) $variant->stock,
+                                    'stock_after' => $newGlobal,
+                                    'from_location_id' => $usedStoreId,
                                     'reference_type' => 'order',
                                     'reference_id' => $order->id,
                                     'reason' => "Commande en ligne #{$order->order_number}",
@@ -335,93 +488,86 @@ class CheckoutController extends Controller
                                 ]);
                             }
                         }
-                    } elseif ($product && $product->track_inventory) {
-                        $stockBefore = (int) ($product->stock ?? 0);
-                        $defaultStoreId = ($isStorePickup && $pickupStore) ? $pickupStore->id : Product::defaultStoreId();
-                        $remaining = $qty;
-                        $storeStocks = \App\Models\ProductStock::where('product_id', $product->id)
-                            ->where('quantity', '>', 0)
-                            ->orderByRaw($defaultStoreId ? "CASE WHEN store_id = {$defaultStoreId} THEN 0 ELSE 1 END" : 'store_id')
-                            ->orderByDesc('quantity')
-                            ->lockForUpdate()
-                            ->get();
-
-                        foreach ($storeStocks as $ss) {
-                            if ($remaining <= 0) {
-                                break;
-                            }
-                            $take = min($remaining, (int) $ss->quantity);
-                            if ($take > 0) {
-                                if ($usedStoreId === null) {
-                                    $usedStoreId = (int) $ss->store_id;
-                                }
-                                $ss->update(['quantity' => (int) $ss->quantity - $take]);
-                                $remaining -= $take;
-                            }
-                        }
-
-                        if ($usedStoreId) {
-                            \App\Models\OrderItem::where('order_id', $order->id)
-                                ->where('product_id', $product->id)
-                                ->whereNull('store_id')
-                                ->orderByDesc('id')
-                                ->limit(1)
-                                ->update(['store_id' => $usedStoreId]);
-                        }
-
-                        $newGlobal = $product->syncStockFromStores(-$qty);
-                        $actorId = auth()->id() ?? $order->user_id ?? \App\Models\User::value('id');
-                        if ($actorId) {
-                            \App\Models\InventoryMovement::create([
-                                'product_id' => $product->id,
-                                'type' => 'out',
-                                'quantity' => $qty,
-                                'stock_before' => $stockBefore,
-                                'stock_after' => $newGlobal,
-                                'from_location_id' => $usedStoreId,
-                                'reference_type' => 'order',
-                                'reference_id' => $order->id,
-                                'reason' => "Commande en ligne #{$order->order_number}",
-                                'created_by' => $actorId,
-                            ]);
-                        }
                     }
-                }
 
-                // Record coupon usage and award affiliate points
-                if ($coupon) {
-                    $matchedCustomer = Customer::where('email', $request->customer_email)
-                        ->orWhere('phone', $cleanPhone)
-                        ->first();
-                    $coupon->recordUsage($order->id, $request->customer_email, $discount, $subtotal, $matchedCustomer?->id);
-                }
+                    // Record coupon usage and award affiliate points
+                    if ($coupon) {
+                        $matchedCustomer = null;
+                        if (!empty($cleanEmail) || !empty($cleanPhone)) {
+                            $matchedCustomer = Customer::where(function ($q) use ($cleanEmail, $cleanPhone) {
+                                if (!empty($cleanEmail)) {
+                                    $q->where('email', $cleanEmail);
+                                }
+                                if (!empty($cleanPhone)) {
+                                    $q->orWhere('phone', $cleanPhone);
+                                }
+                            })->first();
+                        }
+                        $coupon->recordUsage($order->id, $cleanEmail ?: $request->customer_email, $discount, $subtotal, $matchedCustomer?->id);
+                    }
 
-                return $order;
-            });
-        } catch (\Exception $e) {
-            Log::error('Checkout transaction failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            return back()->withInput()->with('error', 'Une erreur est survenue lors de la création de votre commande. Veuillez réessayer.');
+                    return $order;
+                });
+            } catch (\Exception $e) {
+                Log::error('Checkout transaction failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                return back()->withInput()->with('error', 'Une erreur est survenue lors de la création de votre commande. Veuillez réessayer.');
+            }
+
+            // Clear Cart, coupon session & checkout snapshot tokens
+            session()->forget(['cart', 'applied_coupon', 'checkout_cart_hash', 'checkout_submit_token']);
+            session()->put('last_order_id', $order->id);
+            session()->put('last_order_number', $order->order_number);
+
+            if (!auth()->check() && $request->hasSession()) {
+                $request->session()->migrate(true);
+            }
+        } finally {
+            if ($submitLock) {
+                try {
+                    $submitLock->release();
+                } catch (\Throwable $e) {
+                    // Ignore lock release edge cases
+                }
+            }
         }
 
-        // Clear Cart, coupon session & remember order
-        session()->forget('cart');
-        session()->forget('applied_coupon');
-        session()->put('last_order_id', $order->id);
+        // Reload committed order snapshot with fresh item relations before sending emails
+        $freshOrder = Order::with(['items.product.images', 'items.product.primaryImage', 'items.variant'])
+            ->findOrFail($order->id);
 
         // Send Emails (Customer confirmation + Admin order notification)
-        $sendEmails = function () use ($order) {
+        $sendEmails = function () use ($freshOrder, $order) {
             try {
+                if ((int) $freshOrder->id !== (int) $order->id || (string) $freshOrder->order_number !== (string) $order->order_number) {
+                    Log::error('Checkout email aborted due to order identity mismatch', [
+                        'expected_id' => $order->id,
+                        'expected_number' => $order->order_number,
+                        'loaded_id' => $freshOrder->id,
+                        'loaded_number' => $freshOrder->order_number,
+                    ]);
+                    return;
+                }
+
                 MailConfigService::applyConfig();
 
-                $customerEmail = !empty($order->customer_email) ? trim(strtolower((string)$order->customer_email)) : null;
+                $customerEmail = !empty($freshOrder->customer_email) ? trim(strtolower((string)$freshOrder->customer_email)) : null;
+                $itemsAudit = $freshOrder->items->map(fn($item) => $item->product_name . ' x' . $item->quantity)->values()->all();
 
                 // 1. Customer confirmation email
                 if (!empty($customerEmail) && filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
-                    Log::info("Sending order confirmation email to {$customerEmail} for order #{$order->order_number}");
-                    Mail::to($customerEmail)->send(new OrderConfirmation($order));
-                    Log::info("Order confirmation email successfully sent to {$customerEmail} for order #{$order->order_number}");
+                    Log::info("Sending order confirmation email to {$customerEmail} for order #{$freshOrder->order_number}", [
+                        'order_id' => $freshOrder->id,
+                        'order_number' => $freshOrder->order_number,
+                        'customer_name' => $freshOrder->customer_name,
+                        'customer_email' => $customerEmail,
+                        'total' => $freshOrder->total,
+                        'items_count' => $freshOrder->items->count(),
+                        'items' => $itemsAudit,
+                    ]);
+                    Mail::to($customerEmail)->send(new OrderConfirmation($freshOrder));
+                    Log::info("Order confirmation email successfully sent to {$customerEmail} for order #{$freshOrder->order_number}");
                 } else {
-                    Log::warning("Skipped customer confirmation email for order #{$order->order_number}: invalid or empty email '{$order->customer_email}'");
+                    Log::warning("Skipped customer confirmation email for order #{$freshOrder->order_number}: invalid or empty email '{$freshOrder->customer_email}'");
                 }
 
                 // 2. Admin order notification email
@@ -429,13 +575,13 @@ class CheckoutController extends Controller
                 if ($notificationsEnabled) {
                     $recipients = MailConfigService::getOrderNotificationRecipients();
                     if (!empty($recipients)) {
-                        Log::info("Sending admin notification to " . implode(', ', $recipients) . " for order #{$order->order_number}");
-                        Mail::to($recipients)->send(new NewOrderNotification($order));
-                        Log::info("Admin order notification successfully sent for order #{$order->order_number}");
+                        Log::info("Sending admin notification to " . implode(', ', $recipients) . " for order #{$freshOrder->order_number}");
+                        Mail::to($recipients)->send(new NewOrderNotification($freshOrder));
+                        Log::info("Admin order notification successfully sent for order #{$freshOrder->order_number}");
                     }
                 }
             } catch (\Throwable $e) {
-                Log::error("Failed to send checkout emails for order #{$order->order_number}: " . $e->getMessage(), [
+                Log::error("Failed to send checkout emails for order #{$freshOrder->order_number}: " . $e->getMessage(), [
                     'trace' => $e->getTraceAsString()
                 ]);
             }
@@ -456,10 +602,10 @@ class CheckoutController extends Controller
      */
     public function success($id)
     {
-        $order = Order::with(['items.product.images', 'items.product.primaryImage', 'items.variant'])
-            ->where('id', $id)
-            ->orWhere('order_number', $id)
-            ->firstOrFail();
+        $query = Order::with(['items.product.images', 'items.product.primaryImage', 'items.variant']);
+        $order = ctype_digit((string) $id)
+            ? $query->where('id', (int) $id)->firstOrFail()
+            : $query->where('order_number', (string) $id)->firstOrFail();
 
         $pickupStore = $this->resolveCasablancaPickupStore();
         $pickupMapsUrl = self::CASABLANCA_PICKUP_MAPS_URL;
@@ -473,10 +619,10 @@ class CheckoutController extends Controller
      */
     public function liveStatus($id)
     {
-        $order = Order::with(['items.product.images', 'items.product.primaryImage', 'items.variant'])
-            ->where('id', $id)
-            ->orWhere('order_number', $id)
-            ->firstOrFail();
+        $query = Order::with(['items.product.images', 'items.product.primaryImage', 'items.variant']);
+        $order = ctype_digit((string) $id)
+            ? $query->where('id', (int) $id)->firstOrFail()
+            : $query->where('order_number', (string) $id)->firstOrFail();
 
         $status = $order->status;
         $paymentStatus = $order->payment_status;

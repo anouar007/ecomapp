@@ -11,6 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
+            Route::group([], base_path('routes/stateless.php'));
             Route::middleware('web')
                 ->group(base_path('routes/shop.php'));
             Route::middleware('web')

@@ -61,10 +61,16 @@
     AddOutputFilterByType DEFLATE font/ttf
 </IfModule>
 
+# Disable LiteSpeed HTTP Page Caching so PHP session cookies & dynamic cart/checkout pages are never shared across clients
+<IfModule LiteSpeed>
+    CacheDisable public /
+    CacheDisable private /
+</IfModule>
+
 # Browser Caching Headers (mod_expires)
 <IfModule mod_expires.c>
     ExpiresActive On
-    ExpiresDefault "access plus 1 month"
+    ExpiresDefault "access plus 0 seconds"
 
     # Images & Icons
     ExpiresByType image/jpg "access plus 1 year"
@@ -101,6 +107,9 @@
     </FilesMatch>
     <FilesMatch "\.(css|js)$">
         Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+    <FilesMatch "\.php$">
+        Header set X-LiteSpeed-Cache-Control "no-cache"
     </FilesMatch>
 </IfModule>
 

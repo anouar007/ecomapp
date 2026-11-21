@@ -61,6 +61,12 @@ class FastGuestPageCache
                         'Content-Type' => 'text/html; charset=UTF-8',
                         'X-Fast-Cache' => 'HIT',
                         'Vary' => 'Accept-Encoding, Cookie',
+                        'Cache-Control' => 'private, no-store, no-cache, must-revalidate, max-age=0',
+                        'Pragma' => 'no-cache',
+                        'Expires' => '0',
+                        'X-LiteSpeed-Cache-Control' => 'no-cache',
+                        'CDN-Cache-Control' => 'no-store',
+                        'Surrogate-Control' => 'no-store',
                     ]);
                 }
             }
@@ -88,6 +94,12 @@ class FastGuestPageCache
                         ], 900);
 
                         $response->headers->set('X-Fast-Cache', 'MISS');
+                        $response->headers->set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0');
+                        $response->headers->set('Pragma', 'no-cache');
+                        $response->headers->set('Expires', '0');
+                        $response->headers->set('X-LiteSpeed-Cache-Control', 'no-cache');
+                        $response->headers->set('CDN-Cache-Control', 'no-store');
+                        $response->headers->set('Surrogate-Control', 'no-store');
                     }
                 }
             } catch (\Throwable $e) {

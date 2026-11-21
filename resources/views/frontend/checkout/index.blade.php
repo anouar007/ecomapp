@@ -37,6 +37,8 @@
 
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
+                            <input type="hidden" name="checkout_cart_hash" value="{{ $checkoutCartHash ?? '' }}">
+                            <input type="hidden" name="checkout_submit_token" value="{{ $checkoutSubmitToken ?? '' }}">
                             <input type="hidden" name="coupon_code" id="checkout_coupon_code_hidden" value="{{ $appliedCoupon['code'] ?? '' }}">
                             <div class="row g-3">
                                 <div class="col-12">

@@ -42,6 +42,10 @@ class MailConfigService
                 Config::set('mail.from.name', $fromName);
             }
 
+            if (!$isFaked) {
+                \Illuminate\Support\Facades\Mail::purge('smtp');
+            }
+
             return true;
         } catch (\Throwable $e) {
             Log::warning('Failed to apply dynamic mail config: ' . $e->getMessage());
