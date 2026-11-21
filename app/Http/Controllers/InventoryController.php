@@ -462,7 +462,7 @@ class InventoryController extends Controller
         $validated = $request->validate([
             'adjustment_type' => 'required|in:in,out,adjustment,transfer,return',
             'quantity' => "required|integer|min:{$minQty}",
-            'reason' => 'required|string|max:500',
+            'reason' => 'nullable|string|max:500',
             'variant_id' => [
                 'nullable',
                 Rule::exists('product_variants', 'id')->where('product_id', $product->id),
@@ -473,7 +473,7 @@ class InventoryController extends Controller
         ]);
 
         $options = [
-            'reason' => $validated['reason'],
+            'reason' => !empty($validated['reason']) ? trim((string) $validated['reason']) : null,
         ];
 
         if (!empty($validated['variant_id'])) {

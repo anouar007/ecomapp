@@ -66,6 +66,113 @@
     color: #0f172a;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
 }
+.inv-transfer-store-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    height: 100%;
+}
+.inv-transfer-store-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+.inv-transfer-store-card {
+    appearance: none;
+    width: 100%;
+    text-align: left;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 7px 9px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.inv-transfer-store-card:hover {
+    border-color: #94a3b8;
+    background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+.inv-transfer-store-card.is-source.active {
+    background: #fff7ed;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.18);
+}
+.inv-transfer-store-card.is-dest.active {
+    background: #ecfdf5;
+    border-color: #059669;
+    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.18);
+}
+.inv-transfer-store-card.is-adjust.active {
+    background: #eff6ff;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.18);
+}
+.inv-transfer-store-card.is-empty {
+    opacity: 0.62;
+}
+.inv-transfer-store-card .inv-store-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    width: 100%;
+}
+.inv-transfer-store-card .inv-store-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.inv-transfer-store-card .inv-store-check {
+    display: none;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+}
+.inv-transfer-store-card.active .inv-store-check {
+    display: inline-block;
+}
+.inv-transfer-store-card.is-source.active .inv-store-check {
+    color: #ea580c;
+}
+.inv-transfer-store-card.is-dest.active .inv-store-check {
+    color: #059669;
+}
+.inv-transfer-store-card.is-adjust.active .inv-store-check {
+    color: #dc2626;
+}
+.inv-transfer-store-card .inv-store-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 0.68rem;
+    color: #64748b;
+}
+.inv-transfer-store-card .inv-store-qty {
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: #334155;
+    font-variant-numeric: tabular-nums;
+}
+.inv-transfer-store-card.is-has-stock .inv-store-qty {
+    background: #dcfce7;
+    color: #166534;
+}
+.inv-transfer-store-card.is-empty .inv-store-qty {
+    background: #fee2e2;
+    color: #991b1b;
+}
 </style>
 @endpush
 
@@ -845,18 +952,48 @@
                             </div>
                         </div>
 
-                        <!-- Magasin / Dépôt Selector -->
+                        <!-- Magasin / Dépôt Selector (1-Click Visual Cards) -->
                         @if($stores->isNotEmpty())
                         <div class="mb-3 p-2.5 rounded-3 bg-light border">
-                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">
-                                <i class="fas fa-warehouse text-danger me-1"></i>Magasin / Point de stockage ciblé
+                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1.5" style="font-size: 0.68rem; letter-spacing: 0.04em;">
+                                <i class="fas fa-warehouse text-danger me-1"></i>Magasin / Point de stockage ciblé (1 clic)
                             </label>
-                            <select name="store_id" id="modalStoreSelect" class="form-select form-select-sm" onchange="onStoreSelectionChange()">
+                            <select name="store_id" id="modalStoreSelect" class="form-select form-select-sm d-none" onchange="onStoreSelectionChange()">
                                 <option value="">Stock global uniquement (tous dépôts)</option>
                                 @foreach($stores as $st)
                                     <option value="{{ $st->id }}">{{ $st->name }} ({{ $st->code }})</option>
                                 @endforeach
                             </select>
+                            <div class="inv-transfer-store-grid" id="modalAdjustStorePills">
+                                <button type="button"
+                                        class="inv-transfer-store-card is-adjust active"
+                                        data-store-id=""
+                                        onclick="selectAdjustStoreCard('')">
+                                    <div class="inv-store-card-top">
+                                        <span class="inv-store-name">Stock global</span>
+                                        <i class="fas fa-check-circle inv-store-check"></i>
+                                    </div>
+                                    <div class="inv-store-card-meta">
+                                        <span>Tous dépôts</span>
+                                        <span class="inv-store-qty" data-adjust-store-qty>0 pcs</span>
+                                    </div>
+                                </button>
+                                @foreach($stores as $st)
+                                    <button type="button"
+                                            class="inv-transfer-store-card is-adjust"
+                                            data-store-id="{{ $st->id }}"
+                                            onclick="selectAdjustStoreCard({{ $st->id }})">
+                                        <div class="inv-store-card-top">
+                                            <span class="inv-store-name">{{ $st->name }}</span>
+                                            <i class="fas fa-check-circle inv-store-check"></i>
+                                        </div>
+                                        <div class="inv-store-card-meta">
+                                            <span>{{ $st->code }}</span>
+                                            <span class="inv-store-qty" data-adjust-store-qty>0 pcs</span>
+                                        </div>
+                                    </button>
+                                @endforeach
+                            </div>
 
                             <div class="row g-2 mt-2" id="modalStoreMetaContainer" style="display: none;">
                                 <div class="col-7">
@@ -931,9 +1068,9 @@
                             <div class="form-text small" id="modalQtyHelp" style="font-size: 0.72rem;">Nombre d'unités ajoutées à l'inventaire.</div>
                         </div>
 
-                        <!-- Reason -->
+                        <!-- Reason (Optional) -->
                         <div class="mb-2">
-                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Motif de l'ajustement</label>
+                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Motif de l'ajustement (Optionnel)</label>
                             <div class="d-flex flex-wrap gap-1 mb-2">
                                 <button type="button" class="badge bg-light text-secondary border py-1 px-2 text-decoration-none" onclick="setReason('Arrivage fournisseur')">Arrivage</button>
                                 <button type="button" class="badge bg-light text-secondary border py-1 px-2 text-decoration-none" onclick="setReason('Retour client')">Retour client</button>
@@ -944,8 +1081,7 @@
                                       id="modalReasonInput"
                                       class="form-control"
                                       rows="2"
-                                      required
-                                      placeholder="Précisez la raison de cet ajustement..."
+                                      placeholder="Motif optionnel (ex: Arrivage, Retour client...)"
                                       style="border-radius: 12px; font-size: 0.85rem;"></textarea>
                         </div>
                     </div>
@@ -996,22 +1132,77 @@
                         </select>
                     </div>
 
-                    <div class="row g-3 mb-3">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                        <span class="small fw-bold text-dark">
+                            <i class="fas fa-route text-primary me-1"></i>Sélection rapide des dépôts (1 clic)
+                        </span>
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold"
+                                style="font-size: 0.74rem;"
+                                onclick="swapTransferStores()"
+                                title="Inverser Dépôt Source et Dépôt Destination">
+                            <i class="fas fa-arrow-right-arrow-left me-1"></i>Inverser Source / Destination
+                        </button>
+                    </div>
+
+                    <div class="row g-2.5 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-dark mb-1">Dépôt Source (Origine) <span class="text-danger">*</span></label>
-                            <select name="from_store_id" id="inv_transfer_from_store" class="form-select rounded-3" required onchange="onTransferStoreChange('from')">
-                                @foreach($stores as $st)
-                                    <option value="{{ $st->id }}" data-name="{{ $st->name }} ({{ $st->code }})">{{ $st->name }} ({{ $st->code }})</option>
-                                @endforeach
-                            </select>
+                            <div class="inv-transfer-store-box">
+                                <label class="form-label small fw-bold text-dark mb-1.5 d-flex align-items-center justify-content-between">
+                                    <span><i class="fas fa-arrow-up-from-bracket text-warning me-1"></i>Dépôt Source (Origine) <span class="text-danger">*</span></span>
+                                </label>
+                                <select name="from_store_id" id="inv_transfer_from_store" class="form-select d-none" required onchange="onTransferStoreChange('from')">
+                                    @foreach($stores as $st)
+                                        <option value="{{ $st->id }}" data-name="{{ $st->name }} ({{ $st->code }})">{{ $st->name }} ({{ $st->code }})</option>
+                                    @endforeach
+                                </select>
+                                <div class="inv-transfer-store-grid" id="invTransferFromPills">
+                                    @foreach($stores as $idx => $st)
+                                        <button type="button"
+                                                class="inv-transfer-store-card is-source {{ $idx === 0 ? 'active' : '' }}"
+                                                data-store-id="{{ $st->id }}"
+                                                onclick="selectTransferStoreCard('from', {{ $st->id }})">
+                                            <div class="inv-store-card-top">
+                                                <span class="inv-store-name">{{ $st->name }}</span>
+                                                <i class="fas fa-check-circle inv-store-check"></i>
+                                            </div>
+                                            <div class="inv-store-card-meta">
+                                                <span>{{ $st->code }}</span>
+                                                <span class="inv-store-qty" data-store-qty>—</span>
+                                            </div>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-dark mb-1">Dépôt Destination (Arrivée) <span class="text-danger">*</span></label>
-                            <select name="to_store_id" id="inv_transfer_to_store" class="form-select rounded-3" required onchange="onTransferStoreChange('to')">
-                                @foreach($stores as $idx => $st)
-                                    <option value="{{ $st->id }}" data-name="{{ $st->name }} ({{ $st->code }})" {{ $idx === 1 ? 'selected' : '' }}>{{ $st->name }} ({{ $st->code }})</option>
-                                @endforeach
-                            </select>
+                            <div class="inv-transfer-store-box">
+                                <label class="form-label small fw-bold text-dark mb-1.5 d-flex align-items-center justify-content-between">
+                                    <span><i class="fas fa-arrow-right-to-bracket text-success me-1"></i>Dépôt Destination (Arrivée) <span class="text-danger">*</span></span>
+                                </label>
+                                <select name="to_store_id" id="inv_transfer_to_store" class="form-select d-none" required onchange="onTransferStoreChange('to')">
+                                    @foreach($stores as $idx => $st)
+                                        <option value="{{ $st->id }}" data-name="{{ $st->name }} ({{ $st->code }})" {{ $idx === 1 ? 'selected' : '' }}>{{ $st->name }} ({{ $st->code }})</option>
+                                    @endforeach
+                                </select>
+                                <div class="inv-transfer-store-grid" id="invTransferToPills">
+                                    @foreach($stores as $idx => $st)
+                                        <button type="button"
+                                                class="inv-transfer-store-card is-dest {{ $idx === 1 ? 'active' : '' }}"
+                                                data-store-id="{{ $st->id }}"
+                                                onclick="selectTransferStoreCard('to', {{ $st->id }})">
+                                            <div class="inv-store-card-top">
+                                                <span class="inv-store-name">{{ $st->name }}</span>
+                                                <i class="fas fa-check-circle inv-store-check"></i>
+                                            </div>
+                                            <div class="inv-store-card-meta">
+                                                <span>{{ $st->code }}</span>
+                                                <span class="inv-store-qty" data-store-qty>—</span>
+                                            </div>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1257,6 +1448,34 @@
                 }
             });
         }
+
+        syncAdjustStoreCards();
+    }
+
+    function selectAdjustStoreCard(storeId) {
+        const storeSelect = document.getElementById('modalStoreSelect');
+        if (!storeSelect) return;
+        storeSelect.value = storeId ? String(storeId) : '';
+        syncModalStockContext();
+    }
+
+    function syncAdjustStoreCards() {
+        const storeSelect = document.getElementById('modalStoreSelect');
+        const activeVal = storeSelect ? String(storeSelect.value || '') : '';
+        document.querySelectorAll('#modalAdjustStorePills .inv-transfer-store-card').forEach(btn => {
+            const sid = String(btn.dataset.storeId || '');
+            btn.classList.toggle('active', sid === activeVal);
+
+            let qty = modalBaseStock;
+            if (sid !== '') {
+                const rec = (modalStoreStocks || []).find(s => String(s.store_id) === sid);
+                qty = rec ? (parseInt(rec.quantity, 10) || 0) : 0;
+            }
+            const qtyEl = btn.querySelector('[data-adjust-store-qty]');
+            if (qtyEl) qtyEl.textContent = `${qty} pcs`;
+            btn.classList.toggle('is-empty', qty <= 0);
+            btn.classList.toggle('is-has-stock', qty > 0);
+        });
     }
 
     function syncModalStockContext() {
@@ -1297,6 +1516,7 @@
         if (document.getElementById('modalAdjustmentType').value === 'adjustment') {
             document.getElementById('modalQuantityInput').value = currentProductStock;
         }
+        syncAdjustStoreCards();
         recalculateProjected();
     }
 
@@ -1377,6 +1597,8 @@
         reasonInput.focus();
     }
 
+    window.invTransferExplicitSource = false;
+
     function openInventoryTransferModal(productId = null, sourceStoreId = null) {
         const modalEl = document.getElementById('transferInventoryModal');
         if (!modalEl) return;
@@ -1394,12 +1616,13 @@
         }
 
         const prodSelect = document.getElementById('inv_transfer_product_id');
-        if (prodSelect && productId) {
-            prodSelect.value = String(productId);
+        if (prodSelect) {
+            prodSelect.value = productId ? String(productId) : '';
         }
 
         const fromSelect = document.getElementById('inv_transfer_from_store');
         const toSelect = document.getElementById('inv_transfer_to_store');
+        window.invTransferExplicitSource = Boolean(sourceStoreId);
         if (fromSelect && sourceStoreId) {
             fromSelect.value = String(sourceStoreId);
             if (toSelect && toSelect.value === fromSelect.value) {
@@ -1423,6 +1646,98 @@
         });
     }
 
+    function selectTransferStoreCard(role, storeId) {
+        const fromSelect = document.getElementById('inv_transfer_from_store');
+        const toSelect = document.getElementById('inv_transfer_to_store');
+        if (!fromSelect || !toSelect) return;
+
+        const nextId = String(storeId);
+        const prevFrom = fromSelect.value;
+        const prevTo = toSelect.value;
+
+        if (role === 'from') {
+            window.invTransferExplicitSource = true;
+            fromSelect.value = nextId;
+            if (toSelect.value === nextId) {
+                const swapCandidate = prevFrom && prevFrom !== nextId ? prevFrom : null;
+                if (swapCandidate) {
+                    toSelect.value = swapCandidate;
+                } else {
+                    const other = Array.from(toSelect.options).find(o => o.value !== nextId);
+                    if (other) toSelect.value = other.value;
+                }
+            }
+        } else {
+            toSelect.value = nextId;
+            if (fromSelect.value === nextId) {
+                const swapCandidate = prevTo && prevTo !== nextId ? prevTo : null;
+                if (swapCandidate) {
+                    fromSelect.value = swapCandidate;
+                } else {
+                    const other = Array.from(fromSelect.options).find(o => o.value !== nextId);
+                    if (other) fromSelect.value = other.value;
+                }
+            }
+        }
+
+        syncTransferStoreCards();
+        validateTransferQty();
+    }
+
+    function swapTransferStores() {
+        const fromSelect = document.getElementById('inv_transfer_from_store');
+        const toSelect = document.getElementById('inv_transfer_to_store');
+        if (!fromSelect || !toSelect) return;
+
+        const oldFrom = fromSelect.value;
+        const oldTo = toSelect.value;
+        if (!oldFrom || !oldTo || oldFrom === oldTo) return;
+
+        window.invTransferExplicitSource = true;
+        fromSelect.value = oldTo;
+        toSelect.value = oldFrom;
+        syncTransferStoreCards();
+        validateTransferQty();
+    }
+
+    function syncTransferStoreCards() {
+        const prodSelect = document.getElementById('inv_transfer_product_id');
+        const fromSelect = document.getElementById('inv_transfer_from_store');
+        const toSelect = document.getElementById('inv_transfer_to_store');
+        if (!fromSelect || !toSelect) return;
+
+        const fromVal = fromSelect.value;
+        const toVal = toSelect.value;
+        const hasProduct = Boolean(prodSelect && prodSelect.value);
+        const map = hasProduct ? window.__transferStoreStocks?.[prodSelect.value] : null;
+        const meta = hasProduct ? window.__invProducts[prodSelect.value] : null;
+
+        const resolveQty = (storeId) => {
+            if (!hasProduct || (!map && !meta)) return null;
+            if (map) return parseInt(map[storeId] ?? 0, 10) || 0;
+            const rec = (meta.storeStocks || []).find(s => String(s.store_id) === String(storeId));
+            return rec ? (parseInt(rec.quantity, 10) || 0) : 0;
+        };
+
+        document.querySelectorAll('#invTransferFromPills .inv-transfer-store-card').forEach(btn => {
+            const sid = String(btn.dataset.storeId || '');
+            btn.classList.toggle('active', sid === fromVal);
+            const qty = resolveQty(sid);
+            const qtyEl = btn.querySelector('[data-store-qty]');
+            if (qtyEl) qtyEl.textContent = qty === null ? '—' : `${qty} pcs`;
+            btn.classList.toggle('is-empty', qty !== null && qty <= 0);
+            btn.classList.toggle('is-has-stock', qty !== null && qty > 0);
+        });
+
+        document.querySelectorAll('#invTransferToPills .inv-transfer-store-card').forEach(btn => {
+            const sid = String(btn.dataset.storeId || '');
+            btn.classList.toggle('active', sid === toVal);
+            const qty = resolveQty(sid);
+            const qtyEl = btn.querySelector('[data-store-qty]');
+            if (qtyEl) qtyEl.textContent = qty === null ? '—' : `${qty} pcs`;
+        });
+    }
+
     function onTransferStoreChange(changed) {
         const fromSelect = document.getElementById('inv_transfer_from_store');
         const toSelect = document.getElementById('inv_transfer_to_store');
@@ -1431,6 +1746,7 @@
             const other = Array.from(target.options).find(o => o.value !== fromSelect.value);
             if (other) target.value = other.value;
         }
+        syncTransferStoreCards();
         validateTransferQty();
     }
 
@@ -1479,6 +1795,34 @@
         const map = window.__transferStoreStocks?.[prodSelect.value];
         const meta = window.__invProducts[prodSelect.value];
 
+        const getQty = (storeId) => {
+            if (!prodSelect.value || (!map && !meta)) return 0;
+            if (map) return parseInt(map[storeId] ?? 0, 10) || 0;
+            const rec = (meta.storeStocks || []).find(s => String(s.store_id) === String(storeId));
+            return rec ? (parseInt(rec.quantity, 10) || 0) : 0;
+        };
+
+        // Auto-pick the source depot with highest stock if product is chosen and current source has 0 (or no explicit source)
+        if (prodSelect.value && (map || meta) && fromSelect && toSelect) {
+            const currentSourceQty = getQty(fromSelect.value);
+            let bestOpt = null;
+            let bestQty = -1;
+            Array.from(fromSelect.options).forEach(opt => {
+                const q = getQty(opt.value);
+                if (q > bestQty) {
+                    bestQty = q;
+                    bestOpt = opt;
+                }
+            });
+            if (bestOpt && bestQty > 0 && (!window.invTransferExplicitSource || currentSourceQty <= 0)) {
+                fromSelect.value = bestOpt.value;
+                if (toSelect.value === fromSelect.value) {
+                    const other = Array.from(toSelect.options).find(o => o.value !== fromSelect.value);
+                    if (other) toSelect.value = other.value;
+                }
+            }
+        }
+
         [fromSelect, toSelect].forEach(sel => {
             if (!sel) return;
             Array.from(sel.options).forEach(opt => {
@@ -1487,17 +1831,11 @@
                     opt.textContent = base;
                     return;
                 }
-                let qty = 0;
-                if (map) {
-                    qty = parseInt(map[opt.value] ?? 0, 10) || 0;
-                } else {
-                    const rec = (meta.storeStocks || []).find(s => String(s.store_id) === String(opt.value));
-                    qty = rec ? rec.quantity : 0;
-                }
-                opt.textContent = `${base} — ${qty} pcs`;
+                opt.textContent = `${base} — ${getQty(opt.value)} pcs`;
             });
         });
 
+        syncTransferStoreCards();
         validateTransferQty();
     }
 

@@ -124,140 +124,140 @@
         color: #ffffff !important;
     }
 
-    /* Status Color Themes (matched to status badges & mobile order cards) */
+    /* Status Color Themes (matched to status badges & mobile order cards at 0.3 opacity) */
     .kpi-theme-all {
         --kpi-accent: #0f172a;
         --kpi-active-border: #0f172a;
-        --kpi-bg: #f8fafc;
+        --kpi-bg: rgba(15, 23, 42, 0.18);
         --kpi-border: #cbd5e1;
         --kpi-text: #0f172a;
         --kpi-ring: rgba(15, 23, 42, 0.25);
     }
     .kpi-theme-all .order-kpi-icon {
-        background: #e2e8f0;
+        background: rgba(255, 255, 255, 0.78);
         color: #0f172a;
     }
     .kpi-theme-all .order-kpi-badge {
-        background: #e2e8f0;
+        background: rgba(255, 255, 255, 0.78);
         color: #0f172a;
     }
 
     .kpi-theme-pending {
         --kpi-accent: #d97706;
         --kpi-active-border: #b45309;
-        --kpi-bg: #fef9ee;
+        --kpi-bg: rgba(217, 119, 6, 0.3);
         --kpi-border: #f59e0b;
         --kpi-text: #b45309;
         --kpi-ring: rgba(217, 119, 6, 0.28);
     }
     .kpi-theme-pending .order-kpi-icon {
-        background: #fef3c7;
+        background: rgba(255, 255, 255, 0.78);
         color: #d97706;
     }
     .kpi-theme-pending .order-kpi-badge {
-        background: #fef3c7;
+        background: rgba(255, 255, 255, 0.78);
         color: #b45309;
     }
 
     .kpi-theme-en-demande {
         --kpi-accent: #4338ca;
         --kpi-active-border: #3730a3;
-        --kpi-bg: #f4f4fe;
+        --kpi-bg: rgba(67, 56, 202, 0.3);
         --kpi-border: #818cf8;
         --kpi-text: #4338ca;
         --kpi-ring: rgba(67, 56, 202, 0.28);
     }
     .kpi-theme-en-demande .order-kpi-icon {
-        background: #e0e7ff;
+        background: rgba(255, 255, 255, 0.78);
         color: #4338ca;
     }
     .kpi-theme-en-demande .order-kpi-badge {
-        background: #e0e7ff;
+        background: rgba(255, 255, 255, 0.78);
         color: #4338ca;
     }
 
     .kpi-theme-reserved {
         --kpi-accent: #7c3aed;
         --kpi-active-border: #6d28d9;
-        --kpi-bg: #f8f5ff;
+        --kpi-bg: rgba(124, 58, 237, 0.3);
         --kpi-border: #a78bfa;
         --kpi-text: #6d28d9;
         --kpi-ring: rgba(124, 58, 237, 0.28);
     }
     .kpi-theme-reserved .order-kpi-icon {
-        background: #ede9fe;
+        background: rgba(255, 255, 255, 0.78);
         color: #7c3aed;
     }
     .kpi-theme-reserved .order-kpi-badge {
-        background: #ede9fe;
+        background: rgba(255, 255, 255, 0.78);
         color: #6d28d9;
     }
 
     .kpi-theme-processing {
         --kpi-accent: #2563eb;
         --kpi-active-border: #1d4ed8;
-        --kpi-bg: #f2f7ff;
+        --kpi-bg: rgba(37, 99, 235, 0.3);
         --kpi-border: #60a5fa;
         --kpi-text: #1d4ed8;
         --kpi-ring: rgba(37, 99, 235, 0.28);
     }
     .kpi-theme-processing .order-kpi-icon {
-        background: #dbeafe;
+        background: rgba(255, 255, 255, 0.78);
         color: #2563eb;
     }
     .kpi-theme-processing .order-kpi-badge {
-        background: #dbeafe;
+        background: rgba(255, 255, 255, 0.78);
         color: #1d4ed8;
     }
 
     .kpi-theme-shipped {
         --kpi-accent: #0093ac;
         --kpi-active-border: #0e7490;
-        --kpi-bg: #f0fafc;
+        --kpi-bg: rgba(0, 147, 172, 0.3);
         --kpi-border: #38bdf8;
         --kpi-text: #0e7490;
         --kpi-ring: rgba(0, 147, 172, 0.28);
     }
     .kpi-theme-shipped .order-kpi-icon {
-        background: #cffafe;
+        background: rgba(255, 255, 255, 0.78);
         color: #0093ac;
     }
     .kpi-theme-shipped .order-kpi-badge {
-        background: #cffafe;
+        background: rgba(255, 255, 255, 0.78);
         color: #0e7490;
     }
 
     .kpi-theme-delivered {
         --kpi-accent: #059669;
         --kpi-active-border: #047857;
-        --kpi-bg: #f0fbf6;
+        --kpi-bg: rgba(5, 150, 105, 0.3);
         --kpi-border: #34d399;
         --kpi-text: #047857;
         --kpi-ring: rgba(5, 150, 105, 0.28);
     }
     .kpi-theme-delivered .order-kpi-icon {
-        background: #d1fae5;
+        background: rgba(255, 255, 255, 0.78);
         color: #059669;
     }
     .kpi-theme-delivered .order-kpi-badge {
-        background: #d1fae5;
+        background: rgba(255, 255, 255, 0.78);
         color: #047857;
     }
 
     .kpi-theme-cancelled {
         --kpi-accent: #dc2626;
         --kpi-active-border: #b91c1c;
-        --kpi-bg: #fef4f4;
+        --kpi-bg: rgba(220, 38, 38, 0.3);
         --kpi-border: #f87171;
         --kpi-text: #b91c1c;
         --kpi-ring: rgba(220, 38, 38, 0.28);
     }
     .kpi-theme-cancelled .order-kpi-icon {
-        background: #fee2e2;
+        background: rgba(255, 255, 255, 0.78);
         color: #dc2626;
     }
     .kpi-theme-cancelled .order-kpi-badge {
-        background: #fee2e2;
+        background: rgba(255, 255, 255, 0.78);
         color: #b91c1c;
     }
 

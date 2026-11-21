@@ -544,6 +544,34 @@ class ErpCohesionIntegrationTest extends TestCase
                 'new_stock' => 14,
             ]);
 
+        // 4b. Stock adjustment succeeds with empty/omitted reason (Motif optionnel)
+        $this->actingAs($this->adminUser)
+            ->postJson(route('inventory.process-adjustment', $product), [
+                'store_id' => $storeA->id,
+                'adjustment_type' => 'in',
+                'quantity' => 1,
+            ])
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'store_stock' => 3,
+                'new_stock' => 15,
+            ]);
+
+        $this->actingAs($this->adminUser)
+            ->postJson(route('inventory.process-adjustment', $product), [
+                'store_id' => $storeA->id,
+                'adjustment_type' => 'out',
+                'quantity' => 1,
+                'reason' => '',
+            ])
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'store_stock' => 2,
+                'new_stock' => 14,
+            ]);
+
         // 5. Inventory index filtered by store_id, stock_status=low_stock, location_code, and sort_by=stock
         $this->actingAs($this->adminUser)
             ->get(route('inventory.index', [
@@ -555,7 +583,9 @@ class ErpCohesionIntegrationTest extends TestCase
             ->assertStatus(200)
             ->assertSee($product->name)
             ->assertSee($storeA->name)
-            ->assertSee('Rayon A1');
+            ->assertSee('Rayon A1')
+            ->assertSee('id="modalAdjustStorePills"', false)
+            ->assertSee('id="invTransferFromPills"', false);
 
         // 6. Export CSV scoped to store_id
         $exportResp = $this->actingAs($this->adminUser)
@@ -570,7 +600,8 @@ class ErpCohesionIntegrationTest extends TestCase
             ->get(route('inventory.adjust', ['product' => $product->id, 'store_id' => $storeA->id]))
             ->assertStatus(200)
             ->assertSee($storeA->name)
-            ->assertSee($depotB->name);
+            ->assertSee($depotB->name)
+            ->assertSee('id="adjustPageStorePills"', false);
 
         $this->actingAs($this->adminUser)
             ->get(route('inventory.movements', ['store_id' => $storeA->id]))

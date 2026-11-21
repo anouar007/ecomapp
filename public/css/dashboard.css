@@ -3981,54 +3981,54 @@ i.fa-sparkles:before {
     .mobile-order-card.mobile-order-status-pending:hover,
     .mobile-order-card.mobile-order-status-pending:active {
         border: 2px solid #d97706 !important;
-        background-color: #fef9ee !important;
+        background-color: rgba(217, 119, 6, 0.3) !important;
     }
 
     .mobile-order-card.mobile-order-status-en_demande,
     .mobile-order-card.mobile-order-status-en_demande:hover,
     .mobile-order-card.mobile-order-status-en_demande:active {
         border: 2px solid #4338ca !important;
-        background-color: #f4f4fe !important;
+        background-color: rgba(67, 56, 202, 0.3) !important;
     }
 
     .mobile-order-card.mobile-order-status-reserved,
     .mobile-order-card.mobile-order-status-reserved:hover,
     .mobile-order-card.mobile-order-status-reserved:active {
         border: 2px solid #7c3aed !important;
-        background-color: #f8f5ff !important;
+        background-color: rgba(124, 58, 237, 0.3) !important;
     }
 
     .mobile-order-card.mobile-order-status-processing,
     .mobile-order-card.mobile-order-status-processing:hover,
     .mobile-order-card.mobile-order-status-processing:active {
         border: 2px solid #2563eb !important;
-        background-color: #f2f7ff !important;
+        background-color: rgba(37, 99, 235, 0.3) !important;
     }
 
     .mobile-order-card.mobile-order-status-shipped,
     .mobile-order-card.mobile-order-status-shipped:hover,
     .mobile-order-card.mobile-order-status-shipped:active {
         border: 2px solid #0093ac !important;
-        background-color: #f0fafc !important;
+        background-color: rgba(0, 147, 172, 0.3) !important;
     }
 
     .mobile-order-card.mobile-order-status-delivered,
     .mobile-order-card.mobile-order-status-delivered:hover,
     .mobile-order-card.mobile-order-status-delivered:active {
         border: 2px solid #059669 !important;
-        background-color: #f0fbf6 !important;
+        background-color: rgba(5, 150, 105, 0.3) !important;
     }
 
     .mobile-order-card.mobile-order-status-cancelled,
     .mobile-order-card.mobile-order-status-cancelled:hover,
     .mobile-order-card.mobile-order-status-cancelled:active {
         border: 2px solid #dc2626 !important;
-        background-color: #fef4f4 !important;
+        background-color: rgba(220, 38, 38, 0.3) !important;
     }
 
     .mobile-order-card[class*="mobile-order-status-"] .mobile-order-customer {
-        background: rgba(255, 255, 255, 0.72);
-        border-color: rgba(15, 23, 42, 0.06);
+        background: rgba(255, 255, 255, 0.85);
+        border-color: rgba(15, 23, 42, 0.08);
     }
 }
 

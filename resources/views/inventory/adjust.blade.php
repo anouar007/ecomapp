@@ -2,6 +2,93 @@
 
 @section('title', 'Ajuster le stock - ' . $product->name)
 
+@push('styles')
+<style>
+.inv-transfer-store-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+.inv-transfer-store-card {
+    appearance: none;
+    width: 100%;
+    text-align: left;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.inv-transfer-store-card:hover {
+    border-color: #94a3b8;
+    background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+.inv-transfer-store-card.is-adjust.active {
+    background: #eff6ff;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.18);
+}
+.inv-transfer-store-card.is-empty {
+    opacity: 0.68;
+}
+.inv-transfer-store-card .inv-store-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    width: 100%;
+}
+.inv-transfer-store-card .inv-store-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.inv-transfer-store-card .inv-store-check {
+    display: none;
+    font-size: 0.74rem;
+    color: #dc2626;
+    flex-shrink: 0;
+}
+.inv-transfer-store-card.active .inv-store-check {
+    display: inline-block;
+}
+.inv-transfer-store-card .inv-store-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: #64748b;
+}
+.inv-transfer-store-card .inv-store-qty {
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: #334155;
+    font-variant-numeric: tabular-nums;
+}
+.inv-transfer-store-card.is-has-stock .inv-store-qty {
+    background: #dcfce7;
+    color: #166534;
+}
+.inv-transfer-store-card.is-empty .inv-store-qty {
+    background: #fee2e2;
+    color: #991b1b;
+}
+</style>
+@endpush
+
 @section('content')
     <!-- En-tête de page (Clean & Pro Executive Brand Header) -->
     <div class="brand-header">
@@ -75,12 +162,12 @@
                     @endphp
 
                     @if($stores->isNotEmpty())
-                    <!-- Sélecteur de Magasin / Dépôt -->
+                    <!-- Sélecteur de Magasin / Dépôt (1 clic) -->
                     <div class="mb-3.5 p-3 rounded-3 bg-light border">
-                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.04em;">
-                            <i class="fas fa-warehouse text-danger me-1"></i>Magasin / Point de stockage ciblé
+                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1.5" style="font-size: 0.72rem; letter-spacing: 0.04em;">
+                            <i class="fas fa-warehouse text-danger me-1"></i>Magasin / Point de stockage ciblé (1 clic)
                         </label>
-                        <select name="store_id" id="storeSelectAdjust" class="form-select" onchange="onAdjustStoreChange(this)">
+                        <select name="store_id" id="storeSelectAdjust" class="form-select d-none" onchange="onAdjustStoreChange(this)">
                             <option value="" data-stock="{{ $product->stock ?? 0 }}" data-location="" data-min="2" data-label="Stock global">
                                 Stock global (Total produit : {{ $product->stock ?? 0 }} u.)
                             </option>
@@ -101,6 +188,41 @@
                                 </option>
                             @endforeach
                         </select>
+                        @php $globalAdjQty = (int) ($product->stock ?? 0); @endphp
+                        <div class="inv-transfer-store-grid" id="adjustPageStorePills">
+                            <button type="button"
+                                    class="inv-transfer-store-card is-adjust {{ !$selectedStoreId ? 'active' : '' }} {{ $globalAdjQty > 0 ? 'is-has-stock' : 'is-empty' }}"
+                                    data-store-id=""
+                                    onclick="selectStoreForAdjust('')">
+                                <div class="inv-store-card-top">
+                                    <span class="inv-store-name">Stock global</span>
+                                    <i class="fas fa-check-circle inv-store-check"></i>
+                                </div>
+                                <div class="inv-store-card-meta">
+                                    <span>Tous dépôts</span>
+                                    <span class="inv-store-qty">{{ $globalAdjQty }} u.</span>
+                                </div>
+                            </button>
+                            @foreach($stores as $st)
+                                @php
+                                    $rec = $storeStockMap->get($st->id);
+                                    $stQty = (int) ($rec->quantity ?? 0);
+                                @endphp
+                                <button type="button"
+                                        class="inv-transfer-store-card is-adjust {{ (int) $selectedStoreId === (int) $st->id ? 'active' : '' }} {{ $stQty > 0 ? 'is-has-stock' : 'is-empty' }}"
+                                        data-store-id="{{ $st->id }}"
+                                        onclick="selectStoreForAdjust({{ $st->id }})">
+                                    <div class="inv-store-card-top">
+                                        <span class="inv-store-name">{{ $st->name }}</span>
+                                        <i class="fas fa-check-circle inv-store-check"></i>
+                                    </div>
+                                    <div class="inv-store-card-meta">
+                                        <span>{{ $st->code }}</span>
+                                        <span class="inv-store-qty">{{ $stQty }} u.</span>
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
                         <div class="row g-2 mt-2" id="adjustStoreMetaRow" style="{{ $selectedStoreId ? '' : 'display: none;' }}">
                             <div class="col-7">
                                 <label class="form-label text-muted small mb-0.5" style="font-size: 0.72rem;">Emplacement (Rayon / Étagère)</label>
@@ -203,10 +325,10 @@
                         </div>
                     </div>
 
-                    <!-- Motif -->
+                    <!-- Motif (Optionnel) -->
                     <div class="mb-3.5">
                         <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.04em;">
-                            Motif de l'ajustement <span class="text-danger">*</span>
+                            Motif de l'ajustement (Optionnel)
                         </label>
                         <div class="d-flex flex-wrap gap-1.5 mb-2">
                             <button type="button" class="badge bg-light text-secondary border py-1 px-2 text-decoration-none" onclick="setMainReason('Arrivage commande fournisseur')">Arrivage fournisseur</button>
@@ -218,8 +340,7 @@
                                   id="mainReasonInput" 
                                   class="form-control" 
                                   rows="3" 
-                                  required 
-                                  placeholder="Détaillez la raison pour assurer l'audit trail..."
+                                  placeholder="Motif optionnel (ex: Arrivage, Retour client, Audit...)"
                                   style="border-radius: 12px; font-size: 0.88rem;"></textarea>
                     </div>
 
@@ -459,10 +580,18 @@
     function selectStoreForAdjust(storeId) {
         const storeSelect = document.getElementById('storeSelectAdjust');
         if (storeSelect) {
-            storeSelect.value = String(storeId);
+            storeSelect.value = storeId ? String(storeId) : '';
             onAdjustStoreChange(storeSelect);
-            storeSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const pillsWrap = document.getElementById('adjustPageStorePills') || storeSelect;
+            pillsWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+    }
+
+    function syncAdjustPageStorePills(selectedId) {
+        const activeVal = selectedId ? String(selectedId) : '';
+        document.querySelectorAll('#adjustPageStorePills .inv-transfer-store-card').forEach(btn => {
+            btn.classList.toggle('active', String(btn.dataset.storeId || '') === activeVal);
+        });
     }
 
     function onAdjustStoreChange(select) {
@@ -470,6 +599,8 @@
         const metaRow = document.getElementById('adjustStoreMetaRow');
         const locInput = document.getElementById('adjustLocationInput');
         const minInput = document.getElementById('adjustMinQtyInput');
+
+        syncAdjustPageStorePills(select.value);
 
         if (select.value && opt) {
             currentStock = parseInt(opt.dataset.stock, 10) || 0;

@@ -549,8 +549,8 @@
 
 .pos-product-card:hover {
     transform: translateY(-2px);
-    border-color: #dc2626;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    border-color: #198754;
+    box-shadow: 0px 0px 4px 2px #1987542b;
 }
 
 .pos-product-card.out-of-stock-card {
@@ -592,7 +592,7 @@
 .overlay-add {
     position: absolute;
     inset: 0;
-    background: rgba(220, 38, 38, 0.78);
+    background: rgb(25 135 84 / 0%);
     display: flex;
     align-items: center;
     justify-content: center;
