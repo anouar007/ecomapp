@@ -3981,42 +3981,54 @@ i.fa-sparkles:before {
     .mobile-order-card.mobile-order-status-pending:hover,
     .mobile-order-card.mobile-order-status-pending:active {
         border: 2px solid #d97706 !important;
+        background-color: #fef9ee !important;
     }
 
     .mobile-order-card.mobile-order-status-en_demande,
     .mobile-order-card.mobile-order-status-en_demande:hover,
     .mobile-order-card.mobile-order-status-en_demande:active {
         border: 2px solid #4338ca !important;
+        background-color: #f4f4fe !important;
     }
 
     .mobile-order-card.mobile-order-status-reserved,
     .mobile-order-card.mobile-order-status-reserved:hover,
     .mobile-order-card.mobile-order-status-reserved:active {
         border: 2px solid #7c3aed !important;
+        background-color: #f8f5ff !important;
     }
 
     .mobile-order-card.mobile-order-status-processing,
     .mobile-order-card.mobile-order-status-processing:hover,
     .mobile-order-card.mobile-order-status-processing:active {
         border: 2px solid #2563eb !important;
+        background-color: #f2f7ff !important;
     }
 
     .mobile-order-card.mobile-order-status-shipped,
     .mobile-order-card.mobile-order-status-shipped:hover,
     .mobile-order-card.mobile-order-status-shipped:active {
         border: 2px solid #0093ac !important;
+        background-color: #f0fafc !important;
     }
 
     .mobile-order-card.mobile-order-status-delivered,
     .mobile-order-card.mobile-order-status-delivered:hover,
     .mobile-order-card.mobile-order-status-delivered:active {
         border: 2px solid #059669 !important;
+        background-color: #f0fbf6 !important;
     }
 
     .mobile-order-card.mobile-order-status-cancelled,
     .mobile-order-card.mobile-order-status-cancelled:hover,
     .mobile-order-card.mobile-order-status-cancelled:active {
         border: 2px solid #dc2626 !important;
+        background-color: #fef4f4 !important;
+    }
+
+    .mobile-order-card[class*="mobile-order-status-"] .mobile-order-customer {
+        background: rgba(255, 255, 255, 0.72);
+        border-color: rgba(15, 23, 42, 0.06);
     }
 }
 
@@ -5024,6 +5036,109 @@ i.fa-sparkles:before {
 .tax-dot-ht {
     background: #ea580c;
     box-shadow: 0 0 0 2.5px rgba(234, 88, 12, 0.22);
+}
+
+/* Delivery Type Tag Pills (Store / Our Team / Ozon) */
+.delivery-type-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: 9999px !important;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.3;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.delivery-type-pill.dropdown-toggle {
+    cursor: pointer;
+}
+
+.delivery-type-pill.dropdown-toggle::after {
+    display: none !important;
+}
+
+.delivery-type-pill.dropdown-toggle:hover {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+.delivery-type-pill.delivery-type-store {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
+
+.delivery-type-pill.delivery-type-our_team {
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border-color: #93c5fd !important;
+}
+
+.delivery-type-pill.delivery-type-ozon {
+    background: #fffbeb !important;
+    color: #b45309 !important;
+    border-color: #fcd34d !important;
+}
+
+.delivery-type-pill i.fa-chevron-down {
+    font-size: 0.55rem;
+    opacity: 0.85;
+}
+
+.delivery-dot-store {
+    background: #0f172a;
+    box-shadow: 0 0 0 2.5px rgba(15, 23, 42, 0.2);
+}
+
+.delivery-dot-our_team {
+    background: #2563eb;
+    box-shadow: 0 0 0 2.5px rgba(37, 99, 235, 0.22);
+}
+
+.delivery-dot-ozon {
+    background: #d97706;
+    box-shadow: 0 0 0 2.5px rgba(217, 119, 6, 0.22);
+}
+
+/* Staff Attribution Chips (Confirmed By / POS Created By) */
+.order-staff-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 9999px !important;
+    font-size: 0.67rem;
+    font-weight: 700 !important;
+    line-height: 1.25;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #334155;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.order-staff-chip.is-confirmed {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border-color: #a7f3d0 !important;
+}
+
+.order-staff-chip.is-creator {
+    background: #eef2ff !important;
+    color: #3730a3 !important;
+    border-color: #c7d2fe !important;
+}
+
+.order-staff-chip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 135px;
 }
 
 /* ============================================================
@@ -6924,7 +7039,8 @@ dt,
     }
 
     .order-show-page .order-hero-pills .brand-badge-btn,
-    .order-show-page .order-hero-pills .tax-mode-pill {
+    .order-show-page .order-hero-pills .tax-mode-pill,
+    .order-show-page .order-hero-pills .delivery-type-pill {
         min-height: 34px;
         padding: 0.36rem 0.85rem !important;
         font-size: 0.78rem !important;
@@ -7007,6 +7123,24 @@ dt,
         font-size: 0.8rem !important;
     }
 
+    .mobile-order-card .mobile-order-items-pill,
+    .mobile-order-card .mobile-order-badge {
+        border-radius: 9999px !important;
+        min-height: 28px;
+        padding: 4px 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        line-height: 1.2;
+    }
+
+    .mobile-order-card[class*="mobile-order-status-"] .mobile-order-items-pill {
+        background: rgba(255, 255, 255, 0.88);
+        border-color: #cbd5e1;
+        font-weight: 600;
+    }
+
     .mobile-order-card .mobile-order-badge.dropdown-toggle {
         min-height: 30px;
         padding: 4px 10px;
@@ -7014,15 +7148,39 @@ dt,
         font-weight: 700 !important;
     }
 
-    .mobile-order-card .tax-mode-pill {
+    .mobile-order-card .tax-mode-pill,
+    .mobile-order-card .delivery-type-pill {
         min-height: 28px;
         padding: 3px 10px;
-        font-size: 0.7rem;
+        font-size: 0.72rem;
+    }
+
+    .mobile-order-card[class*="mobile-order-status-"] .mobile-order-toolbar {
+        border-top-color: rgba(15, 23, 42, 0.1);
+    }
+
+    .mobile-order-card .mobile-action-btns {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
     }
 
     .mobile-order-card .mobile-act-btn {
         min-height: 34px;
-        padding: 5px 11px;
+        height: 34px;
+        width: auto !important;
+        padding: 0 11px !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+        font-size: 0.76rem;
+        font-weight: 600 !important;
+    }
+
+    .mobile-order-card .mobile-act-delete {
+        width: 34px !important;
+        min-width: 34px !important;
+        padding: 0 !important;
     }
 
     .brand-filter-bar .brand-search-wrapper input.form-control {
@@ -7083,543 +7241,462 @@ dt,
     }
 }
 
-
 /* ==========================================================================
-   MOBILE-FIRST ORDERS LIST & ORDER DETAIL APP-LIKE UX UPGRADES
-   Uses (0,2,0)+ specificity so font weights and pill radii stay crisp.
+   ORDERS & POS EXECUTIVE MOBILE-FIRST WORKSPACE
    ========================================================================== */
-
-/* Hierarchy: bold money, KPI counters & titles despite global weight reset */
-.order-show-page .order-hero-title {
-    font-size: 1.35rem !important;
-    font-weight: 700 !important;
-    line-height: 1.25;
-    color: #0f172a;
-    margin: 0;
-}
-
-.order-show-page .order-show-kpi-value,
-.order-show-page .order-money-strong,
-.order-kpi-card .order-kpi-value,
-.mobile-order-card .mobile-order-price,
-.orders-table-card .order-money-strong {
+.orders-index-page .orders-strong {
     font-weight: 700 !important;
     font-variant-numeric: tabular-nums;
 }
 
-/* Smooth anchor scrolling for Order Detail sections */
-.order-show-page #orderItemsSection,
-.order-show-page #orderSummarySection,
-.order-show-page #orderClientSection,
-.order-show-page #orderHistorySection {
-    scroll-margin-top: 120px;
+.orders-index-page .orders-hero-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+    margin-bottom: 14px;
+    border-top: 4px solid #2563eb;
 }
 
-/* Mobile Compact Top Bar & Hero Total (hidden >= 768px via Bootstrap d-md-none) */
-.order-show-page .order-mobile-topbar {
+.orders-index-page .orders-hero-card.is-pos {
+    border-top-color: #dc2626;
+}
+
+.orders-index-page .orders-hero-main {
+    padding: 16px 18px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    width: 100%;
-    margin-bottom: 10px;
+    gap: 12px;
 }
 
-.order-show-page .order-mobile-back-btn {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    border-radius: 10px !important;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
-    color: #334155;
-    display: inline-flex;
+.orders-index-page .orders-hero-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px !important;
+    display: flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
+    font-size: 1.15rem;
     flex-shrink: 0;
-    transition: background-color 0.15s ease, transform 0.12s ease;
-}
-
-.order-show-page .order-mobile-back-btn:active {
-    transform: scale(0.95);
-    background: #e2e8f0;
-}
-
-.order-show-page .order-mobile-hero-total {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px !important;
-}
-
-.order-show-page .order-mobile-hero-amount {
-    font-size: 1.28rem !important;
-    font-weight: 700 !important;
-    color: #dc2626;
-    line-height: 1.15;
-    font-variant-numeric: tabular-nums;
-}
-
-.order-show-page .order-quick-contact-btn,
-.mobile-order-card .mobile-order-quick-btn {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    border-radius: 9999px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-decoration: none !important;
     border: 1px solid transparent;
-    transition: transform 0.12s ease, filter 0.15s ease;
-    flex-shrink: 0;
 }
 
-.mobile-order-card .mobile-order-quick-btn {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    font-size: 0.85rem;
-}
-
-.order-show-page .order-quick-contact-btn.is-call,
-.mobile-order-card .mobile-order-quick-btn.is-call {
+.orders-index-page .orders-hero-card.is-web .orders-hero-icon {
     background: #eff6ff;
-    color: #1d4ed8;
+    color: #2563eb;
     border-color: #bfdbfe;
 }
 
-.order-show-page .order-quick-contact-btn.is-whatsapp,
-.mobile-order-card .mobile-order-quick-btn.is-whatsapp {
+.orders-index-page .orders-hero-card.is-pos .orders-hero-icon {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.orders-index-page .orders-hero-title {
+    font-size: 1.32rem !important;
+    font-weight: 700 !important;
+    color: #0f172a;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.orders-index-page .orders-hero-subbar {
+    padding: 10px 18px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.orders-index-page .orders-channel-tabs {
+    display: inline-grid;
+    grid-template-columns: repeat(3, minmax(0, auto));
+    background: #e2e8f0;
+    padding: 3px;
+    border-radius: 9999px !important;
+    gap: 3px;
+}
+
+.orders-index-page .orders-channel-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9999px !important;
+    font-size: 0.78rem;
+    font-weight: 600 !important;
+    color: #475569;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: all 0.16s ease;
+}
+
+.orders-index-page .orders-channel-tab:hover {
+    color: #0f172a;
+}
+
+.orders-index-page .orders-channel-tab.active {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+}
+
+.orders-index-page .orders-hero-metrics {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.orders-index-page .orders-metric-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 9999px !important;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    font-size: 0.78rem;
+    color: #334155;
+    white-space: nowrap;
+}
+
+.orders-index-page .orders-metric-chip.is-revenue {
     background: #ecfdf5;
-    color: #059669;
     border-color: #a7f3d0;
+    color: #047857;
 }
 
-.order-show-page .order-quick-contact-btn:active,
-.mobile-order-card .mobile-order-quick-btn:active {
-    transform: scale(0.94);
-}
-
-/* Mobile Compact Status Progress Card (< 768px) */
-.order-show-page .order-mobile-progress-card {
+.orders-index-page .orders-toolbar-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 14px !important;
     padding: 12px 14px;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
     margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-.order-show-page .order-mobile-progress-track {
-    height: 6px;
-    width: 100%;
-    background: #e2e8f0;
+.orders-index-page .orders-toolbar-card .orders-toolbar-top .brand-search-wrapper input.form-control {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px !important;
+    font-size: 0.84rem;
+}
+
+.orders-index-page .orders-toolbar-card .orders-toolbar-top .brand-search-wrapper input.form-control:focus {
+    background-color: #ffffff;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.orders-index-page .orders-toolbar-card .orders-toolbar-top .btn,
+.orders-index-page .orders-toolbar-card .orders-toolbar-top .badge {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    border-radius: 8px !important;
+}
+
+.orders-index-page .orders-search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
     border-radius: 9999px !important;
-    overflow: hidden;
-    margin: 9px 0 10px;
-}
-
-.order-show-page .order-mobile-progress-fill {
-    height: 100%;
-    border-radius: 9999px !important;
-    transition: width 0.35s ease;
-}
-
-.order-show-page .order-mobile-progress-fill.fill-pending { background: #d97706; }
-.order-show-page .order-mobile-progress-fill.fill-en_demande { background: #4338ca; }
-.order-show-page .order-mobile-progress-fill.fill-reserved { background: #7c3aed; }
-.order-show-page .order-mobile-progress-fill.fill-processing { background: #2563eb; }
-.order-show-page .order-mobile-progress-fill.fill-shipped { background: #0093ac; }
-.order-show-page .order-mobile-progress-fill.fill-delivered { background: #059669; }
-
-.order-show-page .order-mobile-steps-dots {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 4px;
-    text-align: center;
-}
-
-.order-show-page .order-mobile-step-chip {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    min-width: 0;
-}
-
-.order-show-page .order-mobile-step-dot {
-    width: 18px;
-    height: 18px;
-    border-radius: 9999px !important;
-    background: #f1f5f9;
-    border: 1.5px solid #cbd5e1;
-    color: #94a3b8;
-    font-size: 0.56rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.order-show-page .order-mobile-step-chip.is-done .order-mobile-step-dot {
-    background: #059669;
-    border-color: #059669;
-    color: #ffffff;
-}
-
-.order-show-page .order-mobile-step-chip.is-current .order-mobile-step-dot {
-    background: #0f172a;
-    border-color: #0f172a;
-    color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.14);
-}
-
-.order-show-page .order-mobile-step-lbl {
-    font-size: 0.62rem;
-    font-weight: 600;
-    color: #64748b;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-}
-
-.order-show-page .order-mobile-step-chip.is-current .order-mobile-step-lbl {
-    color: #0f172a;
-    font-weight: 700 !important;
-}
-
-/* Mobile Sticky Quick-Jump Section Bar (< 992px) */
-.order-show-page .order-mobile-nav-pills {
-    position: sticky;
-    top: 60px;
-    z-index: 990;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    background: rgba(248, 250, 252, 0.94);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 8px 4px;
-    margin: 0 -4px 12px;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.order-show-page .order-mobile-nav-pills::-webkit-scrollbar {
-    display: none;
-}
-
-.order-show-page .order-mobile-jump-pill {
-    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 6px 12px;
-    border-radius: 9999px !important;
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    color: #334155;
-    font-size: 0.76rem;
-    font-weight: 600 !important;
+    justify-content: center;
+    color: #64748b;
+    background: #f1f5f9;
     text-decoration: none !important;
-    white-space: nowrap;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    font-size: 0.72rem;
+    z-index: 2;
 }
 
-.order-show-page .order-mobile-jump-pill:active,
-.order-show-page .order-mobile-jump-pill:focus {
-    background: #0f172a;
-    color: #ffffff;
-    border-color: #0f172a;
+.orders-index-page .orders-toolbar-card .orders-search-clear i {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    font-size: 0.72rem;
+    line-height: 1;
 }
 
-/* Mobile Item Card Polish */
-.order-show-page .order-mobile-item-name {
-    font-size: 0.9rem !important;
-    font-weight: 700 !important;
-    line-height: 1.3;
+.orders-index-page .orders-search-clear:hover {
+    background: #e2e8f0;
     color: #0f172a;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-decoration: none;
 }
 
-.order-show-page .order-mobile-item-pricebar {
+.orders-index-page .orders-quick-chips {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
     margin-top: 10px;
-    padding: 8px 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.orders-index-page .orders-quick-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 9999px !important;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 10px !important;
+    color: #475569;
+    font-size: 0.74rem;
+    font-weight: 600 !important;
+    line-height: 1;
+    text-decoration: none !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
 }
 
-/* Sticky Bottom Thumb Action Dock on Order Show (< 992px) */
-.order-show-page .order-show-mobile-dock {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1020;
-    background: rgba(255, 255, 255, 0.97);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid #cbd5e1;
-    box-shadow: 0 -6px 24px rgba(15, 23, 42, 0.1);
-    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.orders-index-page .orders-quick-chip:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
 }
 
-.order-show-page .order-dock-btn {
-    flex: 1 1 0;
-    min-width: 0;
-    min-height: 42px !important;
-    height: 42px;
-    padding: 0 10px !important;
-    border-radius: 10px !important;
-    font-size: 0.78rem !important;
+.orders-index-page .orders-quick-chip.active {
+    background: #0f172a;
+    color: #ffffff !important;
+    border-color: #0f172a;
     font-weight: 700 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px;
+}
+
+.orders-index-page .orders-quick-chip.active .status-dot {
+    background: #ffffff !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35) !important;
+}
+
+.orders-index-page .orders-quick-chip.is-ht.active {
+    background: #ea580c;
+    border-color: #c2410c;
+}
+
+.orders-index-page .orders-quick-chip.is-ttc.active {
+    background: #1e40af;
+    border-color: #1e3a8a;
+}
+
+.orders-index-page .orders-filter-field {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    min-width: 0;
+}
+
+.orders-index-page .orders-filter-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+    line-height: 1.2;
+    margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.order-show-page .order-dock-icon-btn {
-    flex: 0 0 42px;
-    width: 42px;
-    min-height: 42px !important;
-    height: 42px;
-    border-radius: 10px !important;
+.orders-index-page #orderFiltersCollapse .form-select,
+.orders-index-page #orderFiltersCollapse .form-control {
+    display: block;
+    width: 100%;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 0.8rem !important;
+    border-radius: 8px !important;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.orders-index-page #orderFiltersCollapse .form-select {
+    padding-left: 0.65rem !important;
+    padding-right: 1.95rem !important;
+    background-position: right 0.6rem center !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.orders-index-page #orderFiltersCollapse .form-control[type="date"] {
+    padding-left: 0.65rem !important;
+    padding-right: 0.65rem !important;
+}
+
+.orders-index-page .orders-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.orders-index-page #orderFiltersCollapse .orders-filter-actions .btn-brand-primary,
+.orders-index-page #orderFiltersCollapse .orders-filter-actions .btn-brand-light {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 0.8rem !important;
+    border-radius: 8px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    text-decoration: none !important;
+    line-height: 1 !important;
 }
 
-/* Mobile Order Card Name 2-line clamp */
-.mobile-order-card .mobile-order-item-name-clamp {
-    font-size: 0.82rem !important;
+.orders-index-page #orderFiltersCollapse .orders-filter-actions .btn-brand-light {
+    width: 36px !important;
+    flex: 0 0 36px !important;
+    padding: 0 !important;
+}
+
+.orders-index-page .orders-table-card tbody tr:hover td {
+    box-shadow: inset 0 1px 0 #e2e8f0, inset 0 -1px 0 #e2e8f0;
+}
+
+/* Mobile Order Card Visual Grouping Upgrades */
+.mobile-order-card .mobile-order-num,
+.mobile-order-card .mobile-order-cust-name {
     font-weight: 700 !important;
-    color: #1e293b;
-    line-height: 1.28;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
-@media (max-width: 991.98px) {
-    /* Allow position: sticky inside order detail while keeping zero horizontal scroll */
-    .main-content:has(.order-show-page) {
-        overflow-x: clip !important;
+.mobile-order-card .mobile-order-item-depot {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.mobile-order-card .mobile-order-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.mobile-order-card .mobile-order-staff-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+@media (min-width: 768px) {
+    .orders-index-page .orders-kpi-grid .order-kpi-card {
+        min-height: 84px;
+        padding: 11px 14px;
     }
 
-    .order-show-page {
-        padding-bottom: 86px;
-    }
-
-    .order-show-page .product-form-card-title {
-        font-weight: 700 !important;
-        font-size: 0.96rem !important;
+    .orders-index-page .orders-kpi-grid .order-kpi-value {
+        font-size: 1.42rem;
     }
 }
 
 @media (max-width: 767.98px) {
-    /* Allow sticky nav strip inside container-fluid on mobile */
-    .container-fluid:has(.order-show-page) {
-        overflow-x: clip !important;
+    .orders-index-page .orders-hero-main {
+        padding: 12px 14px;
+        gap: 10px;
     }
 
-    .order-show-page .order-show-hero-top {
-        padding: 12px !important;
-        gap: 0.65rem;
+    .orders-index-page .orders-hero-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
     }
 
-    .order-show-page .order-hero-pills {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
+    .orders-index-page .orders-hero-title {
+        font-size: 1.1rem !important;
+    }
+
+    .orders-index-page .orders-hero-subbar {
+        padding: 10px 12px;
         gap: 8px;
     }
 
-    .order-show-page .order-hero-pills .brand-badge-btn,
-    .order-show-page .order-hero-pills .tax-mode-pill {
-        min-height: 34px;
-        padding: 0.36rem 0.85rem !important;
-        font-size: 0.78rem !important;
-        font-weight: 700 !important;
-        border-radius: 9999px !important;
+    .orders-index-page .orders-channel-tabs {
+        display: grid;
+        width: 100%;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .order-show-page .order-show-kpi-grid {
-        background: #ffffff;
+    .orders-index-page .orders-channel-tab {
+        padding: 7px 6px;
+        font-size: 0.74rem;
+        gap: 4px;
     }
 
-    .order-show-page .order-show-kpi-item {
-        padding: 9px 11px !important;
+    .orders-index-page .orders-hero-metrics {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
     }
 
-    .order-show-page .order-show-kpi-value {
-        font-size: 1rem !important;
+    .orders-index-page .orders-metric-chip {
+        justify-content: center;
+        padding: 5px 8px;
+        font-size: 0.74rem;
     }
 
-    .order-show-page .order-scroll-pills {
-        flex-wrap: nowrap !important;
+    .orders-index-page .orders-kpi-grid > .col {
+        flex: 0 0 124px !important;
+        width: 124px !important;
+        max-width: 124px !important;
+    }
+
+    .orders-index-page .orders-kpi-grid .order-kpi-card {
+        min-height: 70px !important;
+        padding: 8px 10px !important;
+    }
+
+    .orders-index-page .orders-toolbar-card {
+        padding: 10px 12px;
+    }
+
+    .orders-index-page .orders-quick-chips {
+        flex-wrap: nowrap;
         overflow-x: auto;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
-        max-width: 100%;
         padding-bottom: 2px;
     }
 
-    .order-show-page .order-scroll-pills::-webkit-scrollbar {
+    .orders-index-page .orders-quick-chips::-webkit-scrollbar {
         display: none;
-    }
-
-    .order-show-page .order-scroll-pills .order-history-filter-pill {
-        flex-shrink: 0;
-        white-space: nowrap;
-        min-height: 32px;
-        padding: 4px 12px;
-    }
-
-    /* Single-row horizontal snap rail for 8 Status KPI cards on /orders mobile */
-    .orders-kpi-grid {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        scroll-snap-type: x proximity;
-        gap: 8px !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        padding: 2px 1px 8px;
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .orders-kpi-grid::-webkit-scrollbar {
-        display: none;
-    }
-
-    .orders-kpi-grid > .col {
-        flex: 0 0 132px !important;
-        width: 132px !important;
-        max-width: 132px !important;
-        padding: 0 !important;
-        margin-bottom: 0 !important;
-        scroll-snap-align: start;
-    }
-
-    .orders-kpi-grid .order-kpi-card {
-        min-height: 76px !important;
-        padding: 9px 11px !important;
-        border-radius: 12px !important;
-    }
-
-    .orders-kpi-grid .order-kpi-value {
-        font-size: 1.2rem !important;
-    }
-
-    .orders-kpi-grid .order-kpi-icon {
-        width: 28px !important;
-        height: 28px !important;
-        font-size: 0.8rem !important;
-    }
-
-    .mobile-order-card .mobile-order-badge.dropdown-toggle {
-        min-height: 30px;
-        padding: 4px 10px;
-        font-size: 0.72rem;
-        font-weight: 700 !important;
-    }
-
-    .mobile-order-card .tax-mode-pill {
-        min-height: 28px;
-        padding: 3px 10px;
-        font-size: 0.7rem;
-    }
-
-    .mobile-order-card .mobile-act-btn {
-        min-height: 34px;
-        padding: 5px 11px;
-    }
-
-    .brand-filter-bar .brand-search-wrapper input.form-control {
-        font-size: 16px !important;
-        min-height: 42px !important;
     }
 }
 
-@media (max-width: 575.98px) {
-    .order-show-page .order-history-timeline {
-        padding-left: 1.65rem;
-    }
-
-    .order-show-page .order-history-timeline::before {
-        left: 11px;
-    }
-
-    .order-show-page .order-history-node {
-        left: -1.65rem;
-        width: 24px;
-        height: 24px;
-        font-size: 0.65rem;
-    }
-
-    #replaceOrderItemModal .modal-dialog {
-        margin: 0 !important;
-        max-width: 100vw !important;
-        width: 100vw !important;
-        height: 100dvh !important;
-    }
-
-    #replaceOrderItemModal .modal-content {
-        border-radius: 0 !important;
-        height: 100dvh !important;
-    }
-
-    #replaceOrderItemModal .modal-header,
-    #replaceOrderItemModal .modal-footer {
-        border-radius: 0 !important;
-    }
-
-    #replaceOrderItemModal .modal-body {
-        padding: 14px !important;
-    }
-
-    #replaceOrderItemModal .modal-footer {
-        padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
-    }
-
-    #replaceOrderItemModal #replaceProductSearch {
-        font-size: 16px !important;
-        min-height: 44px !important;
-    }
-
-    #replaceOrderItemModal .replace-product-option {
-        min-height: 64px;
-        padding: 10px 12px !important;
-    }
-}

@@ -282,51 +282,74 @@
 @section('title', $isPosChannel ? 'Commandes POS (Caisse)' : 'Commandes Site Web')
 
 @section('content')
-    <!-- En-tête de page (Clean & Pro) -->
-    <div class="brand-header">
-        <div class="d-flex align-items-center gap-2.5">
-            <div class="brand-header-icon flex-shrink-0">
-                <i class="fas {{ $isPosChannel ? 'fa-cash-register' : 'fa-shopping-bag' }}"></i>
+<div class="orders-index-page">
+    <!-- En-tête Exécutif Mobile-First -->
+    <div class="orders-hero-card {{ $isPosChannel ? 'is-pos' : 'is-web' }}">
+        <div class="orders-hero-main">
+            <div class="d-flex align-items-center gap-2.5 min-w-0">
+                <div class="orders-hero-icon">
+                    <i class="fas {{ $isPosChannel ? 'fa-cash-register' : 'fa-shopping-bag' }}"></i>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="orders-hero-title text-truncate">{{ $isPosChannel ? 'Commandes POS (Caisse)' : 'Commandes Site Web' }}</h1>
+                    <p class="text-muted small mb-0 d-none d-md-block">
+                        {{ $isPosChannel ? 'Ventes effectuées en boutique depuis la caisse POS' : 'Suivi complet des commandes clients provenant du site web' }}
+                    </p>
+                </div>
             </div>
-            <div>
-                <h1 class="brand-title">{{ $isPosChannel ? 'Commandes POS (Caisse)' : 'Commandes Site Web' }}</h1>
-                <p class="brand-subtitle d-flex align-items-center gap-2 flex-wrap mb-0">
-                    <span class="d-none d-md-inline">{{ $isPosChannel ? 'Consultez et gérez les ventes effectuées en boutique depuis la caisse POS' : 'Suivez et gérez vos commandes provenant du site web selon leur statut de livraison' }}</span>
-                    <span class="badge bg-light text-dark border px-2 py-1"><i class="fas fa-receipt text-primary me-1"></i> <strong id="kpi-total-orders">{{ number_format($stats['total'] ?? $orders->total(), 0, ',', ' ') }}</strong> total</span>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="fas fa-coins me-1"></i> <strong id="kpi-revenue-orders">{{ currency($stats['revenue'] ?? 0) }}</strong> encaissés</span>
-                </p>
+
+            <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-auto">
+                @if(request('status') || request('payment_status') || request('tax_mode') || request('delivery_type') || request('staff_id') || request('store_id') || request('search'))
+                    <a href="{{ route($indexRoute) }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 d-none d-md-inline-flex align-items-center gap-1.5 fw-semibold">
+                        <i class="fas fa-rotate-left"></i> <span>Toutes ({{ number_format($stats['total'] ?? 0, 0, ',', ' ') }})</span>
+                    </a>
+                @endif
+                <a href="{{ route('export.orders.pdf', $exportParams) }}" data-no-spa="true" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 d-none d-md-inline-flex align-items-center gap-1.5 fw-semibold">
+                    <i class="fas fa-file-pdf text-danger"></i> <span>Exporter PDF</span>
+                </a>
+                <a href="{{ route('export.orders', $exportParams) }}" data-no-spa="true" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 d-none d-md-inline-flex align-items-center gap-1.5 fw-semibold">
+                    <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
+                </a>
+                @if($isPosChannel)
+                    <a href="{{ route('pos.index') }}" class="btn-brand-primary justify-content-center text-nowrap px-3 py-2" style="font-size: 0.82rem;">
+                        <i class="fas fa-cash-register me-1"></i> <span class="d-none d-sm-inline">Ouvrir la caisse POS</span><span class="d-sm-none">Caisse</span>
+                    </a>
+                @else
+                    <a href="{{ route('orders.create') }}" class="btn-brand-primary justify-content-center text-nowrap px-3 py-2" style="font-size: 0.82rem;">
+                        <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouvelle commande</span><span class="d-sm-none">Créer</span>
+                    </a>
+                @endif
             </div>
         </div>
-        <div class="brand-header-actions">
-            @if($isPosChannel)
-                <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
-                    <i class="fas fa-globe text-primary"></i> <span class="d-none d-sm-inline">Commandes </span><span>Site Web</span>
+
+        <div class="orders-hero-subbar">
+            <div class="orders-channel-tabs" role="navigation" aria-label="Navigation Commandes">
+                <a href="{{ route('orders.index') }}" class="orders-channel-tab {{ !$isPosChannel ? 'active' : '' }}">
+                    <i class="fas fa-globe {{ !$isPosChannel ? 'text-primary' : '' }}"></i>
+                    <span>Site Web</span>
                 </a>
-            @else
-                <a href="{{ route('orders.pos') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
-                    <i class="fas fa-cash-register text-danger"></i> <span class="d-none d-sm-inline">Commandes </span><span>POS</span>
+                <a href="{{ route('orders.pos') }}" class="orders-channel-tab {{ $isPosChannel ? 'active' : '' }}">
+                    <i class="fas fa-cash-register {{ $isPosChannel ? 'text-danger' : '' }}"></i>
+                    <span>Commandes POS</span>
                 </a>
-            @endif
-            @if(request('status') || request('payment_status') || request('tax_mode') || request('store_id') || request('search'))
-                <a href="{{ route($indexRoute) }}" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
-                    <i class="fas fa-rotate-left"></i> <span>Toutes ({{ number_format($stats['total'] ?? 0, 0, ',', ' ') }})</span>
+                <a href="{{ route('orders.staff-stats') }}" class="orders-channel-tab">
+                    <i class="fas fa-user-check text-success"></i>
+                    <span>Stats Équipe</span>
                 </a>
-            @endif
-            <a href="{{ route('export.orders.pdf', $exportParams) }}" data-no-spa="true" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-none d-md-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
-                <i class="fas fa-file-pdf text-danger"></i> <span>Exporter PDF</span>
-            </a>
-            <a href="{{ route('export.orders', $exportParams) }}" data-no-spa="true" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-none d-md-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
-                <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
-            </a>
-            @if($isPosChannel)
-                <a href="{{ route('pos.index') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
-                    <i class="fas fa-cash-register me-1"></i> <span class="d-none d-sm-inline">Ouvrir la caisse POS</span><span class="d-sm-none">Caisse</span>
-                </a>
-            @else
-                <a href="{{ route('orders.create') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
-                    <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouvelle commande</span><span class="d-sm-none">Créer</span>
-                </a>
-            @endif
+            </div>
+
+            <div class="orders-hero-metrics tabular-nums">
+                <span class="orders-metric-chip">
+                    <i class="fas fa-receipt text-primary"></i>
+                    <strong class="orders-strong text-dark" id="kpi-total-orders">{{ number_format($stats['total'] ?? $orders->total(), 0, ',', ' ') }}</strong>
+                    <span>total</span>
+                </span>
+                <span class="orders-metric-chip is-revenue">
+                    <i class="fas fa-coins"></i>
+                    <strong class="orders-strong" id="kpi-revenue-orders">{{ currency($stats['revenue'] ?? 0) }}</strong>
+                    <span class="d-none d-sm-inline">encaissés</span>
+                </span>
+            </div>
         </div>
     </div>
 
@@ -528,159 +551,252 @@
         </div>
     </div>
 
-    <!-- Barre de filtres unifiée (Desktop & Mobile) -->
-    <div class="brand-filter-bar mb-3">
+    <!-- Barre de filtres unifiée + Raccourcis tactiles (Desktop & Mobile) -->
+    <div class="orders-toolbar-card">
         <form method="GET" action="{{ route($indexRoute) }}" id="orderFilterForm">
             <!-- Row 1 : Champ Recherche + Bouton Toggle Mobile + Actions Desktop -->
-            <div class="d-flex align-items-center gap-2 flex-nowrap flex-md-wrap">
-                <div class="brand-search-wrapper flex-grow-1 min-w-0" style="min-width: 140px;">
+            <div class="orders-toolbar-top d-flex align-items-center gap-2 flex-nowrap flex-md-wrap">
+                <div class="brand-search-wrapper position-relative flex-grow-1 min-w-0" style="min-width: 140px;">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" class="form-control" 
+                    <input type="text" name="search" class="form-control {{ request('search') ? 'pe-5' : '' }}"
                            placeholder="Client, téléphone, ville, email, N° commande..."
                            value="{{ request('search') }}">
+                    @if(request('search'))
+                        <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="orders-search-clear" title="Effacer la recherche">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
                 </div>
 
                 @php
                     $hasDateFilter = request('date_preset') || request('date_from') || request('date_to') || request('date');
-                    $hasActiveFilters = request('status') || request('payment_status') || request('tax_mode') || request('store_id') || $hasDateFilter;
-                    $activeFilterCount = collect(['status', 'payment_status', 'tax_mode', 'store_id', 'date_preset', 'date_from', 'date_to', 'date'])->filter(fn($k) => request()->filled($k))->count();
+                    $hasActiveFilters = request('status') || request('payment_status') || request('tax_mode') || request('delivery_type') || request('staff_id') || request('store_id') || $hasDateFilter;
+                    $activeFilterCount = collect(['status', 'payment_status', 'tax_mode', 'delivery_type', 'staff_id', 'store_id', 'date_preset', 'date_from', 'date_to', 'date'])->filter(fn($k) => request()->filled($k))->count();
                 @endphp
 
                 <!-- Bouton Drawer Filtres Mobile (d-md-none) -->
-                <button type="button" 
-                        class="btn d-md-none {{ $hasActiveFilters ? 'btn-brand-primary' : 'btn-brand-light' }} d-inline-flex align-items-center gap-1.5"
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#orderFiltersCollapse" 
+                <button type="button"
+                        class="btn d-md-none {{ $hasActiveFilters ? 'btn-brand-primary' : 'btn-brand-light' }} d-inline-flex align-items-center gap-1.5 flex-shrink-0"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#orderFiltersCollapse"
                         aria-expanded="{{ $hasActiveFilters ? 'true' : 'false' }}">
                     <i class="fas fa-sliders-h"></i>
                     <span>Filtres</span>
                     @if($activeFilterCount > 0)
-                        <span class="badge bg-white text-dark rounded-pill px-1.5" style="font-size: 0.7rem;">{{ $activeFilterCount }}</span>
+                        <span class="badge bg-white text-dark px-1.5" style="font-size: 0.7rem;">{{ $activeFilterCount }}</span>
                     @endif
                 </button>
 
-                <!-- Actions Desktop (Compteur de résultats) (d-none d-md-flex) -->
+                <!-- Compteur résultats & quick reset Desktop (d-none d-md-flex) -->
                 <div class="ms-md-auto d-none d-md-flex align-items-center gap-2">
+                    <span class="badge bg-light text-secondary border px-2.5 py-2">
+                        {{ $orders->total() }} résultat{{ $orders->total() > 1 ? 's' : '' }}
+                    </span>
                     @if(request('search') || $hasActiveFilters)
-                        <span class="badge bg-light text-secondary border px-2.5 py-2">
-                            {{ $orders->total() }} résultat(s)
-                        </span>
+                        <a href="{{ route($indexRoute) }}" class="btn btn-sm btn-light border text-danger fw-semibold" title="Réinitialiser tous les filtres">
+                            <i class="fas fa-times me-1"></i>Réinitialiser
+                        </a>
                     @endif
-                    <a href="{{ route('export.orders.pdf', $exportParams) }}" data-no-spa="true" class="btn-brand-outline border-danger text-danger">
-                        <i class="fas fa-file-pdf me-1.5"></i>Exporter PDF
-                    </a>
-                    <a href="{{ route('export.orders', $exportParams) }}" data-no-spa="true" class="btn-brand-outline">
-                        <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i>Exporter CSV
-                    </a>
                 </div>
             </div>
 
-            <!-- Row 2 : Filtres Déroulants Uniques (Toujours visibles sur Desktop, repliables sur Mobile) -->
-            <div class="collapse d-md-block {{ $hasActiveFilters ? 'show' : '' }} mt-3 pt-3 pt-md-2 border-top border-top-md-0" id="orderFiltersCollapse">
-                <div class="row g-2 align-items-center">
+            <!-- Row 1b : Raccourcis filtres rapides en 1 clic (Swipeable sur Mobile) -->
+            @php
+                $isTodayPreset = request('date_preset') === 'today';
+                $isUnconfirmedQuick = request('staff_id') === 'unconfirmed';
+                $quickTax = strtolower((string) request('tax_mode'));
+                $quickDeliv = strtolower((string) request('delivery_type'));
+            @endphp
+            <div class="orders-quick-chips" aria-label="Filtres rapides">
+                <a href="{{ $isTodayPreset ? request()->fullUrlWithQuery(['date_preset' => null, 'date_from' => null, 'date_to' => null, 'page' => null]) : request()->fullUrlWithQuery(['date_preset' => 'today', 'date_from' => null, 'date_to' => null, 'page' => null]) }}"
+                   class="orders-quick-chip {{ $isTodayPreset ? 'active' : '' }}">
+                    <i class="far fa-calendar-check"></i><span>Aujourd'hui</span>
+                </a>
+                @if(!$isPosChannel)
+                    <a href="{{ $isUnconfirmedQuick ? request()->fullUrlWithQuery(['staff_id' => null, 'page' => null]) : request()->fullUrlWithQuery(['staff_id' => 'unconfirmed', 'page' => null]) }}"
+                       class="orders-quick-chip {{ $isUnconfirmedQuick ? 'active' : '' }}">
+                        <i class="fas fa-clock"></i><span>Non confirmées</span>
+                    </a>
+                @endif
+                <a href="{{ $quickTax === 'ht' ? request()->fullUrlWithQuery(['tax_mode' => null, 'page' => null]) : request()->fullUrlWithQuery(['tax_mode' => 'ht', 'page' => null]) }}"
+                   class="orders-quick-chip is-ht {{ $quickTax === 'ht' ? 'active' : '' }}">
+                    <span class="status-dot tax-dot-ht"></span><span>HT</span>
+                </a>
+                <a href="{{ $quickTax === 'ttc' ? request()->fullUrlWithQuery(['tax_mode' => null, 'page' => null]) : request()->fullUrlWithQuery(['tax_mode' => 'ttc', 'page' => null]) }}"
+                   class="orders-quick-chip is-ttc {{ $quickTax === 'ttc' ? 'active' : '' }}">
+                    <span class="status-dot tax-dot-ttc"></span><span>TTC</span>
+                </a>
+                <a href="{{ $quickDeliv === 'ozon' ? request()->fullUrlWithQuery(['delivery_type' => null, 'page' => null]) : request()->fullUrlWithQuery(['delivery_type' => 'ozon', 'page' => null]) }}"
+                   class="orders-quick-chip {{ $quickDeliv === 'ozon' ? 'active' : '' }}">
+                    <i class="fas fa-box-open"></i><span>Ozon</span>
+                </a>
+                <a href="{{ $quickDeliv === 'our_team' ? request()->fullUrlWithQuery(['delivery_type' => null, 'page' => null]) : request()->fullUrlWithQuery(['delivery_type' => 'our_team', 'page' => null]) }}"
+                   class="orders-quick-chip {{ $quickDeliv === 'our_team' ? 'active' : '' }}">
+                    <i class="fas fa-people-carry-box"></i><span>Our Team</span>
+                </a>
+                <a href="{{ $quickDeliv === 'store' ? request()->fullUrlWithQuery(['delivery_type' => null, 'page' => null]) : request()->fullUrlWithQuery(['delivery_type' => 'store', 'page' => null]) }}"
+                   class="orders-quick-chip {{ $quickDeliv === 'store' ? 'active' : '' }}">
+                    <i class="fas fa-store"></i><span>Store</span>
+                </a>
+            </div>
+
+            <!-- Row 2 : Filtres Déroulants Structurés (Toujours visibles sur Desktop, repliables sur Mobile) -->
+            <div class="collapse d-md-block {{ $hasActiveFilters ? 'show' : '' }} mt-2.5 pt-2.5 border-top" id="orderFiltersCollapse">
+                <div class="row g-2 align-items-end">
                     <!-- Statut de livraison -->
-                    <div class="col-6 col-md-auto">
-                        <select name="status" id="orderStatusFilterSelect" class="form-select form-select-sm fw-semibold" style="min-width: 160px;">
-                            <option value="">Tous les statuts</option>
-                            @php
-                                $statusNames = [
-                                    'pending' => '⏳ En attente',
-                                    'en_demande' => '📋 Sur Commande',
-                                    'reserved' => '🔖 Réservé',
-                                    'processing' => '⚙️ En cours',
-                                    'shipped' => '🚚 Expédiée',
-                                    'delivered' => '✅ Livrée',
-                                    'cancelled' => '❌ Annulée'
-                                ];
-                            @endphp
-                            @foreach($statusNames as $stKey => $stLabel)
-                                <option value="{{ $stKey }}" {{ request('status') == $stKey ? 'selected' : '' }}>{{ $stLabel }}</option>
-                            @endforeach
-                        </select>
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">Statut</span>
+                            <select name="status" id="orderStatusFilterSelect" class="form-select form-select-sm fw-semibold">
+                                <option value="">Tous les statuts</option>
+                                @php
+                                    $statusNames = [
+                                        'pending' => '⏳ En attente',
+                                        'en_demande' => '📋 Sur Commande',
+                                        'reserved' => '🔖 Réservé',
+                                        'processing' => '⚙️ En cours',
+                                        'shipped' => '🚚 Expédiée',
+                                        'delivered' => '✅ Livrée',
+                                        'cancelled' => '❌ Annulée'
+                                    ];
+                                @endphp
+                                @foreach($statusNames as $stKey => $stLabel)
+                                    <option value="{{ $stKey }}" {{ request('status') == $stKey ? 'selected' : '' }}>{{ $stLabel }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Statut de paiement -->
-                    <div class="col-6 col-md-auto">
-                        <select name="payment_status" class="form-select form-select-sm" style="min-width: 155px;">
-                            <option value="">Tous les paiements</option>
-                            @php
-                                $paymentStatusNames = [
-                                    'pending' => '⏳ En attente',
-                                    'partial' => '⏳ Partiel',
-                                    'paid' => '💳 Payé',
-                                    'failed' => '⚠️ Échoué',
-                                    'refunded' => '↩️ Remboursé'
-                                ];
-                            @endphp
-                            @foreach($paymentStatusNames as $pstKey => $pstLabel)
-                                <option value="{{ $pstKey }}" {{ request('payment_status') == $pstKey ? 'selected' : '' }}>{{ $pstLabel }}</option>
-                            @endforeach
-                        </select>
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">Paiement</span>
+                            <select name="payment_status" class="form-select form-select-sm">
+                                <option value="">Tous paiements</option>
+                                @php
+                                    $paymentStatusNames = [
+                                        'pending' => '⏳ En attente',
+                                        'partial' => '⏳ Partiel',
+                                        'paid' => '💳 Payé',
+                                        'failed' => '⚠️ Échoué',
+                                        'refunded' => '↩️ Remboursé'
+                                    ];
+                                @endphp
+                                @foreach($paymentStatusNames as $pstKey => $pstLabel)
+                                    <option value="{{ $pstKey }}" {{ request('payment_status') == $pstKey ? 'selected' : '' }}>{{ $pstLabel }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Régime Fiscal (TTC / HT) -->
-                    <div class="col-6 col-md-auto">
-                        <select name="tax_mode" class="form-select form-select-sm fw-semibold" style="min-width: 145px;">
-                            <option value="">🏷️ Tous (TTC / HT)</option>
-                            <option value="ttc" {{ strtolower((string) request('tax_mode')) === 'ttc' ? 'selected' : '' }}>TTC</option>
-                            <option value="ht" {{ strtolower((string) request('tax_mode')) === 'ht' ? 'selected' : '' }}>HT</option>
-                        </select>
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">Régime</span>
+                            <select name="tax_mode" class="form-select form-select-sm fw-semibold">
+                                <option value="">Tous (TTC / HT)</option>
+                                <option value="ttc" {{ strtolower((string) request('tax_mode')) === 'ttc' ? 'selected' : '' }}>TTC</option>
+                                <option value="ht" {{ strtolower((string) request('tax_mode')) === 'ht' ? 'selected' : '' }}>HT</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Type de livraison (Store / Our Team / Ozon) -->
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">Livraison</span>
+                            <select name="delivery_type" class="form-select form-select-sm fw-semibold">
+                                <option value="">Toutes livraisons</option>
+                                <option value="store" {{ strtolower((string) request('delivery_type')) === 'store' ? 'selected' : '' }}>Store</option>
+                                <option value="our_team" {{ strtolower((string) request('delivery_type')) === 'our_team' ? 'selected' : '' }}>Our Team</option>
+                                <option value="ozon" {{ strtolower((string) request('delivery_type')) === 'ozon' ? 'selected' : '' }}>Ozon</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Utilisateur (Confirmée par / Créée par) -->
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">{{ $isPosChannel ? 'Créée par' : 'Confirmée par' }}</span>
+                            <select name="staff_id" class="form-select form-select-sm fw-semibold">
+                                <option value="">Tous utilisateurs</option>
+                                @if(!$isPosChannel)
+                                    <option value="unconfirmed" {{ request('staff_id') === 'unconfirmed' ? 'selected' : '' }}>⏳ Non confirmées</option>
+                                @endif
+                                @foreach($staffUsers ?? [] as $su)
+                                    <option value="{{ $su->id }}" {{ (string) request('staff_id') === (string) $su->id ? 'selected' : '' }}>
+                                        {{ $su->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Magasin / Dépôt source -->
-                    <div class="col-12 col-md-auto">
-                        <select name="store_id" class="form-select form-select-sm" style="min-width: 170px;">
-                            <option value="">🏪 Tous les dépôts</option>
-                            <option value="unassigned" {{ request('store_id') === 'unassigned' ? 'selected' : '' }}>⚠️ Dépôt à affecter</option>
-                            @foreach($stores ?? [] as $st)
-                                <option value="{{ $st->id }}" {{ (string) request('store_id') === (string) $st->id ? 'selected' : '' }}>
-                                    {{ $st->name }} ({{ $st->code }})
-                                </option>
-                            @endforeach
-                        </select>
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">Dépôt</span>
+                            <select name="store_id" class="form-select form-select-sm">
+                                <option value="">Tous les dépôts</option>
+                                <option value="unassigned" {{ request('store_id') === 'unassigned' ? 'selected' : '' }}>⚠️ Dépôt à affecter</option>
+                                @foreach($stores ?? [] as $st)
+                                    <option value="{{ $st->id }}" {{ (string) request('store_id') === (string) $st->id ? 'selected' : '' }}>
+                                        {{ $st->name }} ({{ $st->code }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Filtre de Date (Preset) -->
-                    <div class="col-12 col-md-auto">
-                        <select name="date_preset" id="orderDatePreset" class="form-select form-select-sm" style="min-width: 165px;">
-                            <option value="">📅 Toutes les dates</option>
-                            <option value="today" {{ request('date_preset') == 'today' ? 'selected' : '' }}>Aujourd'hui</option>
-                            <option value="yesterday" {{ request('date_preset') == 'yesterday' ? 'selected' : '' }}>Hier</option>
-                            <option value="this_week" {{ request('date_preset') == 'this_week' ? 'selected' : '' }}>Cette semaine</option>
-                            <option value="this_month" {{ request('date_preset') == 'this_month' ? 'selected' : '' }}>Ce mois-ci</option>
-                            <option value="last_month" {{ request('date_preset') == 'last_month' ? 'selected' : '' }}>Mois dernier</option>
-                            <option value="custom" {{ request('date_preset') == 'custom' || (!request('date_preset') && (request('date_from') || request('date_to'))) ? 'selected' : '' }}>Période personnalisée...</option>
-                        </select>
+                    <div class="col-6 col-md-3 col-xl-3">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">Période</span>
+                            <select name="date_preset" id="orderDatePreset" class="form-select form-select-sm">
+                                <option value="">📅 Toutes les dates</option>
+                                <option value="today" {{ request('date_preset') == 'today' ? 'selected' : '' }}>Aujourd'hui</option>
+                                <option value="yesterday" {{ request('date_preset') == 'yesterday' ? 'selected' : '' }}>Hier</option>
+                                <option value="this_week" {{ request('date_preset') == 'this_week' ? 'selected' : '' }}>Cette semaine</option>
+                                <option value="this_month" {{ request('date_preset') == 'this_month' ? 'selected' : '' }}>Ce mois-ci</option>
+                                <option value="last_month" {{ request('date_preset') == 'last_month' ? 'selected' : '' }}>Mois dernier</option>
+                                <option value="custom" {{ request('date_preset') == 'custom' || (!request('date_preset') && (request('date_from') || request('date_to'))) ? 'selected' : '' }}>Période personnalisée...</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Date de début (Du) -->
-                    <div class="col-6 col-md-auto">
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text bg-light text-muted px-2" style="font-size: 0.72rem;">Du</span>
-                            <input type="date" name="date_from" id="orderDateFrom" class="form-control form-control-sm" 
-                                   value="{{ request('date_from', request('date_preset') ? ($stats['date_from'] ?? '') : '') }}" 
+                    <div class="col-6 col-md-3 col-xl-3">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">Du</span>
+                            <input type="date" name="date_from" id="orderDateFrom" class="form-control form-control-sm"
+                                   value="{{ request('date_from', request('date_preset') ? ($stats['date_from'] ?? '') : '') }}"
                                    title="Date de début">
                         </div>
                     </div>
 
                     <!-- Date de fin (Au) -->
-                    <div class="col-6 col-md-auto">
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text bg-light text-muted px-2" style="font-size: 0.72rem;">Au</span>
-                            <input type="date" name="date_to" id="orderDateTo" class="form-control form-control-sm" 
-                                   value="{{ request('date_to', request('date_preset') ? ($stats['date_to'] ?? '') : '') }}" 
+                    <div class="col-6 col-md-3 col-xl-3">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label">Au</span>
+                            <input type="date" name="date_to" id="orderDateTo" class="form-control form-control-sm"
+                                   value="{{ request('date_to', request('date_preset') ? ($stats['date_to'] ?? '') : '') }}"
                                    title="Date de fin">
                         </div>
                     </div>
 
                     <!-- Boutons Filtrer / Réinitialiser -->
-                    <div class="col-12 col-md-auto d-flex gap-2">
-                        <button type="submit" class="btn-brand-primary btn-sm flex-grow-1 flex-md-grow-0 justify-content-center" title="Appliquer les filtres">
-                            <i class="fas fa-filter me-1"></i> <span class="d-none d-md-inline">Filtrer</span><span class="d-md-none">Appliquer les filtres</span>
-                        </button>
-                        <a href="{{ route($indexRoute) }}" class="btn-brand-light btn-sm flex-shrink-0" title="Réinitialiser les filtres">
-                            <i class="fas fa-redo"></i>
-                        </a>
+                    <div class="col-6 col-md-3 col-xl-3">
+                        <div class="orders-filter-field">
+                            <span class="orders-filter-label" aria-hidden="true">&nbsp;</span>
+                            <div class="orders-filter-actions">
+                                <button type="submit" class="btn-brand-primary btn-sm flex-grow-1 justify-content-center" title="Appliquer les filtres">
+                                    <i class="fas fa-filter me-1"></i> <span>Appliquer</span>
+                                </button>
+                                <a href="{{ route($indexRoute) }}" class="btn-brand-light btn-sm flex-shrink-0" title="Réinitialiser les filtres">
+                                    <i class="fas fa-redo"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Bouton Exporter sur Mobile (d-md-none) -->
@@ -748,6 +864,30 @@
                 </a>
             @endif
 
+            @if(request('delivery_type'))
+                @php
+                    $deliveryTypeKey = strtolower((string) request('delivery_type'));
+                    $deliveryTypeLabel = \App\Models\Order::DELIVERY_TYPES[$deliveryTypeKey] ?? ucfirst($deliveryTypeKey);
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['delivery_type' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    <i class="fas fa-shipping-fast text-danger me-0.5"></i> Livraison : {{ $deliveryTypeLabel }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('staff_id'))
+                @php
+                    $selStaffObj = isset($staffUsers) && is_numeric(request('staff_id'))
+                        ? $staffUsers->firstWhere('id', (int) request('staff_id'))
+                        : null;
+                    $staffFilterLabel = request('staff_id') === 'unconfirmed'
+                        ? 'Non confirmées'
+                        : ($selStaffObj?->name ?? '#' . request('staff_id'));
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['staff_id' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    <i class="fas fa-user-check text-success me-0.5"></i> {{ $isPosChannel ? 'Créée par' : 'Confirmée par' }} : {{ $staffFilterLabel }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
             @if(request('store_id'))
                 @php
                     $selectedStoreObj = isset($stores) && is_numeric(request('store_id'))
@@ -809,7 +949,7 @@
                     {{ $orders->total() }}
                 </span>
             </div>
-            @if(request('status') || request('payment_status') || request('tax_mode') || request('store_id') || request('search'))
+            @if(request('status') || request('payment_status') || request('tax_mode') || request('delivery_type') || request('staff_id') || request('store_id') || request('search'))
                 <a href="{{ route($indexRoute) }}" class="small text-danger fw-semibold text-decoration-none" style="font-size: 0.75rem;">
                     <i class="fas fa-times me-0.5"></i>Effacer filtres
                 </a>
@@ -887,6 +1027,22 @@
                                     </span>
                                 </div>
                             @endif
+                            <div class="d-flex flex-column align-items-start gap-1 mt-1">
+                                @if($order->createdByUser)
+                                    <span class="order-staff-chip is-creator" title="Commande créée par {{ $order->createdByUser->name }} le {{ $order->created_at->format('d/m/Y à H:i') }}">
+                                        <i class="fas fa-user-tie"></i>
+                                        <span class="order-staff-chip-name">{{ $order->createdByUser->name }}</span>
+                                    </span>
+                                @endif
+                                @if(!$order->isPosOrder() || ($order->confirmedByUser && (int) $order->confirmed_by !== (int) $order->created_by))
+                                    <span class="order-staff-chip is-confirmed {{ $order->confirmedByUser ? '' : 'd-none' }}"
+                                          id="dt-confirmed-by-{{ $order->id }}"
+                                          title="{{ $order->confirmedByUser ? 'Confirmée par ' . $order->confirmedByUser->name . ($order->confirmed_at ? ' le ' . $order->confirmed_at->format('d/m/Y à H:i') : '') : '' }}">
+                                        <i class="fas fa-user-check"></i>
+                                        <span class="order-staff-chip-name" id="dt-confirmed-name-{{ $order->id }}">{{ $order->confirmedByUser?->name }}</span>
+                                    </span>
+                                @endif
+                            </div>
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-2.5">
@@ -927,7 +1083,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="position-relative flex-shrink-0" style="width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; padding: 2px; display: flex; align-items: center; justify-content: center;">
                                         <img src="{{ $firstItem->product_image }}" 
-                                             alt="{{ $firstItem->product_name }}" 
+                                             alt="{{ $firstItem->clean_product_name }}" 
                                              style="width: 100%; height: 100%; object-fit: contain;" 
                                              onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
                                              loading="lazy">
@@ -939,7 +1095,7 @@
                                     </div>
                                     <div class="min-w-0" style="max-width: 150px;">
                                         <div class="text-truncate fw-semibold text-dark small" title="{{ $firstItem->displayName }}">
-                                            {{ $firstItem->product_name }}
+                                            {{ $firstItem->clean_product_name }}
                                         </div>
                                         <div class="text-muted" style="font-size: 0.70rem;">
                                             @if($firstItem->variant_name)
@@ -973,7 +1129,7 @@
                             @endif
                         </td>
                         <td class="text-end fw-bold text-dark fs-6 font-heading tabular-nums">
-                            <div>{{ $order->formatted_total }}</div>
+                            <div class="orders-strong">{{ $order->formatted_total }}</div>
                             @php $orderTaxMode = $order->normalized_tax_mode; @endphp
                             <div class="dropdown d-inline-block mt-1">
                                 <button type="button"
@@ -1117,6 +1273,52 @@
                                     </li>
                                 </ul>
                             </div>
+                            @php
+                                $orderDeliveryType = $order->effective_delivery_type;
+                                $orderDeliveryIcon = match ($orderDeliveryType) {
+                                    'our_team' => 'fa-people-carry-box',
+                                    'ozon' => 'fa-box-open',
+                                    default => 'fa-store',
+                                };
+                            @endphp
+                            <div class="mt-1">
+                                <div class="dropdown d-inline-block">
+                                    <button type="button"
+                                            class="delivery-type-pill delivery-type-{{ $orderDeliveryType }} dropdown-toggle"
+                                            data-bs-toggle="dropdown"
+                                            data-bs-auto-close="true"
+                                            data-bs-boundary="viewport"
+                                            data-bs-popper-config='{"strategy":"fixed"}'
+                                            aria-expanded="false"
+                                            id="dt-delivery-pill-{{ $order->id }}"
+                                            title="Changer le type de livraison">
+                                        <i class="fas {{ $orderDeliveryIcon }}" id="dt-delivery-icon-{{ $order->id }}"></i>
+                                        <span id="dt-delivery-label-{{ $order->id }}">{{ $order->effective_delivery_type_label }}</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu text-start" aria-labelledby="dt-delivery-pill-{{ $order->id }}">
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Type de livraison</li>
+                                        <li>
+                                            <button type="button" data-delivery-type="store" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $orderDeliveryType === 'store' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'store')">
+                                                <span><span class="status-dot delivery-dot-store me-1.5"></span> Store</span>
+                                                @if($orderDeliveryType === 'store') <i class="fas fa-check text-dark small"></i> @endif
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-delivery-type="our_team" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $orderDeliveryType === 'our_team' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'our_team')">
+                                                <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Our Team</span>
+                                                @if($orderDeliveryType === 'our_team') <i class="fas fa-check text-primary small"></i> @endif
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-delivery-type="ozon" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $orderDeliveryType === 'ozon' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'ozon')">
+                                                <span><span class="status-dot delivery-dot-ozon me-1.5"></span> Ozon</span>
+                                                @if($orderDeliveryType === 'ozon') <i class="fas fa-check text-warning small"></i> @endif
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </td>
                         <td class="text-center d-none">
                             @php
@@ -1212,6 +1414,7 @@
         </div>
         @endif
     </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -1262,9 +1465,11 @@
             document.getElementById(`dt-status-pill-${orderId}`),
             document.getElementById(`dt-pay-pill-${orderId}`),
             document.getElementById(`dt-tax-pill-${orderId}`),
+            document.getElementById(`dt-delivery-pill-${orderId}`),
             document.getElementById(`mob-status-pill-${orderId}`),
             document.getElementById(`mob-pay-pill-${orderId}`),
-            document.getElementById(`mob-tax-pill-${orderId}`)
+            document.getElementById(`mob-tax-pill-${orderId}`),
+            document.getElementById(`mob-delivery-pill-${orderId}`)
         ].filter(Boolean);
 
         toggles.forEach(btn => {
@@ -1307,10 +1512,10 @@
         // Visual loading indicator on triggering pill (using pointerEvents instead of disabled)
         const dtPillId = field === 'status'
             ? `dt-status-pill-${orderId}`
-            : (field === 'tax_mode' ? `dt-tax-pill-${orderId}` : `dt-pay-pill-${orderId}`);
+            : (field === 'tax_mode' ? `dt-tax-pill-${orderId}` : (field === 'delivery_type' ? `dt-delivery-pill-${orderId}` : `dt-pay-pill-${orderId}`));
         const mobPillId = field === 'status'
             ? `mob-status-pill-${orderId}`
-            : (field === 'tax_mode' ? `mob-tax-pill-${orderId}` : `mob-pay-pill-${orderId}`);
+            : (field === 'tax_mode' ? `mob-tax-pill-${orderId}` : (field === 'delivery_type' ? `mob-delivery-pill-${orderId}` : `mob-pay-pill-${orderId}`));
         const dtPill = document.getElementById(dtPillId);
         const mobPill = document.getElementById(mobPillId);
         
@@ -1330,6 +1535,8 @@
                 [field]: value,
                 channel: '{{ $channel ?? 'website' }}',
                 filter_tax_mode: urlParams.get('tax_mode') || '',
+                filter_delivery_type: urlParams.get('delivery_type') || '',
+                filter_staff_id: urlParams.get('staff_id') || '',
                 date_from: urlParams.get('date_from') || '{{ $stats['date_from'] ?? '' }}',
                 date_to: urlParams.get('date_to') || '{{ $stats['date_to'] ?? '' }}',
                 date_preset: urlParams.get('date_preset') || ''
@@ -1563,7 +1770,7 @@
 
             const mobTaxPill = document.getElementById(`mob-tax-pill-${orderId}`);
             if (mobTaxPill) {
-                mobTaxPill.className = `tax-mode-pill tax-mode-${tm} dropdown-toggle mt-1`;
+                mobTaxPill.className = `tax-mode-pill tax-mode-${tm} dropdown-toggle`;
                 const mobTaxLabel = document.getElementById(`mob-tax-label-${orderId}`);
                 if (mobTaxLabel) mobTaxLabel.textContent = tmLabel;
                 const mobTaxMenu = mobTaxPill.closest('.dropdown')?.querySelector('.dropdown-menu');
@@ -1578,6 +1785,63 @@
                         }
                     });
                 }
+            }
+        }
+
+        // --- Delivery Type Tag (Store / Our Team / Ozon) ---
+        if (order.delivery_type) {
+            const delivMetaMap = {
+                store: { label: 'Store', icon: 'fa-store', checkClass: 'text-dark' },
+                our_team: { label: 'Our Team', icon: 'fa-people-carry-box', checkClass: 'text-primary' },
+                ozon: { label: 'Ozon', icon: 'fa-box-open', checkClass: 'text-warning' }
+            };
+            const dt = delivMetaMap[order.delivery_type] ? order.delivery_type : 'ozon';
+            const dInfo = delivMetaMap[dt];
+
+            [
+                { pill: `dt-delivery-pill-${orderId}`, icon: `dt-delivery-icon-${orderId}`, label: `dt-delivery-label-${orderId}` },
+                { pill: `mob-delivery-pill-${orderId}`, icon: `mob-delivery-icon-${orderId}`, label: `mob-delivery-label-${orderId}` }
+            ].forEach(cfg => {
+                const pillEl = document.getElementById(cfg.pill);
+                if (!pillEl) return;
+                pillEl.className = `delivery-type-pill delivery-type-${dt} dropdown-toggle`;
+                const iconEl = document.getElementById(cfg.icon);
+                if (iconEl) iconEl.className = `fas ${dInfo.icon}`;
+                const lblEl = document.getElementById(cfg.label);
+                if (lblEl) lblEl.textContent = order.delivery_type_label || dInfo.label;
+                const menuEl = pillEl.closest('.dropdown')?.querySelector('.dropdown-menu');
+                if (menuEl) {
+                    menuEl.querySelectorAll('.dropdown-item').forEach(item => {
+                        const isSel = item.dataset.deliveryType === dt;
+                        item.classList.toggle('active', isSel);
+                        const chk = item.querySelector('.fa-check');
+                        if (chk) chk.remove();
+                        if (isSel) {
+                            item.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${dInfo.checkClass} small"></i>`);
+                        }
+                    });
+                }
+            });
+        }
+
+        // --- Staff Confirmation Attribution (First user moving off pending) ---
+        if (order.confirmed_by_name) {
+            const dtConf = document.getElementById(`dt-confirmed-by-${orderId}`);
+            const dtConfName = document.getElementById(`dt-confirmed-name-${orderId}`);
+            if (dtConf && dtConfName) {
+                dtConfName.textContent = order.confirmed_by_name;
+                dtConf.title = `Confirmée par ${order.confirmed_by_name}${order.confirmed_at_formatted ? ' le ' + order.confirmed_at_formatted : ''}`;
+                dtConf.classList.remove('d-none');
+            }
+            const mobStaffRow = document.getElementById(`mob-staff-row-${orderId}`);
+            if (mobStaffRow) {
+                mobStaffRow.classList.remove('d-none');
+            }
+            const mobConf = document.getElementById(`mob-confirmed-by-${orderId}`);
+            const mobConfName = document.getElementById(`mob-confirmed-name-${orderId}`);
+            if (mobConf && mobConfName) {
+                mobConfName.textContent = `Confirmée : ${order.confirmed_by_name}`;
+                mobConf.classList.remove('d-none');
             }
         }
     }

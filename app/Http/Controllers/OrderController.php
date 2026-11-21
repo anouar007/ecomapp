@@ -10,6 +10,8 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\Store;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +58,8 @@ class OrderController extends Controller
 
         $query = Order::with([
             'user',
+            'createdByUser',
+            'confirmedByUser',
             'items.product.images',
             'items.product.primaryImage',
             'items.variant',
@@ -84,6 +88,30 @@ class OrderController extends Controller
         $taxModeFilter = strtolower((string) $request->input('tax_mode', ''));
         if (in_array($taxModeFilter, ['ttc', 'ht'], true)) {
             $query->where('tax_mode', $taxModeFilter);
+        }
+
+        // Filter by Delivery Type tag (store / our_team / ozon)
+        $deliveryTypeFilter = strtolower((string) $request->input('delivery_type', ''));
+        if (in_array($deliveryTypeFilter, ['store', 'our_team', 'ozon'], true)) {
+            $query->where('delivery_type', $deliveryTypeFilter);
+        }
+
+        // Filter by Staff member (POS creator OR first confirming staff on Website)
+        $staffFilter = trim((string) $request->input('staff_id', ''));
+        $applyStaffFilter = function ($q) use ($staffFilter, $isPos) {
+            if ($staffFilter === 'unconfirmed' && !$isPos) {
+                $q->whereNull('confirmed_by');
+            } elseif (is_numeric($staffFilter) && (int) $staffFilter > 0) {
+                $uid = (int) $staffFilter;
+                if ($isPos) {
+                    $q->where('created_by', $uid);
+                } else {
+                    $q->where('confirmed_by', $uid);
+                }
+            }
+        };
+        if ($staffFilter !== '') {
+            $applyStaffFilter($query);
         }
 
         // Filter by fulfilling Store / Magasin / Dépôt on items
@@ -185,6 +213,12 @@ class OrderController extends Controller
         if (in_array($taxModeFilter, ['ttc', 'ht'], true)) {
             $statsQuery->where('tax_mode', $taxModeFilter);
         }
+        if (in_array($deliveryTypeFilter, ['store', 'our_team', 'ozon'], true)) {
+            $statsQuery->where('delivery_type', $deliveryTypeFilter);
+        }
+        if ($staffFilter !== '') {
+            $applyStaffFilter($statsQuery);
+        }
         if (!empty($storeFilter)) {
             $applyStoreFilter($statsQuery);
         }
@@ -207,9 +241,29 @@ class OrderController extends Controller
             'date_preset' => $datePreset,
         ];
 
+        $referencedStaffIds = Order::select('confirmed_by')
+            ->whereNotNull('confirmed_by')
+            ->pluck('confirmed_by')
+            ->merge(Order::select('created_by')->whereNotNull('created_by')->pluck('created_by'))
+            ->unique()
+            ->filter()
+            ->values()
+            ->all();
+
+        $staffUsers = User::where(function ($q) use ($referencedStaffIds) {
+            if (!empty($referencedStaffIds)) {
+                $q->whereIn('id', $referencedStaffIds);
+            }
+            $q->orWhereHas('roles', function ($rq) {
+                $rq->whereNotIn('name', ['Customer', 'customer']);
+            });
+        })
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
+
         $orders = $query->latest()->paginate(15)->withQueryString();
 
-        return view('orders.index', compact('orders', 'stats', 'stores', 'channel', 'indexRoute'));
+        return view('orders.index', compact('orders', 'stats', 'stores', 'staffUsers', 'channel', 'indexRoute'));
     }
 
     /**
@@ -254,6 +308,7 @@ class OrderController extends Controller
             'discount' => ['nullable', 'numeric', 'min:0'],
             'payment_method' => ['nullable', 'string', 'max:50'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
+            'delivery_type' => ['nullable', 'in:store,our_team,ozon'],
             'default_store_id' => ['nullable', 'exists:stores,id'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
@@ -326,6 +381,7 @@ class OrderController extends Controller
 
             $order = Order::create([
                 'user_id' => Auth::id(),
+                'created_by' => Auth::id(),
                 'customer_name' => $validated['customer_name'],
                 'customer_email' => $validated['customer_email'],
                 'customer_phone' => $validated['customer_phone'] ?? null,
@@ -340,6 +396,7 @@ class OrderController extends Controller
                 'discount' => $validated['discount'] ?? 0,
                 'total' => $total,
                 'tax_mode' => $validated['tax_mode'] ?? 'ht',
+                'delivery_type' => $validated['delivery_type'] ?? 'ozon',
                 'status' => 'pending',
                 'stock_deducted' => false,
                 'payment_method' => $validated['payment_method'] ?? null,
@@ -374,6 +431,8 @@ class OrderController extends Controller
             'items.variant',
             'items.store',
             'user',
+            'createdByUser',
+            'confirmedByUser',
         ]);
         $stores = $this->activeStores();
         $orderHistory = $this->buildOrderHistory($order);
@@ -403,6 +462,10 @@ class OrderController extends Controller
             'discount' => 'Remise',
             'total' => 'Total',
             'tax_mode' => 'Régime (TTC/HT)',
+            'delivery_type' => 'Type de livraison',
+            'confirmed_by' => 'Confirmée par',
+            'confirmed_at' => 'Date confirmation',
+            'created_by' => 'Créée par',
             'product_name' => 'Produit',
             'quantity' => 'Quantité',
             'price' => 'Prix unitaire',
@@ -433,6 +496,9 @@ class OrderController extends Controller
             'cod' => 'Paiement à la livraison',
             'ttc' => 'TTC',
             'ht' => 'HT',
+            'store' => 'Store',
+            'our_team' => 'Our Team',
+            'ozon' => 'Ozon',
         ];
 
         $formatValue = function ($key, $val) use ($storeNames, $valueLabels) {
@@ -441,6 +507,9 @@ class OrderController extends Controller
             }
             if ($key === 'store_id') {
                 return $storeNames->get((int) $val, "Dépôt #{$val}");
+            }
+            if (in_array($key, ['confirmed_by', 'created_by'], true) && is_numeric($val)) {
+                return User::where('id', (int) $val)->value('name') ?? "Utilisateur #{$val}";
             }
             if ($key === 'stock_deducted') {
                 return $val ? 'Oui' : 'Non';
@@ -675,6 +744,7 @@ class OrderController extends Controller
             'status' => ['required', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
             'payment_status' => ['required', 'in:pending,partial,paid,failed,refunded'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
+            'delivery_type' => ['nullable', 'in:store,our_team,ozon'],
             'payment_method' => ['nullable', 'string', 'max:50'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -706,6 +776,9 @@ class OrderController extends Controller
                     'status' => $validated['status'],
                     'payment_status' => $validated['payment_status'],
                     'tax_mode' => $validated['tax_mode'] ?? $order->normalized_tax_mode,
+                    'delivery_type' => array_key_exists('delivery_type', $validated)
+                        ? ($validated['delivery_type'] ?: null)
+                        : $order->delivery_type,
                     'payment_method' => $validated['payment_method'] ?? null,
                     'transaction_id' => $validated['transaction_id'] ?? null,
                     'notes' => $validated['notes'] ?? null,
@@ -993,7 +1066,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Quick update order delivery, payment status, or TTC/HT tax mode tag via AJAX.
+     * Quick update order delivery, payment status, TTC/HT tax mode, or delivery_type tag via AJAX.
      */
     public function quickUpdateStatus(Request $request, Order $order)
     {
@@ -1001,10 +1074,11 @@ class OrderController extends Controller
             'status' => ['nullable', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
             'payment_status' => ['nullable', 'in:pending,partial,paid,failed,refunded'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
+            'delivery_type' => ['nullable', 'in:store,our_team,ozon'],
         ]);
 
-        if (empty($validated['status']) && empty($validated['payment_status']) && empty($validated['tax_mode'])) {
-            return response()->json(['success' => false, 'message' => 'Aucun statut ou régime spécifié.'], 422);
+        if (empty($validated['status']) && empty($validated['payment_status']) && empty($validated['tax_mode']) && empty($validated['delivery_type'])) {
+            return response()->json(['success' => false, 'message' => 'Aucun statut, régime ou type de livraison spécifié.'], 422);
         }
 
         $order->load('items.product');
@@ -1053,9 +1127,15 @@ class OrderController extends Controller
                 $order->tax_mode = $validated['tax_mode'];
                 $order->save();
             }
+
+            if (isset($validated['delivery_type']) && $validated['delivery_type'] !== $order->delivery_type) {
+                $order->delivery_type = $validated['delivery_type'];
+                $order->save();
+            }
         });
 
         $order->refresh();
+        $order->loadMissing(['createdByUser', 'confirmedByUser']);
 
         $statsQuery = Order::query();
         $channel = $request->input('channel');
@@ -1067,6 +1147,20 @@ class OrderController extends Controller
         $filterTaxMode = strtolower((string) $request->input('filter_tax_mode', ''));
         if (in_array($filterTaxMode, ['ttc', 'ht'], true)) {
             $statsQuery->where('tax_mode', $filterTaxMode);
+        }
+        $filterDeliveryType = strtolower((string) $request->input('filter_delivery_type', ''));
+        if (in_array($filterDeliveryType, ['store', 'our_team', 'ozon'], true)) {
+            $statsQuery->where('delivery_type', $filterDeliveryType);
+        }
+        $filterStaffId = trim((string) $request->input('filter_staff_id', ''));
+        if ($filterStaffId === 'unconfirmed' && $channel !== 'pos') {
+            $statsQuery->whereNull('confirmed_by');
+        } elseif (is_numeric($filterStaffId) && (int) $filterStaffId > 0) {
+            if ($channel === 'pos') {
+                $statsQuery->where('created_by', (int) $filterStaffId);
+            } else {
+                $statsQuery->where('confirmed_by', (int) $filterStaffId);
+            }
         }
         if ($request->filled('date_from')) {
             $statsQuery->whereDate('created_at', '>=', $request->date_from);
@@ -1113,6 +1207,13 @@ class OrderController extends Controller
                 },
                 'tax_mode' => $order->normalized_tax_mode,
                 'tax_mode_label' => $order->tax_mode_label,
+                'delivery_type' => $order->effective_delivery_type,
+                'delivery_type_label' => $order->effective_delivery_type_label,
+                'confirmed_by' => $order->confirmed_by,
+                'confirmed_by_name' => $order->confirmedByUser?->name,
+                'confirmed_at_formatted' => $order->confirmed_at?->format('d/m/Y à H:i'),
+                'created_by' => $order->created_by,
+                'created_by_name' => $order->createdByUser?->name,
             ],
             'stats' => [
                 'total' => $stats['total'],
@@ -1126,6 +1227,210 @@ class OrderController extends Controller
                 'revenue_formatted' => currency($stats['revenue']),
             ],
         ]);
+    }
+
+    /**
+     * Determine whether the given user can view staff statistics across all team members.
+     */
+    protected function canViewAllStaffStats(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->hasAnyRole(['Admin', 'Super Admin', 'Manager'])) {
+            return true;
+        }
+
+        $roleNames = $user->roles()
+            ->pluck('name')
+            ->map(static fn ($name) => strtolower(trim((string) $name)))
+            ->all();
+
+        return !empty(array_intersect($roleNames, ['admin', 'super admin', 'super_admin', 'manager']));
+    }
+
+    /**
+     * Staff attribution statistics: website confirmations (first user moving off pending)
+     * and POS orders created per staff member.
+     */
+    public function staffStats(Request $request)
+    {
+        $currentUser = Auth::user();
+        $canViewAllStaffStats = $this->canViewAllStaffStats($currentUser);
+
+        $datePreset = $request->input('date_preset', 'all');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
+        if ($datePreset === 'today') {
+            $dateFrom = now()->toDateString();
+            $dateTo = now()->toDateString();
+        } elseif ($datePreset === 'yesterday') {
+            $dateFrom = now()->subDay()->toDateString();
+            $dateTo = now()->subDay()->toDateString();
+        } elseif ($datePreset === 'last_7_days') {
+            $dateFrom = now()->subDays(6)->toDateString();
+            $dateTo = now()->toDateString();
+        } elseif ($datePreset === 'this_month') {
+            $dateFrom = now()->startOfMonth()->toDateString();
+            $dateTo = now()->endOfMonth()->toDateString();
+        } elseif ($datePreset === 'last_month') {
+            $dateFrom = now()->subMonth()->startOfMonth()->toDateString();
+            $dateTo = now()->subMonth()->endOfMonth()->toDateString();
+        } elseif (!empty($dateFrom) || !empty($dateTo)) {
+            $datePreset = 'custom';
+        } else {
+            $datePreset = 'all';
+        }
+
+        // Website orders attributed to the FIRST confirming staff member (confirmed_by)
+        $webBase = Order::query()->website()->whereNotNull('confirmed_by');
+        if (!$canViewAllStaffStats && $currentUser) {
+            $webBase->where('confirmed_by', $currentUser->id);
+        }
+        if (!empty($dateFrom)) {
+            $webBase->whereRaw('DATE(COALESCE(confirmed_at, updated_at, created_at)) >= ?', [$dateFrom]);
+        }
+        if (!empty($dateTo)) {
+            $webBase->whereRaw('DATE(COALESCE(confirmed_at, updated_at, created_at)) <= ?', [$dateTo]);
+        }
+
+        $webAgg = (clone $webBase)
+            ->selectRaw("
+                confirmed_by as staff_id,
+                SUM(CASE WHEN LOWER(status) NOT IN ('cancelled', 'annulée') THEN 1 ELSE 0 END) as web_confirmed,
+                SUM(CASE WHEN LOWER(status) IN ('cancelled', 'annulée') THEN 1 ELSE 0 END) as web_cancelled,
+                SUM(CASE WHEN LOWER(status) IN ('delivered', 'livrée') THEN 1 ELSE 0 END) as web_delivered,
+                SUM(CASE WHEN LOWER(status) NOT IN ('cancelled', 'annulée') THEN total ELSE 0 END) as web_revenue,
+                MAX(COALESCE(confirmed_at, updated_at, created_at)) as last_web_at
+            ")
+            ->groupBy('confirmed_by')
+            ->get()
+            ->keyBy('staff_id');
+
+        // POS orders attributed to the staff member who created them (created_by)
+        $posBase = Order::query()->pos()->whereNotNull('created_by');
+        if (!$canViewAllStaffStats && $currentUser) {
+            $posBase->where('created_by', $currentUser->id);
+        }
+        if (!empty($dateFrom)) {
+            $posBase->whereDate('created_at', '>=', $dateFrom);
+        }
+        if (!empty($dateTo)) {
+            $posBase->whereDate('created_at', '<=', $dateTo);
+        }
+
+        $posAgg = (clone $posBase)
+            ->selectRaw("
+                created_by as staff_id,
+                SUM(CASE WHEN LOWER(status) NOT IN ('cancelled', 'annulée') THEN 1 ELSE 0 END) as pos_created,
+                SUM(CASE WHEN LOWER(status) IN ('cancelled', 'annulée') THEN 1 ELSE 0 END) as pos_cancelled,
+                SUM(CASE WHEN LOWER(status) IN ('delivered', 'livrée') THEN 1 ELSE 0 END) as pos_delivered,
+                SUM(CASE WHEN LOWER(status) NOT IN ('cancelled', 'annulée') THEN total ELSE 0 END) as pos_revenue,
+                MAX(created_at) as last_pos_at
+            ")
+            ->groupBy('created_by')
+            ->get()
+            ->keyBy('staff_id');
+
+        if ($canViewAllStaffStats) {
+            $activeStaffIds = $webAgg->keys()
+                ->merge($posAgg->keys())
+                ->unique()
+                ->map(fn ($id) => (int) $id)
+                ->filter()
+                ->values()
+                ->all();
+
+            $staffMembers = User::where(function ($q) use ($activeStaffIds) {
+                if (!empty($activeStaffIds)) {
+                    $q->whereIn('id', $activeStaffIds);
+                }
+                $q->orWhereHas('roles', function ($rq) {
+                    $rq->whereNotIn('name', ['Customer', 'customer']);
+                });
+            })
+                ->with('roles')
+                ->orderBy('name')
+                ->get();
+        } else {
+            $staffMembers = $currentUser
+                ? User::whereKey($currentUser->id)->with('roles')->get()
+                : collect();
+        }
+
+        $rows = $staffMembers->map(function ($u) use ($webAgg, $posAgg) {
+            $w = $webAgg->get($u->id);
+            $p = $posAgg->get($u->id);
+
+            $webConfirmed = (int) ($w->web_confirmed ?? 0);
+            $webCancelled = (int) ($w->web_cancelled ?? 0);
+            $webDelivered = (int) ($w->web_delivered ?? 0);
+            $webRevenue = (float) ($w->web_revenue ?? 0);
+
+            $posCreated = (int) ($p->pos_created ?? 0);
+            $posCancelled = (int) ($p->pos_cancelled ?? 0);
+            $posDelivered = (int) ($p->pos_delivered ?? 0);
+            $posRevenue = (float) ($p->pos_revenue ?? 0);
+
+            $totalHandled = $webConfirmed + $posCreated;
+            $totalDelivered = $webDelivered + $posDelivered;
+            $totalRevenue = $webRevenue + $posRevenue;
+
+            $lastWeb = !empty($w?->last_web_at) ? Carbon::parse($w->last_web_at) : null;
+            $lastPos = !empty($p?->last_pos_at) ? Carbon::parse($p->last_pos_at) : null;
+            $lastActivity = $lastWeb && $lastPos
+                ? ($lastWeb->gt($lastPos) ? $lastWeb : $lastPos)
+                : ($lastWeb ?? $lastPos);
+
+            return (object) [
+                'user_id' => $u->id,
+                'name' => $u->name,
+                'email' => $u->email,
+                'role_label' => $u->roles->pluck('name')->filter()->first() ?: 'Équipe',
+                'web_confirmed' => $webConfirmed,
+                'web_cancelled' => $webCancelled,
+                'web_delivered' => $webDelivered,
+                'web_revenue' => $webRevenue,
+                'pos_created' => $posCreated,
+                'pos_cancelled' => $posCancelled,
+                'pos_delivered' => $posDelivered,
+                'pos_revenue' => $posRevenue,
+                'total_handled' => $totalHandled,
+                'total_delivered' => $totalDelivered,
+                'total_revenue' => $totalRevenue,
+                'delivery_rate' => $totalHandled > 0 ? round(($totalDelivered / $totalHandled) * 100) : 0,
+                'last_activity_at' => $lastActivity,
+            ];
+        })->sortByDesc(fn ($r) => [$r->total_handled, $r->total_revenue])->values();
+
+        $pendingUnconfirmedQuery = Order::query()->website()->whereNull('confirmed_by')->where('status', 'pending');
+        if (!empty($dateFrom)) {
+            $pendingUnconfirmedQuery->whereDate('created_at', '>=', $dateFrom);
+        }
+        if (!empty($dateTo)) {
+            $pendingUnconfirmedQuery->whereDate('created_at', '<=', $dateTo);
+        }
+
+        $summary = [
+            'total_web_confirmed' => $rows->sum('web_confirmed'),
+            'total_web_cancelled' => $rows->sum('web_cancelled'),
+            'total_pos_created' => $rows->sum('pos_created'),
+            'total_handled' => $rows->sum('total_handled'),
+            'total_revenue' => $rows->sum('total_revenue'),
+            'pending_unconfirmed_count' => $pendingUnconfirmedQuery->count(),
+            'active_staff_count' => $rows->where('total_handled', '>', 0)->count(),
+        ];
+
+        return view('orders.staff_stats', compact(
+            'rows',
+            'summary',
+            'datePreset',
+            'dateFrom',
+            'dateTo',
+            'canViewAllStaffStats'
+        ));
     }
 
     /**

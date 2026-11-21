@@ -1229,36 +1229,12 @@ class Product extends Model
             ->first();
 
         if (!$existingAlert) {
-            $alert = $this->stockAlerts()->create([
+            $this->stockAlerts()->create([
                 'alert_type' => $alertType,
                 'threshold_value' => $threshold,
                 'current_stock' => $currentStock,
                 'triggered_at' => now(),
             ]);
-
-            // Send email notification to admin users after the HTTP response so SMTP latency never blocks stock saves
-            $alertId = $alert->id;
-            dispatch(function () use ($alertId) {
-                $freshAlert = \App\Models\StockAlert::with('product')->find($alertId);
-                if (!$freshAlert) {
-                    return;
-                }
-
-                $admins = \App\Models\User::whereHas('roles', function ($q) {
-                    $q->where('name', 'admin');
-                })->get();
-
-                foreach ($admins as $admin) {
-                    $settings = \App\Models\NotificationSetting::forUser($admin->id);
-                    if ($settings->isEnabled('low_stock_alert')) {
-                        try {
-                            $admin->notify(new \App\Notifications\LowStockAlert($freshAlert));
-                        } catch (\Throwable $e) {
-                            \Illuminate\Support\Facades\Log::warning('Low stock email notification failed: ' . $e->getMessage());
-                        }
-                    }
-                }
-            })->afterResponse();
         }
     }
 

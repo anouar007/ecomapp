@@ -69,13 +69,23 @@ class OrderItem extends Model
     }
 
     /**
+     * Get decoded plain-text product name (prevents HTML entity double-encoding like &amp;).
+     */
+    public function getCleanProductNameAttribute(): string
+    {
+        return html_entity_decode((string) $this->product_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    /**
      * Get full display name including variant name.
      */
     public function getDisplayNameAttribute(): string
     {
-        return !empty($this->variant_name) 
-            ? "{$this->product_name} ({$this->variant_name})" 
-            : $this->product_name;
+        $cleanName = $this->clean_product_name;
+
+        return !empty($this->variant_name)
+            ? "{$cleanName} ({$this->variant_name})"
+            : $cleanName;
     }
 
     /**

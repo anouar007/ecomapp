@@ -136,6 +136,26 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <!-- Type de livraison -->
+                        <div class="col-12 col-sm-6">
+                            <label for="delivery_type" class="form-label fw-semibold text-dark">
+                                Type de livraison
+                            </label>
+                            <select id="delivery_type" name="delivery_type" class="form-select fw-semibold @error('delivery_type') is-invalid @enderror">
+                                @php $editDeliveryType = old('delivery_type', $order->normalized_delivery_type); @endphp
+                                <option value="" {{ empty($editDeliveryType) ? 'selected' : '' }}>— Non spécifié —</option>
+                                <option value="store" {{ $editDeliveryType === 'store' ? 'selected' : '' }}>Store</option>
+                                <option value="our_team" {{ $editDeliveryType === 'our_team' ? 'selected' : '' }}>Our Team</option>
+                                <option value="ozon" {{ $editDeliveryType === 'ozon' ? 'selected' : '' }}>Ozon</option>
+                            </select>
+                            <div class="form-text small text-muted mt-1.5">
+                                Canal d'expédition ou de remise (POS / Boutique).
+                            </div>
+                            @error('delivery_type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 

@@ -11,9 +11,18 @@ class Order extends Model
 {
     use HasFactory, \App\Traits\LogsActivity;
 
+    public const DELIVERY_TYPES = [
+        'store' => 'Store',
+        'our_team' => 'Our Team',
+        'ozon' => 'Ozon',
+    ];
+
     protected $fillable = [
         'order_number',
         'user_id',
+        'created_by',
+        'confirmed_by',
+        'confirmed_at',
         'customer_id',
         'customer_name',
         'customer_email',
@@ -32,6 +41,7 @@ class Order extends Model
         'coupon_code',
         'total',
         'tax_mode',
+        'delivery_type',
         'paid_amount',
         'remaining_amount',
         'status',
@@ -52,6 +62,7 @@ class Order extends Model
         'paid_amount' => 'decimal:2',
         'remaining_amount' => 'decimal:2',
         'payment_due_date' => 'date',
+        'confirmed_at' => 'datetime',
         'stock_deducted' => 'boolean',
     ];
 
@@ -65,6 +76,22 @@ class Order extends Model
         static::creating(function ($order) {
             if (empty($order->order_number)) {
                 $order->order_number = 'ORD-' . strtoupper(uniqid());
+            }
+        });
+
+        static::updating(function ($order) {
+            // Permanently record the FIRST user who moves an order out of 'pending' ('En attente')
+            if (
+                empty($order->confirmed_by)
+                && $order->isDirty('status')
+                && strtolower((string) $order->getOriginal('status')) === 'pending'
+                && strtolower((string) $order->status) !== 'pending'
+            ) {
+                $actorId = Auth::id();
+                if ($actorId) {
+                    $order->confirmed_by = $actorId;
+                    $order->confirmed_at = $order->confirmed_at ?? now();
+                }
             }
         });
 
@@ -87,6 +114,22 @@ class Order extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    /**
+     * Get the staff user who created the POS / manual order.
+     */
+    public function createdByUser()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the first user who changed the order status from pending ('En attente').
+     */
+    public function confirmedByUser()
+    {
+        return $this->belongsTo(User::class, 'confirmed_by');
     }
 
     /**
@@ -211,6 +254,57 @@ class Order extends Model
     public function getTaxModeLabelAttribute(): string
     {
         return $this->normalized_tax_mode === 'ht' ? 'HT' : 'TTC';
+    }
+
+    /**
+     * Normalize POS / order delivery type ('store', 'our_team', 'ozon', or null).
+     */
+    public function getNormalizedDeliveryTypeAttribute(): ?string
+    {
+        $val = strtolower(trim((string) $this->delivery_type));
+
+        return array_key_exists($val, self::DELIVERY_TYPES) ? $val : null;
+    }
+
+    /**
+     * Human-readable label for the delivery type ('Store', 'Our Team', 'Ozon', or null).
+     */
+    public function getDeliveryTypeLabelAttribute(): ?string
+    {
+        $key = $this->normalized_delivery_type;
+
+        return $key !== null ? self::DELIVERY_TYPES[$key] : null;
+    }
+
+    /**
+     * Determine whether this website order selected in-store pickup ("Retrait au magasin").
+     */
+    public function isStorePickupOrder(): bool
+    {
+        $addr = mb_strtolower(trim((string) $this->shipping_address));
+
+        return str_starts_with($addr, 'retrait au magasin');
+    }
+
+    /**
+     * Effective delivery type with automatic fallback for legacy/default orders
+     * ('store' for POS or in-store pickup orders, 'ozon' for standard website deliveries).
+     */
+    public function getEffectiveDeliveryTypeAttribute(): string
+    {
+        if ($this->normalized_delivery_type !== null) {
+            return $this->normalized_delivery_type;
+        }
+
+        return ($this->isPosOrder() || $this->isStorePickupOrder()) ? 'store' : 'ozon';
+    }
+
+    /**
+     * Effective human-readable label for delivery type ('Store', 'Our Team', or 'Ozon').
+     */
+    public function getEffectiveDeliveryTypeLabelAttribute(): string
+    {
+        return self::DELIVERY_TYPES[$this->effective_delivery_type] ?? 'Ozon';
     }
 
     /**

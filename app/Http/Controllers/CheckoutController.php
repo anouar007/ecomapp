@@ -382,6 +382,7 @@ class CheckoutController extends Controller
                         'coupon_code' => $coupon?->code,
                         'total' => $total,
                         'tax_mode' => 'ht',
+                        'delivery_type' => $isStorePickup ? 'store' : 'ozon',
                         'status' => 'pending',
                         'stock_deducted' => true,
                         'payment_status' => 'pending',

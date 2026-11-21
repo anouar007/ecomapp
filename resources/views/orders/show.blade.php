@@ -326,6 +326,56 @@
                                 </ul>
                             </div>
 
+                            @php
+                                $showDeliveryType = $order->effective_delivery_type;
+                                $showDeliveryIcon = match ($showDeliveryType) {
+                                    'our_team' => 'fa-people-carry-box',
+                                    'ozon' => 'fa-box-open',
+                                    default => 'fa-store',
+                                };
+                            @endphp
+                            @if($canEditOrderShow)
+                                <div class="dropdown d-inline-block">
+                                    <button type="button"
+                                            class="delivery-type-pill delivery-type-{{ $showDeliveryType }} dropdown-toggle"
+                                            data-bs-toggle="dropdown"
+                                            data-bs-auto-close="true"
+                                            aria-expanded="false"
+                                            id="show-delivery-pill-{{ $order->id }}"
+                                            title="Changer le type de livraison">
+                                        <i class="fas {{ $showDeliveryIcon }}" id="show-delivery-icon-{{ $order->id }}"></i>
+                                        <span id="show-delivery-label-{{ $order->id }}">{{ $order->effective_delivery_type_label }}</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="show-delivery-pill-{{ $order->id }}">
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Type de livraison</li>
+                                        <li>
+                                            <button type="button" data-delivery-type="store" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $showDeliveryType === 'store' ? 'active' : '' }}" onclick="quickUpdateShowDeliveryType({{ $order->id }}, 'store')">
+                                                <span><span class="status-dot delivery-dot-store me-1.5"></span> Store</span>
+                                                @if($showDeliveryType === 'store') <i class="fas fa-check text-dark small"></i> @endif
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-delivery-type="our_team" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $showDeliveryType === 'our_team' ? 'active' : '' }}" onclick="quickUpdateShowDeliveryType({{ $order->id }}, 'our_team')">
+                                                <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Our Team</span>
+                                                @if($showDeliveryType === 'our_team') <i class="fas fa-check text-primary small"></i> @endif
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" data-delivery-type="ozon" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $showDeliveryType === 'ozon' ? 'active' : '' }}" onclick="quickUpdateShowDeliveryType({{ $order->id }}, 'ozon')">
+                                                <span><span class="status-dot delivery-dot-ozon me-1.5"></span> Ozon</span>
+                                                @if($showDeliveryType === 'ozon') <i class="fas fa-check text-warning small"></i> @endif
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            @else
+                                <span class="delivery-type-pill delivery-type-{{ $showDeliveryType }}" id="show-delivery-pill-{{ $order->id }}">
+                                    <i class="fas {{ $showDeliveryIcon }}" id="show-delivery-icon-{{ $order->id }}"></i>
+                                    <span id="show-delivery-label-{{ $order->id }}">{{ $order->effective_delivery_type_label }}</span>
+                                </span>
+                            @endif
+
                             <span class="brand-badge {{ $showPayBadgeClass }} d-inline-flex d-md-none ms-auto" style="font-size: 0.7rem;">
                                 {{ $showPayShortLabel }}
                             </span>
@@ -707,7 +757,7 @@
                                         <div class="d-flex align-items-center gap-3">
                                             <div class="order-item-thumb-box">
                                                 <img src="{{ $item->product_image }}" 
-                                                     alt="{{ $item->product_name }}" 
+                                                     alt="{{ $item->clean_product_name }}" 
                                                      style="width: 100%; height: 100%; object-fit: contain;"
                                                      onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
                                                      loading="lazy">
@@ -715,10 +765,10 @@
                                             <div>
                                                 @if($item->product)
                                                     <a href="{{ route('products.edit', $item->product) }}" class="fw-bold text-dark text-decoration-none d-block hover-danger">
-                                                        {{ $item->product_name }}
+                                                        {{ $item->clean_product_name }}
                                                     </a>
                                                 @else
-                                                    <span class="fw-bold text-dark d-block">{{ $item->product_name }}</span>
+                                                    <span class="fw-bold text-dark d-block">{{ $item->clean_product_name }}</span>
                                                 @endif
                                                 <div class="d-flex align-items-center gap-1.5 flex-wrap mt-0.5">
                                                     <span class="text-muted small font-monospace">SKU: {{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}</span>
@@ -742,7 +792,7 @@
                                                                 data-item-id="{{ $item->id }}"
                                                                 data-replace-url="{{ route('orders.items.replace', [$order, $item]) }}"
                                                                 data-product-id="{{ $item->product_id }}"
-                                                                data-product-name="{{ $item->product_name }}"
+                                                                data-product-name="{{ $item->clean_product_name }}"
                                                                 data-product-sku="{{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}"
                                                                 data-variant-name="{{ $item->variant_name ?? '' }}"
                                                                 data-product-image="{{ $item->product_image }}"
@@ -767,7 +817,7 @@
                                             <div class="input-group input-group-sm">
                                                 <select name="store_id"
                                                         class="form-select form-select-sm item-store-select"
-                                                        aria-label="Magasin ou dépôt pour {{ $item->product_name }}">
+                                                        aria-label="Magasin ou dépôt pour {{ $item->clean_product_name }}">
                                                     <option value="">— Non assigné —</option>
                                                     @foreach($stores ?? [] as $st)
                                                         @php
@@ -854,7 +904,7 @@
                             <div class="d-flex align-items-start gap-2.5">
                                 <div class="order-item-thumb-box" style="width: 56px; height: 56px;">
                                     <img src="{{ $item->product_image }}" 
-                                         alt="{{ $item->product_name }}" 
+                                         alt="{{ $item->clean_product_name }}" 
                                          style="width: 100%; height: 100%; object-fit: contain;"
                                          onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
                                          loading="lazy">
@@ -862,11 +912,11 @@
                                 <div class="flex-grow-1 min-w-0">
                                     @if($item->product)
                                         <a href="{{ route('products.edit', $item->product) }}" class="order-mobile-item-name">
-                                            {{ $item->product_name }}
+                                            {{ $item->clean_product_name }}
                                         </a>
                                     @else
                                         <div class="order-mobile-item-name">
-                                            {{ $item->product_name }}
+                                            {{ $item->clean_product_name }}
                                         </div>
                                     @endif
                                     <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1">
@@ -889,7 +939,7 @@
                                         @csrf
                                         <div class="input-group">
                                             <span class="input-group-text bg-white text-primary px-2.5"><i class="fas fa-warehouse"></i></span>
-                                            <select name="store_id" class="form-select item-store-select" style="min-height: 40px; font-size: 0.84rem;" aria-label="Dépôt pour {{ $item->product_name }}">
+                                            <select name="store_id" class="form-select item-store-select" style="min-height: 40px; font-size: 0.84rem;" aria-label="Dépôt pour {{ $item->clean_product_name }}">
                                                 <option value="">— Non assigné —</option>
                                                 @foreach($stores ?? [] as $st)
                                                     @php
@@ -930,7 +980,7 @@
                                                     data-item-id="{{ $item->id }}"
                                                     data-replace-url="{{ route('orders.items.replace', [$order, $item]) }}"
                                                     data-product-id="{{ $item->product_id }}"
-                                                    data-product-name="{{ $item->product_name }}"
+                                                    data-product-name="{{ $item->clean_product_name }}"
                                                     data-product-sku="{{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}"
                                                     data-variant-name="{{ $item->variant_name ?? '' }}"
                                                     data-product-image="{{ $item->product_image }}"
@@ -1003,7 +1053,7 @@
                                 <div class="order-history-card">
                                     <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-1">
                                         <div class="fw-bold text-dark" style="font-size: 0.88rem;">
-                                            {{ $event->title }}
+                                            {{ html_entity_decode((string) $event->title, ENT_QUOTES | ENT_HTML5, 'UTF-8') }}
                                         </div>
                                         <div class="small text-muted d-flex align-items-center gap-2">
                                             @if($event->timestamp)
@@ -1018,7 +1068,7 @@
                                     </div>
 
                                     @if($event->description)
-                                        <div class="small text-secondary mb-2">{{ $event->description }}</div>
+                                        <div class="small text-secondary mb-2">{{ html_entity_decode((string) $event->description, ENT_QUOTES | ENT_HTML5, 'UTF-8') }}</div>
                                     @endif
 
                                     @if(!empty($event->changes))
@@ -1027,10 +1077,10 @@
                                                 <div class="order-diff-chip">
                                                     <span class="fw-semibold text-secondary">{{ $chg['field'] }} :</span>
                                                     @if($chg['old'] !== null)
-                                                        <span class="text-danger text-decoration-line-through">{{ $chg['old'] }}</span>
+                                                        <span class="text-danger text-decoration-line-through">{{ html_entity_decode((string) $chg['old'], ENT_QUOTES | ENT_HTML5, 'UTF-8') }}</span>
                                                         <i class="fas fa-arrow-right text-muted" style="font-size: 0.65rem;"></i>
                                                     @endif
-                                                    <span class="fw-bold text-dark">{{ $chg['new'] }}</span>
+                                                    <span class="fw-bold text-dark">{{ html_entity_decode((string) $chg['new'], ENT_QUOTES | ENT_HTML5, 'UTF-8') }}</span>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -1041,7 +1091,7 @@
                                             @foreach($event->meta as $mKey => $mVal)
                                                 <div class="order-diff-chip">
                                                     <span class="fw-semibold text-secondary">{{ $mKey }} :</span>
-                                                    <span class="fw-bold text-dark">{{ $mVal }}</span>
+                                                    <span class="fw-bold text-dark">{{ html_entity_decode((string) $mVal, ENT_QUOTES | ENT_HTML5, 'UTF-8') }}</span>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -1239,6 +1289,57 @@
                                 {{ $order->shipping_city }} {{ $order->shipping_zip ? '(' . $order->shipping_zip . ')' : '' }}
                                 <span class="text-muted">• {{ $order->shipping_country ?: 'Maroc' }}</span>
                             </div>
+                        </div>
+                    @endif
+
+                    @php
+                        $tileDeliveryColor = match ($order->effective_delivery_type) {
+                            'our_team' => '#1d4ed8',
+                            'ozon' => '#b45309',
+                            default => '#0f172a',
+                        };
+                        $tileDeliveryIcon = match ($order->effective_delivery_type) {
+                            'our_team' => 'fa-people-carry-box',
+                            'ozon' => 'fa-box-open',
+                            default => 'fa-store',
+                        };
+                    @endphp
+                    <div class="order-info-tile d-flex align-items-center justify-content-between gap-2" id="show-delivery-tile-wrap">
+                        <span class="text-muted">
+                            <i class="fas fa-shipping-fast me-1 text-danger"></i>Type de livraison
+                        </span>
+                        <span class="fw-bold d-inline-flex align-items-center gap-1" style="color: {{ $tileDeliveryColor }};" id="show-delivery-tile-val">
+                            <i class="fas {{ $tileDeliveryIcon }}" id="show-delivery-tile-icon"></i>
+                            <span id="show-delivery-tile-label">{{ $order->effective_delivery_type_label }}</span>
+                        </span>
+                    </div>
+
+                    @if($order->isPosOrder() || $order->createdByUser)
+                        <div class="order-info-tile d-flex align-items-center justify-content-between gap-2" id="show-created-by-tile">
+                            <span class="text-muted">
+                                <i class="fas fa-user-tie me-1 text-primary"></i>{{ $order->isPosOrder() ? 'Créée par (POS)' : 'Créée par' }}
+                            </span>
+                            <span class="fw-bold text-dark">
+                                {{ $order->createdByUser?->name ?? 'Utilisateur inconnu' }}
+                            </span>
+                        </div>
+                    @endif
+
+                    @if(!$order->isPosOrder() || $order->confirmedByUser)
+                        <div class="order-info-tile d-flex align-items-center justify-content-between gap-2" id="show-confirmed-by-tile">
+                            <span class="text-muted">
+                                <i class="fas fa-user-check me-1 text-success"></i>Confirmée par
+                            </span>
+                            @if($order->confirmedByUser)
+                                <div class="text-end">
+                                    <div class="fw-bold text-success">{{ $order->confirmedByUser->name }}</div>
+                                    @if($order->confirmed_at)
+                                        <div class="text-muted" style="font-size: 0.7rem;">{{ $order->confirmed_at->format('d/m/Y à H:i') }}</div>
+                                    @endif
+                                </div>
+                            @else
+                                <span class="text-muted fst-italic">En attente de confirmation</span>
+                            @endif
                         </div>
                     @endif
                 </div>
@@ -1853,6 +1954,95 @@ window.quickUpdateShowTaxMode = async function(orderId, value) {
                 position: 'top-end',
                 icon: 'success',
                 title: data.message || `Régime mis à jour : ${tmLabel}`,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+            });
+        }
+    } catch (err) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'error', title: 'Erreur', text: err.message, confirmButtonColor: '#dc2626' });
+        } else {
+            alert(err.message);
+        }
+    } finally {
+        if (pill) {
+            pill.style.opacity = '1';
+            pill.style.pointerEvents = '';
+        }
+    }
+};
+
+window.quickUpdateShowDeliveryType = async function(orderId, value) {
+    const pill = document.getElementById(`show-delivery-pill-${orderId}`);
+    if (pill) {
+        pill.style.opacity = '0.6';
+        pill.style.pointerEvents = 'none';
+        if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+            bootstrap.Dropdown.getInstance(pill)?.hide();
+        }
+        pill.classList.remove('show');
+        pill.closest('.dropdown')?.querySelector('.dropdown-menu')?.classList.remove('show');
+    }
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+    try {
+        const res = await fetch(`/orders/${orderId}/quick-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ delivery_type: value }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success || !data.order) {
+            throw new Error(data.message || 'Impossible de modifier le type de livraison.');
+        }
+
+        const metaMap = {
+            store: { label: 'Store', icon: 'fa-store', checkClass: 'text-dark', color: '#0f172a' },
+            our_team: { label: 'Our Team', icon: 'fa-people-carry-box', checkClass: 'text-primary', color: '#1d4ed8' },
+            ozon: { label: 'Ozon', icon: 'fa-box-open', checkClass: 'text-warning', color: '#b45309' },
+        };
+        const dt = metaMap[data.order.delivery_type] ? data.order.delivery_type : 'ozon';
+        const info = metaMap[dt];
+        const finalLabel = data.order.delivery_type_label || info.label;
+
+        if (pill) {
+            pill.className = `delivery-type-pill delivery-type-${dt} dropdown-toggle`;
+            const iconEl = document.getElementById(`show-delivery-icon-${orderId}`);
+            if (iconEl) iconEl.className = `fas ${info.icon}`;
+            const lbl = document.getElementById(`show-delivery-label-${orderId}`);
+            if (lbl) lbl.textContent = finalLabel;
+            const menu = pill.closest('.dropdown')?.querySelector('.dropdown-menu');
+            if (menu) {
+                menu.querySelectorAll('.dropdown-item').forEach(item => {
+                    const isSel = item.dataset.deliveryType === dt;
+                    item.classList.toggle('active', isSel);
+                    const chk = item.querySelector('.fa-check');
+                    if (chk) chk.remove();
+                    if (isSel) {
+                        item.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${info.checkClass} small"></i>`);
+                    }
+                });
+            }
+        }
+
+        const tileVal = document.getElementById('show-delivery-tile-val');
+        if (tileVal) tileVal.style.color = info.color;
+        const tileIcon = document.getElementById('show-delivery-tile-icon');
+        if (tileIcon) tileIcon.className = `fas ${info.icon}`;
+        const tileLbl = document.getElementById('show-delivery-tile-label');
+        if (tileLbl) tileLbl.textContent = finalLabel;
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: data.message || `Type de livraison : ${finalLabel}`,
                 showConfirmButton: false,
                 timer: 2000,
                 timerProgressBar: true,

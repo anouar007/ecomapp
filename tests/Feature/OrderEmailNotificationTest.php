@@ -4,18 +4,27 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
+use App\Mail\OrderConfirmation;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Models\NotificationSetting;
+use App\Models\StockAlert;
 use App\Mail\NewOrderNotification;
+use App\Notifications\InvoiceGenerated;
+use App\Notifications\LowStockAlert;
 use App\Services\MailConfigService;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class OrderEmailNotificationTest extends TestCase
 {
+    use DatabaseTransactions;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -110,6 +119,8 @@ class OrderEmailNotificationTest extends TestCase
             'customer_name' => 'Amine Tazi',
             'customer_email' => 'amine@client.ma',
             'customer_phone' => '0661122334',
+            'customer_phone_confirmation' => '0661122334',
+            'delivery_method' => 'delivery',
             'shipping_city' => 'Casablanca',
             'shipping_address' => '25 Bd d\'Anfa',
             'ice' => '00987654321',
@@ -214,6 +225,161 @@ class OrderEmailNotificationTest extends TestCase
         ]);
 
         $loginResponse->assertRedirect(route('orders.show', $order));
+    }
+
+    public function test_product_stock_and_order_changes_do_not_email_admins_while_website_checkout_does(): void
+    {
+        Mail::fake();
+        Notification::fake();
+
+        $admin = User::factory()->create();
+        $admin->assignRole('Admin');
+
+        Setting::set('order_notifications_enabled', '1', 'boolean', 'email');
+        Setting::set('order_notification_email', 'orders-alert@winashop.ma', 'string', 'email');
+
+        // Default notification settings only enable order_placed
+        $notifSettings = NotificationSetting::forUser($admin->id);
+        $this->assertTrue($notifSettings->order_placed);
+        $this->assertFalse($notifSettings->low_stock_alert);
+        $this->assertFalse($notifSettings->invoice_generated);
+        $this->assertFalse($notifSettings->customer_registered);
+        $this->assertFalse($notifSettings->daily_summary);
+
+        // Even if explicitly enabled in DB, LowStockAlert & InvoiceGenerated do not route via mail
+        $notifSettings->update(['low_stock_alert' => true, 'invoice_generated' => true]);
+
+        $productA = Product::factory()->create([
+            'name' => 'Low Stock Change Probe A ' . uniqid(),
+            'price' => 1500.00,
+            'stock' => 6,
+            'stock_quantity' => 6,
+            'low_stock_threshold' => 4,
+            'track_inventory' => true,
+            'force_in_stock' => false,
+            'status' => 'active',
+        ]);
+
+        $productB = Product::factory()->create([
+            'name' => 'Low Stock Change Probe B ' . uniqid(),
+            'price' => 2200.00,
+            'stock' => 5,
+            'stock_quantity' => 5,
+            'low_stock_threshold' => 4,
+            'track_inventory' => true,
+            'force_in_stock' => false,
+            'status' => 'active',
+        ]);
+
+        // 1. Product update + stock drops (low stock and zero stock) create in-app StockAlert but send zero emails/notifications
+        $productA->update(['name' => $productA->name . ' Updated', 'price' => 1550.00]);
+        $productA->adjustStock(4, 'out', $admin->id, ['reason' => 'Stock check adjustment']);
+        $productA->syncStockFields(0);
+
+        $alert = StockAlert::where('product_id', $productA->id)->latest('id')->first();
+        $this->assertNotNull($alert);
+        $this->assertSame([], (new LowStockAlert($alert))->via($admin));
+
+        // 2. Admin order status change (triggers deductStock & checkStockLevel) + item replacement send zero emails/notifications
+        $existingOrder = Order::create([
+            'order_number' => 'ORD-NOEMAIL-' . strtoupper(uniqid()),
+            'customer_name' => 'Internal Update Client',
+            'customer_email' => 'internal@example.test',
+            'customer_phone' => '0611223344',
+            'shipping_city' => 'Casablanca',
+            'shipping_address' => '10 Rue Test',
+            'shipping_zip' => '20000',
+            'subtotal' => 2200,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'total' => 2200,
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'payment_method' => 'cod',
+            'tax_mode' => 'ht',
+            'delivery_type' => 'ozon',
+        ]);
+
+        $orderItem = OrderItem::create([
+            'order_id' => $existingOrder->id,
+            'product_id' => $productB->id,
+            'product_name' => $productB->name,
+            'product_sku' => $productB->sku ?: 'SKU-B',
+            'price' => 2200,
+            'quantity' => 2,
+            'subtotal' => 4400,
+        ]);
+
+        $this->actingAs($admin)
+            ->postJson(route('orders.quick-status', $existingOrder), ['status' => 'delivered'])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $productC = Product::factory()->create([
+            'name' => 'Replacement Product C ' . uniqid(),
+            'price' => 900.00,
+            'stock' => 2,
+            'stock_quantity' => 2,
+            'low_stock_threshold' => 4,
+            'track_inventory' => true,
+            'force_in_stock' => false,
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($admin)
+            ->postJson(route('orders.items.replace', [$existingOrder, $orderItem]), [
+                'product_id' => $productC->id,
+                'quantity' => 1,
+                'price' => 900,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertSame([], (new InvoiceGenerated(new \App\Models\Invoice()))->via($admin));
+
+        Notification::assertNothingSent();
+        Mail::assertNothingSent();
+
+        // 3. Website checkout still sends NewOrderNotification to configured admin recipient(s)
+        $webProduct = Product::factory()->create([
+            'name' => 'Website Order Email Probe ' . uniqid(),
+            'price' => 1200.00,
+            'stock' => 4,
+            'stock_quantity' => 4,
+            'low_stock_threshold' => 5,
+            'track_inventory' => true,
+            'force_in_stock' => false,
+            'status' => 'active',
+        ]);
+
+        $checkoutResponse = $this->withSession([
+            'cart' => [
+                (string) $webProduct->id => [
+                    'product_id' => $webProduct->id,
+                    'name' => $webProduct->name,
+                    'price' => (float) $webProduct->price,
+                    'quantity' => 2,
+                ],
+            ],
+        ])->post(route('checkout.store'), [
+            'customer_name' => 'Website Buyer',
+            'customer_email' => 'buyer@example.test',
+            'customer_phone' => '0677889900',
+            'customer_phone_confirmation' => '0677889900',
+            'delivery_method' => 'delivery',
+            'shipping_city' => 'Casablanca',
+            'shipping_address' => '99 Bd Zerktouni',
+        ]);
+
+        $checkoutResponse->assertRedirect();
+
+        Mail::assertSent(NewOrderNotification::class, function (NewOrderNotification $mail) {
+            return $mail->hasTo('orders-alert@winashop.ma');
+        });
+        Mail::assertSent(OrderConfirmation::class, function (OrderConfirmation $mail) {
+            return $mail->hasTo('buyer@example.test');
+        });
+        Notification::assertNothingSent();
     }
 }
 

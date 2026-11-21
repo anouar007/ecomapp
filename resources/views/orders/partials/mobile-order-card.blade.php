@@ -56,7 +56,7 @@
             @php $mobTaxMode = $order->normalized_tax_mode; @endphp
             <div class="dropdown d-inline-block mt-1">
                 <button type="button"
-                        class="tax-mode-pill tax-mode-{{ $mobTaxMode }} dropdown-toggle mt-1"
+                        class="tax-mode-pill tax-mode-{{ $mobTaxMode }} dropdown-toggle"
                         data-bs-toggle="dropdown"
                         data-bs-auto-close="true"
                         data-bs-boundary="viewport"
@@ -178,23 +178,25 @@
         @endif
     </div>
 
-    <!-- Order Items Preview Snippet -->
+    <!-- Zone 3: Order Items Preview Snippet + Depot -->
     @php
         $firstItem = $order->items->first();
         $totalItemsCount = $order->items->count();
+        $mobStores = $order->items->pluck('store')->filter()->unique('id');
+        $mobUnassigned = $order->items->whereNull('store_id')->isNotEmpty();
     @endphp
     @if($firstItem)
         <div class="mobile-order-item-snippet">
-            <div style="width: 46px; height: 46px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 3px; display: flex; align-items: center; justify-content: center;">
                 <img src="{{ $firstItem->product_image }}" 
-                     alt="{{ $firstItem->product_name }}" 
+                     alt="{{ $firstItem->clean_product_name }}" 
                      style="width: 100%; height: 100%; object-fit: contain;"
                      onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
                      loading="lazy">
             </div>
             <div class="min-w-0 flex-grow-1">
                 <div class="mobile-order-item-name-clamp">
-                    {{ $firstItem->product_name }}
+                    {{ $firstItem->clean_product_name }}
                     @if($firstItem->variant_name)
                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal ms-1" style="font-size: 0.65rem;">{{ $firstItem->variant_name }}</span>
                     @endif
@@ -208,16 +210,26 @@
                         </span>
                     @endif
                 </div>
+                @if($mobStores->isNotEmpty() || $mobUnassigned)
+                    <div class="mobile-order-item-depot">
+                        @foreach($mobStores as $mst)
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.66rem;">
+                                <i class="fas fa-warehouse me-1"></i>{{ $mst->name }}
+                            </span>
+                        @endforeach
+                        @if($mobUnassigned)
+                            <a href="{{ route('orders.show', $order) }}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-0.5 text-decoration-none" style="font-size: 0.66rem;">
+                                <i class="fas fa-store-slash me-1"></i>Dépôt à affecter
+                            </a>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
     @endif
 
-    <!-- Tags Row: Items Count, Interactive Delivery Status, Payment Method -->
-    <div class="mobile-order-tags">
-        <span class="mobile-order-items-pill">
-            <i class="fas fa-box text-muted me-1"></i>{{ $totalItemsCount }} article{{ $totalItemsCount > 1 ? 's' : '' }}
-        </span>
-
+    <!-- Zone 4: Interactive Controls Row (Status, Delivery Type, Payment Method) -->
+    <div class="mobile-order-controls-row">
         <!-- Delivery Status Pill (Interactive Quick Switcher) -->
         <div class="dropdown d-inline-block">
             <button type="button" 
@@ -281,28 +293,90 @@
             </ul>
         </div>
 
-        @if($order->payment_method)
-            <span class="mobile-order-badge" style="background: #f8fafc; color: #475569; border: 1px solid #e2e8f0;">
-                <i class="fas fa-wallet text-muted me-1"></i>{{ ucfirst(str_replace('_', ' ', $order->payment_method)) }}
-            </span>
-        @endif
         @php
-            $mobStores = $order->items->pluck('store')->filter()->unique('id');
-            $mobUnassigned = $order->items->whereNull('store_id')->isNotEmpty();
+            $mobDeliveryType = $order->effective_delivery_type;
+            $mobDeliveryIcon = match ($mobDeliveryType) {
+                'our_team' => 'fa-people-carry-box',
+                'ozon' => 'fa-box-open',
+                default => 'fa-store',
+            };
         @endphp
-        @foreach($mobStores as $mst)
-            <span class="mobile-order-badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">
-                <i class="fas fa-warehouse me-1"></i>{{ $mst->name }}
+        <div class="dropdown d-inline-block">
+            <button type="button"
+                    class="delivery-type-pill delivery-type-{{ $mobDeliveryType }} dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    data-bs-auto-close="true"
+                    data-bs-boundary="viewport"
+                    data-bs-popper-config='{"strategy":"fixed"}'
+                    aria-expanded="false"
+                    id="mob-delivery-pill-{{ $order->id }}"
+                    title="Changer le type de livraison">
+                <i class="fas {{ $mobDeliveryIcon }}" id="mob-delivery-icon-{{ $order->id }}"></i>
+                <span id="mob-delivery-label-{{ $order->id }}">{{ $order->effective_delivery_type_label }}</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <ul class="dropdown-menu shadow-lg border rounded-3 p-1.5 status-dropdown-menu text-start" aria-labelledby="mob-delivery-pill-{{ $order->id }}">
+                <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Type de livraison</li>
+                <li>
+                    <button type="button" data-delivery-type="store" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobDeliveryType === 'store' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'store')">
+                        <span><span class="status-dot delivery-dot-store me-1.5"></span> Store</span>
+                        @if($mobDeliveryType === 'store') <i class="fas fa-check text-dark small"></i> @endif
+                    </button>
+                </li>
+                <li>
+                    <button type="button" data-delivery-type="our_team" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobDeliveryType === 'our_team' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'our_team')">
+                        <span><span class="status-dot delivery-dot-our_team me-1.5"></span> Our Team</span>
+                        @if($mobDeliveryType === 'our_team') <i class="fas fa-check text-primary small"></i> @endif
+                    </button>
+                </li>
+                <li>
+                    <button type="button" data-delivery-type="ozon" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobDeliveryType === 'ozon' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'delivery_type', 'ozon')">
+                        <span><span class="status-dot delivery-dot-ozon me-1.5"></span> Ozon</span>
+                        @if($mobDeliveryType === 'ozon') <i class="fas fa-check text-warning small"></i> @endif
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        @if($order->payment_method)
+            @php
+                $mobPayMethodLabel = match(strtolower((string) $order->payment_method)) {
+                    'cod', 'cash_on_delivery' => 'À la livraison',
+                    'cash' => 'Espèces',
+                    'card' => 'Carte',
+                    'virement', 'bank_transfer' => 'Virement',
+                    'credit' => 'Crédit',
+                    'other' => 'Autre',
+                    default => ucfirst(str_replace('_', ' ', (string) $order->payment_method)),
+                };
+            @endphp
+            <span class="mobile-order-badge mobile-order-payment-pill ms-auto" style="background: rgba(255, 255, 255, 0.88); color: #475569; border: 1px solid #cbd5e1;">
+                <i class="fas fa-wallet text-muted"></i><span>{{ $mobPayMethodLabel }}</span>
             </span>
-        @endforeach
-        @if($mobUnassigned && $totalItemsCount > 0)
-            <a href="{{ route('orders.show', $order) }}" class="mobile-order-badge text-decoration-none" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a;">
-                <i class="fas fa-store-slash me-1"></i>Dépôt à affecter
-            </a>
         @endif
     </div>
 
-    <!-- Bottom Actions Toolbar -->
+    <!-- Zone 5a: Staff Attribution (Creator / First Confirmer) -->
+    @if($order->createdByUser || !$order->isPosOrder() || ($order->confirmedByUser && (int) $order->confirmed_by !== (int) $order->created_by))
+        <div class="mobile-order-staff-row {{ (!$order->createdByUser && !$order->confirmedByUser) ? 'd-none' : '' }}" id="mob-staff-row-{{ $order->id }}">
+            @if($order->createdByUser)
+                <span class="order-staff-chip is-creator" title="Créée par {{ $order->createdByUser->name }}">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Créée : {{ $order->createdByUser->name }}</span>
+                </span>
+            @endif
+            @if(!$order->isPosOrder() || ($order->confirmedByUser && (int) $order->confirmed_by !== (int) $order->created_by))
+                <span class="order-staff-chip is-confirmed {{ $order->confirmedByUser ? '' : 'd-none' }}"
+                      id="mob-confirmed-by-{{ $order->id }}"
+                      title="{{ $order->confirmedByUser ? 'Confirmée par ' . $order->confirmedByUser->name : '' }}">
+                    <i class="fas fa-user-check"></i>
+                    <span id="mob-confirmed-name-{{ $order->id }}">{{ $order->confirmedByUser ? 'Confirmée : ' . $order->confirmedByUser->name : '' }}</span>
+                </span>
+            @endif
+        </div>
+    @endif
+
+    <!-- Zone 5b: Bottom Actions Toolbar -->
     <div class="mobile-order-toolbar">
         <div>
             @if($order->invoice)
@@ -316,8 +390,8 @@
                     <span>Devis</span>
                 </a>
             @else
-                <span class="text-muted small" style="font-size: 0.72rem;">
-                    <i class="fas fa-receipt text-muted me-1"></i>#{{ substr($order->order_number, -6) }}
+                <span class="mobile-order-items-pill">
+                    <i class="fas fa-box text-muted me-1"></i>{{ $totalItemsCount }} article{{ $totalItemsCount > 1 ? 's' : '' }}
                 </span>
             @endif
         </div>

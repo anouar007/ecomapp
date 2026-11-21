@@ -38,8 +38,10 @@ class NotificationSetting extends Model
             ['user_id' => $userId],
             [
                 'order_placed' => true,
-                'invoice_generated' => true,
-                'low_stock_alert' => true,
+                'invoice_generated' => false,
+                'low_stock_alert' => false,
+                'customer_registered' => false,
+                'daily_summary' => false,
             ]
         );
     }

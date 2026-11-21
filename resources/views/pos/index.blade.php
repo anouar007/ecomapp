@@ -1138,6 +1138,57 @@
     box-shadow: 0 1px 3px rgba(234, 88, 12, 0.35);
 }
 
+.pos-delivery-toggle-group {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 3px;
+}
+
+.pos-delivery-toggle-btn {
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 6px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    line-height: 1.2;
+}
+
+.pos-delivery-toggle-btn:hover {
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.pos-delivery-toggle-btn.active[data-delivery-type="store"] {
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+}
+
+.pos-delivery-toggle-btn.active[data-delivery-type="our_team"] {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.32);
+}
+
+.pos-delivery-toggle-btn.active[data-delivery-type="ozon"] {
+    background: #d97706;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(217, 119, 6, 0.32);
+}
+
 .order-totals {
     background: #ffffff;
     padding: 10px 14px 12px;
@@ -1558,6 +1609,29 @@
                     </div>
                 </div>
 
+                <div class="mt-2 pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                    <input type="hidden" id="orderDeliveryType" value="store">
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span style="font-size: 11.5px; color: #334155; font-weight: 700; line-height: 1.25;">
+                            <i class="fas fa-shipping-fast me-1 text-danger"></i> Type de livraison
+                        </span>
+                    </div>
+                    <div class="pos-delivery-toggle-group" id="posDeliveryTypeGroup" role="group" aria-label="Type de livraison">
+                        <button type="button" class="pos-delivery-toggle-btn active" data-delivery-type="store" onclick="setPosDeliveryType('store')">
+                            <i class="fas fa-store"></i>
+                            <span>Store</span>
+                        </button>
+                        <button type="button" class="pos-delivery-toggle-btn" data-delivery-type="our_team" onclick="setPosDeliveryType('our_team')">
+                            <i class="fas fa-people-carry-box"></i>
+                            <span>Our Team</span>
+                        </button>
+                        <button type="button" class="pos-delivery-toggle-btn" data-delivery-type="ozon" onclick="setPosDeliveryType('ozon')">
+                            <i class="fas fa-box-open"></i>
+                            <span>Ozon</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-color: #f1f5f9 !important;">
                     <input type="hidden" id="orderTaxMode" value="ht">
                     <div style="font-size: 11.5px; color: #334155; font-weight: 700;">
@@ -1729,6 +1803,7 @@ window.holdCurrentCart = function() {
         partialPaidAmount: document.getElementById('partialPaidAmount')?.value || '',
         paymentDueDate: document.getElementById('paymentDueDate')?.value || '',
         orderStatus: document.getElementById('orderStatus')?.value || 'delivered',
+        deliveryType: document.getElementById('orderDeliveryType')?.value || 'store',
         taxMode: document.getElementById('orderTaxMode')?.value || 'ht',
         notes: document.getElementById('orderNotes')?.value || '',
         total: window.posState.currentTotal,
@@ -1744,6 +1819,7 @@ window.holdCurrentCart = function() {
     if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
     togglePartialPaymentBox();
     setPosOrderStatus('delivered');
+    setPosDeliveryType('store');
     setPosTaxMode('ht');
     document.getElementById('orderNotes').value = '';
     resetCustomerFields();
@@ -1818,6 +1894,7 @@ window.resumeHeldOrder = function(idx) {
     if (document.getElementById('paymentDueDate') && held.paymentDueDate) document.getElementById('paymentDueDate').value = held.paymentDueDate;
     togglePartialPaymentBox();
     setPosOrderStatus(held.orderStatus || 'delivered');
+    setPosDeliveryType(held.deliveryType || 'store');
     setPosTaxMode(held.taxMode || 'ht');
     document.getElementById('orderNotes').value = held.notes || '';
     renderCart();
@@ -1981,6 +2058,8 @@ function renderMobileConfirmSummary() {
     const partialDueDate = (document.getElementById('paymentDueDate')?.value || '').trim();
     const orderStatus = document.getElementById('orderStatus')?.value || 'delivered';
     const orderStatusBadgeHtml = formatPosStatusBadgeHtml(orderStatus);
+    const orderDeliveryType = document.getElementById('orderDeliveryType')?.value || 'store';
+    const orderDeliveryBadgeHtml = formatPosDeliveryBadgeHtml(orderDeliveryType);
     const orderTaxMode = document.getElementById('orderTaxMode')?.value || 'ht';
     const orderTaxBadgeHtml = formatPosTaxBadgeHtml(orderTaxMode);
     const notes = (document.getElementById('orderNotes')?.value || '').trim();
@@ -2045,7 +2124,7 @@ function renderMobileConfirmSummary() {
                 <button type="button" onclick="goToMobileStep(4)" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px;">Modifier</button>
             </div>
             <div class="fw-bold text-dark">${methodLabels[method] || method}</div>
-            <div class="small mt-1 d-flex align-items-center gap-1.5 flex-wrap" style="color:#334155;"><span>Statut :</span> ${orderStatusBadgeHtml} <span class="ms-1">Régime :</span> ${orderTaxBadgeHtml}</div>
+            <div class="small mt-1 d-flex align-items-center gap-1.5 flex-wrap" style="color:#334155;"><span>Statut :</span> ${orderStatusBadgeHtml} <span class="ms-1">Livraison :</span> ${orderDeliveryBadgeHtml} <span class="ms-1">Régime :</span> ${orderTaxBadgeHtml}</div>
             ${partialHtml}
             ${changeHtml}
             ${notes ? `<div class="text-muted small mt-1"><i class="fas fa-sticky-note me-1"></i>${escapeHtml(notes)}</div>` : ''}
@@ -2839,6 +2918,33 @@ window.formatPosTaxBadgeHtml = function(taxMode) {
     return `<span class="tax-mode-pill tax-mode-${mode}">${label}</span>`;
 };
 
+window.POS_DELIVERY_TYPE_META = {
+    store:    { label: 'Store',    icon: 'fa-store',            bg: '#f1f5f9', color: '#0f172a', border: '#cbd5e1' },
+    our_team: { label: 'Our Team', icon: 'fa-people-carry-box', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+    ozon:     { label: 'Ozon',     icon: 'fa-box-open',         bg: '#fffbeb', color: '#b45309', border: '#fde68a' }
+};
+
+window.formatPosDeliveryBadgeHtml = function(deliveryType) {
+    const key = String(deliveryType || 'store').toLowerCase();
+    const meta = window.POS_DELIVERY_TYPE_META[key] || window.POS_DELIVERY_TYPE_META.store;
+    return `<span class="badge d-inline-flex align-items-center gap-1" style="background:${meta.bg};color:${meta.color};border:1px solid ${meta.border};padding:2px 9px;font-size:11px;font-weight:700;"><i class="fas ${meta.icon}"></i> ${escapeHtml(meta.label)}</span>`;
+};
+
+window.setPosDeliveryType = function(deliveryType) {
+    const raw = String(deliveryType || 'store').toLowerCase();
+    const nextType = window.POS_DELIVERY_TYPE_META[raw] ? raw : 'store';
+    const inputEl = document.getElementById('orderDeliveryType');
+    if (inputEl) {
+        inputEl.value = nextType;
+    }
+    document.querySelectorAll('#posDeliveryTypeGroup .pos-delivery-toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.deliveryType === nextType);
+    });
+    if (window.posState?.mobileStep === 5 && typeof renderMobileConfirmSummary === 'function') {
+        renderMobileConfirmSummary();
+    }
+};
+
 window.setPosTaxMode = function(mode) {
     const nextMode = String(mode || 'ht').toLowerCase() === 'ttc' ? 'ttc' : 'ht';
     const inputEl = document.getElementById('orderTaxMode');
@@ -3177,6 +3283,7 @@ window.checkout = function() {
         paid_amount: isPartialPayment ? partialPaidAmount : null,
         payment_due_date: isPartialPayment ? paymentDueDate : null,
         status: document.getElementById('orderStatus')?.value || 'delivered',
+        delivery_type: document.getElementById('orderDeliveryType')?.value || 'store',
         tax_mode: document.getElementById('orderTaxMode')?.value || 'ht',
         notes: document.getElementById('orderNotes')?.value || null,
         discount_amount: parseFloat(document.getElementById('discountAmount')?.value) || 0,
@@ -3249,6 +3356,7 @@ window.checkout = function() {
                ${data.order.payment_due_date ? `<p class="mb-1"><strong>Échéance :</strong> ${escapeHtml(data.order.payment_due_date)}</p>` : ''}`
             : '';
         const statusLabelHtml = formatPosStatusBadgeHtml(data.order.status || 'delivered');
+        const deliveryTypeBadgeHtml = formatPosDeliveryBadgeHtml(data.order.delivery_type || 'store');
         const taxModeBadgeHtml = formatPosTaxBadgeHtml(data.order.tax_mode || 'ht');
         const savedClientHtml = (saveCustomer && data.customer)
             ? `<p class="mb-0 text-success small"><i class="fas fa-user-check me-1"></i>Client enregistré : <strong>${escapeHtml(data.customer.name)}</strong></p>`
@@ -3261,6 +3369,7 @@ window.checkout = function() {
                 <div class="text-start p-2 rounded bg-light border mb-2">
                     <p class="mb-1"><strong>Commande :</strong> #${escapeHtml(data.order.order_number)}</p>
                     <p class="mb-1"><strong>Statut :</strong> ${statusLabelHtml}</p>
+                    <p class="mb-1"><strong>Livraison :</strong> ${deliveryTypeBadgeHtml}</p>
                     <p class="mb-1"><strong>Régime :</strong> ${taxModeBadgeHtml}</p>
                     <p class="mb-1"><strong>Total commande :</strong> <strong class="text-danger">${formatCurrency(data.order.total)}</strong></p>
                     ${partialOrderHtml}
@@ -3288,6 +3397,7 @@ window.checkout = function() {
             if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
             togglePartialPaymentBox();
             setPosOrderStatus('delivered');
+            setPosDeliveryType('store');
             setPosTaxMode('ht');
             document.getElementById('orderNotes').value = '';
             resetCustomerFields();

@@ -1,0 +1,330 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\Store;
+use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
+
+class PosDeliveryTypeTest extends TestCase
+{
+    use DatabaseTransactions;
+
+    protected function makeAdmin(): User
+    {
+        Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+        $admin = User::factory()->create(['status' => 'active']);
+        $admin->assignRole('Admin');
+
+        return $admin;
+    }
+
+    public function test_pos_page_renders_delivery_type_section_under_order_status(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $res = $this->actingAs($admin)->get(route('pos.index'));
+
+        $res->assertStatus(200)
+            ->assertSee('Statut commande')
+            ->assertSee('Type de livraison')
+            ->assertSee('id="orderDeliveryType"', false)
+            ->assertSee('id="posDeliveryTypeGroup"', false)
+            ->assertSee('Store')
+            ->assertSee('Our Team')
+            ->assertSee('Ozon');
+    }
+
+    public function test_pos_checkout_defaults_to_store_and_persists_our_team_or_ozon(): void
+    {
+        $admin = $this->makeAdmin();
+        $store = Store::where('is_active', true)->first() ?? Store::create([
+            'name' => 'Dépôt Delivery Type Test',
+            'code' => 'DELIV-TEST-01',
+            'is_active' => true,
+        ]);
+
+        $product = Product::factory()->create([
+            'name' => 'POS Delivery Type Product ' . uniqid(),
+            'price' => 500.00,
+            'stock' => 25,
+            'track_inventory' => false,
+            'force_in_stock' => true,
+            'status' => 'active',
+        ]);
+
+        $defaultRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Store Default',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $defaultRes->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('order.delivery_type', 'store')
+            ->assertJsonPath('order.delivery_type_label', 'Store');
+
+        $teamRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Our Team',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'our_team',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $teamRes->assertStatus(200)
+            ->assertJsonPath('order.delivery_type', 'our_team')
+            ->assertJsonPath('order.delivery_type_label', 'Our Team');
+
+        $ozonRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Ozon',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'ozon',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $ozonRes->assertStatus(200)
+            ->assertJsonPath('order.delivery_type', 'ozon')
+            ->assertJsonPath('order.delivery_type_label', 'Ozon');
+
+        $ozonOrder = Order::findOrFail($ozonRes->json('order.id'));
+        $this->assertSame('ozon', $ozonOrder->normalized_delivery_type);
+        $this->assertSame('Ozon', $ozonOrder->delivery_type_label);
+
+        $invalidRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Invalid Delivery',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'invalid_carrier',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $invalidRes->assertStatus(422);
+    }
+
+    public function test_orders_views_and_update_support_delivery_type(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $order = Order::create([
+            'customer_name' => 'POS Delivery Views Client',
+            'shipping_address' => 'Vente en boutique (POS)',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '00000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 300,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'discount' => 0,
+            'total' => 300,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'ozon',
+            'status' => 'delivered',
+            'stock_deducted' => false,
+            'payment_status' => 'paid',
+            'payment_method' => 'cash',
+            'notes' => 'Vente POS',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('orders.show', $order))
+            ->assertStatus(200)
+            ->assertSee('Ozon');
+
+        $this->actingAs($admin)
+            ->get(route('orders.pos'))
+            ->assertStatus(200)
+            ->assertSee('Ozon');
+
+        $this->actingAs($admin)
+            ->put(route('orders.update', $order), [
+                'status' => 'delivered',
+                'payment_status' => 'paid',
+                'tax_mode' => 'ht',
+                'delivery_type' => 'our_team',
+                'payment_method' => 'cash',
+            ])
+            ->assertRedirect(route('orders.show', $order));
+
+        $order->refresh();
+        $this->assertSame('our_team', $order->normalized_delivery_type);
+        $this->assertSame('Our Team', $order->delivery_type_label);
+    }
+
+    public function test_website_checkout_defaults_delivery_type_to_ozon_for_delivery_and_store_for_pickup(): void
+    {
+        Mail::fake();
+
+        $product = Product::factory()->create([
+            'name' => 'Website Delivery Default Product ' . uniqid(),
+            'price' => 800.00,
+            'stock' => 20,
+            'track_inventory' => false,
+            'force_in_stock' => true,
+            'status' => 'active',
+        ]);
+
+        // 1. Standard delivery checkout -> defaults to ozon
+        $delivRes = $this->withSession([
+            'cart' => [
+                (string) $product->id => [
+                    'product_id' => $product->id,
+                    'name' => $product->name,
+                    'price' => (float) $product->price,
+                    'quantity' => 1,
+                ],
+            ],
+        ])->post(route('checkout.store'), [
+            'customer_name' => 'Website Ozon Client',
+            'customer_email' => 'web-ozon@example.test',
+            'customer_phone' => '0611223344',
+            'customer_phone_confirmation' => '0611223344',
+            'delivery_method' => 'delivery',
+            'shipping_address' => '15 Bd Zerktouni',
+            'shipping_city' => 'Casablanca',
+        ]);
+        $delivRes->assertRedirect();
+
+        $delivOrder = Order::where('customer_email', 'web-ozon@example.test')->latest('id')->firstOrFail();
+        $this->assertSame('ozon', $delivOrder->normalized_delivery_type);
+        $this->assertSame('Ozon', $delivOrder->delivery_type_label);
+
+        // 2. Retrait au magasin pickup checkout -> defaults to store
+        $pickupRes = $this->withSession([
+            'cart' => [
+                (string) $product->id => [
+                    'product_id' => $product->id,
+                    'name' => $product->name,
+                    'price' => (float) $product->price,
+                    'quantity' => 1,
+                ],
+            ],
+        ])->post(route('checkout.store'), [
+            'customer_name' => 'Website Store Pickup Client',
+            'customer_email' => 'web-pickup@example.test',
+            'customer_phone' => '0655667788',
+            'customer_phone_confirmation' => '0655667788',
+            'delivery_method' => 'pickup_casablanca',
+            'shipping_city' => 'Casablanca',
+        ]);
+        $pickupRes->assertRedirect();
+
+        $pickupOrder = Order::where('customer_email', 'web-pickup@example.test')->latest('id')->firstOrFail();
+        $this->assertSame('store', $pickupOrder->normalized_delivery_type);
+        $this->assertSame('Store', $pickupOrder->delivery_type_label);
+    }
+
+    public function test_website_orders_page_lists_filters_and_quick_updates_delivery_type(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $webOzon = Order::create([
+            'customer_name' => 'Web Ozon Client',
+            'shipping_address' => '10 Avenue Hassan II',
+            'shipping_city' => 'Rabat',
+            'shipping_zip' => '10000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 450,
+            'tax' => 0,
+            'shipping_cost' => 40,
+            'discount' => 0,
+            'total' => 490,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'ozon',
+            'status' => 'pending',
+            'stock_deducted' => false,
+            'payment_status' => 'pending',
+            'payment_method' => 'cod',
+        ]);
+
+        $webTeam = Order::create([
+            'customer_name' => 'Web Team Client',
+            'shipping_address' => '22 Rue Maarif',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 600,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'discount' => 0,
+            'total' => 600,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'our_team',
+            'status' => 'processing',
+            'stock_deducted' => false,
+            'payment_status' => 'pending',
+            'payment_method' => 'cod',
+        ]);
+
+        // Renders interactive desktop, mobile & detail pills on website orders + detail page
+        $this->actingAs($admin)
+            ->get(route('orders.index'))
+            ->assertStatus(200)
+            ->assertSee('id="dt-delivery-pill-' . $webOzon->id . '"', false)
+            ->assertSee('id="mob-delivery-pill-' . $webOzon->id . '"', false)
+            ->assertSee('Ozon')
+            ->assertSee('Our Team');
+
+        // Filtering website orders by delivery_type works accurately
+        $this->actingAs($admin)
+            ->get(route('orders.index', ['delivery_type' => 'our_team']))
+            ->assertStatus(200)
+            ->assertSee('Web Team Client')
+            ->assertDontSee('Web Ozon Client');
+
+        // Quick-status updates delivery_type cleanly without changing order status or tax_mode
+        $quickRes = $this->actingAs($admin)->postJson(route('orders.quick-status', $webOzon), [
+            'delivery_type' => 'our_team',
+            'channel' => 'website',
+        ]);
+
+        $quickRes->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('order.status', 'pending')
+            ->assertJsonPath('order.tax_mode', 'ht')
+            ->assertJsonPath('order.delivery_type', 'our_team')
+            ->assertJsonPath('order.delivery_type_label', 'Our Team');
+
+        $webOzon->refresh();
+        $this->assertSame('our_team', $webOzon->normalized_delivery_type);
+        $this->assertSame('pending', $webOzon->status);
+
+        // Order detail page renders interactive show-delivery-pill and tile
+        $this->actingAs($admin)
+            ->get(route('orders.show', $webOzon))
+            ->assertStatus(200)
+            ->assertSee('id="show-delivery-pill-' . $webOzon->id . '"', false)
+            ->assertSee('Our Team');
+    }
+}

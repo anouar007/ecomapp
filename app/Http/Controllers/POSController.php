@@ -214,6 +214,7 @@ class POSController extends Controller
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
             'payment_due_date' => ['nullable', 'date'],
             'status' => ['nullable', 'string', 'in:delivered,pending,en_demande,reserved,processing,shipped'],
+            'delivery_type' => ['nullable', 'string', 'in:store,our_team,ozon'],
             'tax_mode' => ['nullable', 'string', 'in:ttc,ht'],
             'notes' => ['nullable', 'string', 'max:500'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
@@ -472,6 +473,8 @@ class POSController extends Controller
 
             $notes = trim((string) ($validated['notes'] ?? ''));
             $orderStatus = $validated['status'] ?? 'delivered';
+            $rawDeliveryType = strtolower((string) ($validated['delivery_type'] ?? 'store'));
+            $orderDeliveryType = array_key_exists($rawDeliveryType, Order::DELIVERY_TYPES) ? $rawDeliveryType : 'store';
             $orderTaxMode = strtolower((string) ($validated['tax_mode'] ?? 'ht')) === 'ttc' ? 'ttc' : 'ht';
             $shouldDeductStock = $orderStatus === 'delivered';
             $orderPaymentStatus = $isPartialPayment
@@ -480,6 +483,7 @@ class POSController extends Controller
 
             $order = Order::create([
                 'user_id' => Auth::id(),
+                'created_by' => Auth::id(),
                 'customer_id' => $customer?->id,
                 'customer_name' => $customerName,
                 'customer_email' => $customerEmail ?? $customer?->email,
@@ -494,6 +498,7 @@ class POSController extends Controller
                 'discount' => $totalDiscount,
                 'total' => $total,
                 'tax_mode' => $orderTaxMode,
+                'delivery_type' => $orderDeliveryType,
                 'paid_amount' => $paidNow,
                 'remaining_amount' => $remainingAmount,
                 'status' => $orderStatus,
@@ -673,6 +678,8 @@ class POSController extends Controller
                     'status' => $order->status,
                     'tax_mode' => $order->normalized_tax_mode,
                     'tax_mode_label' => $order->tax_mode_label,
+                    'delivery_type' => $order->normalized_delivery_type,
+                    'delivery_type_label' => $order->delivery_type_label,
                     'stock_deducted' => (bool) $order->stock_deducted,
                     'total' => (float) $order->total,
                     'paid_amount' => (float) $order->paid_amount,
@@ -681,6 +688,8 @@ class POSController extends Controller
                     'payment_due_date' => $order->payment_due_date?->format('d/m/Y'),
                     'discount' => (float) $order->discount,
                     'payment_method' => $order->payment_method,
+                    'created_by' => $order->created_by,
+                    'created_by_name' => Auth::user()?->name,
                     'show_url' => route('orders.show', $order),
                     'receipt_url' => route('pos.receipt', $order),
                 ],

@@ -20,7 +20,8 @@ class InvoiceGenerated extends Notification
 
     public function via($notifiable)
     {
-        return ['mail'];
+        // Admin automatic emails are restricted strictly to new website orders.
+        return [];
     }
 
     public function toMail($notifiable)

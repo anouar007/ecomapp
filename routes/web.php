@@ -137,6 +137,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:access_pos|manage_orders|view_orders')->group(function () {
         Route::get('orders/pos', [\App\Http\Controllers\OrderController::class, 'posOrders'])->name('orders.pos');
     });
+    Route::middleware('permission:access_pos|manage_orders|view_orders|create_orders|edit_orders')->group(function () {
+        Route::get('orders/staff-stats', [\App\Http\Controllers\OrderController::class, 'staffStats'])->name('orders.staff-stats');
+    });
     Route::middleware('permission:manage_orders|view_orders')->group(function () {
         Route::get('orders', [\App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
