@@ -445,6 +445,19 @@ class OrderEmailNotificationTest extends TestCase
         $this->assertNotFalse(\Illuminate\Support\Facades\Event::until(
             new \Illuminate\Mail\Events\MessageSending($allowedOrderEmail, [])
         ));
+
+        // 5. Seeded/placeholder domains (e.g. admin@speed.com) are stripped from recipients and blocked at transport layer
+        Setting::set('order_notification_email', 'admin@speed.com, orders-alert@winashop.ma, test@example.com', 'string', 'email');
+        $this->assertSame(['orders-alert@winashop.ma'], MailConfigService::getOrderNotificationRecipients());
+
+        $blockedSeedDomainEmail = (new \Symfony\Component\Mime\Email())
+            ->to('admin@speed.com')
+            ->subject('🔔 [Wina Shop] Nouvelle Commande #ORD-TEST (2 420,00 DH)')
+            ->text('Should be blocked because speed.com is a seeded domain');
+        $blockedSeedDomainEmail->getHeaders()->addTextHeader('X-Wina-Mail-Type', 'website-new-order');
+        $this->assertFalse(\Illuminate\Support\Facades\Event::until(
+            new \Illuminate\Mail\Events\MessageSending($blockedSeedDomainEmail, [])
+        ));
     }
 }
 

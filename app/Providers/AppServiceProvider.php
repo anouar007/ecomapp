@@ -139,9 +139,14 @@ class AppServiceProvider extends ServiceProvider
             $targetsProtectedAdmin = false;
             foreach ($allRecipients as $address) {
                 $addr = mb_strtolower(trim((string) $address->getAddress()));
-                if ($addr !== '' && isset($protectedEmails[$addr])) {
+                if ($addr === '') {
+                    continue;
+                }
+                if (\App\Services\MailConfigService::isBlockedPlaceholderEmail($addr)) {
+                    return false;
+                }
+                if (isset($protectedEmails[$addr])) {
                     $targetsProtectedAdmin = true;
-                    break;
                 }
             }
 
@@ -179,8 +184,10 @@ class AppServiceProvider extends ServiceProvider
                 \App::setLocale($locale);
             }
 
-            // Dynamically configure SMTP mail settings from database
-            \App\Services\MailConfigService::applyConfig();
+            // Dynamically configure SMTP mail settings from database (keep phpunit array mailer during test boot)
+            if (!$this->app->environment('testing')) {
+                \App\Services\MailConfigService::applyConfig();
+            }
         } catch (\Throwable $e) {
             // Fail silently during early setup/migrations
         }

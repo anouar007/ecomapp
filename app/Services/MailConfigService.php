@@ -54,6 +54,36 @@ class MailConfigService
     }
 
     /**
+     * Determine whether an email belongs to a seeded/placeholder/unroutable domain.
+     */
+    public static function isBlockedPlaceholderEmail(string $email): bool
+    {
+        $clean = mb_strtolower(trim($email));
+        if ($clean === '' || !str_contains($clean, '@')) {
+            return false;
+        }
+
+        $domain = substr(strrchr($clean, '@') ?: '', 1);
+        if ($domain === '') {
+            return false;
+        }
+
+        if (in_array($domain, [
+            'speed.com',
+            'wina.com',
+            'wina.local',
+            'example.com',
+            'example.net',
+            'example.org',
+            'localhost',
+        ], true)) {
+            return true;
+        }
+
+        return str_ends_with($domain, '.local') || str_ends_with($domain, '.invalid');
+    }
+
+    /**
      * Get the list of recipient emails for new order notifications.
      */
     public static function getOrderNotificationRecipients(): array
@@ -72,7 +102,7 @@ class MailConfigService
         $clean = [];
         foreach ($emails as $email) {
             $email = trim($email);
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL) && !self::isBlockedPlaceholderEmail($email)) {
                 $clean[] = $email;
             }
         }
