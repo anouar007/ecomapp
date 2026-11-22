@@ -161,9 +161,10 @@
                     $stTotalUnits = $st->total_units;
                 @endphp
                 <a href="{{ route('stores.stock', array_merge(request()->except(['page', 'store_id']), ['store_id' => $st->id])) }}" 
-                   class="chip-store {{ $isActiveStore ? 'active' : '' }}">
-                    <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse text-purple' : 'fa-shop text-primary' }}"></i>
-                    <span>{{ $st->name }}</span>
+                   class="chip-store {{ $st->has_custom_colors ? 'store-box-themed' : '' }} {{ $isActiveStore ? 'active' : '' }}"
+                   style="{{ $st->has_custom_colors ? $st->box_style : '' }}">
+                    <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse' : 'fa-shop' }}" style="color: {{ $st->resolved_badge_text_color }};"></i>
+                    <span class="store-theme-text">{{ $st->name }}</span>
                     <span class="badge bg-light text-dark border rounded-pill px-1.5" style="font-size: 0.65rem;">
                         {{ number_format($stTotalUnits, 0, ',', ' ') }} pcs
                     </span>
@@ -290,11 +291,12 @@
                                         $qty = $stockRecord ? $stockRecord->quantity : 0;
                                         $loc = $stockRecord ? $stockRecord->location_code : null;
                                     @endphp
-                                    <div class="store-stock-pill-badge {{ $qty > 0 ? 'border-primary-subtle' : 'opacity-75' }}">
+                                    <div class="store-stock-pill-badge store-box-themed {{ $qty > 0 ? '' : 'opacity-75' }}"
+                                         style="{{ $st->box_style }}">
                                         <div class="d-flex align-items-center gap-1.5">
-                                            <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse text-purple' : 'fa-shop text-primary' }}"></i>
-                                            <span class="fw-semibold text-dark">{{ $st->name }} :</span>
-                                            <span class="badge {{ $qty > 0 ? 'bg-primary text-white' : 'bg-light text-muted border' }} rounded-pill px-2 py-0.5">
+                                            <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse' : 'fa-shop' }}"></i>
+                                            <span class="fw-semibold store-theme-text">{{ $st->name }} :</span>
+                                            <span class="badge {{ $qty > 0 ? 'bg-white text-dark border' : 'bg-light text-muted border' }} rounded-pill px-2 py-0.5">
                                                 {{ $qty }} pcs
                                             </span>
                                         </div>
@@ -381,10 +383,10 @@
                             $stQty = $stRecord ? $stRecord->quantity : 0;
                             $stLoc = $stRecord ? $stRecord->location_code : null;
                         @endphp
-                        <div class="d-flex align-items-center justify-content-between text-muted" style="font-size: 0.76rem;">
+                        <div class="d-flex align-items-center justify-content-between rounded-2 px-2 py-1 border store-box-themed mb-1" style="font-size: 0.76rem; {{ $st->box_style }}">
                             <div class="d-flex align-items-center gap-1.5 text-truncate" style="max-width: 65%;">
-                                <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse text-purple' : 'fa-shop text-primary' }}" style="width: 14px;"></i>
-                                <span class="fw-medium text-dark text-truncate">{{ $st->name }}</span>
+                                <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse' : 'fa-shop' }}" style="width: 14px;"></i>
+                                <span class="fw-semibold store-theme-text text-truncate">{{ $st->name }}</span>
                             </div>
                             <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
                                 <span class="badge {{ $stQty > 0 ? 'bg-primary' : 'bg-white text-muted border' }} rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">

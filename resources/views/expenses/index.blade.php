@@ -550,7 +550,7 @@
                                     <span>• Réf: <span class="font-monospace">{{ $e->reference_number }}</span></span>
                                 @endif
                                 @if($e->store)
-                                    <span>• <span class="badge bg-light text-secondary border">{{ $e->store->name }}</span></span>
+                                    <span>• <span class="badge store-badge-themed border" style="{{ $e->store->badge_style }}">{{ $e->store->name }}</span></span>
                                 @else
                                     <span>• <span class="badge bg-light text-muted border">Siège / Général</span></span>
                                 @endif

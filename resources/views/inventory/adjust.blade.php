@@ -209,11 +209,17 @@
                                     $stQty = (int) ($rec->quantity ?? 0);
                                 @endphp
                                 <button type="button"
-                                        class="inv-transfer-store-card is-adjust {{ (int) $selectedStoreId === (int) $st->id ? 'active' : '' }} {{ $stQty > 0 ? 'is-has-stock' : 'is-empty' }}"
+                                        class="inv-transfer-store-card is-adjust {{ $st->has_custom_colors ? 'store-box-themed' : '' }} {{ (int) $selectedStoreId === (int) $st->id ? 'active' : '' }} {{ $stQty > 0 ? 'is-has-stock' : 'is-empty' }}"
+                                        style="{{ $st->has_custom_colors ? $st->box_style : '' }}"
                                         data-store-id="{{ $st->id }}"
                                         onclick="selectStoreForAdjust({{ $st->id }})">
                                     <div class="inv-store-card-top">
-                                        <span class="inv-store-name">{{ $st->name }}</span>
+                                        <span class="inv-store-name">
+                                            @unless($st->has_custom_colors)
+                                                <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:{{ $st->resolved_badge_text_color }};margin-right:4px;"></span>
+                                            @endunless
+                                            {{ $st->name }}
+                                        </span>
                                         <i class="fas fa-check-circle inv-store-check"></i>
                                     </div>
                                     <div class="inv-store-card-meta">
@@ -476,13 +482,14 @@
                             $stLoc = $stRec->location_code ?? null;
                             $stMin = (int) ($stRec->min_quantity ?? 2);
                         @endphp
-                        <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3 bg-light border">
+                        <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3 border {{ $st->has_custom_colors ? 'store-box-themed' : 'bg-light' }}"
+                             style="{{ $st->has_custom_colors ? $st->box_style : '' }}">
                             <div class="min-w-0">
-                                <div class="fw-semibold text-dark small text-truncate">{{ $st->name }}</div>
-                                <div class="text-muted" style="font-size: 0.7rem;">
+                                <div class="fw-semibold text-dark store-theme-text small text-truncate">{{ $st->name }}</div>
+                                <div class="text-muted store-theme-muted" style="font-size: 0.7rem;">
                                     <span class="font-monospace">{{ $st->code }}</span>
                                     @if($stLoc)
-                                        · <span class="text-primary font-monospace"><i class="fas fa-map-pin me-0.5"></i>{{ $stLoc }}</span>
+                                        · <span class="font-monospace"><i class="fas fa-map-pin me-0.5"></i>{{ $stLoc }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -490,7 +497,7 @@
                                 <span class="badge {{ $stQty <= 0 ? 'bg-danger' : ($stQty <= $stMin ? 'bg-warning text-dark' : 'bg-success') }} rounded-pill px-2 py-1">
                                     {{ $stQty }} u.
                                 </span>
-                                <button type="button" class="btn btn-xs btn-outline-dark rounded-pill px-2 py-0.5" style="font-size: 0.7rem;" onclick="selectStoreForAdjust({{ $st->id }})">
+                                <button type="button" class="btn btn-xs btn-light border text-dark rounded-pill px-2 py-0.5" style="font-size: 0.7rem;" onclick="selectStoreForAdjust({{ $st->id }})">
                                     Cibler
                                 </button>
                             </div>

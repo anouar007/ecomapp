@@ -446,6 +446,9 @@
             'name' => $st->name,
             'code' => $st->code,
             'type' => $st->type,
+            'badge_bg_color' => $st->resolved_badge_bg_color,
+            'badge_text_color' => $st->resolved_badge_text_color,
+            'badge_border_color' => $st->resolved_border_color,
         ];
     }
 
@@ -557,9 +560,12 @@
                 const pills = orderStores.map(st => {
                     const info = map[st.id];
                     const qty = info ? info.qty : 0;
-                    const cls = qty > 0 ? 'bg-success-subtle text-success border-success-subtle' : 'bg-light text-muted border';
+                    const bg = escapeHtml(st.badge_bg_color || '#eff6ff');
+                    const txt = escapeHtml(st.badge_text_color || '#1d4ed8');
+                    const bdr = escapeHtml(st.badge_border_color || 'rgba(29, 78, 216, 0.32)');
+                    const opacity = qty > 0 ? '1' : '0.6';
                     const loc = info?.location ? ` (${escapeHtml(info.location)})` : '';
-                    return `<span class="badge ${cls} border me-1 mb-1">${escapeHtml(st.name)}: <strong>${qty}</strong>${loc}</span>`;
+                    return `<span class="badge border me-1 mb-1" style="background-color:${bg};color:${txt};border-color:${bdr} !important;opacity:${opacity};">${escapeHtml(st.name)}: <strong>${qty}</strong>${loc}</span>`;
                 }).join('');
                 hint.innerHTML = `<i class="fas fa-warehouse text-primary me-1"></i>Disponibilité par dépôt : ${pills}`;
                 hint.classList.remove('d-none');

@@ -103,18 +103,22 @@ class StoreController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'       => ['required', 'string', 'max:150'],
-            'code'       => ['required', 'string', 'max:50', 'unique:stores,code'],
-            'type'       => ['required', 'in:store,warehouse,showroom,workshop'],
-            'city'       => ['nullable', 'string', 'max:100'],
-            'address'    => ['nullable', 'string', 'max:255'],
-            'phone'      => ['nullable', 'string', 'max:50'],
-            'email'      => ['nullable', 'email', 'max:100'],
-            'is_active'  => ['boolean'],
-            'is_default' => ['boolean'],
-            'notes'      => ['nullable', 'string'],
+            'name'             => ['required', 'string', 'max:150'],
+            'code'             => ['required', 'string', 'max:50', 'unique:stores,code'],
+            'type'             => ['required', 'in:store,warehouse,showroom,workshop'],
+            'badge_bg_color'   => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'badge_text_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'city'             => ['nullable', 'string', 'max:100'],
+            'address'          => ['nullable', 'string', 'max:255'],
+            'phone'            => ['nullable', 'string', 'max:50'],
+            'email'            => ['nullable', 'email', 'max:100'],
+            'is_active'        => ['boolean'],
+            'is_default'       => ['boolean'],
+            'notes'            => ['nullable', 'string'],
         ]);
 
+        $validated['badge_bg_color'] = Store::sanitizeHexColor($validated['badge_bg_color'] ?? null);
+        $validated['badge_text_color'] = Store::sanitizeHexColor($validated['badge_text_color'] ?? null);
         $validated['is_active'] = $request->has('is_active');
         $validated['is_default'] = $request->has('is_default');
 
@@ -133,18 +137,22 @@ class StoreController extends Controller
     public function update(Request $request, Store $store)
     {
         $validated = $request->validate([
-            'name'       => ['required', 'string', 'max:150'],
-            'code'       => ['required', 'string', 'max:50', 'unique:stores,code,' . $store->id],
-            'type'       => ['required', 'in:store,warehouse,showroom,workshop'],
-            'city'       => ['nullable', 'string', 'max:100'],
-            'address'    => ['nullable', 'string', 'max:255'],
-            'phone'      => ['nullable', 'string', 'max:50'],
-            'email'      => ['nullable', 'email', 'max:100'],
-            'is_active'  => ['boolean'],
-            'is_default' => ['boolean'],
-            'notes'      => ['nullable', 'string'],
+            'name'             => ['required', 'string', 'max:150'],
+            'code'             => ['required', 'string', 'max:50', 'unique:stores,code,' . $store->id],
+            'type'             => ['required', 'in:store,warehouse,showroom,workshop'],
+            'badge_bg_color'   => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'badge_text_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'city'             => ['nullable', 'string', 'max:100'],
+            'address'          => ['nullable', 'string', 'max:255'],
+            'phone'            => ['nullable', 'string', 'max:50'],
+            'email'            => ['nullable', 'email', 'max:100'],
+            'is_active'        => ['boolean'],
+            'is_default'       => ['boolean'],
+            'notes'            => ['nullable', 'string'],
         ]);
 
+        $validated['badge_bg_color'] = Store::sanitizeHexColor($validated['badge_bg_color'] ?? null);
+        $validated['badge_text_color'] = Store::sanitizeHexColor($validated['badge_text_color'] ?? null);
         $validated['is_active'] = $request->has('is_active');
         $validated['is_default'] = $request->has('is_default');
 

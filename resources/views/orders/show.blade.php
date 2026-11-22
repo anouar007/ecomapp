@@ -342,6 +342,9 @@
                                             class="delivery-type-pill delivery-type-{{ $showDeliveryType }} dropdown-toggle"
                                             data-bs-toggle="dropdown"
                                             data-bs-auto-close="true"
+                                            data-shipping-cost="{{ round((float) ($order->shipping_cost ?? 0), 2) }}"
+                                            data-suggested-shipping="{{ \App\Services\DeliveryService::getDeliveryCost($order->shipping_city, 40.0) }}"
+                                            data-shipping-city="{{ $order->shipping_city ?? '' }}"
                                             aria-expanded="false"
                                             id="show-delivery-pill-{{ $order->id }}"
                                             title="Changer le type de livraison">
@@ -395,7 +398,7 @@
                                 <div class="text-muted text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em; font-weight: 700;">
                                     Total <span id="show-mobile-tax-label">{{ $order->tax_mode_label }}</span> &bull; {{ $order->items->sum('quantity') }} article{{ $order->items->sum('quantity') > 1 ? 's' : '' }}
                                 </div>
-                                <div class="order-mobile-hero-amount">{{ currency($order->total) }}</div>
+                                <div class="order-mobile-hero-amount" id="show-mobile-hero-total">{{ currency($order->total) }}</div>
                             </div>
                             @if($order->customer_phone)
                                 <div class="d-flex align-items-center gap-2 flex-shrink-0">
@@ -464,9 +467,9 @@
                     <i class="fas fa-coins text-danger"></i>
                     <span>Total <span id="show-kpi-tax-label">{{ $order->tax_mode_label }}</span></span>
                 </div>
-                <div class="order-show-kpi-value order-money-strong text-danger">{{ currency($order->total) }}</div>
+                <div class="order-show-kpi-value order-money-strong text-danger" id="show-kpi-total">{{ currency($order->total) }}</div>
                 <div class="order-show-kpi-sub">
-                    Livraison : <strong>{{ $order->shipping_cost > 0 ? currency($order->shipping_cost) : 'Gratuite' }}</strong>
+                    Livraison : <strong id="show-kpi-shipping">{{ $order->shipping_cost > 0 ? currency($order->shipping_cost) : 'Gratuite' }}</strong>
                     @if($order->discount > 0)
                         &bull; Remise : <strong class="text-success">-{{ currency($order->discount) }}</strong>
                     @endif
@@ -484,7 +487,7 @@
                 </div>
                 <div class="order-show-kpi-sub">
                     @if((float) ($order->remaining_amount ?? 0) > 0)
-                        Reste : <strong class="text-danger">{{ currency($order->remaining_amount) }}</strong>
+                        Reste : <strong class="text-danger" id="show-kpi-remaining">{{ currency($order->remaining_amount) }}</strong>
                     @else
                         {{ $showPayFullText }}
                     @endif
@@ -845,7 +848,7 @@
                                             </div>
                                             <div class="mt-1 d-flex align-items-center gap-1 flex-wrap item-store-meta" id="item-store-meta-{{ $item->id }}">
                                                 @if($item->store)
-                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;">
+                                                    <span class="badge store-badge-themed" style="font-size: 0.68rem; {{ $item->store->badge_style }}">
                                                         <i class="fas fa-warehouse me-1"></i>{{ $item->store->name }}
                                                     </span>
                                                     @if($assignedStockRow?->location_code)
@@ -1159,7 +1162,7 @@
 
                     <div class="d-flex justify-content-between align-items-center text-secondary small">
                         <span>Frais de livraison</span>
-                        <span class="fw-semibold text-dark">{{ $order->shipping_cost > 0 ? currency($order->shipping_cost) : 'Gratuit' }}</span>
+                        <span class="fw-semibold text-dark" id="show-summary-shipping">{{ $order->shipping_cost > 0 ? currency($order->shipping_cost) : 'Gratuit' }}</span>
                     </div>
 
                     @if($order->discount > 0)
@@ -1171,7 +1174,7 @@
 
                     <div class="order-total-highlight d-flex justify-content-between align-items-center mt-1">
                         <span class="order-money-strong text-dark fs-6">Total <span id="show-total-tax-label">{{ $order->tax_mode_label }}</span></span>
-                        <span class="order-money-strong text-danger fs-4">{{ currency($order->total) }}</span>
+                        <span class="order-money-strong text-danger fs-4" id="show-summary-total">{{ currency($order->total) }}</span>
                     </div>
 
                     @if((float) ($order->remaining_amount ?? 0) > 0 && (float) $order->total > 0)
@@ -1181,7 +1184,7 @@
                         <div class="order-info-tile mt-1">
                             <div class="d-flex justify-content-between small mb-1">
                                 <span class="text-muted">Réglé : <strong class="text-success">{{ currency($order->paid_amount ?? 0) }}</strong></span>
-                                <span class="text-muted">Reste : <strong class="text-danger">{{ currency($order->remaining_amount) }}</strong></span>
+                                <span class="text-muted">Reste : <strong class="text-danger" id="show-summary-remaining">{{ currency($order->remaining_amount) }}</strong></span>
                             </div>
                             <div class="progress" style="height: 6px; border-radius: 999px; background: #e2e8f0;">
                                 <div class="progress-bar bg-success" role="progressbar" style="width: {{ $paidProgressPct }}%;" aria-valuenow="{{ $paidProgressPct }}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -1413,7 +1416,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="text-muted">Reste à payer :</span>
-                            <span class="fw-bold text-danger">{{ currency($order->remaining_amount ?? 0) }}</span>
+                            <span class="fw-bold text-danger" id="show-payment-remaining">{{ currency($order->remaining_amount ?? 0) }}</span>
                         </div>
                         @if($order->payment_due_date)
                             @php
@@ -1789,7 +1792,10 @@ function initOrderShow() {
                         const locBadge = data.item.location_code
                             ? `<span class="badge bg-light text-secondary border" style="font-size: 0.68rem;"><i class="fas fa-map-pin text-danger me-1"></i>${data.item.location_code}</span>`
                             : '';
-                        metaEl.innerHTML = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;"><i class="fas fa-warehouse me-1"></i>${data.item.store_name}</span>${locBadge}`;
+                        const bg = data.item.store_badge_bg || '#eff6ff';
+                        const txt = data.item.store_badge_text || '#1d4ed8';
+                        const bdr = data.item.store_badge_border || 'rgba(29, 78, 216, 0.32)';
+                        metaEl.innerHTML = `<span class="badge store-badge-themed" style="font-size: 0.68rem; background-color: ${bg}; color: ${txt}; border-color: ${bdr};"><i class="fas fa-warehouse me-1"></i>${data.item.store_name}</span>${locBadge}`;
                     } else {
                         metaEl.innerHTML = `<span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.68rem;"><i class="fas fa-exclamation-circle me-1"></i>Dépôt à attribuer</span>`;
                     }
@@ -2023,13 +2029,88 @@ window.quickUpdateShowTaxMode = async function(orderId, value) {
 window.quickUpdateShowDeliveryType = async function(orderId, value) {
     const pill = document.getElementById(`show-delivery-pill-${orderId}`);
     if (pill) {
-        pill.style.opacity = '0.6';
-        pill.style.pointerEvents = 'none';
         if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
             bootstrap.Dropdown.getInstance(pill)?.hide();
         }
         pill.classList.remove('show');
         pill.closest('.dropdown')?.querySelector('.dropdown-menu')?.classList.remove('show');
+    }
+
+    let shippingCostPayload = 0;
+    if (value !== 'store') {
+        const labels = { our_team: 'Livreur', ozon: 'Ozon', autre: 'Autre', store: 'Store' };
+        const typeLabel = labels[value] || value;
+        const curShip = parseFloat(pill?.dataset.shippingCost ?? '0') || 0;
+        const sugShip = parseFloat(pill?.dataset.suggestedShipping ?? '40') || 40;
+        const cityName = pill?.dataset.shippingCity || '';
+        const defaultPrice = curShip > 0 ? curShip : (sugShip > 0 ? sugShip : 40);
+        const presets = Array.from(new Set([0, 20, 30, 40, sugShip].filter(v => !Number.isNaN(v) && v >= 0))).sort((a, b) => a - b);
+
+        if (typeof Swal !== 'undefined') {
+            const presetHtml = presets.map(p =>
+                `<button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 fw-semibold swal-ship-preset" data-price="${p}" style="font-size:0.78rem;">${p} DH</button>`
+            ).join('');
+            const cityHint = cityName ? `<div class="text-muted small mb-2"><i class="fas fa-map-marker-alt text-danger me-1"></i>Ville : <strong>${cityName}</strong></div>` : '';
+            const resPrompt = await Swal.fire({
+                title: `Frais de livraison — ${typeLabel}`,
+                html: `
+                    ${cityHint}
+                    <div class="input-group input-group-lg mb-2.5">
+                        <input type="number" id="swal-show-shipping-input" class="form-control fw-bold text-center" step="0.01" min="0" value="${defaultPrice}" placeholder="0.00">
+                        <span class="input-group-text fw-bold bg-light">DH</span>
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-center gap-1.5 mt-2">${presetHtml}</div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-check me-1"></i> Enregistrer',
+                cancelButtonText: 'Annuler',
+                confirmButtonColor: '#dc2626',
+                focusConfirm: false,
+                didOpen: () => {
+                    const inp = document.getElementById('swal-show-shipping-input');
+                    if (inp) {
+                        inp.focus();
+                        inp.select();
+                        inp.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                Swal.clickConfirm();
+                            }
+                        });
+                    }
+                    document.querySelectorAll('.swal-ship-preset').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            if (inp) {
+                                inp.value = btn.dataset.price;
+                                inp.focus();
+                            }
+                        });
+                    });
+                },
+                preConfirm: () => {
+                    const inp = document.getElementById('swal-show-shipping-input');
+                    const val = parseFloat(String(inp ? inp.value : '').replace(',', '.'));
+                    if (Number.isNaN(val) || val < 0) {
+                        Swal.showValidationMessage('Veuillez saisir un prix de livraison valide (≥ 0 DH).');
+                        return false;
+                    }
+                    return Math.round(val * 100) / 100;
+                }
+            });
+            if (!resPrompt.isConfirmed) return;
+            shippingCostPayload = resPrompt.value;
+        } else {
+            const raw = window.prompt(`Prix de livraison (${typeLabel}) en DH :`, String(defaultPrice));
+            if (raw === null) return;
+            const parsed = parseFloat(String(raw).replace(',', '.'));
+            if (Number.isNaN(parsed) || parsed < 0) return;
+            shippingCostPayload = Math.round(parsed * 100) / 100;
+        }
+    }
+
+    if (pill) {
+        pill.style.opacity = '0.6';
+        pill.style.pointerEvents = 'none';
     }
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
@@ -2041,7 +2122,7 @@ window.quickUpdateShowDeliveryType = async function(orderId, value) {
                 'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json',
             },
-            body: JSON.stringify({ delivery_type: value }),
+            body: JSON.stringify({ delivery_type: value, shipping_cost: shippingCostPayload }),
         });
         const data = await res.json();
         if (!res.ok || !data.success || !data.order) {
@@ -2060,6 +2141,9 @@ window.quickUpdateShowDeliveryType = async function(orderId, value) {
 
         if (pill) {
             pill.className = `delivery-type-pill delivery-type-${dt} dropdown-toggle`;
+            if (data.order.shipping_cost !== undefined) {
+                pill.dataset.shippingCost = String(data.order.shipping_cost);
+            }
             const iconEl = document.getElementById(`show-delivery-icon-${orderId}`);
             if (iconEl) iconEl.className = `fas ${info.icon}`;
             const lbl = document.getElementById(`show-delivery-label-${orderId}`);
@@ -2084,6 +2168,31 @@ window.quickUpdateShowDeliveryType = async function(orderId, value) {
         if (tileIcon) tileIcon.className = `fas ${info.icon}`;
         const tileLbl = document.getElementById('show-delivery-tile-label');
         if (tileLbl) tileLbl.textContent = finalLabel;
+
+        // Live-update shipping cost, order totals & remaining amounts
+        if (data.order.total_formatted) {
+            ['show-mobile-hero-total', 'show-kpi-total', 'show-summary-total'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = data.order.total_formatted;
+            });
+        }
+        if (data.order.shipping_cost_formatted) {
+            const sumShip = document.getElementById('show-summary-shipping');
+            if (sumShip) sumShip.textContent = data.order.shipping_cost_formatted;
+        }
+        if (data.order.shipping_cost_formatted_fem) {
+            const kpiShip = document.getElementById('show-kpi-shipping');
+            if (kpiShip) kpiShip.textContent = data.order.shipping_cost_formatted_fem;
+        }
+        if (data.order.remaining_amount_formatted) {
+            ['show-kpi-remaining', 'show-summary-remaining', 'show-payment-remaining'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = data.order.remaining_amount_formatted;
+            });
+        }
+        if (typeof ORDER_REPLACE_CTX !== 'undefined' && data.order.total !== undefined) {
+            ORDER_REPLACE_CTX.orderTotal = Number(data.order.total);
+        }
 
         if (typeof Swal !== 'undefined') {
             Swal.fire({
@@ -2223,7 +2332,15 @@ function renderReplacementResults(products) {
 
     box.innerHTML = products.map((p, idx) => {
         const storeBadges = Array.isArray(p.store_stocks) && p.store_stocks.length
-            ? p.store_stocks.map(s => `<span class="badge ${s.quantity > 0 ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-muted border'}" style="font-size:0.65rem;">${escapeReplaceHtml(s.store_name)}: ${s.quantity}</span>`).join(' ')
+            ? p.store_stocks.map(s => {
+                if (s.quantity > 0) {
+                    const bg = escapeReplaceHtml(s.badge_bg_color || '#eff6ff');
+                    const txt = escapeReplaceHtml(s.badge_text_color || '#1d4ed8');
+                    const bdr = escapeReplaceHtml(s.badge_border_color || 'rgba(29, 78, 216, 0.32)');
+                    return `<span class="badge border" style="font-size:0.65rem;background-color:${bg};color:${txt};border-color:${bdr} !important;">${escapeReplaceHtml(s.store_name)}: ${s.quantity}</span>`;
+                }
+                return `<span class="badge bg-light text-muted border" style="font-size:0.65rem;">${escapeReplaceHtml(s.store_name)}: ${s.quantity}</span>`;
+            }).join(' ')
             : `<span class="badge bg-light text-secondary border" style="font-size:0.65rem;">Stock global : ${p.stock}</span>`;
         const isOut = p.track_inventory && !p.force_in_stock && p.stock <= 0;
         return `

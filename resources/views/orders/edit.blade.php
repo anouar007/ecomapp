@@ -142,10 +142,13 @@
                             <label for="delivery_type" class="form-label fw-semibold text-dark">
                                 Type de livraison
                             </label>
-                            <select id="delivery_type" name="delivery_type" class="form-select fw-semibold @error('delivery_type') is-invalid @enderror">
-                                @php $editDeliveryType = old('delivery_type', $order->normalized_delivery_type); @endphp
+                            @php
+                                $editDeliveryType = old('delivery_type', $order->normalized_delivery_type);
+                                $editSuggestedShipping = \App\Services\DeliveryService::getDeliveryCost($order->shipping_city, 40.0);
+                            @endphp
+                            <select id="delivery_type" name="delivery_type" data-suggested-shipping="{{ $editSuggestedShipping }}" class="form-select fw-semibold @error('delivery_type') is-invalid @enderror">
                                 <option value="" {{ empty($editDeliveryType) ? 'selected' : '' }}>— Non spécifié —</option>
-                                <option value="store" {{ $editDeliveryType === 'store' ? 'selected' : '' }}>Store</option>
+                                <option value="store" {{ $editDeliveryType === 'store' ? 'selected' : '' }}>Store (0 DH)</option>
                                 <option value="our_team" {{ $editDeliveryType === 'our_team' ? 'selected' : '' }}>Livreur</option>
                                 <option value="ozon" {{ $editDeliveryType === 'ozon' ? 'selected' : '' }}>Ozon</option>
                                 <option value="autre" {{ $editDeliveryType === 'autre' ? 'selected' : '' }}>Autre</option>
@@ -155,6 +158,40 @@
                             </div>
                             @error('delivery_type')
                                 <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Frais de livraison -->
+                        <div class="col-12 col-sm-6">
+                            <label for="shipping_cost" class="form-label fw-semibold text-dark">
+                                Frais de livraison (DH)
+                            </label>
+                            <div class="input-group">
+                                <input type="number"
+                                       step="0.01"
+                                       min="0"
+                                       id="shipping_cost"
+                                       name="shipping_cost"
+                                       value="{{ old('shipping_cost', number_format((float) ($order->shipping_cost ?? 0), 2, '.', '')) }}"
+                                       {{ $editDeliveryType === 'store' ? 'readonly' : '' }}
+                                       class="form-control fw-bold @error('shipping_cost') is-invalid @enderror">
+                                <span class="input-group-text fw-semibold">DH</span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-1 mt-1.5" id="edit-shipping-presets">
+                                @foreach(collect([0, 20, 30, 40, $editSuggestedShipping])->unique()->sort()->values() as $presetCost)
+                                    <button type="button"
+                                            class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0 fw-semibold edit-ship-preset-btn"
+                                            style="font-size: 0.7rem;"
+                                            data-price="{{ $presetCost }}">
+                                        {{ $presetCost }} DH
+                                    </button>
+                                @endforeach
+                            </div>
+                            <div class="form-text small text-muted mt-1" id="edit-shipping-hint">
+                                {{ $editDeliveryType === 'store' ? 'Store sélectionné : frais automatiquement fixés à 0 DH.' : 'Le total de la commande est recalculé automatiquement.' }}
+                            </div>
+                            @error('shipping_cost')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
@@ -420,6 +457,38 @@ function syncOrderEditStatusColor(sel) {
                 paySelect.value = 'paid';
             }
         });
+
+        const deliverySelect = document.getElementById('delivery_type');
+        const shippingInput = document.getElementById('shipping_cost');
+        const shippingHint = document.getElementById('edit-shipping-hint');
+        if (deliverySelect && shippingInput) {
+            deliverySelect.addEventListener('change', function () {
+                const val = this.value;
+                const suggested = parseFloat(this.dataset.suggestedShipping || '40') || 40;
+                if (val === 'store') {
+                    shippingInput.value = '0.00';
+                    shippingInput.readOnly = true;
+                    if (shippingHint) shippingHint.textContent = 'Store sélectionné : frais automatiquement fixés à 0 DH.';
+                } else {
+                    shippingInput.readOnly = false;
+                    if (shippingHint) shippingHint.textContent = 'Saisissez ou confirmez le prix de livraison — le total sera recalculé automatiquement.';
+                    const current = parseFloat(shippingInput.value || '0') || 0;
+                    if (current === 0 && val !== '') {
+                        shippingInput.value = suggested.toFixed(2);
+                    }
+                    shippingInput.focus();
+                    shippingInput.select();
+                }
+            });
+            document.querySelectorAll('.edit-ship-preset-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (deliverySelect.value === 'store') return;
+                    const p = parseFloat(btn.dataset.price || '0') || 0;
+                    shippingInput.value = p.toFixed(2);
+                    shippingInput.focus();
+                });
+            });
+        }
     }
 
     if (document.readyState === 'loading') {

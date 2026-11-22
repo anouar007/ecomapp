@@ -355,8 +355,8 @@
                             <div class="text-muted d-flex align-items-center gap-1.5 flex-wrap" style="font-size: 0.72rem;">
                                 <span><i class="fas fa-credit-card me-1 opacity-50"></i>{{ $trx->payment_method_label }}</span>
                                 @if($trx->store)
-                                    <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
-                                        <i class="fas fa-store me-1 text-primary"></i>{{ $trx->store->name }}
+                                    <span class="badge store-badge-themed border rounded-pill px-2 py-0.5" style="font-size: 0.65rem; {{ $trx->store->badge_style }}">
+                                        <i class="fas fa-store me-1"></i>{{ $trx->store->name }}
                                     </span>
                                 @endif
                             </div>

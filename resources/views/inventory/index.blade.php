@@ -196,7 +196,8 @@
                 <h1 class="brand-title">
                     Inventaire &amp; Stocks
                     @if($selectedStore)
-                        <span class="badge bg-dark text-white rounded-pill ms-1.5 align-middle" style="font-size: 0.72rem;">
+                        <span class="badge {{ $selectedStore->has_custom_colors ? 'store-badge-themed' : 'bg-dark text-white' }} rounded-pill ms-1.5 align-middle"
+                              style="font-size: 0.72rem; {{ $selectedStore->has_custom_colors ? $selectedStore->badge_style : '' }}">
                             <i class="fas {{ $selectedStore->type === 'warehouse' ? 'fa-warehouse' : 'fa-store' }} me-1"></i>{{ $selectedStore->name }}
                         </span>
                     @endif
@@ -304,16 +305,17 @@
                     $isActiveStore = (int) $selectedStoreId === (int) $st->id;
                     $stUnits = (int) ($storeUnitStats->get($st->id)->total_units ?? 0);
                     $stIcon = match($st->type) {
-                        'warehouse' => 'fa-warehouse text-danger',
-                        'showroom' => 'fa-tv text-info',
-                        'workshop' => 'fa-wrench text-warning',
-                        default => 'fa-shop text-primary',
+                        'warehouse' => 'fa-warehouse',
+                        'showroom' => 'fa-tv',
+                        'workshop' => 'fa-wrench',
+                        default => 'fa-shop',
                     };
                 @endphp
                 <a href="{{ route('inventory.index', array_merge(request()->except(['page', 'store_id']), ['store_id' => $st->id])) }}"
-                   class="chip-store {{ $isActiveStore ? 'active' : '' }}">
-                    <i class="fas {{ $stIcon }}"></i>
-                    <span>{{ $st->name }}</span>
+                   class="chip-store {{ $st->has_custom_colors ? 'store-box-themed' : '' }} {{ $isActiveStore ? 'active' : '' }}"
+                   style="{{ $st->has_custom_colors ? $st->box_style : '' }}">
+                    <i class="fas {{ $stIcon }}" style="color: {{ $st->resolved_badge_text_color }};"></i>
+                    <span class="store-theme-text">{{ $st->name }}</span>
                     <span class="badge bg-light text-dark border rounded-pill px-1.5" style="font-size: 0.68rem;">
                         {{ number_format($stUnits, 0, ',', ' ') }} pcs
                     </span>
@@ -798,15 +800,16 @@
                                                 $dotColor = $stQty <= 0 ? '#94a3b8' : ($stQty <= $stMin ? '#f59e0b' : '#10b981');
                                             @endphp
                                             <button type="button"
-                                                    class="store-inline-pill"
+                                                    class="store-inline-pill store-badge-themed"
+                                                    style="{{ $st->badge_style }}"
                                                     data-inv-store-pill="{{ $product->id }}-{{ $st->id }}"
                                                     data-store-name="{{ $st->name }}"
                                                     onclick="openAdjustModal({{ $product->id }}, {{ $st->id }})"
                                                     title="Cliquer pour ajuster {{ $st->name }}{{ $stLoc ? ' · ' . $stLoc : '' }}">
                                                 <span data-inv-store-dot style="width: 6px; height: 6px; border-radius: 50%; background: {{ $dotColor }}; display: inline-block;"></span>
                                                 <span class="text-truncate" style="max-width: 85px;">{{ $st->name }}</span>
-                                                <strong class="text-dark" data-inv-store-qty>{{ $stQty }}</strong>
-                                                <span class="text-muted font-monospace {{ $stLoc ? '' : 'd-none' }}" data-inv-store-loc style="font-size: 0.6rem;">{{ $stLoc ? '· ' . $stLoc : '' }}</span>
+                                                <strong data-inv-store-qty>{{ $stQty }}</strong>
+                                                <span class="font-monospace opacity-75 {{ $stLoc ? '' : 'd-none' }}" data-inv-store-loc style="font-size: 0.6rem;">{{ $stLoc ? '· ' . $stLoc : '' }}</span>
                                             </button>
                                         @endforeach
                                     </div>
@@ -980,11 +983,17 @@
                                 </button>
                                 @foreach($stores as $st)
                                     <button type="button"
-                                            class="inv-transfer-store-card is-adjust"
+                                            class="inv-transfer-store-card is-adjust {{ $st->has_custom_colors ? 'store-box-themed' : '' }}"
+                                            style="{{ $st->has_custom_colors ? $st->box_style : '' }}"
                                             data-store-id="{{ $st->id }}"
                                             onclick="selectAdjustStoreCard({{ $st->id }})">
                                         <div class="inv-store-card-top">
-                                            <span class="inv-store-name">{{ $st->name }}</span>
+                                            <span class="inv-store-name">
+                                                @unless($st->has_custom_colors)
+                                                    <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:{{ $st->resolved_badge_text_color }};margin-right:4px;"></span>
+                                                @endunless
+                                                {{ $st->name }}
+                                            </span>
                                             <i class="fas fa-check-circle inv-store-check"></i>
                                         </div>
                                         <div class="inv-store-card-meta">
@@ -1159,11 +1168,17 @@
                                 <div class="inv-transfer-store-grid" id="invTransferFromPills">
                                     @foreach($stores as $idx => $st)
                                         <button type="button"
-                                                class="inv-transfer-store-card is-source {{ $idx === 0 ? 'active' : '' }}"
+                                                class="inv-transfer-store-card is-source {{ $st->has_custom_colors ? 'store-box-themed' : '' }} {{ $idx === 0 ? 'active' : '' }}"
+                                                style="{{ $st->has_custom_colors ? $st->box_style : '' }}"
                                                 data-store-id="{{ $st->id }}"
                                                 onclick="selectTransferStoreCard('from', {{ $st->id }})">
                                             <div class="inv-store-card-top">
-                                                <span class="inv-store-name">{{ $st->name }}</span>
+                                                <span class="inv-store-name">
+                                                    @unless($st->has_custom_colors)
+                                                        <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:{{ $st->resolved_badge_text_color }};margin-right:4px;"></span>
+                                                    @endunless
+                                                    {{ $st->name }}
+                                                </span>
                                                 <i class="fas fa-check-circle inv-store-check"></i>
                                             </div>
                                             <div class="inv-store-card-meta">
@@ -1188,11 +1203,17 @@
                                 <div class="inv-transfer-store-grid" id="invTransferToPills">
                                     @foreach($stores as $idx => $st)
                                         <button type="button"
-                                                class="inv-transfer-store-card is-dest {{ $idx === 1 ? 'active' : '' }}"
+                                                class="inv-transfer-store-card is-dest {{ $st->has_custom_colors ? 'store-box-themed' : '' }} {{ $idx === 1 ? 'active' : '' }}"
+                                                style="{{ $st->has_custom_colors ? $st->box_style : '' }}"
                                                 data-store-id="{{ $st->id }}"
                                                 onclick="selectTransferStoreCard('to', {{ $st->id }})">
                                             <div class="inv-store-card-top">
-                                                <span class="inv-store-name">{{ $st->name }}</span>
+                                                <span class="inv-store-name">
+                                                    @unless($st->has_custom_colors)
+                                                        <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:{{ $st->resolved_badge_text_color }};margin-right:4px;"></span>
+                                                    @endunless
+                                                    {{ $st->name }}
+                                                </span>
                                                 <i class="fas fa-check-circle inv-store-check"></i>
                                             </div>
                                             <div class="inv-store-card-meta">

@@ -895,8 +895,11 @@
                         ? 'À affecter'
                         : ($selectedStoreObj?->name ?? '#' . request('store_id'));
                 @endphp
-                <a href="{{ request()->fullUrlWithQuery(['store_id' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
-                    <i class="fas fa-warehouse text-primary me-0.5"></i> Dépôt : {{ $storeFilterLabel }} <i class="fas fa-times text-muted ms-0.5"></i>
+                <a href="{{ request()->fullUrlWithQuery(['store_id' => null]) }}"
+                   class="badge {{ $selectedStoreObj ? 'store-badge-themed' : 'bg-white text-dark border' }} rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs"
+                   style="{{ $selectedStoreObj ? $selectedStoreObj->badge_style : '' }}"
+                   title="Supprimer ce filtre">
+                    <i class="fas fa-warehouse {{ $selectedStoreObj ? '' : 'text-primary' }} me-0.5"></i> Dépôt : {{ $storeFilterLabel }} <i class="fas fa-times {{ $selectedStoreObj ? '' : 'text-muted' }} ms-0.5"></i>
                 </a>
             @endif
 
@@ -1110,7 +1113,7 @@
                                         @endphp
                                         <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
                                             @foreach($orderStoreBadges as $stBadge)
-                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-0" style="font-size: 0.64rem;" title="{{ $stBadge->name }}">
+                                                <span class="badge store-badge-themed px-1.5 py-0" style="font-size: 0.64rem; {{ $stBadge->badge_style }}" title="{{ $stBadge->name }}">
                                                     <i class="fas fa-warehouse me-0.5"></i>{{ $stBadge->name }}
                                                 </span>
                                             @endforeach
@@ -1127,7 +1130,7 @@
                             @endif
                         </td>
                         <td class="text-end fw-bold text-dark fs-6 font-heading tabular-nums">
-                            <div class="orders-strong">{{ $order->formatted_total }}</div>
+                            <div class="orders-strong" id="dt-order-total-{{ $order->id }}">{{ $order->formatted_total }}</div>
                             @php $orderTaxMode = $order->normalized_tax_mode; @endphp
                             <div class="dropdown d-inline-block mt-1">
                                 <button type="button"
@@ -1159,8 +1162,8 @@
                                 </ul>
                             </div>
                             @if((float) ($order->remaining_amount ?? 0) > 0)
-                                <div class="mt-1">
-                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
+                                <div class="mt-1" id="dt-order-remaining-wrap-{{ $order->id }}">
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5" style="font-size: 0.65rem;" id="dt-order-remaining-{{ $order->id }}">
                                         Reste : {{ currency($order->remaining_amount) }}
                                     </span>
                                     @if($order->payment_due_date)
@@ -1288,6 +1291,9 @@
                                             data-bs-auto-close="true"
                                             data-bs-boundary="viewport"
                                             data-bs-popper-config='{"strategy":"fixed"}'
+                                            data-shipping-cost="{{ round((float) ($order->shipping_cost ?? 0), 2) }}"
+                                            data-suggested-shipping="{{ \App\Services\DeliveryService::getDeliveryCost($order->shipping_city, 40.0) }}"
+                                            data-shipping-city="{{ $order->shipping_city ?? '' }}"
                                             aria-expanded="false"
                                             id="dt-delivery-pill-{{ $order->id }}"
                                             title="Changer le type de livraison">
@@ -1508,11 +1514,100 @@
     /**
      * Quick In-Place Status & Payment Status Updater
      */
-    function quickUpdateOrder(orderId, field, value) {
+    async function promptDeliveryShippingPrice(deliveryType, currentShipping, suggestedShipping, cityName) {
+        const labels = { our_team: 'Livreur', ozon: 'Ozon', autre: 'Autre', store: 'Store' };
+        const typeLabel = labels[deliveryType] || deliveryType;
+        const defaultPrice = currentShipping > 0 ? currentShipping : (suggestedShipping > 0 ? suggestedShipping : 40);
+        const presets = Array.from(new Set([0, 20, 30, 40, suggestedShipping].filter(v => !Number.isNaN(v) && v >= 0))).sort((a, b) => a - b);
+
+        if (typeof Swal === 'undefined') {
+            const raw = window.prompt(`Prix de livraison (${typeLabel}) en DH :`, String(defaultPrice));
+            if (raw === null) return null;
+            const parsed = parseFloat(String(raw).replace(',', '.'));
+            return Number.isNaN(parsed) || parsed < 0 ? null : parsed;
+        }
+
+        const presetHtml = presets.map(p =>
+            `<button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 fw-semibold swal-ship-preset" data-price="${p}" style="font-size:0.78rem;">${p} DH</button>`
+        ).join('');
+
+        const cityHint = cityName ? `<div class="text-muted small mb-2"><i class="fas fa-map-marker-alt text-danger me-1"></i>Ville : <strong>${cityName}</strong></div>` : '';
+
+        const result = await Swal.fire({
+            title: `Frais de livraison — ${typeLabel}`,
+            html: `
+                ${cityHint}
+                <div class="input-group input-group-lg mb-2.5">
+                    <input type="number" id="swal-shipping-cost-input" class="form-control fw-bold text-center" step="0.01" min="0" value="${defaultPrice}" placeholder="0.00">
+                    <span class="input-group-text fw-bold bg-light">DH</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-center gap-1.5 mt-2">${presetHtml}</div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-check me-1"></i> Enregistrer',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#dc2626',
+            focusConfirm: false,
+            didOpen: () => {
+                const inp = document.getElementById('swal-shipping-cost-input');
+                if (inp) {
+                    inp.focus();
+                    inp.select();
+                    inp.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            Swal.clickConfirm();
+                        }
+                    });
+                }
+                document.querySelectorAll('.swal-ship-preset').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (inp) {
+                            inp.value = btn.dataset.price;
+                            inp.focus();
+                        }
+                    });
+                });
+            },
+            preConfirm: () => {
+                const inp = document.getElementById('swal-shipping-cost-input');
+                const val = parseFloat(String(inp ? inp.value : '').replace(',', '.'));
+                if (Number.isNaN(val) || val < 0) {
+                    Swal.showValidationMessage('Veuillez saisir un prix de livraison valide (≥ 0 DH).');
+                    return false;
+                }
+                return Math.round(val * 100) / 100;
+            }
+        });
+
+        return result.isConfirmed ? result.value : null;
+    }
+
+    /**
+     * Quick Update Order Status, Payment Status, Tax Mode or Delivery Type via AJAX
+     */
+    async function quickUpdateOrder(orderId, field, value) {
         if (!orderId || !field || !value) return;
 
         // Auto close dropdown immediately on click
         closeOrderDropdowns(orderId);
+
+        let shippingCostPayload = undefined;
+        if (field === 'delivery_type') {
+            if (value === 'store') {
+                shippingCostPayload = 0;
+            } else {
+                const sourcePill = document.getElementById(`dt-delivery-pill-${orderId}`) || document.getElementById(`mob-delivery-pill-${orderId}`);
+                const curShip = parseFloat(sourcePill?.dataset.shippingCost ?? '0') || 0;
+                const sugShip = parseFloat(sourcePill?.dataset.suggestedShipping ?? '40') || 40;
+                const cityName = sourcePill?.dataset.shippingCity || '';
+                const chosenPrice = await promptDeliveryShippingPrice(value, curShip, sugShip, cityName);
+                if (chosenPrice === null) {
+                    return;
+                }
+                shippingCostPayload = chosenPrice;
+            }
+        }
 
         // Visual loading indicator on triggering pill (using pointerEvents instead of disabled)
         const dtPillId = field === 'status'
@@ -1546,6 +1641,9 @@
                 date_to: urlParams.get('date_to') || '{{ $stats['date_to'] ?? '' }}',
                 date_preset: urlParams.get('date_preset') || ''
             };
+            if (shippingCostPayload !== undefined) {
+                bodyPayload.shipping_cost = shippingCostPayload;
+            }
 
             fetch(`/orders/${orderId}/quick-status`, {
                 method: 'POST',
@@ -1811,6 +1909,9 @@
                 const pillEl = document.getElementById(cfg.pill);
                 if (!pillEl) return;
                 pillEl.className = `delivery-type-pill delivery-type-${dt} dropdown-toggle`;
+                if (order.shipping_cost !== undefined) {
+                    pillEl.dataset.shippingCost = String(order.shipping_cost);
+                }
                 const iconEl = document.getElementById(cfg.icon);
                 if (iconEl) iconEl.className = `fas ${dInfo.icon}`;
                 const lblEl = document.getElementById(cfg.label);
@@ -1828,6 +1929,24 @@
                     });
                 }
             });
+        }
+
+        // --- Order Total & Remaining Amount (updated when shipping_cost changes) ---
+        if (order.total_formatted) {
+            const dtTotalEl = document.getElementById(`dt-order-total-${orderId}`);
+            if (dtTotalEl) dtTotalEl.textContent = order.total_formatted;
+            const mobTotalEl = document.getElementById(`mob-order-total-${orderId}`);
+            if (mobTotalEl) mobTotalEl.textContent = order.total_formatted;
+        }
+        if (order.remaining_amount !== undefined) {
+            const dtRemWrap = document.getElementById(`dt-order-remaining-wrap-${orderId}`);
+            const dtRemEl = document.getElementById(`dt-order-remaining-${orderId}`);
+            if (dtRemEl && order.remaining_amount_formatted) {
+                dtRemEl.textContent = `Reste : ${order.remaining_amount_formatted}`;
+            }
+            if (dtRemWrap) {
+                dtRemWrap.classList.toggle('d-none', Number(order.remaining_amount) <= 0);
+            }
         }
 
         // --- Staff Confirmation Attribution (First user moving off pending) ---

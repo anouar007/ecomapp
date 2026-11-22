@@ -650,8 +650,8 @@ html, body, .main-content {
                                             {{ $trx->type_label }}
                                         </span>
                                         @if($trx->store)
-                                            <span class="badge bg-light text-secondary border rounded-pill" style="font-size: 0.65rem;">
-                                                <i class="fas fa-store me-1 text-primary"></i>{{ $trx->store->name }}
+                                            <span class="badge store-badge-themed border rounded-pill" style="font-size: 0.65rem; {{ $trx->store->badge_style }}">
+                                                <i class="fas fa-store me-1"></i>{{ $trx->store->name }}
                                             </span>
                                         @endif
                                     </div>

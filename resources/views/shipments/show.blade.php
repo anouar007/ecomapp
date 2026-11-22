@@ -20,7 +20,7 @@
                             </span>
                             <span class="text-white-50 small">• Réception du {{ $shipment->received_date->format('d/m/Y') }}</span>
                             @if($shipment->store)
-                                <span class="badge bg-light text-dark rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                <span class="badge store-badge-themed rounded-pill px-2 py-0.5" style="font-size: 0.68rem; {{ $shipment->store->badge_style }}">
                                     <i class="fas fa-warehouse me-1"></i>{{ $shipment->store->name }}
                                 </span>
                             @endif

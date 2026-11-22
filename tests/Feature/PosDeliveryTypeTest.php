@@ -421,4 +421,128 @@ class PosDeliveryTypeTest extends TestCase
             ->assertSee('Livreur')
             ->assertSee('Autre');
     }
+
+    public function test_changing_delivery_type_updates_shipping_cost_and_total_for_website_and_pos_orders(): void
+    {
+        $admin = $this->makeAdmin();
+
+        // 1. Website order with 40 DH Ozon shipping (total = 540 DH)
+        $webOrder = Order::create([
+            'order_number' => 'ORD-SHIP-' . strtoupper(uniqid()),
+            'customer_name' => 'Shipping Website Client',
+            'customer_email' => 'ship-web@example.test',
+            'customer_phone' => '0611223344',
+            'shipping_address' => '10 Rue Atlas',
+            'shipping_city' => 'Rabat',
+            'shipping_zip' => '10000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 416.67,
+            'tax' => 83.33,
+            'shipping_cost' => 40.00,
+            'discount' => 0,
+            'total' => 540.00,
+            'paid_amount' => 100.00,
+            'remaining_amount' => 440.00,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'ozon',
+            'status' => 'pending',
+            'payment_status' => 'partial',
+            'payment_method' => 'cod',
+        ]);
+
+        // Switching to Store forces shipping_cost to 0 and reduces total & remaining_amount by 40
+        $this->actingAs($admin)->postJson(route('orders.quick-status', $webOrder), [
+            'delivery_type' => 'store',
+            'channel' => 'website',
+        ])->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('order.delivery_type', 'store')
+            ->assertJsonPath('order.shipping_cost', 0)
+            ->assertJsonPath('order.total', 500)
+            ->assertJsonPath('order.remaining_amount', 400);
+
+        $webOrder->refresh();
+        $this->assertEquals(0.00, (float) $webOrder->shipping_cost);
+        $this->assertEquals(500.00, (float) $webOrder->total);
+        $this->assertEquals(400.00, (float) $webOrder->remaining_amount);
+
+        // Switching to Livreur with custom 25 DH updates shipping_cost, total & remaining_amount
+        $this->actingAs($admin)->postJson(route('orders.quick-status', $webOrder), [
+            'delivery_type' => 'our_team',
+            'shipping_cost' => 25,
+            'channel' => 'website',
+        ])->assertOk()
+            ->assertJsonPath('order.delivery_type', 'our_team')
+            ->assertJsonPath('order.shipping_cost', 25)
+            ->assertJsonPath('order.total', 525)
+            ->assertJsonPath('order.remaining_amount', 425);
+
+        // 2. POS order (paid, 0 DH Store) -> Ozon with custom 40 DH -> back to Store
+        $posOrder = Order::create([
+            'order_number' => 'POS-SHIP-' . strtoupper(uniqid()),
+            'customer_name' => 'Shipping POS Client',
+            'customer_email' => 'ship-pos@example.test',
+            'customer_phone' => '0622334455',
+            'shipping_address' => 'Point de Vente',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 300.00,
+            'tax' => 0,
+            'shipping_cost' => 0.00,
+            'discount' => 0,
+            'total' => 300.00,
+            'paid_amount' => 300.00,
+            'remaining_amount' => 0.00,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'store',
+            'status' => 'delivered',
+            'payment_status' => 'paid',
+            'payment_method' => 'cash',
+        ]);
+
+        $this->actingAs($admin)->postJson(route('orders.quick-status', $posOrder), [
+            'delivery_type' => 'ozon',
+            'shipping_cost' => 40,
+            'channel' => 'pos',
+        ])->assertOk()
+            ->assertJsonPath('order.delivery_type', 'ozon')
+            ->assertJsonPath('order.shipping_cost', 40)
+            ->assertJsonPath('order.total', 340)
+            ->assertJsonPath('order.paid_amount', 340);
+
+        $posOrder->refresh();
+        $this->assertEquals(40.00, (float) $posOrder->shipping_cost);
+        $this->assertEquals(340.00, (float) $posOrder->total);
+        $this->assertEquals(340.00, (float) $posOrder->paid_amount);
+
+        // Edit form (PUT orders.update) supports custom shipping_cost and forces 0 for store
+        $this->actingAs($admin)->put(route('orders.update', $posOrder), [
+            'status' => 'delivered',
+            'payment_status' => 'paid',
+            'tax_mode' => 'ht',
+            'delivery_type' => 'autre',
+            'shipping_cost' => 35,
+            'payment_method' => 'cash',
+        ])->assertRedirect(route('orders.show', $posOrder));
+
+        $posOrder->refresh();
+        $this->assertSame('autre', $posOrder->normalized_delivery_type);
+        $this->assertEquals(35.00, (float) $posOrder->shipping_cost);
+        $this->assertEquals(335.00, (float) $posOrder->total);
+
+        $this->actingAs($admin)->put(route('orders.update', $posOrder), [
+            'status' => 'delivered',
+            'payment_status' => 'paid',
+            'tax_mode' => 'ht',
+            'delivery_type' => 'store',
+            'shipping_cost' => 99, // ignored when delivery_type === store
+            'payment_method' => 'cash',
+        ])->assertRedirect(route('orders.show', $posOrder));
+
+        $posOrder->refresh();
+        $this->assertSame('store', $posOrder->normalized_delivery_type);
+        $this->assertEquals(0.00, (float) $posOrder->shipping_cost);
+        $this->assertEquals(300.00, (float) $posOrder->total);
+    }
 }

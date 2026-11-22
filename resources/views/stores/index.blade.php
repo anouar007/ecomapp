@@ -176,17 +176,21 @@
     <div class="row g-4">
         @forelse($stores as $st)
         <div class="col-12 col-md-6 col-xl-4">
-            <div class="store-box-card">
+            <div class="store-box-card {{ $st->has_custom_colors ? 'store-box-themed' : '' }}"
+                 style="{{ $st->has_custom_colors ? $st->box_style : '' }}">
                 <div>
                     <!-- Top store info -->
                     <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="store-avatar-icon {{ $st->type === 'warehouse' ? 'bg-purple-subtle text-purple' : 'bg-primary-subtle text-primary' }}" style="{{ $st->type === 'warehouse' ? 'background: #f3e8ff; color: #7e22ce;' : '' }}">
+                        <div class="d-flex align-items-center gap-3 min-w-0">
+                            <div class="store-avatar-icon" style="{{ $st->badge_style }} border: 1px solid var(--store-border);">
                                 <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse' : ($st->type === 'showroom' ? 'fa-tv' : 'fa-store') }}"></i>
                             </div>
-                            <div>
-                                <h5 class="fw-bold text-dark mb-0 fs-6">{{ $st->name }}</h5>
+                            <div class="min-w-0">
+                                <h5 class="fw-bold mb-0 fs-6 store-box-title text-dark text-truncate">{{ $st->name }}</h5>
                                 <div class="d-flex align-items-center gap-1.5 mt-1 flex-wrap">
+                                    <span class="badge store-badge-themed rounded-pill" style="font-size: 0.68rem; {{ $st->badge_style }}">
+                                        <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse' : ($st->type === 'showroom' ? 'fa-tv' : 'fa-store') }} me-1"></i>{{ $st->name }}
+                                    </span>
                                     <span class="badge bg-light text-secondary border font-monospace" style="font-size: 0.68rem;">{{ $st->code }}</span>
                                     <span class="badge {{ $st->type_badge_class }} border rounded-pill" style="font-size: 0.68rem;">{{ $st->type_label }}</span>
                                     @if($st->is_default)
@@ -250,22 +254,22 @@
                     </div>
 
                     <!-- Store Details -->
-                    <div class="text-muted small space-y-1.5 mb-3" style="font-size: 0.78rem;">
+                    <div class="text-muted store-box-muted small space-y-1.5 mb-3" style="font-size: 0.78rem;">
                         @if($st->city || $st->address)
                             <div class="d-flex align-items-center gap-2">
-                                <i class="fas fa-location-dot text-secondary opacity-50" style="width: 14px;"></i>
+                                <i class="fas fa-location-dot opacity-75" style="width: 14px;"></i>
                                 <span class="text-truncate">{{ $st->city ? $st->city.' — ' : '' }}{{ $st->address ?? '' }}</span>
                             </div>
                         @endif
                         @if($st->phone)
                             <div class="d-flex align-items-center gap-2">
-                                <i class="fas fa-phone text-secondary opacity-50" style="width: 14px;"></i>
+                                <i class="fas fa-phone opacity-75" style="width: 14px;"></i>
                                 <span>{{ $st->phone }}</span>
                             </div>
                         @endif
                         @if($st->email)
                             <div class="d-flex align-items-center gap-2">
-                                <i class="fas fa-envelope text-secondary opacity-50" style="width: 14px;"></i>
+                                <i class="fas fa-envelope opacity-75" style="width: 14px;"></i>
                                 <span class="text-truncate">{{ $st->email }}</span>
                             </div>
                         @endif
@@ -276,16 +280,16 @@
                 <div class="pt-3 border-top mt-2">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <div>
-                            <span class="text-muted" style="font-size: 0.72rem;">Stock physique :</span>
-                            <span class="fw-bold text-success small ms-1">{{ number_format($st->total_units, 0, ',', ' ') }} pcs</span>
+                            <span class="text-muted store-box-muted" style="font-size: 0.72rem;">Stock physique :</span>
+                            <span class="fw-bold store-box-title text-success small ms-1">{{ number_format($st->total_units, 0, ',', ' ') }} pcs</span>
                         </div>
                         <div>
-                            <span class="text-muted" style="font-size: 0.72rem;">Valeur achat :</span>
-                            <span class="fw-bold text-dark small ms-1">{{ currency($st->cost_valuation) }}</span>
+                            <span class="text-muted store-box-muted" style="font-size: 0.72rem;">Valeur achat :</span>
+                            <span class="fw-bold store-box-title text-dark small ms-1">{{ currency($st->cost_valuation) }}</span>
                         </div>
                     </div>
                     @if($st->month_expenses > 0 || $st->month_collections > 0)
-                    <div class="d-flex align-items-center justify-content-between mb-2.5 p-2 rounded-3 bg-light border" style="font-size: 0.72rem;">
+                    <div class="d-flex align-items-center justify-content-between mb-2.5 p-2 rounded-3 bg-light text-dark border" style="font-size: 0.72rem;">
                         <div>
                             <span class="text-muted">Charges mois :</span>
                             <a href="{{ route('expenses.index', ['store_id' => $st->id]) }}" class="fw-bold text-danger text-decoration-none ms-1">
@@ -303,7 +307,7 @@
                     </div>
                     @endif
                     <div class="d-flex align-items-center gap-1.5">
-                        <a href="{{ route('inventory.index', ['store_id' => $st->id]) }}" class="btn btn-sm btn-outline-dark rounded-pill flex-fill fw-semibold shadow-xs">
+                        <a href="{{ route('inventory.index', ['store_id' => $st->id]) }}" class="btn btn-sm btn-light border text-dark rounded-pill flex-fill fw-semibold shadow-xs">
                             <i class="fas fa-boxes-stacked me-1.5"></i> Gérer le Stock
                         </a>
                         <a href="{{ route('stores.stock', ['store_id' => $st->id]) }}" class="btn btn-sm btn-light border rounded-pill px-2.5 text-primary" title="Matrice & Rayons">
@@ -330,6 +334,19 @@
     </div>
 </div>
 
+@php
+    $storeColorPresets = [
+        ['label' => 'Bleu',   'bg' => '#eff6ff', 'text' => '#1d4ed8'],
+        ['label' => 'Violet', 'bg' => '#f3e8ff', 'text' => '#7c3aed'],
+        ['label' => 'Vert',   'bg' => '#ecfdf5', 'text' => '#047857'],
+        ['label' => 'Ambre',  'bg' => '#fffbeb', 'text' => '#b45309'],
+        ['label' => 'Rouge',  'bg' => '#fef2f2', 'text' => '#b91c1c'],
+        ['label' => 'Cyan',   'bg' => '#ecfeff', 'text' => '#0e7490'],
+        ['label' => 'Rose',   'bg' => '#fdf2f8', 'text' => '#be185d'],
+        ['label' => 'Sombre', 'bg' => '#1e293b', 'text' => '#ffffff'],
+    ];
+@endphp
+
 <!-- ======================================================= -->
 <!-- MODAL: NOUVEAU POINT DE STOCKAGE                       -->
 <!-- ======================================================= -->
@@ -354,18 +371,18 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-7">
                         <label class="form-label small fw-bold text-dark mb-1">Nom du site <span class="text-danger">*</span></label>
-                        <input type="text" name="name" class="form-control rounded-3" placeholder="Ex: Magasin Maarif Casablanca" required>
+                        <input type="text" name="name" id="new_name" class="form-control rounded-3" placeholder="Ex: Magasin Maarif Casablanca" required>
                     </div>
                     <div class="col-md-5">
                         <label class="form-label small fw-bold text-dark mb-1">Code unique <span class="text-danger">*</span></label>
-                        <input type="text" name="code" class="form-control rounded-3 font-monospace text-uppercase" placeholder="MAG-MAARIF" required>
+                        <input type="text" name="code" id="new_code" class="form-control rounded-3 font-monospace text-uppercase" placeholder="MAG-MAARIF" required>
                     </div>
                 </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label small fw-bold text-dark mb-1">Type d'emplacement <span class="text-danger">*</span></label>
-                        <select name="type" class="form-select rounded-3" required>
+                        <select name="type" id="new_type" class="form-select rounded-3" required>
                             <option value="store" selected>Magasin / Boutique de vente</option>
                             <option value="warehouse">Dépôt Central / Entrepôt logistique</option>
                             <option value="showroom">Showroom</option>
@@ -375,6 +392,63 @@
                     <div class="col-md-6">
                         <label class="form-label small fw-bold text-dark mb-1">Ville</label>
                         <input type="text" name="city" class="form-control rounded-3" placeholder="Casablanca, Rabat, Marrakech...">
+                    </div>
+                </div>
+
+                <!-- Couleurs du badge & de la boîte -->
+                <div class="p-3 rounded-3 bg-light border mb-3" data-store-color-widget="new">
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2.5 flex-wrap">
+                        <label class="form-label small fw-bold text-dark mb-0">
+                            <i class="fas fa-palette text-primary me-1"></i> Couleurs du badge &amp; de la boîte
+                        </label>
+                        <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-0.5 fw-semibold js-store-color-reset" style="font-size: 0.72rem;">
+                            <i class="fas fa-rotate-left me-1"></i> Réinitialiser
+                        </button>
+                    </div>
+
+                    <div class="row g-2.5 mb-2.5">
+                        <div class="col-6">
+                            <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Couleur de fond (Background)</label>
+                            <div class="input-group input-group-sm">
+                                <input type="color" id="new_badge_bg_picker" class="form-control form-control-color js-store-bg-picker" value="#eff6ff" title="Choisir la couleur de fond">
+                                <input type="text" name="badge_bg_color" id="new_badge_bg_color" class="form-control font-monospace js-store-bg-input" placeholder="#eff6ff" maxlength="7">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Couleur du texte</label>
+                            <div class="input-group input-group-sm">
+                                <input type="color" id="new_badge_text_picker" class="form-control form-control-color js-store-text-picker" value="#1d4ed8" title="Choisir la couleur du texte">
+                                <input type="text" name="badge_text_color" id="new_badge_text_color" class="form-control font-monospace js-store-text-input" placeholder="#1d4ed8" maxlength="7">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-1.5 mb-2.5">
+                        @foreach($storeColorPresets as $preset)
+                            <button type="button"
+                                    class="btn btn-xs rounded-pill border px-2.5 py-0.5 fw-semibold js-store-color-preset"
+                                    data-bg="{{ $preset['bg'] }}"
+                                    data-text="{{ $preset['text'] }}"
+                                    style="font-size: 0.7rem; background-color: {{ $preset['bg'] }}; color: {{ $preset['text'] }}; border-color: {{ \App\Models\Store::hexToRgba($preset['text'], 0.35) }} !important;">
+                                {{ $preset['label'] }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <div class="pt-2 border-top d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted" style="font-size: 0.7rem;">Badge :</span>
+                            <span class="badge store-badge-themed rounded-pill px-2.5 py-1 js-store-preview-badge">
+                                <i class="fas fa-store me-1"></i><span class="js-preview-name">Magasin</span>
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted" style="font-size: 0.7rem;">Boîte :</span>
+                            <div class="store-box-themed border rounded-3 px-2.5 py-1 d-inline-flex align-items-center gap-2 js-store-preview-box" style="font-size: 0.74rem;">
+                                <span class="fw-bold store-theme-text js-preview-name">Magasin</span>
+                                <span class="font-monospace store-theme-muted js-preview-code" style="font-size: 0.68rem;">CODE</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -461,6 +535,63 @@
                     </div>
                 </div>
 
+                <!-- Couleurs du badge & de la boîte -->
+                <div class="p-3 rounded-3 bg-light border mb-3" data-store-color-widget="edit">
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2.5 flex-wrap">
+                        <label class="form-label small fw-bold text-dark mb-0">
+                            <i class="fas fa-palette text-primary me-1"></i> Couleurs du badge &amp; de la boîte
+                        </label>
+                        <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-0.5 fw-semibold js-store-color-reset" style="font-size: 0.72rem;">
+                            <i class="fas fa-rotate-left me-1"></i> Réinitialiser
+                        </button>
+                    </div>
+
+                    <div class="row g-2.5 mb-2.5">
+                        <div class="col-6">
+                            <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Couleur de fond (Background)</label>
+                            <div class="input-group input-group-sm">
+                                <input type="color" id="edit_badge_bg_picker" class="form-control form-control-color js-store-bg-picker" value="#eff6ff" title="Choisir la couleur de fond">
+                                <input type="text" name="badge_bg_color" id="edit_badge_bg_color" class="form-control font-monospace js-store-bg-input" placeholder="#eff6ff" maxlength="7">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Couleur du texte</label>
+                            <div class="input-group input-group-sm">
+                                <input type="color" id="edit_badge_text_picker" class="form-control form-control-color js-store-text-picker" value="#1d4ed8" title="Choisir la couleur du texte">
+                                <input type="text" name="badge_text_color" id="edit_badge_text_color" class="form-control font-monospace js-store-text-input" placeholder="#1d4ed8" maxlength="7">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-1.5 mb-2.5">
+                        @foreach($storeColorPresets as $preset)
+                            <button type="button"
+                                    class="btn btn-xs rounded-pill border px-2.5 py-0.5 fw-semibold js-store-color-preset"
+                                    data-bg="{{ $preset['bg'] }}"
+                                    data-text="{{ $preset['text'] }}"
+                                    style="font-size: 0.7rem; background-color: {{ $preset['bg'] }}; color: {{ $preset['text'] }}; border-color: {{ \App\Models\Store::hexToRgba($preset['text'], 0.35) }} !important;">
+                                {{ $preset['label'] }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <div class="pt-2 border-top d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted" style="font-size: 0.7rem;">Badge :</span>
+                            <span class="badge store-badge-themed rounded-pill px-2.5 py-1 js-store-preview-badge">
+                                <i class="fas fa-store me-1"></i><span class="js-preview-name">Magasin</span>
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted" style="font-size: 0.7rem;">Boîte :</span>
+                            <div class="store-box-themed border rounded-3 px-2.5 py-1 d-inline-flex align-items-center gap-2 js-store-preview-box" style="font-size: 0.74rem;">
+                                <span class="fw-bold store-theme-text js-preview-name">Magasin</span>
+                                <span class="font-monospace store-theme-muted js-preview-code" style="font-size: 0.68rem;">CODE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label small fw-bold text-dark mb-1">Adresse complète</label>
                     <input type="text" name="address" id="edit_address" class="form-control rounded-3">
@@ -505,6 +636,103 @@
 
 @push('scripts')
 <script>
+const STORE_TYPE_DEFAULTS = {
+    warehouse: { bg: '#f3e8ff', text: '#7c3aed' },
+    showroom:  { bg: '#ecfeff', text: '#0e7490' },
+    workshop:  { bg: '#fffbeb', text: '#b45309' },
+    store:     { bg: '#eff6ff', text: '#1d4ed8' }
+};
+
+function sanitizeStoreHex(val) {
+    const t = String(val || '').trim();
+    return /^#[0-9A-Fa-f]{6}$/.test(t) ? t.toLowerCase() : null;
+}
+
+function storeHexToRgba(hex, alpha = 0.32) {
+    const clean = sanitizeStoreHex(hex);
+    if (!clean) return `rgba(100, 116, 139, ${alpha})`;
+    const r = parseInt(clean.slice(1, 3), 16);
+    const g = parseInt(clean.slice(3, 5), 16);
+    const b = parseInt(clean.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function refreshStoreColorPreview(widget) {
+    if (!widget) return;
+    const modalForm = widget.closest('form');
+    const typeVal = modalForm?.querySelector('select[name="type"]')?.value || 'store';
+    const defaults = STORE_TYPE_DEFAULTS[typeVal] || STORE_TYPE_DEFAULTS.store;
+
+    const bgInput = widget.querySelector('.js-store-bg-input');
+    const textInput = widget.querySelector('.js-store-text-input');
+    const bgPicker = widget.querySelector('.js-store-bg-picker');
+    const textPicker = widget.querySelector('.js-store-text-picker');
+
+    const bg = sanitizeStoreHex(bgInput?.value) || defaults.bg;
+    const text = sanitizeStoreHex(textInput?.value) || defaults.text;
+    const border = storeHexToRgba(text, 0.35);
+
+    if (bgPicker) bgPicker.value = bg;
+    if (textPicker) textPicker.value = text;
+
+    const storeName = modalForm?.querySelector('input[name="name"]')?.value?.trim() || 'Magasin';
+    const storeCode = modalForm?.querySelector('input[name="code"]')?.value?.trim() || 'CODE';
+
+    widget.querySelectorAll('.js-preview-name').forEach(el => { el.textContent = storeName; });
+    widget.querySelectorAll('.js-preview-code').forEach(el => { el.textContent = storeCode; });
+
+    const previewBadge = widget.querySelector('.js-store-preview-badge');
+    const previewBox = widget.querySelector('.js-store-preview-box');
+    [previewBadge, previewBox].forEach(el => {
+        if (!el) return;
+        el.style.setProperty('--store-bg', bg);
+        el.style.setProperty('--store-text', text);
+        el.style.setProperty('--store-border', border);
+    });
+}
+
+function initStoreColorWidgets() {
+    document.querySelectorAll('[data-store-color-widget]').forEach(widget => {
+        const bgInput = widget.querySelector('.js-store-bg-input');
+        const textInput = widget.querySelector('.js-store-text-input');
+        const bgPicker = widget.querySelector('.js-store-bg-picker');
+        const textPicker = widget.querySelector('.js-store-text-picker');
+        const modalForm = widget.closest('form');
+
+        bgPicker?.addEventListener('input', () => {
+            if (bgInput) bgInput.value = bgPicker.value.toLowerCase();
+            refreshStoreColorPreview(widget);
+        });
+        textPicker?.addEventListener('input', () => {
+            if (textInput) textInput.value = textPicker.value.toLowerCase();
+            refreshStoreColorPreview(widget);
+        });
+        bgInput?.addEventListener('input', () => refreshStoreColorPreview(widget));
+        textInput?.addEventListener('input', () => refreshStoreColorPreview(widget));
+
+        widget.querySelectorAll('.js-store-color-preset').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (bgInput) bgInput.value = btn.dataset.bg;
+                if (textInput) textInput.value = btn.dataset.text;
+                refreshStoreColorPreview(widget);
+            });
+        });
+
+        widget.querySelector('.js-store-color-reset')?.addEventListener('click', () => {
+            if (bgInput) bgInput.value = '';
+            if (textInput) textInput.value = '';
+            refreshStoreColorPreview(widget);
+        });
+
+        ['input[name="name"]', 'input[name="code"]', 'select[name="type"]'].forEach(sel => {
+            modalForm?.querySelector(sel)?.addEventListener('input', () => refreshStoreColorPreview(widget));
+            modalForm?.querySelector(sel)?.addEventListener('change', () => refreshStoreColorPreview(widget));
+        });
+
+        refreshStoreColorPreview(widget);
+    });
+}
+
 function openEditStoreModal(store) {
     document.getElementById('editStoreForm').action = `/stores/${store.id}`;
     document.getElementById('editStoreTitle').textContent = `Modifier : ${store.name}`;
@@ -515,11 +743,16 @@ function openEditStoreModal(store) {
     document.getElementById('edit_address').value = store.address || '';
     document.getElementById('edit_phone').value = store.phone || '';
     document.getElementById('edit_email').value = store.email || '';
+    document.getElementById('edit_badge_bg_color').value = sanitizeStoreHex(store.badge_bg_color) || '';
+    document.getElementById('edit_badge_text_color').value = sanitizeStoreHex(store.badge_text_color) || '';
     document.getElementById('edit_is_active').checked = !!store.is_active;
     document.getElementById('edit_is_default').checked = !!store.is_default;
+    refreshStoreColorPreview(document.querySelector('[data-store-color-widget="edit"]'));
     const modal = new bootstrap.Modal(document.getElementById('editStoreModal'));
     modal.show();
 }
+
+document.addEventListener('DOMContentLoaded', initStoreColorWidgets);
 </script>
 @endpush
 @endsection

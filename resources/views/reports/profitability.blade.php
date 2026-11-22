@@ -430,7 +430,7 @@
                         <i class="fas fa-calendar-check me-1 text-danger"></i> {{ $startDate->format('d/m/Y') }} &rarr; {{ $endDate->format('d/m/Y') }}
                     </span>
                     @if($selectedStore)
-                    <span class="badge bg-dark text-white rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem;">
+                    <span class="badge {{ $selectedStore->has_custom_colors ? 'store-badge-themed' : 'bg-dark text-white' }} rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem; {{ $selectedStore->has_custom_colors ? $selectedStore->badge_style : '' }}">
                         <i class="fas fa-store me-1"></i> {{ $selectedStore->name }}
                     </span>
                     @else
@@ -1402,6 +1402,7 @@
                     @foreach($storeOverview as $st)
                     @php
                         $isSelectedStore = (int)($storeId ?? 0) === (int)$st->id;
+                        $stModel = $stores->firstWhere('id', $st->id);
                     @endphp
                     <tr class="{{ $isSelectedStore ? 'table-danger bg-opacity-10' : '' }}">
                         <td class="ps-4 py-3">
@@ -1411,7 +1412,11 @@
                                 'start_date' => $period === 'custom' ? $startDate->format('Y-m-d') : null,
                                 'end_date' => $period === 'custom' ? $endDate->format('Y-m-d') : null,
                             ])) }}" class="text-decoration-none fw-bold text-dark d-inline-flex align-items-center gap-1.5">
-                                <span>{{ $st->name }}</span>
+                                @if($stModel)
+                                    <span class="badge store-badge-themed rounded-pill px-2 py-0.5" style="{{ $stModel->badge_style }}">{{ $st->name }}</span>
+                                @else
+                                    <span>{{ $st->name }}</span>
+                                @endif
                                 @if($isSelectedStore)
                                 <span class="badge bg-danger rounded-pill" style="font-size: 0.65rem;">Actif</span>
                                 @endif

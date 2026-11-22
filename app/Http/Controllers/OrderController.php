@@ -749,6 +749,7 @@ class OrderController extends Controller
             'payment_status' => ['required', 'in:pending,partial,paid,failed,refunded'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
             'delivery_type' => ['nullable', 'in:store,our_team,livreur,ozon,autre'],
+            'shipping_cost' => ['nullable', 'numeric', 'min:0'],
             'payment_method' => ['nullable', 'string', 'max:50'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -776,22 +777,33 @@ class OrderController extends Controller
                     $order->refresh();
                 }
 
+                $newDeliveryType = array_key_exists('delivery_type', $validated)
+                    ? Order::normalizeDeliveryType($validated['delivery_type'])
+                    : $order->delivery_type;
+
                 $orderUpdateData = [
                     'status' => $validated['status'],
                     'payment_status' => $validated['payment_status'],
                     'tax_mode' => $validated['tax_mode'] ?? $order->normalized_tax_mode,
-                    'delivery_type' => array_key_exists('delivery_type', $validated)
-                        ? Order::normalizeDeliveryType($validated['delivery_type'])
-                        : $order->delivery_type,
+                    'delivery_type' => $newDeliveryType,
                     'payment_method' => $validated['payment_method'] ?? null,
                     'transaction_id' => $validated['transaction_id'] ?? null,
                     'notes' => $validated['notes'] ?? null,
                 ];
-                if ($validated['payment_status'] === 'paid') {
-                    $orderUpdateData['paid_amount'] = $order->total;
-                    $orderUpdateData['remaining_amount'] = 0;
-                }
                 $order->update($orderUpdateData);
+
+                if ($newDeliveryType === 'store') {
+                    $order->applyShippingCost(0.0);
+                } elseif (array_key_exists('shipping_cost', $validated) && $validated['shipping_cost'] !== null) {
+                    $order->applyShippingCost((float) $validated['shipping_cost']);
+                }
+
+                if ($validated['payment_status'] === 'paid') {
+                    $order->update([
+                        'paid_amount' => $order->total,
+                        'remaining_amount' => 0,
+                    ]);
+                }
 
                 // Auto-mark as paid on delivery
                 if ($validated['status'] === 'delivered') {
@@ -852,6 +864,7 @@ class OrderController extends Controller
         $storeStock = ($newStoreId && $item->product_id)
             ? ProductStock::where('product_id', $item->product_id)->where('store_id', $newStoreId)->first()
             : null;
+        $assignedStore = $newStoreId ? Store::find($newStoreId) : null;
 
         $storeName = $result['store_name'] ?? 'Non assigné';
         $message = "Dépôt de « {$item->product_name} » mis à jour : {$storeName}.";
@@ -864,6 +877,9 @@ class OrderController extends Controller
                     'id' => $item->id,
                     'store_id' => $newStoreId,
                     'store_name' => $result['store_name'] ?? null,
+                    'store_badge_bg' => $assignedStore?->resolved_badge_bg_color,
+                    'store_badge_text' => $assignedStore?->resolved_badge_text_color,
+                    'store_badge_border' => $assignedStore?->resolved_border_color,
                     'location_code' => $storeStock?->location_code,
                     'store_quantity' => $storeStock ? (int) $storeStock->quantity : null,
                 ],
@@ -993,6 +1009,9 @@ class OrderController extends Controller
                         'store_id' => (int) $ss->store_id,
                         'store_name' => $ss->store->name,
                         'store_code' => $ss->store->code,
+                        'badge_bg_color' => $ss->store->resolved_badge_bg_color,
+                        'badge_text_color' => $ss->store->resolved_badge_text_color,
+                        'badge_border_color' => $ss->store->resolved_border_color,
                         'quantity' => (int) $ss->quantity,
                         'location_code' => $ss->location_code,
                     ])->values()->all(),
@@ -1079,15 +1098,18 @@ class OrderController extends Controller
             'payment_status' => ['nullable', 'in:pending,partial,paid,failed,refunded'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
             'delivery_type' => ['nullable', 'in:store,our_team,livreur,ozon,autre'],
+            'shipping_cost' => ['nullable', 'numeric', 'min:0'],
         ]);
 
-        if (empty($validated['status']) && empty($validated['payment_status']) && empty($validated['tax_mode']) && empty($validated['delivery_type'])) {
+        $hasShippingCost = array_key_exists('shipping_cost', $validated) && $validated['shipping_cost'] !== null;
+
+        if (empty($validated['status']) && empty($validated['payment_status']) && empty($validated['tax_mode']) && empty($validated['delivery_type']) && !$hasShippingCost) {
             return response()->json(['success' => false, 'message' => 'Aucun statut, régime ou type de livraison spécifié.'], 422);
         }
 
         $order->load('items.product');
 
-        DB::transaction(function () use ($order, $validated) {
+        DB::transaction(function () use ($order, $validated, $hasShippingCost) {
             if (isset($validated['status']) && $validated['status'] !== $order->status) {
                 $originalStatus = $order->status;
                 $newStatus = $validated['status'];
@@ -1135,9 +1157,19 @@ class OrderController extends Controller
             $normalizedDeliveryType = !empty($validated['delivery_type'])
                 ? Order::normalizeDeliveryType($validated['delivery_type'])
                 : null;
-            if ($normalizedDeliveryType !== null && $normalizedDeliveryType !== $order->delivery_type) {
-                $order->delivery_type = $normalizedDeliveryType;
-                $order->save();
+            if ($normalizedDeliveryType !== null) {
+                if ($normalizedDeliveryType !== $order->delivery_type) {
+                    $order->delivery_type = $normalizedDeliveryType;
+                    $order->save();
+                }
+
+                if ($normalizedDeliveryType === 'store') {
+                    $order->applyShippingCost(0.0);
+                } elseif ($hasShippingCost) {
+                    $order->applyShippingCost((float) $validated['shipping_cost']);
+                }
+            } elseif ($hasShippingCost) {
+                $order->applyShippingCost((float) $validated['shipping_cost']);
             }
         });
 
@@ -1216,6 +1248,15 @@ class OrderController extends Controller
                 'tax_mode_label' => $order->tax_mode_label,
                 'delivery_type' => $order->effective_delivery_type,
                 'delivery_type_label' => $order->effective_delivery_type_label,
+                'shipping_cost' => round((float) ($order->shipping_cost ?? 0), 2),
+                'shipping_cost_formatted' => (float) ($order->shipping_cost ?? 0) > 0 ? currency($order->shipping_cost) : 'Gratuit',
+                'shipping_cost_formatted_fem' => (float) ($order->shipping_cost ?? 0) > 0 ? currency($order->shipping_cost) : 'Gratuite',
+                'total' => round((float) $order->total, 2),
+                'total_formatted' => $order->formatted_total,
+                'paid_amount' => round((float) ($order->paid_amount ?? 0), 2),
+                'paid_amount_formatted' => currency($order->paid_amount ?? 0),
+                'remaining_amount' => round((float) ($order->remaining_amount ?? 0), 2),
+                'remaining_amount_formatted' => currency($order->remaining_amount ?? 0),
                 'confirmed_by' => $order->confirmed_by,
                 'confirmed_by_name' => $order->confirmedByUser?->name,
                 'confirmed_at_formatted' => $order->confirmed_at?->format('d/m/Y à H:i'),

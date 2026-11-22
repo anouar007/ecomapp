@@ -7868,3 +7868,107 @@ dt,
         display: none;
     }
 }
+
+/* ==========================================================================
+   CUSTOM PER-STORE BADGE & BOX THEME COLORS
+   ========================================================================== */
+.store-badge-themed {
+    background-color: var(--store-bg, #eff6ff) !important;
+    color: var(--store-text, #1d4ed8) !important;
+    border: 1px solid var(--store-border, rgba(29, 78, 216, 0.32)) !important;
+}
+
+.store-badge-themed i,
+.store-badge-themed strong,
+.store-badge-themed span {
+    color: inherit !important;
+}
+
+.store-box-themed {
+    background-color: var(--store-bg, #ffffff) !important;
+    color: var(--store-text, #0f172a) !important;
+    border-color: var(--store-border, #cbd5e1) !important;
+}
+
+.store-box-themed .store-theme-text,
+.store-box-themed .inv-store-name,
+.store-box-themed .store-box-title {
+    color: var(--store-text, #0f172a) !important;
+}
+
+.store-box-themed .store-theme-muted,
+.store-box-themed .inv-store-card-meta,
+.store-box-themed .store-box-muted {
+    color: var(--store-text, #475569) !important;
+    opacity: 0.85;
+}
+
+.chip-store.store-box-themed:hover {
+    filter: brightness(0.97);
+}
+
+.chip-store.store-box-themed.active {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--store-text, #0f172a) !important;
+    border-color: var(--store-text, #0f172a) !important;
+}
+
+.inv-transfer-store-card.store-box-themed.active {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--store-text, #dc2626) !important;
+    border-color: var(--store-text, #dc2626) !important;
+}
+
+.inv-transfer-store-card.store-box-themed.active .inv-store-check {
+    color: var(--store-text, #dc2626) !important;
+}
+
+/* ==========================================================================
+   CUSTOM PER-STORE BADGE & BOX THEME COLORS
+   ========================================================================== */
+.store-badge-themed {
+    background-color: var(--store-bg, #eff6ff) !important;
+    color: var(--store-text, #1d4ed8) !important;
+    border: 1px solid var(--store-border, rgba(29, 78, 216, 0.32)) !important;
+}
+
+.store-badge-themed i,
+.store-badge-themed strong,
+.store-badge-themed span {
+    color: inherit !important;
+}
+
+.store-box-themed {
+    background-color: var(--store-bg, #ffffff) !important;
+    color: var(--store-text, #0f172a) !important;
+    border-color: var(--store-border, #cbd5e1) !important;
+}
+
+.store-box-themed .store-theme-text,
+.store-box-themed .inv-store-name,
+.store-box-themed .store-box-title {
+    color: var(--store-text, #0f172a) !important;
+}
+
+.store-box-themed .store-theme-muted,
+.store-box-themed .inv-store-card-meta,
+.store-box-themed .store-box-muted {
+    color: var(--store-text, #475569) !important;
+    opacity: 0.85;
+}
+
+.chip-store.store-box-themed:hover {
+    filter: brightness(0.97);
+}
+
+.chip-store.store-box-themed.active {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--store-text, #0f172a) !important;
+    border-color: var(--store-text, #0f172a) !important;
+}
+
+.inv-transfer-store-card.store-box-themed.active {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--store-text, #dc2626) !important;
+    border-color: var(--store-text, #dc2626) !important;
+}
+
+.inv-transfer-store-card.store-box-themed.active .inv-store-check {
+    color: var(--store-text, #dc2626) !important;
+}

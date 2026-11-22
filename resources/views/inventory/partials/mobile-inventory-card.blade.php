@@ -140,13 +140,11 @@
             @php
                 $stRec = $product->storeStocks->firstWhere('store_id', $st->id);
                 $stQty = (int) ($stRec->quantity ?? 0);
-                $stMin = (int) ($stRec->min_quantity ?? 2);
                 $stLoc = $stRec->location_code ?? null;
-                $stBadge = $stQty <= 0 ? 'bg-light text-muted border' : ($stQty <= $stMin ? 'bg-warning-subtle text-warning border-warning-subtle' : 'bg-primary-subtle text-primary border-primary-subtle');
             @endphp
             <button type="button"
-                    class="badge {{ $stBadge }} border d-inline-flex align-items-center gap-1 px-2 py-1"
-                    style="font-size: 0.66rem;"
+                    class="badge store-badge-themed border d-inline-flex align-items-center gap-1 px-2 py-1"
+                    style="font-size: 0.66rem; {{ $st->badge_style }} {{ $stQty <= 0 ? 'opacity: 0.65;' : '' }}"
                     data-mob-store-pill="{{ $product->id }}-{{ $st->id }}"
                     onclick="openAdjustModal({{ $product->id }}, {{ $st->id }})"
                     title="Gérer le stock sur {{ $st->name }}">

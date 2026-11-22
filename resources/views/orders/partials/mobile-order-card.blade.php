@@ -50,7 +50,7 @@
         </div>
 
         <div class="mobile-order-price-wrap tabular-nums">
-            <div class="mobile-order-price">
+            <div class="mobile-order-price" id="mob-order-total-{{ $order->id }}">
                 {{ $order->formatted_total }}
             </div>
             @php $mobTaxMode = $order->normalized_tax_mode; @endphp
@@ -213,7 +213,7 @@
                 @if($mobStores->isNotEmpty() || $mobUnassigned)
                     <div class="mobile-order-item-depot">
                         @foreach($mobStores as $mst)
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.66rem;">
+                            <span class="badge store-badge-themed px-2 py-0.5" style="font-size: 0.66rem; {{ $mst->badge_style }}">
                                 <i class="fas fa-warehouse me-1"></i>{{ $mst->name }}
                             </span>
                         @endforeach
@@ -309,6 +309,9 @@
                     data-bs-auto-close="true"
                     data-bs-boundary="viewport"
                     data-bs-popper-config='{"strategy":"fixed"}'
+                    data-shipping-cost="{{ round((float) ($order->shipping_cost ?? 0), 2) }}"
+                    data-suggested-shipping="{{ \App\Services\DeliveryService::getDeliveryCost($order->shipping_city, 40.0) }}"
+                    data-shipping-city="{{ $order->shipping_city ?? '' }}"
                     aria-expanded="false"
                     id="mob-delivery-pill-{{ $order->id }}"
                     title="Changer le type de livraison">

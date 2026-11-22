@@ -323,6 +323,61 @@ class Order extends Model
     }
 
     /**
+     * Update shipping_cost and recalculate order total, payment balances,
+     * linked invoices, and customer metrics cleanly.
+     */
+    public function applyShippingCost(float $newShippingCost): void
+    {
+        $oldShipping = round((float) ($this->shipping_cost ?? 0), 2);
+        $newShipping = max(0.0, round($newShippingCost, 2));
+        $delta = round($newShipping - $oldShipping, 2);
+
+        if (abs($delta) < 0.005) {
+            return;
+        }
+
+        $newTotal = max(0.0, round(((float) $this->total) + $delta, 2));
+
+        $this->shipping_cost = $newShipping;
+        $this->total = $newTotal;
+
+        if ($this->payment_status === 'paid') {
+            $this->paid_amount = $newTotal;
+            $this->remaining_amount = 0;
+        } elseif ($this->payment_status === 'partial' || (float) ($this->paid_amount ?? 0) > 0) {
+            $paidNow = round((float) ($this->paid_amount ?? 0), 2);
+            if ($paidNow >= $newTotal) {
+                $this->payment_status = 'paid';
+                $this->paid_amount = $newTotal;
+                $this->remaining_amount = 0;
+            } else {
+                $this->remaining_amount = round($newTotal - $paidNow, 2);
+            }
+        } elseif ((float) ($this->remaining_amount ?? 0) > 0) {
+            $this->remaining_amount = $newTotal;
+        }
+
+        $this->save();
+
+        // Sync linked Invoices / Quotes if any exist for this order
+        $linkedDocs = Invoice::where('order_id', $this->id)->get();
+        foreach ($linkedDocs as $doc) {
+            $docOldShipping = round((float) ($doc->getRawOriginal('shipping_cost') ?? $doc->shipping_cost ?? 0), 2);
+            $docDelta = round($newShipping - $docOldShipping, 2);
+            $docTotal = max(0.0, round(((float) ($doc->getRawOriginal('total_amount') ?? $doc->total_amount ?? 0)) + $docDelta, 2));
+
+            $doc->update([
+                'shipping_cost' => $newShipping,
+                'total_amount' => $docTotal,
+            ]);
+        }
+
+        if ($this->customer_id && ($customer = Customer::find($this->customer_id))) {
+            $customer->recalculateMetrics();
+        }
+    }
+
+    /**
      * Determine whether the order is tagged as Hors Taxes (HT).
      */
     public function isHt(): bool

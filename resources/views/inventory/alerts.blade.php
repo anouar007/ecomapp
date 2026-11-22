@@ -283,9 +283,15 @@
                                         @if($alert->product->storeStocks && $alert->product->storeStocks->isNotEmpty())
                                         <div class="d-flex flex-wrap gap-1 mt-1">
                                             @foreach($alert->product->storeStocks as $ss)
-                                                <span class="badge {{ $ss->quantity <= 0 ? 'bg-light text-muted border' : 'bg-info-subtle text-info border border-info-subtle' }}" style="font-size: 0.62rem;">
-                                                    {{ $ss->store->name ?? ('Site #' . $ss->store_id) }}: {{ $ss->quantity }}
-                                                </span>
+                                                @if($ss->store)
+                                                    <span class="badge store-badge-themed border" style="font-size: 0.62rem; {{ $ss->store->badge_style }} {{ $ss->quantity <= 0 ? 'opacity: 0.65;' : '' }}">
+                                                        {{ $ss->store->name }}: {{ $ss->quantity }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge {{ $ss->quantity <= 0 ? 'bg-light text-muted border' : 'bg-info-subtle text-info border border-info-subtle' }}" style="font-size: 0.62rem;">
+                                                        Site #{{ $ss->store_id }}: {{ $ss->quantity }}
+                                                    </span>
+                                                @endif
                                             @endforeach
                                         </div>
                                         @endif

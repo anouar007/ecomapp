@@ -182,6 +182,9 @@ class POSController extends Controller
                     'name' => $s->store->name,
                     'code' => $s->store->code,
                     'quantity' => (int) $s->quantity,
+                    'badge_bg_color' => $s->store->resolved_badge_bg_color,
+                    'badge_text_color' => $s->store->resolved_badge_text_color,
+                    'badge_border_color' => $s->store->resolved_border_color,
                 ])
                 ->values()
                 ->all();

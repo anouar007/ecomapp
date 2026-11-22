@@ -217,11 +217,11 @@
         display: block !important;
     }
     .pos-product-card {
-        min-height: 170px !important;
+        min-height: 184px !important;
     }
     .card-img-wrapper {
-        height: 92px !important;
-        min-height: 92px !important;
+        height: 106px !important;
+        min-height: 106px !important;
     }
     .control-btn,
     .cart-item-remove {
@@ -569,8 +569,8 @@
 .card-img-wrapper {
     position: relative;
     width: 100%;
-    height: 120px;
-    min-height: 120px;
+    height: 138px;
+    min-height: 138px;
     background: #f8fafc;
     overflow: hidden;
     display: flex;
@@ -592,7 +592,7 @@
 .overlay-add {
     position: absolute;
     inset: 0;
-    background: rgb(25 135 84 / 0%);
+    background: rgb(25 135 84 / 16%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1931,6 +1931,9 @@
             'name' => $s->name,
             'code' => $s->code,
             'is_default' => (bool) $s->is_default,
+            'badge_bg_color' => $s->resolved_badge_bg_color,
+            'badge_text_color' => $s->resolved_badge_text_color,
+            'badge_border_color' => $s->resolved_border_color,
         ];
     })->values();
 @endphp
@@ -2300,8 +2303,9 @@ function renderMobileConfirmSummary() {
             unitHtml = `<div style="font-size:10.5px;color:#0284c7;">Prix perso : <strong>${formatCurrency(line.basePrice)}/u</strong></div>`;
         }
         const storeName = getItemStoreName(item);
+        const storeObj = item.store_id ? (window.posStores || []).find(s => Number(s.id) === Number(item.store_id)) : null;
         const storeHtml = storeName
-            ? `<div style="font-size:10.5px;color:#64748b;"><i class="fas fa-warehouse me-1"></i>${escapeHtml(storeName)}</div>`
+            ? `<div style="font-size:10.5px;margin-top:2px;"><span class="badge store-badge-themed px-1.5 py-0" style="font-size:9.5px;background-color:${escapeHtml(storeObj?.badge_bg_color || '#eff6ff')};color:${escapeHtml(storeObj?.badge_text_color || '#1d4ed8')};border-color:${escapeHtml(storeObj?.badge_border_color || 'rgba(29, 78, 216, 0.32)')};"><i class="fas fa-warehouse me-1"></i>${escapeHtml(storeName)}</span></div>`
             : '';
         return `<div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="border-color:#f1f5f9 !important;">
             <div class="text-truncate me-2">
@@ -2723,8 +2727,12 @@ function renderProducts() {
         if (storesList.length > 0) {
             storeTagsHtml = `<div class="card-stores-tags">` + storesList.map(st => {
                 const isSelected = selectedStoreId && String(st.id) === String(selectedStoreId);
-                return `<span class="store-tag-pill ${isSelected ? 'active-store' : ''}" title="${escapeHtml(st.name)} : ${st.quantity} en stock">
-                    <i class="fas fa-store" style="font-size:8px;"></i> ${escapeHtml(st.name)} (${st.quantity})
+                const bg = escapeHtml(st.badge_bg_color || '#eff6ff');
+                const txt = escapeHtml(st.badge_text_color || '#1d4ed8');
+                const bdr = escapeHtml(st.badge_border_color || 'rgba(29, 78, 216, 0.32)');
+                const activeRing = isSelected ? `box-shadow:0 0 0 1.5px ${txt};` : '';
+                return `<span class="store-tag-pill ${isSelected ? 'active-store' : ''}" style="background-color:${bg};color:${txt};border-color:${bdr};${activeRing}" title="${escapeHtml(st.name)} : ${st.quantity} en stock">
+                    <i class="fas fa-store" style="font-size:8px;color:inherit;"></i> ${escapeHtml(st.name)} (${st.quantity})
                 </span>`;
             }).join('') + `</div>`;
         } else if (product.global_stock > 0) {

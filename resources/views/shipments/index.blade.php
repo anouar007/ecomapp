@@ -312,8 +312,8 @@
                         <!-- Store / Depot -->
                         <td class="py-3">
                             @if($shp->store)
-                                <span class="badge bg-light text-dark border px-2 py-1">
-                                    <i class="fas fa-warehouse text-secondary me-1"></i>{{ $shp->store->name }}
+                                <span class="badge store-badge-themed border px-2 py-1" style="{{ $shp->store->badge_style }}">
+                                    <i class="fas fa-warehouse me-1"></i>{{ $shp->store->name }}
                                 </span>
                             @else
                                 <span class="badge bg-light text-muted border px-2 py-1">Dépôt Central</span>

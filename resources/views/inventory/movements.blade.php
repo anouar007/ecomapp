@@ -275,13 +275,13 @@
                                 @if($movement->fromStore || $movement->toStore)
                                     <div class="mt-1 d-flex flex-wrap align-items-center gap-1" style="font-size: 0.68rem;">
                                         @if($movement->fromStore && $movement->toStore)
-                                            <span class="badge bg-light text-dark border px-1.5 py-0.5">{{ $movement->fromStore->name }}</span>
+                                            <span class="badge store-badge-themed border px-1.5 py-0.5" style="{{ $movement->fromStore->badge_style }}">{{ $movement->fromStore->name }}</span>
                                             <i class="fas fa-arrow-right text-muted" style="font-size: 0.58rem;"></i>
-                                            <span class="badge bg-info-subtle text-info border border-info-subtle px-1.5 py-0.5">{{ $movement->toStore->name }}</span>
+                                            <span class="badge store-badge-themed border px-1.5 py-0.5" style="{{ $movement->toStore->badge_style }}">{{ $movement->toStore->name }}</span>
                                         @elseif($movement->toStore)
-                                            <span class="badge bg-light text-dark border px-1.5 py-0.5"><i class="fas fa-warehouse text-primary me-1"></i>{{ $movement->toStore->name }}</span>
+                                            <span class="badge store-badge-themed border px-1.5 py-0.5" style="{{ $movement->toStore->badge_style }}"><i class="fas fa-warehouse me-1"></i>{{ $movement->toStore->name }}</span>
                                         @elseif($movement->fromStore)
-                                            <span class="badge bg-light text-dark border px-1.5 py-0.5"><i class="fas fa-warehouse text-secondary me-1"></i>{{ $movement->fromStore->name }}</span>
+                                            <span class="badge store-badge-themed border px-1.5 py-0.5" style="{{ $movement->fromStore->badge_style }}"><i class="fas fa-warehouse me-1"></i>{{ $movement->fromStore->name }}</span>
                                         @endif
                                     </div>
                                 @endif
