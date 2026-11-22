@@ -413,7 +413,7 @@
 
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2.5">
                         <span class="text-muted">Prix de vente :</span>
-                        <span class="fw-bold text-dark">{{ currency($product->price) }}</span>
+                        <span class="fw-bold text-dark">{{ currency($product->active_price) }}</span>
                     </div>
 
                     @if(auth()->check() && auth()->user()->hasRole('Admin') && $product->cost_price)

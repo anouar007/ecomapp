@@ -598,7 +598,7 @@ class Product extends Model
         if (!$this->cost_price || $this->cost_price == 0) {
             return 0;
         }
-        return (($this->price - $this->cost_price) / $this->cost_price) * 100;
+        return (((float) $this->active_price - (float) $this->cost_price) / (float) $this->cost_price) * 100;
     }
 
     /**
@@ -1008,12 +1008,12 @@ class Product extends Model
     public function getPriceRangeAttribute(): string
     {
         if (!$this->has_variants) {
-            return $this->formatted_price;
+            return $this->formatted_active_price;
         }
 
         $variants = $this->relationLoaded('variants') ? $this->variants : $this->variants()->get();
         if ($variants->isEmpty()) {
-            return $this->formatted_price;
+            return $this->formatted_active_price;
         }
 
         $min = $variants->min('price');

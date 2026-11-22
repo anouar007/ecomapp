@@ -70,7 +70,7 @@ class ProductTagController extends Controller
     public function create()
     {
         $products = Product::with(['images', 'productCategory'])
-            ->select('id', 'name', 'sku', 'price', 'sale_price', 'stock', 'category_id', 'status')
+            ->select('id', 'name', 'sku', 'price', 'sale_price', 'sale_end_date', 'stock', 'category_id', 'status')
             ->orderBy('name', 'asc')
             ->get();
         $selectedProductIds = [];
@@ -128,7 +128,7 @@ class ProductTagController extends Controller
     public function edit(ProductTag $productTag)
     {
         $products = Product::with(['images', 'productCategory'])
-            ->select('id', 'name', 'sku', 'price', 'sale_price', 'stock', 'category_id', 'status')
+            ->select('id', 'name', 'sku', 'price', 'sale_price', 'sale_end_date', 'stock', 'category_id', 'status')
             ->orderBy('name', 'asc')
             ->get();
         $selectedProductIds = $productTag->products()->pluck('products.id')->map(fn($id) => (int) $id)->toArray();

@@ -341,14 +341,14 @@
                                      data-id="{{ $prod->id }}"
                                      data-name="{{ strtolower($prod->name) }}"
                                      data-sku="{{ strtolower($prodSku) }}"
-                                     data-price="{{ $prod->price }}">
+                                     data-price="{{ $prod->active_price }}">
                                     <input type="checkbox" name="applicable_ids[]" value="{{ $prod->id }}" class="form-check-input product-checkbox" {{ $isChecked ? 'checked' : '' }} {{ $applicableTo != 'specific_products' ? 'disabled' : '' }}>
                                     <img src="{{ $prodImg }}" alt="{{ $prod->name }}" class="picker-item-thumb" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                     <div class="flex-grow-1 min-w-0">
                                         <div class="fw-semibold text-dark text-truncate product-name-label" style="font-size: 0.88rem;">{{ $prod->name }}</div>
                                         <div class="d-flex align-items-center gap-2 mt-0.5">
                                             <span class="badge bg-light text-muted border font-monospace" style="font-size: 0.68rem;">SKU: {{ $prodSku }}</span>
-                                            <span class="fw-bold text-dark small">{{ currency($prod->price) }}</span>
+                                            <span class="fw-bold text-dark small">{{ currency($prod->active_price) }}</span>
                                         </div>
                                     </div>
                                 </div>

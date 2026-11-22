@@ -58,7 +58,7 @@ class CouponController extends Controller
 
     public function create()
     {
-        $products = Product::with(['images', 'primaryImage'])->where('status', 'active')->orderBy('name')->get(['id', 'name', 'sku', 'price', 'image']);
+        $products = Product::with(['images', 'primaryImage'])->where('status', 'active')->orderBy('name')->get(['id', 'name', 'sku', 'price', 'sale_price', 'sale_end_date', 'image']);
         $categories = Category::withCount('products')->orderBy('name')->get(['id', 'name']);
         $users = User::orderBy('name')->get(['id', 'name', 'email']);
         $customers = Customer::orderBy('name')->get(['id', 'name', 'email']);
@@ -120,7 +120,7 @@ class CouponController extends Controller
 
     public function edit(Coupon $coupon)
     {
-        $products = Product::with(['images', 'primaryImage'])->where('status', 'active')->orderBy('name')->get(['id', 'name', 'sku', 'price', 'image']);
+        $products = Product::with(['images', 'primaryImage'])->where('status', 'active')->orderBy('name')->get(['id', 'name', 'sku', 'price', 'sale_price', 'sale_end_date', 'image']);
         $categories = Category::withCount('products')->orderBy('name')->get(['id', 'name']);
         $users = User::orderBy('name')->get(['id', 'name', 'email']);
         $customers = Customer::orderBy('name')->get(['id', 'name', 'email']);

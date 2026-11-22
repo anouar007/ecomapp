@@ -269,7 +269,7 @@ class HomeSectionController extends Controller
             'id' => $p->id,
             'name' => $p->name,
             'sku' => $p->sku ?: '—',
-            'price' => $p->formatted_price,
+            'price' => $p->formatted_active_price,
             'thumbnail' => $p->thumbnail,
             'stock' => (int)$p->stock,
             'in_stock' => $p->isInStock(),

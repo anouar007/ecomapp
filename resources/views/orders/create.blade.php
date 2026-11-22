@@ -264,11 +264,11 @@
                                                     data-variant-id=""
                                                     data-variant-name=""
                                                     data-name="{{ $prod->name }}" 
-                                                    data-price="{{ $prod->price }}" 
+                                                    data-price="{{ $prod->active_price }}" 
                                                     data-sku="{{ $prod->sku }}" 
                                                     data-stock="{{ $prod->stock }}"
                                                     data-thumb="{{ $prod->thumbnail }}">
-                                                {{ $prod->name }} &bull; {{ currency($prod->price) }} (Stock: {{ $prod->stock }})
+                                                {{ $prod->name }} &bull; {{ currency($prod->active_price) }} (Stock: {{ $prod->stock }})
                                             </option>
                                         @endif
                                     @endforeach

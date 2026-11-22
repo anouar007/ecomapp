@@ -207,7 +207,7 @@
                             </a>
                             <div class="card-body p-3 text-center">
                                 <h6 class="fw-bold mb-1"><a href="{{ route('shop.show', $prod->id) }}" class="text-decoration-none text-dark">{{ $prod->name }}</a></h6>
-                                <p class="text-primary fw-bold mb-0">{{ $prod->formatted_price }}</p>
+                                <p class="text-primary fw-bold mb-0">{{ $prod->formatted_active_price }}</p>
                             </div>
                         </div>
                     </div>

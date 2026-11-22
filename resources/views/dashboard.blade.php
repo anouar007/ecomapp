@@ -858,8 +858,8 @@
                                             <div class="stock-item-title text-truncate">{{ $product->name }}</div>
                                             <div class="d-flex align-items-center gap-1.5 flex-wrap">
                                                 <span class="stock-sku-badge">{{ $product->sku ?? ('#'.$product->id) }}</span>
-                                                @if((float)$product->price > 0)
-                                                    <span class="stock-price-text">&bull; {{ currency($product->price) }}</span>
+                                                @if((float)$product->active_price > 0)
+                                                    <span class="stock-price-text">&bull; {{ currency($product->active_price) }}</span>
                                                 @endif
                                             </div>
                                             <!-- Mini-jauge de niveau de stock -->

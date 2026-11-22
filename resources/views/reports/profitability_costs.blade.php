@@ -351,7 +351,7 @@
                 <tbody class="divide-y">
                     @forelse($products as $p)
                     @php
-                        $effectivePrice = (float)($p->sale_price ?? $p->price ?? 0);
+                        $effectivePrice = (float) ($p->active_price ?? 0);
                         $costPrice = (float)($p->cost_price ?? 0);
                         $profitDh = $effectivePrice - $costPrice;
                         $marginPct = $effectivePrice > 0 ? round(($profitDh / $effectivePrice) * 100, 1) : 0;
@@ -397,8 +397,8 @@
                         <!-- Selling Price -->
                         <td class="py-3 text-end">
                             <div class="fw-bold text-dark fs-6">{{ currency($effectivePrice) }}</div>
-                            @if($p->sale_price && $p->sale_price < $p->price)
-                                <div class="text-muted text-decoration-line-through small" style="font-size: 0.7rem;">{{ currency($p->price) }}</div>
+                            @if($p->isOnSale() && $p->old_price)
+                                <div class="text-muted text-decoration-line-through small" style="font-size: 0.7rem;">{{ currency($p->old_price) }}</div>
                             @endif
                         </td>
 
@@ -500,7 +500,7 @@
         <div class="d-block d-lg-none p-3 space-y-3 bg-light bg-opacity-50">
             @forelse($products as $p)
             @php
-                $mEffectivePrice = (float)($p->sale_price ?? $p->price ?? 0);
+                $mEffectivePrice = (float) ($p->active_price ?? 0);
                 $mCostPrice = (float)($p->cost_price ?? 0);
                 $mProfitDh = $mEffectivePrice - $mCostPrice;
                 $mMarginPct = $mEffectivePrice > 0 ? round(($mProfitDh / $mEffectivePrice) * 100, 1) : 0;

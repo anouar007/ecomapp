@@ -266,7 +266,7 @@ class ProfitabilityController extends Controller
         $product->update(['cost_price' => $validated['cost_price']]);
 
         if ($request->wantsJson() || $request->ajax()) {
-            $effectivePrice = (float)($product->sale_price ?? $product->price ?? 0);
+            $effectivePrice = (float) ($product->active_price ?? 0);
             $cost = (float)$product->cost_price;
             $profit = $effectivePrice - $cost;
             $marginPct = $effectivePrice > 0 ? round(($profit / $effectivePrice) * 100, 1) : 0;

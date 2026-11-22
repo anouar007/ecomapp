@@ -475,7 +475,7 @@
 
                                     <div class="item-actions-row d-flex align-items-center justify-content-between justify-content-md-end gap-2 flex-shrink-0">
                                         <div class="item-price text-end me-1">
-                                            <div class="fw-bold text-dark item-price-val" style="font-size: 0.95rem;">{{ $p->formatted_price }}</div>
+                                            <div class="fw-bold text-dark item-price-val" style="font-size: 0.95rem;">{{ $p->formatted_active_price }}</div>
                                         </div>
 
                                         <!-- Reorder Arrows -->

@@ -208,7 +208,7 @@
                             {{ $product->name }}
                         </h6>
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span class="fw-bold text-primary">{{ currency($product->price) }}</span>
+                            <span class="fw-bold text-primary">{{ currency($product->active_price) }}</span>
                             <span class="text-muted small" id="hub-res-text-{{ $product->id }}" style="font-size: 11px;">
                                 @if($product->image_width)
                                     {{ $product->image_width }}×{{ $product->image_height }} px

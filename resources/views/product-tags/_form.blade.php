@@ -22,7 +22,7 @@
     $sampleProduct = ($products ?? collect())->first();
     $sampleThumb = $sampleProduct ? $sampleProduct->thumbnail : asset('images/camera/cat_cameras.jpg');
     $sampleName = $sampleProduct ? $sampleProduct->name : 'Sony Alpha FX3 Cinema Line 4K';
-    $samplePrice = $sampleProduct ? $sampleProduct->formatted_price : '42 900,00 MAD';
+    $samplePrice = $sampleProduct ? $sampleProduct->formatted_active_price : '42 900,00 MAD';
 
     $presetIcons = [
         '' => 'Aucune',
@@ -1129,7 +1129,7 @@
                                 </div>
                             </div>
                             <span class="text-danger fw-bold flex-shrink-0" style="font-size: 0.76rem;">
-                                {{ currency($prod->price) }}
+                                {{ currency($prod->active_price) }}
                             </span>
                         </label>
                     @endforeach
@@ -1178,7 +1178,7 @@
                         @foreach(($products ?? collect())->take(25) as $idx => $pItem)
                             <option value="{{ $pItem->id }}"
                                     data-name="{{ $pItem->name }}"
-                                    data-price="{{ $pItem->formatted_price }}"
+                                    data-price="{{ $pItem->formatted_active_price }}"
                                     data-thumb="{{ $pItem->thumbnail }}">
                                 📷 Tester sur : {{ Str::limit($pItem->name, 42) }}
                             </option>

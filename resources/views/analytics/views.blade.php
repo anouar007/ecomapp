@@ -908,7 +908,7 @@
                                             <span class="badge bg-light text-dark border">{{ $product->productCategory?->name ?? 'Non classé' }}</span>
                                         </td>
                                         <td>
-                                            <span class="fw-bold text-dark">{{ currency($product->price) }}</span>
+                                            <span class="fw-bold text-dark">{{ currency($product->active_price) }}</span>
                                         </td>
                                         <td>
                                             @if($product->stock > 5)
@@ -980,7 +980,7 @@
                                 <!-- Bottom Row: Price, Stock, Visitors, Action Button -->
                                 <div class="d-flex align-items-center justify-content-between pt-2 border-top flex-wrap gap-1.5" style="font-size: 0.75rem;">
                                     <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                                        <strong class="text-dark">{{ currency($product->price) }}</strong>
+                                        <strong class="text-dark">{{ currency($product->active_price) }}</strong>
                                         @if($product->stock > 5)
                                             <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.65rem;">{{ $product->stock }} en stock</span>
                                         @elseif($product->stock > 0)
