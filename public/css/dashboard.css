@@ -3977,6 +3977,7 @@ i.fa-sparkles:before {
 }
 
 @media (max-width: 767.98px) {
+
     .mobile-order-card.mobile-order-status-pending,
     .mobile-order-card.mobile-order-status-pending:hover,
     .mobile-order-card.mobile-order-status-pending:active {
@@ -3987,8 +3988,8 @@ i.fa-sparkles:before {
     .mobile-order-card.mobile-order-status-en_demande,
     .mobile-order-card.mobile-order-status-en_demande:hover,
     .mobile-order-card.mobile-order-status-en_demande:active {
-        border: 2px solid #4338ca !important;
-        background-color: rgba(67, 56, 202, 0.3) !important;
+        border: 2px solid #c61aff !important;
+        background-color: rgba(198, 26, 255, 0.3) !important;
     }
 
     .mobile-order-card.mobile-order-status-reserved,
@@ -4074,7 +4075,7 @@ i.fa-sparkles:before {
 
 .mobile-order-date {
     font-size: 0.72rem;
-    color: #64748b;
+    color: #000000;
     margin-top: 2px;
 }
 
@@ -4890,9 +4891,9 @@ i.fa-sparkles:before {
 }
 
 .brand-badge.indigo {
-    background: #eef2ff;
-    color: #4338ca;
-    border-color: #c7d2fe;
+    background: rgba(198, 26, 255, 0.14);
+    color: #c61aff;
+    border-color: rgba(198, 26, 255, 0.38);
 }
 
 .brand-badge-btn {
@@ -4927,9 +4928,9 @@ i.fa-sparkles:before {
 }
 
 .brand-badge-btn.status-pill-en_demande {
-    background: #4338ca !important;
+    background: #c61aff !important;
     color: #ffffff !important;
-    border-color: #3730a3 !important;
+    border-color: #a800e0 !important;
 }
 
 .brand-badge-btn.status-pill-reserved {
@@ -4975,8 +4976,8 @@ i.fa-sparkles:before {
 }
 
 .dot-indigo {
-    background: #4338ca;
-    box-shadow: 0 0 0 2.5px rgba(67, 56, 202, 0.22);
+    background: #c61aff;
+    box-shadow: 0 0 0 2.5px rgba(198, 26, 255, 0.25);
 }
 
 /* TTC / HT Fiscal Tag Pills (Orders Table, Mobile Cards, Show Page, POS) */
@@ -5219,13 +5220,33 @@ i.fa-sparkles:before {
     position: relative;
 }
 
-.order-show-hero.order-hero-accent-pending { border-top-color: #d97706; }
-.order-show-hero.order-hero-accent-en_demande { border-top-color: #4338ca; }
-.order-show-hero.order-hero-accent-reserved { border-top-color: #7c3aed; }
-.order-show-hero.order-hero-accent-processing { border-top-color: #2563eb; }
-.order-show-hero.order-hero-accent-shipped { border-top-color: #0093ac; }
-.order-show-hero.order-hero-accent-delivered { border-top-color: #059669; }
-.order-show-hero.order-hero-accent-cancelled { border-top-color: #dc2626; }
+.order-show-hero.order-hero-accent-pending {
+    border-top-color: #d97706;
+}
+
+.order-show-hero.order-hero-accent-en_demande {
+    border-top-color: #c61aff;
+}
+
+.order-show-hero.order-hero-accent-reserved {
+    border-top-color: #7c3aed;
+}
+
+.order-show-hero.order-hero-accent-processing {
+    border-top-color: #2563eb;
+}
+
+.order-show-hero.order-hero-accent-shipped {
+    border-top-color: #0093ac;
+}
+
+.order-show-hero.order-hero-accent-delivered {
+    border-top-color: #059669;
+}
+
+.order-show-hero.order-hero-accent-cancelled {
+    border-top-color: #dc2626;
+}
 
 .order-show-hero-top {
     padding: 1.15rem 1.35rem;
@@ -6778,16 +6799,16 @@ dt,
 
 .order-show-page .order-quick-contact-btn.is-call,
 .mobile-order-card .mobile-order-quick-btn.is-call {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border-color: #bfdbfe;
+    background: #1d4ed8;
+    color: #eff6ff;
+    border-color: #1d4ed8;
 }
 
 .order-show-page .order-quick-contact-btn.is-whatsapp,
 .mobile-order-card .mobile-order-quick-btn.is-whatsapp {
-    background: #ecfdf5;
-    color: #059669;
-    border-color: #a7f3d0;
+    background: #079669;
+    color: #f8f6ff;
+    border-color: #079669;
 }
 
 .order-show-page .order-quick-contact-btn:active,
@@ -6820,12 +6841,29 @@ dt,
     transition: width 0.35s ease;
 }
 
-.order-show-page .order-mobile-progress-fill.fill-pending { background: #d97706; }
-.order-show-page .order-mobile-progress-fill.fill-en_demande { background: #4338ca; }
-.order-show-page .order-mobile-progress-fill.fill-reserved { background: #7c3aed; }
-.order-show-page .order-mobile-progress-fill.fill-processing { background: #2563eb; }
-.order-show-page .order-mobile-progress-fill.fill-shipped { background: #0093ac; }
-.order-show-page .order-mobile-progress-fill.fill-delivered { background: #059669; }
+.order-show-page .order-mobile-progress-fill.fill-pending {
+    background: #d97706;
+}
+
+.order-show-page .order-mobile-progress-fill.fill-en_demande {
+    background: #c61aff;
+}
+
+.order-show-page .order-mobile-progress-fill.fill-reserved {
+    background: #7c3aed;
+}
+
+.order-show-page .order-mobile-progress-fill.fill-processing {
+    background: #2563eb;
+}
+
+.order-show-page .order-mobile-progress-fill.fill-shipped {
+    background: #0093ac;
+}
+
+.order-show-page .order-mobile-progress-fill.fill-delivered {
+    background: #059669;
+}
 
 .order-show-page .order-mobile-steps-dots {
     display: grid;
@@ -7017,6 +7055,7 @@ dt,
 }
 
 @media (max-width: 991.98px) {
+
     /* Allow position: sticky inside order detail while keeping zero horizontal scroll */
     .main-content:has(.order-show-page) {
         overflow-x: clip !important;
@@ -7058,15 +7097,33 @@ dt,
         margin-bottom: 0 !important;
     }
 
-    .order-show-page #orderItemsSection { order: 1; }
-    .order-show-page #orderClientSection { order: 2; }
-    .order-show-page #orderNotesSection { order: 3; }
-    .order-show-page #orderSummarySection { order: 4; }
-    .order-show-page #orderPaymentSection { order: 5; }
-    .order-show-page #orderHistorySection { order: 6; }
+    .order-show-page #orderItemsSection {
+        order: 1;
+    }
+
+    .order-show-page #orderClientSection {
+        order: 2;
+    }
+
+    .order-show-page #orderNotesSection {
+        order: 3;
+    }
+
+    .order-show-page #orderSummarySection {
+        order: 4;
+    }
+
+    .order-show-page #orderPaymentSection {
+        order: 5;
+    }
+
+    .order-show-page #orderHistorySection {
+        order: 6;
+    }
 }
 
 @media (max-width: 767.98px) {
+
     /* Allow sticky nav strip inside container-fluid on mobile */
     .container-fluid:has(.order-show-page) {
         overflow-x: clip !important;
@@ -7173,7 +7230,7 @@ dt,
         padding: 2px 0 4px !important;
     }
 
-    .orders-kpi-grid > .col {
+    .orders-kpi-grid>.col {
         flex: initial !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -7190,7 +7247,7 @@ dt,
         text-align: left !important;
     }
 
-    .orders-kpi-grid .order-kpi-card > div {
+    .orders-kpi-grid .order-kpi-card>div {
         width: 100%;
         display: block !important;
     }
@@ -7226,9 +7283,9 @@ dt,
 
     .orders-kpi-grid .order-kpi-badge {
         display: inline-block !important;
-        font-size: 0.58rem !important;
-        font-weight: 700 !important;
-        padding: 1.5px 5px !important;
+        font-size: 0.68rem !important;
+        font-weight: 800 !important;
+        padding: 2px 6px !important;
         border-radius: 9999px !important;
         line-height: 1.15 !important;
         flex-shrink: 0 !important;
@@ -7784,7 +7841,7 @@ dt,
         font-size: 0.74rem;
     }
 
-    .orders-index-page .orders-kpi-grid > .col {
+    .orders-index-page .orders-kpi-grid>.col {
         flex: initial !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -7811,4 +7868,3 @@ dt,
         display: none;
     }
 }
-

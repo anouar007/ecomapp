@@ -61,9 +61,9 @@
         line-height: 1.2;
     }
     .order-kpi-badge {
-        font-size: 0.68rem;
-        font-weight: 700 !important;
-        padding: 2px 7px;
+        font-size: 0.82rem;
+        font-weight: 800 !important;
+        padding: 3px 8px;
         border-radius: 9999px;
         line-height: 1.2;
         letter-spacing: 0.02em;
@@ -124,28 +124,28 @@
         color: #ffffff !important;
     }
 
-    /* Status Color Themes (matched to status badges & mobile order cards at 0.3 opacity) */
+    /* Status Color Themes (matched to status badges & mobile order cards with lighter tint) */
     .kpi-theme-all {
-        --kpi-accent: #0f172a;
-        --kpi-active-border: #0f172a;
-        --kpi-bg: rgba(15, 23, 42, 0.18);
-        --kpi-border: #cbd5e1;
-        --kpi-text: #0f172a;
-        --kpi-ring: rgba(15, 23, 42, 0.25);
+        --kpi-accent: #64748b;
+        --kpi-active-border: #475569;
+        --kpi-bg: rgba(100, 116, 139, 0.12);
+        --kpi-border: #94a3b8;
+        --kpi-text: #475569;
+        --kpi-ring: rgba(100, 116, 139, 0.25);
     }
     .kpi-theme-all .order-kpi-icon {
-        background: rgba(255, 255, 255, 0.78);
-        color: #0f172a;
+        background: rgba(255, 255, 255, 0.88);
+        color: #475569;
     }
     .kpi-theme-all .order-kpi-badge {
-        background: rgba(255, 255, 255, 0.78);
-        color: #0f172a;
+        background: rgba(255, 255, 255, 0.88);
+        color: #475569;
     }
 
     .kpi-theme-pending {
         --kpi-accent: #d97706;
         --kpi-active-border: #b45309;
-        --kpi-bg: rgba(217, 119, 6, 0.3);
+        --kpi-bg: rgba(217, 119, 6, 0.12);
         --kpi-border: #f59e0b;
         --kpi-text: #b45309;
         --kpi-ring: rgba(217, 119, 6, 0.28);
@@ -160,26 +160,26 @@
     }
 
     .kpi-theme-en-demande {
-        --kpi-accent: #4338ca;
-        --kpi-active-border: #3730a3;
-        --kpi-bg: rgba(67, 56, 202, 0.3);
-        --kpi-border: #818cf8;
-        --kpi-text: #4338ca;
-        --kpi-ring: rgba(67, 56, 202, 0.28);
+        --kpi-accent: #c61aff;
+        --kpi-active-border: #a800e0;
+        --kpi-bg: rgba(198, 26, 255, 0.12);
+        --kpi-border: #d966ff;
+        --kpi-text: #a800e0;
+        --kpi-ring: rgba(198, 26, 255, 0.28);
     }
     .kpi-theme-en-demande .order-kpi-icon {
         background: rgba(255, 255, 255, 0.78);
-        color: #4338ca;
+        color: #c61aff;
     }
     .kpi-theme-en-demande .order-kpi-badge {
         background: rgba(255, 255, 255, 0.78);
-        color: #4338ca;
+        color: #a800e0;
     }
 
     .kpi-theme-reserved {
         --kpi-accent: #7c3aed;
         --kpi-active-border: #6d28d9;
-        --kpi-bg: rgba(124, 58, 237, 0.3);
+        --kpi-bg: rgba(124, 58, 237, 0.12);
         --kpi-border: #a78bfa;
         --kpi-text: #6d28d9;
         --kpi-ring: rgba(124, 58, 237, 0.28);
@@ -196,7 +196,7 @@
     .kpi-theme-processing {
         --kpi-accent: #2563eb;
         --kpi-active-border: #1d4ed8;
-        --kpi-bg: rgba(37, 99, 235, 0.3);
+        --kpi-bg: rgba(37, 99, 235, 0.12);
         --kpi-border: #60a5fa;
         --kpi-text: #1d4ed8;
         --kpi-ring: rgba(37, 99, 235, 0.28);
@@ -213,7 +213,7 @@
     .kpi-theme-shipped {
         --kpi-accent: #0093ac;
         --kpi-active-border: #0e7490;
-        --kpi-bg: rgba(0, 147, 172, 0.3);
+        --kpi-bg: rgba(0, 147, 172, 0.12);
         --kpi-border: #38bdf8;
         --kpi-text: #0e7490;
         --kpi-ring: rgba(0, 147, 172, 0.28);
@@ -230,7 +230,7 @@
     .kpi-theme-delivered {
         --kpi-accent: #059669;
         --kpi-active-border: #047857;
-        --kpi-bg: rgba(5, 150, 105, 0.3);
+        --kpi-bg: rgba(5, 150, 105, 0.12);
         --kpi-border: #34d399;
         --kpi-text: #047857;
         --kpi-ring: rgba(5, 150, 105, 0.28);
@@ -247,7 +247,7 @@
     .kpi-theme-cancelled {
         --kpi-accent: #dc2626;
         --kpi-active-border: #b91c1c;
-        --kpi-bg: rgba(220, 38, 38, 0.3);
+        --kpi-bg: rgba(220, 38, 38, 0.12);
         --kpi-border: #f87171;
         --kpi-text: #b91c1c;
         --kpi-ring: rgba(220, 38, 38, 0.28);
@@ -301,9 +301,9 @@
         }
         .order-kpi-card .order-kpi-badge {
             display: inline-block !important;
-            font-size: 0.58rem;
-            font-weight: 700;
-            padding: 1.5px 5px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 6px;
             border-radius: 9999px;
             line-height: 1.15;
             flex-shrink: 0;
@@ -1628,7 +1628,7 @@
         const st = (order.status || '').toLowerCase();
         const stMap = {
             'pending': { label: 'En attente', dot: 'amber', badgeClass: 'warning status-pill-pending', textClass: 'text-warning', mobBg: '#d97706', mobColor: '#ffffff', mobBorder: '#b45309' },
-            'en_demande': { label: 'Sur Commande', dot: 'indigo', badgeClass: 'indigo status-pill-en_demande', textClass: 'text-primary', mobBg: '#4338ca', mobColor: '#ffffff', mobBorder: '#3730a3' },
+            'en_demande': { label: 'Sur Commande', dot: 'indigo', badgeClass: 'indigo status-pill-en_demande', textClass: 'text-primary', mobBg: '#c61aff', mobColor: '#ffffff', mobBorder: '#a800e0' },
             'reserved': { label: 'Réservé', dot: 'purple', badgeClass: 'purple status-pill-reserved', textClass: 'text-purple', mobBg: '#7c3aed', mobColor: '#ffffff', mobBorder: '#6d28d9' },
             'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary status-pill-processing', textClass: 'text-primary', mobBg: '#2563eb', mobColor: '#ffffff', mobBorder: '#1d4ed8' },
             'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info status-pill-shipped', textClass: 'text-info', mobBg: '#0093ac', mobColor: '#ffffff', mobBorder: '#0e7490' },
@@ -1980,7 +1980,7 @@
         if (!sel) return;
         const themeMap = {
             'pending':    { bg: '#d97706', border: '#b45309', color: '#ffffff' },
-            'en_demande': { bg: '#4338ca', border: '#3730a3', color: '#ffffff' },
+            'en_demande': { bg: '#c61aff', border: '#a800e0', color: '#ffffff' },
             'reserved':   { bg: '#7c3aed', border: '#6d28d9', color: '#ffffff' },
             'processing': { bg: '#2563eb', border: '#1d4ed8', color: '#ffffff' },
             'shipped':    { bg: '#0093ac', border: '#0e7490', color: '#ffffff' },

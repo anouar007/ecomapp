@@ -393,7 +393,7 @@ function syncOrderEditStatusColor(sel) {
     if (!sel) return;
     const themeMap = {
         'pending':    { bg: '#d97706', border: '#b45309', color: '#ffffff' },
-        'en_demande': { bg: '#4338ca', border: '#3730a3', color: '#ffffff' },
+        'en_demande': { bg: '#c61aff', border: '#a800e0', color: '#ffffff' },
         'reserved':   { bg: '#7c3aed', border: '#6d28d9', color: '#ffffff' },
         'processing': { bg: '#2563eb', border: '#1d4ed8', color: '#ffffff' },
         'shipped':    { bg: '#0093ac', border: '#0e7490', color: '#ffffff' },
