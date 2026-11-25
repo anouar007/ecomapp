@@ -60,6 +60,7 @@ class OrderController extends Controller
             'user',
             'createdByUser',
             'confirmedByUser',
+            'cancelledByUser',
             'items.product.images',
             'items.product.primaryImage',
             'items.variant',
@@ -433,6 +434,7 @@ class OrderController extends Controller
             'user',
             'createdByUser',
             'confirmedByUser',
+            'cancelledByUser',
         ]);
         $stores = $this->activeStores();
         $orderHistory = $this->buildOrderHistory($order);
@@ -452,6 +454,9 @@ class OrderController extends Controller
 
         $fieldLabels = [
             'status' => 'Statut commande',
+            'cancellation_reason' => 'Raison d\'annulation',
+            'cancelled_by' => 'Annulée par',
+            'cancelled_at' => 'Date d\'annulation',
             'payment_status' => 'Statut paiement',
             'payment_method' => 'Mode de paiement',
             'transaction_id' => 'Réf. transaction',
@@ -512,7 +517,7 @@ class OrderController extends Controller
             if ($key === 'store_id') {
                 return $storeNames->get((int) $val, "Dépôt #{$val}");
             }
-            if (in_array($key, ['confirmed_by', 'created_by'], true) && is_numeric($val)) {
+            if (in_array($key, ['confirmed_by', 'created_by', 'cancelled_by'], true) && is_numeric($val)) {
                 return User::where('id', (int) $val)->value('name') ?? "Utilisateur #{$val}";
             }
             if ($key === 'stock_deducted') {
@@ -746,7 +751,15 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
+            'cancellation_reason' => [
+                'required_if:status,cancelled',
+                'nullable',
+                'string',
+                'max:1000',
+            ],
             'payment_status' => ['required', 'in:pending,partial,paid,failed,refunded'],
+            'paid_amount' => ['nullable', 'numeric', 'min:0'],
+            'payment_due_date' => ['nullable', 'date'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
             'delivery_type' => ['nullable', 'in:store,our_team,livreur,ozon,autre'],
             'shipping_cost' => ['nullable', 'numeric', 'min:0'],
@@ -755,7 +768,16 @@ class OrderController extends Controller
             'notes' => ['nullable', 'string'],
             'item_stores' => ['nullable', 'array'],
             'item_stores.*' => ['nullable', 'exists:stores,id'],
+        ], [
+            'cancellation_reason.required_if' => "La raison d'annulation est obligatoire lorsque le statut est Annulée.",
         ]);
+
+        $cleanCancelReasonInput = trim((string) ($validated['cancellation_reason'] ?? ''));
+        if ($validated['status'] === 'cancelled' && $cleanCancelReasonInput === '') {
+            return back()->withErrors([
+                'cancellation_reason' => "La raison d'annulation est obligatoire lorsque le statut est Annulée.",
+            ])->withInput();
+        }
 
         try {
             DB::transaction(function () use ($order, $validated) {
@@ -781,6 +803,8 @@ class OrderController extends Controller
                     ? Order::normalizeDeliveryType($validated['delivery_type'])
                     : $order->delivery_type;
 
+                $cleanCancelReason = trim((string) ($validated['cancellation_reason'] ?? ''));
+
                 $orderUpdateData = [
                     'status' => $validated['status'],
                     'payment_status' => $validated['payment_status'],
@@ -790,6 +814,31 @@ class OrderController extends Controller
                     'transaction_id' => $validated['transaction_id'] ?? null,
                     'notes' => $validated['notes'] ?? null,
                 ];
+
+                if ($validated['status'] === 'cancelled') {
+                    $orderUpdateData['cancellation_reason'] = $cleanCancelReason;
+                    $orderUpdateData['cancelled_at'] = ($originalStatus !== 'cancelled' || !$order->cancelled_at)
+                        ? now()
+                        : $order->cancelled_at;
+                    $orderUpdateData['cancelled_by'] = ($originalStatus !== 'cancelled' || !$order->cancelled_by)
+                        ? Auth::id()
+                        : $order->cancelled_by;
+                } elseif ($originalStatus === 'cancelled') {
+                    $orderUpdateData['cancellation_reason'] = null;
+                    $orderUpdateData['cancelled_at'] = null;
+                    $orderUpdateData['cancelled_by'] = null;
+                }
+
+                // Restore stock BEFORE saving status='cancelled' so InventoryMovement records the full reason & staff user before OrderObserver runs
+                $shouldRestore = ($originalStatus === 'delivered' && $validated['status'] !== 'delivered')
+                    || ($validated['status'] === 'cancelled' && $originalStatus !== 'cancelled');
+                if ($shouldRestore && $order->stock_deducted) {
+                    $reason = $validated['status'] === 'cancelled'
+                        ? "Annulation commande #{$order->order_number}" . ($cleanCancelReason !== '' ? " : {$cleanCancelReason}" : '')
+                        : "Retour statut commande #{$order->order_number}";
+                    $order->restoreStock(Auth::id(), $reason);
+                }
+
                 $order->update($orderUpdateData);
 
                 if ($newDeliveryType === 'store') {
@@ -798,38 +847,24 @@ class OrderController extends Controller
                     $order->applyShippingCost((float) $validated['shipping_cost']);
                 }
 
-                if ($validated['payment_status'] === 'paid') {
-                    $order->update([
-                        'paid_amount' => $order->total,
-                        'remaining_amount' => 0,
-                    ]);
-                }
+                $hasPaidAmount = array_key_exists('paid_amount', $validated) && $validated['paid_amount'] !== null;
+                $hasDueDate = array_key_exists('payment_due_date', $validated);
+                $this->applyPaymentStatusToOrder(
+                    $order,
+                    $validated['payment_status'],
+                    $hasPaidAmount ? (float) $validated['paid_amount'] : null,
+                    $hasDueDate,
+                    $hasDueDate && !empty($validated['payment_due_date']) ? (string) $validated['payment_due_date'] : null
+                );
 
-                // Auto-mark as paid on delivery
-                if ($validated['status'] === 'delivered') {
-                    $order->update([
-                        'payment_status' => 'paid',
-                        'paid_amount' => $order->total,
-                        'remaining_amount' => 0,
-                    ]);
-                    if ($order->invoice) {
-                        $order->invoice->update(['payment_status' => 'paid']);
-                    }
+                // Auto-mark as paid only when newly transitioning status to delivered
+                if ($validated['status'] === 'delivered' && $originalStatus !== 'delivered') {
+                    $this->applyPaymentStatusToOrder($order, 'paid');
                 }
 
                 // Deduct stock on delivery if not yet deducted
                 if ($validated['status'] === 'delivered' && !$order->stock_deducted) {
                     $order->deductStock(Auth::id(), "Livraison commande #{$order->order_number}");
-                }
-
-                // Restore stock if reverted from delivered or newly cancelled
-                $shouldRestore = ($originalStatus === 'delivered' && $validated['status'] !== 'delivered')
-                    || ($validated['status'] === 'cancelled' && $originalStatus !== 'cancelled');
-                if ($shouldRestore && $order->stock_deducted) {
-                    $reason = $validated['status'] === 'cancelled'
-                        ? "Annulation commande #{$order->order_number}"
-                        : "Retour statut commande #{$order->order_number}";
-                    $order->restoreStock(Auth::id(), $reason);
                 }
             });
         } catch (\InvalidArgumentException $e) {
@@ -992,7 +1027,7 @@ class OrderController extends Controller
                 'sale_price' => $product->sale_price !== null ? round((float) $product->sale_price, 2) : null,
                 'stock' => (int) ($product->stock ?? 0),
                 'track_inventory' => (bool) ($product->track_inventory ?? true),
-                'force_in_stock' => (bool) ($product->force_in_stock ?? false),
+                'force_in_stock' => (bool) ($product->force_in_stock ?? true),
                 'has_variants' => (bool) $product->has_variants && $product->variants->isNotEmpty(),
                 'image' => $product->thumbnail,
                 'variants' => $product->variants->map(fn ($v) => [
@@ -1089,17 +1124,75 @@ class OrderController extends Controller
     }
 
     /**
+     * Synchronize an order's payment_status, paid/remaining amounts, due date, and linked invoice.
+     */
+    private function applyPaymentStatusToOrder(
+        Order $order,
+        string $paymentStatus,
+        ?float $paidAmount = null,
+        bool $updateDueDate = false,
+        ?string $dueDate = null
+    ): void {
+        $orderTotal = max(0.0, round((float) $order->total, 2));
+        $order->payment_status = $paymentStatus;
+
+        if ($paymentStatus === 'paid') {
+            $order->paid_amount = $orderTotal;
+            $order->remaining_amount = 0;
+        } elseif ($paymentStatus === 'partial') {
+            $resolvedPaid = $paidAmount !== null
+                ? $paidAmount
+                : round((float) ($order->paid_amount ?? 0), 2);
+            $resolvedPaid = min($orderTotal, max(0.0, round($resolvedPaid, 2)));
+            $order->paid_amount = $resolvedPaid;
+            $order->remaining_amount = max(0.0, round($orderTotal - $resolvedPaid, 2));
+            if ($updateDueDate) {
+                $order->payment_due_date = $dueDate ?: null;
+            }
+        } else {
+            $order->paid_amount = 0;
+            $order->remaining_amount = 0;
+        }
+
+        $order->save();
+
+        if ($order->invoice) {
+            if ($paymentStatus === 'paid') {
+                $order->invoice->update(['payment_status' => 'paid']);
+            } elseif ($paymentStatus === 'partial') {
+                $order->invoice->update(['payment_status' => 'partial']);
+            } elseif (in_array($paymentStatus, ['pending', 'failed'], true)) {
+                $order->invoice->update(['payment_status' => 'unpaid']);
+            }
+        }
+    }
+
+    /**
      * Quick update order delivery, payment status, TTC/HT tax mode, or delivery_type tag via AJAX.
      */
     public function quickUpdateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
             'status' => ['nullable', 'in:pending,en_demande,reserved,processing,shipped,delivered,cancelled'],
+            'cancellation_reason' => ['nullable', 'string', 'max:1000'],
             'payment_status' => ['nullable', 'in:pending,partial,paid,failed,refunded'],
+            'paid_amount' => ['nullable', 'numeric', 'min:0'],
+            'payment_due_date' => ['nullable', 'date'],
             'tax_mode' => ['nullable', 'in:ttc,ht'],
             'delivery_type' => ['nullable', 'in:store,our_team,livreur,ozon,autre'],
             'shipping_cost' => ['nullable', 'numeric', 'min:0'],
         ]);
+
+        $cleanCancelReason = trim((string) ($validated['cancellation_reason'] ?? ''));
+        if (($validated['status'] ?? null) === 'cancelled' && $cleanCancelReason === '') {
+            return response()->json([
+                'success' => false,
+                'message' => "Veuillez indiquer la raison d'annulation de la commande.",
+                'errors' => [
+                    'cancellation_reason' => ["La raison d'annulation est obligatoire."],
+                ],
+            ], 422);
+        }
 
         $hasShippingCost = array_key_exists('shipping_cost', $validated) && $validated['shipping_cost'] !== null;
 
@@ -1109,14 +1202,38 @@ class OrderController extends Controller
 
         $order->load('items.product');
 
-        DB::transaction(function () use ($order, $validated, $hasShippingCost) {
-            if (isset($validated['status']) && $validated['status'] !== $order->status) {
+        DB::transaction(function () use ($order, $validated, $hasShippingCost, $cleanCancelReason) {
+            if (isset($validated['status']) && ($validated['status'] !== $order->status || $validated['status'] === 'cancelled')) {
                 $originalStatus = $order->status;
                 $newStatus = $validated['status'];
+
+                // Restore stock BEFORE saving status='cancelled' so InventoryMovement records the full reason & staff user before OrderObserver runs
+                $shouldRestore = ($originalStatus === 'delivered' && $newStatus !== 'delivered')
+                    || ($newStatus === 'cancelled' && $originalStatus !== 'cancelled');
+                if ($shouldRestore && $order->stock_deducted) {
+                    $reason = $newStatus === 'cancelled'
+                        ? "Annulation commande #{$order->order_number} : {$cleanCancelReason}"
+                        : "Retour statut commande #{$order->order_number}";
+                    $order->restoreStock(Auth::id(), $reason);
+                }
+
                 $order->status = $newStatus;
+                if ($newStatus === 'cancelled') {
+                    $order->cancellation_reason = $cleanCancelReason;
+                    $order->cancelled_at = ($originalStatus !== 'cancelled' || !$order->cancelled_at)
+                        ? now()
+                        : $order->cancelled_at;
+                    $order->cancelled_by = ($originalStatus !== 'cancelled' || !$order->cancelled_by)
+                        ? Auth::id()
+                        : $order->cancelled_by;
+                } elseif ($originalStatus === 'cancelled') {
+                    $order->cancellation_reason = null;
+                    $order->cancelled_at = null;
+                    $order->cancelled_by = null;
+                }
                 $order->save();
 
-                if ($newStatus === 'delivered') {
+                if ($newStatus === 'delivered' && $originalStatus !== 'delivered') {
                     $order->payment_status = 'paid';
                     $order->paid_amount = $order->total;
                     $order->remaining_amount = 0;
@@ -1129,24 +1246,18 @@ class OrderController extends Controller
                 if ($newStatus === 'delivered' && !$order->stock_deducted) {
                     $order->deductStock(Auth::id(), "Livraison commande #{$order->order_number}");
                 }
-
-                $shouldRestore = ($originalStatus === 'delivered' && $newStatus !== 'delivered')
-                    || ($newStatus === 'cancelled' && $originalStatus !== 'cancelled');
-                if ($shouldRestore && $order->stock_deducted) {
-                    $reason = $newStatus === 'cancelled'
-                        ? "Annulation commande #{$order->order_number}"
-                        : "Retour statut commande #{$order->order_number}";
-                    $order->restoreStock(Auth::id(), $reason);
-                }
             }
 
             if (isset($validated['payment_status'])) {
-                $order->payment_status = $validated['payment_status'];
-                if ($validated['payment_status'] === 'paid') {
-                    $order->paid_amount = $order->total;
-                    $order->remaining_amount = 0;
-                }
-                $order->save();
+                $hasPaidAmount = array_key_exists('paid_amount', $validated) && $validated['paid_amount'] !== null;
+                $hasDueDate = array_key_exists('payment_due_date', $validated);
+                $this->applyPaymentStatusToOrder(
+                    $order,
+                    $validated['payment_status'],
+                    $hasPaidAmount ? (float) $validated['paid_amount'] : null,
+                    $hasDueDate,
+                    $hasDueDate && !empty($validated['payment_due_date']) ? (string) $validated['payment_due_date'] : null
+                );
             }
 
             if (isset($validated['tax_mode']) && $validated['tax_mode'] !== $order->tax_mode) {
@@ -1174,7 +1285,7 @@ class OrderController extends Controller
         });
 
         $order->refresh();
-        $order->loadMissing(['createdByUser', 'confirmedByUser']);
+        $order->loadMissing(['createdByUser', 'confirmedByUser', 'cancelledByUser']);
 
         $statsQuery = Order::query();
         $channel = $request->input('channel');
@@ -1236,6 +1347,9 @@ class OrderController extends Controller
                     'cancelled' => 'Annulée',
                     default => ucfirst($order->status)
                 },
+                'cancellation_reason' => $order->cancellation_reason,
+                'cancelled_at_formatted' => $order->cancelled_at?->format('d/m/Y à H:i'),
+                'cancelled_by_name' => $order->cancelledByUser?->name,
                 'payment_status' => $order->payment_status,
                 'payment_status_label' => match ($order->payment_status) {
                     'paid' => 'Payé',
@@ -1257,6 +1371,8 @@ class OrderController extends Controller
                 'paid_amount_formatted' => currency($order->paid_amount ?? 0),
                 'remaining_amount' => round((float) ($order->remaining_amount ?? 0), 2),
                 'remaining_amount_formatted' => currency($order->remaining_amount ?? 0),
+                'payment_due_date' => $order->payment_due_date?->format('Y-m-d'),
+                'payment_due_date_formatted' => $order->payment_due_date?->format('d/m/Y'),
                 'confirmed_by' => $order->confirmed_by,
                 'confirmed_by_name' => $order->confirmedByUser?->name,
                 'confirmed_at_formatted' => $order->confirmed_at?->format('d/m/Y à H:i'),

@@ -1282,13 +1282,15 @@
                         <div class="border rounded p-2.5 bg-light d-flex flex-wrap gap-2 product-card-tag-container" style="min-height: 48px;">
                             @forelse($productTags ?? [] as $pTag)
                                 @php $isTagSelected = in_array((int) $pTag->id, $currentTagIds); @endphp
-                                <label class="d-inline-flex align-items-center gap-1.5 border rounded px-2 py-1 bg-white shadow-2xs" style="cursor: pointer; border-color: {{ $isTagSelected ? '#dc2626' : '#e5e7eb' }} !important;">
+                                <label class="d-inline-flex align-items-center gap-1.5 border rounded px-2 py-1 bg-white shadow-2xs" style="cursor: pointer; border-color: {{ $isTagSelected ? '#dc2626' : '#e5e7eb' }} !important;" title="Position : {{ $pTag->position_label }}">
                                     <input type="checkbox" name="tag_ids[]" value="{{ $pTag->id }}" class="form-check-input mt-0" {{ $isTagSelected ? 'checked' : '' }}>
                                     <span class="product-card-tag-badge" style="{{ $pTag->inline_style }} font-size: 0.68rem !important; padding: 2px 7px !important;">
                                         @if(!empty($pTag->icon))
                                             <i class="{{ $pTag->icon }}"></i>
                                         @endif
-                                        <span>{{ $pTag->name }}</span>
+                                        @if(trim((string) $pTag->name) !== '')
+                                            <span>{{ $pTag->name }}</span>
+                                        @endif
                                     </span>
                                 </label>
                             @empty
@@ -1400,7 +1402,7 @@
                     <div class="mt-3 pt-3 border-top">
                         <div class="form-check form-switch d-flex align-items-start gap-2 ps-0">
                             <input type="hidden" name="force_in_stock" value="0">
-                            <input class="form-check-input ms-0 mt-1 flex-shrink-0" type="checkbox" role="switch" id="force_in_stock" name="force_in_stock" value="1" {{ old('force_in_stock', $product->force_in_stock) ? 'checked' : '' }} style="width: 2.25em; height: 1.15em; cursor: pointer;">
+                            <input class="form-check-input ms-0 mt-1 flex-shrink-0" type="checkbox" role="switch" id="force_in_stock" name="force_in_stock" value="1" {{ old('force_in_stock', $product->force_in_stock ?? 1) ? 'checked' : '' }} style="width: 2.25em; height: 1.15em; cursor: pointer;">
                             <label class="form-check-label" for="force_in_stock" style="cursor: pointer;">
                                 <span class="fw-semibold text-dark d-block">
                                     <i class="fas fa-infinity text-success me-1"></i> Toujours en stock (forcer disponibilité)

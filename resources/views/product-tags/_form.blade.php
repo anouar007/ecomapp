@@ -1,7 +1,7 @@
 @php
     $isEdit = isset($productTag) && $productTag->exists;
     $isDiscountTag = isset($productTag) && (bool) ($productTag->is_discount_tag ?? false);
-    $name = old('name', $productTag->name ?? 'NEW');
+    $name = old('name', $isEdit ? (string) ($productTag->name ?? '') : '');
     $icon = old('icon', $productTag->icon ?? 'fas fa-bolt');
     $styleType = old('style_type', $productTag->style_type ?? 'gradient');
     $bgColor = old('bg_color', $productTag->bg_color ?? '#10b981');
@@ -590,24 +590,32 @@
     .sim-corner-slot.pos-top-left {
         top: clamp(5px, 3.2cqw, 10px);
         left: clamp(5px, 3.2cqw, 10px);
+        right: auto;
+        bottom: auto;
         align-items: flex-start;
     }
 
     .sim-corner-slot.pos-top-right {
         top: clamp(5px, 3.2cqw, 10px);
         right: clamp(5px, 3.2cqw, 10px);
+        left: auto;
+        bottom: auto;
         align-items: flex-end;
     }
 
     .sim-corner-slot.pos-bottom-left {
         bottom: clamp(5px, 3.2cqw, 10px);
         left: clamp(5px, 3.2cqw, 10px);
+        top: auto;
+        right: auto;
         align-items: flex-start;
     }
 
     .sim-corner-slot.pos-bottom-right {
         bottom: clamp(5px, 3.2cqw, 10px);
         right: clamp(5px, 3.2cqw, 10px);
+        top: auto;
+        left: auto;
         align-items: flex-end;
     }
 
@@ -768,8 +776,11 @@
             <div class="row g-3">
                 <div class="col-12 col-md-7">
                     <label class="studio-label" for="tagNameInput">
-                        <span>{{ $isDiscountTag ? 'Format du Pourcentage Auto' : 'Libellé du Badge' }} <span class="text-danger">*</span></span>
-                        <span class="text-muted fw-normal" style="font-size: 0.72rem;" id="charCountLabel">{{ strlen($name) }}/60</span>
+                        <span>{{ $isDiscountTag ? 'Format du Pourcentage Auto' : 'Libellé du Badge' }}</span>
+                        <span class="d-inline-flex align-items-center gap-2">
+                            <span class="text-muted fw-normal" style="font-size: 0.7rem;">Optionnel</span>
+                            <span class="text-muted fw-normal" style="font-size: 0.72rem;" id="charCountLabel">{{ strlen($name) }}/60</span>
+                        </span>
                     </label>
                     <input type="text"
                            name="name"
@@ -777,8 +788,7 @@
                            class="form-control @error('name') is-invalid @enderror"
                            value="{{ $name }}"
                            maxlength="60"
-                           placeholder="{{ $isDiscountTag ? 'Ex: -{percent}% ou PROMO -{percent}%' : 'Ex: NEW, TOP SELLER, PROMO -20%...' }}"
-                           required>
+                           placeholder="{{ $isDiscountTag ? 'Ex: -{percent}% ou PROMO -{percent}%' : 'Ex: NEW, TOP SELLER, PROMO -20% (optionnel)...' }}">
                     @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -1070,7 +1080,7 @@
                     </span>
                     <div>
                         <h2 class="studio-card-title">{{ $isDiscountTag ? 'Activation du Badge Réduction Auto (−%)' : 'Attribution aux Produits & Publication' }}</h2>
-                        <p class="studio-card-subtitle">{{ $isDiscountTag ? 'Ce badge s\'affiche automatiquement sous les tags dès qu\'un produit a un ancien prix supérieur au prix actuel' : 'Sélectionnez les produits qui afficheront immédiatement ce badge' }}</p>
+                        <p class="studio-card-subtitle">{{ $isDiscountTag ? 'Ce badge s\'affiche automatiquement dans le coin sélectionné ci-dessus dès qu\'un produit a un ancien prix supérieur au prix actuel' : 'Sélectionnez les produits qui afficheront immédiatement ce badge' }}</p>
                     </div>
                 </div>
                 @if(!$isDiscountTag)
@@ -1222,7 +1232,7 @@
                                 <div class="sim-corner-slot pos-{{ $position }}" id="simulatedCornerSlot">
                                     <span class="product-card-tag-badge" id="livePreviewBadge">
                                         <i id="livePreviewIcon" class="{{ $icon }}" style="{{ empty($icon) ? 'display:none;' : '' }}"></i>
-                                        <span id="livePreviewText">{{ $name }}</span>
+                                        <span id="livePreviewText" style="{{ trim((string) $name) === '' ? 'display:none;' : '' }}">{{ $name }}</span>
                                     </span>
                                 </div>
                                 <img id="simProductImage1" src="{{ $sampleThumb }}" alt="Preview" onerror="this.onerror=null;this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
@@ -1246,7 +1256,7 @@
                                 <div class="sim-corner-slot pos-{{ $position }}" id="simulatedCornerSlot2">
                                     <span class="product-card-tag-badge" id="livePreviewBadge2">
                                         <i id="livePreviewIcon2" class="{{ $icon }}" style="{{ empty($icon) ? 'display:none;' : '' }}"></i>
-                                        <span id="livePreviewText2">{{ $name }}</span>
+                                        <span id="livePreviewText2" style="{{ trim((string) $name) === '' ? 'display:none;' : '' }}">{{ $name }}</span>
                                     </span>
                                 </div>
                                 <img id="simProductImage2" src="{{ $sampleThumb }}" alt="Preview Mobile" onerror="this.onerror=null;this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
@@ -1298,7 +1308,7 @@ function hexToRgbaJs(hex, alpha) {
 
 function updateLiveTagPreview() {
     const nameInput = document.getElementById('tagNameInput');
-    const rawName = nameInput.value || 'BADGE';
+    const rawName = nameInput.value.trim();
     const name = rawName.replace('{percent}', '25');
     document.getElementById('charCountLabel').textContent = `${nameInput.value.length}/60`;
 
@@ -1374,7 +1384,13 @@ function updateLiveTagPreview() {
         const slotEl = document.getElementById(sId);
         if (!badge) return;
 
-        textEl.textContent = name;
+        if (rawName !== '') {
+            textEl.textContent = name;
+            textEl.style.display = 'inline';
+        } else {
+            textEl.textContent = '';
+            textEl.style.display = 'none';
+        }
         if (icon) {
             iconEl.className = icon;
             iconEl.style.display = 'inline-block';

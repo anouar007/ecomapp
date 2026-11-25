@@ -253,7 +253,9 @@
                                         @if(!empty($tag->icon))
                                             <i class="{{ $tag->icon }}"></i>
                                         @endif
-                                        <span>{{ $tag->is_discount_tag ? $tag->formatDiscountLabel(25) : $tag->name }}</span>
+                                        @if($tag->is_discount_tag || trim((string) $tag->name) !== '')
+                                            <span>{{ $tag->is_discount_tag ? $tag->formatDiscountLabel(25) : $tag->name }}</span>
+                                        @endif
                                     </span>
                                 </div>
                             </td>
@@ -261,7 +263,13 @@
                             <!-- Name & Slug -->
                             <td>
                                 <div class="fw-bold text-dark d-flex align-items-center gap-1.5 flex-wrap">
-                                    <span>{{ $tag->is_discount_tag ? 'Badge Réduction Auto (' . $tag->name . ')' : $tag->name }}</span>
+                                    @if($tag->is_discount_tag)
+                                        <span>Badge Réduction Auto ({{ $tag->name }})</span>
+                                    @elseif(trim((string) $tag->name) !== '')
+                                        <span>{{ $tag->name }}</span>
+                                    @else
+                                        <span class="text-muted fst-italic">Badge sans texte</span>
+                                    @endif
                                     @if($tag->is_discount_tag)
                                         <span class="badge bg-danger text-white small py-0.5 px-2" style="font-size: 0.65rem;">
                                             <i class="fas fa-calculator me-1"></i>Auto-calculé (−%)
@@ -274,7 +282,7 @@
                                     @endif
                                 </div>
                                 <div class="text-muted small font-monospace" style="font-size: 0.76rem;">
-                                    {{ $tag->is_discount_tag ? 'Sous les tags • Calculé selon Ancien/Nouveau prix' : $tag->slug }}
+                                    {{ $tag->is_discount_tag ? 'Position indépendante • Calculé selon Ancien/Nouveau prix' : $tag->slug }}
                                 </div>
                             </td>
 
@@ -348,7 +356,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @if(!$tag->is_discount_tag)
-                                        <form action="{{ route('product-tags.destroy', $tag) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer définitivement le tag « {{ addslashes($tag->name) }} » ? Il sera retiré des produits associés.');">
+                                        <form action="{{ route('product-tags.destroy', $tag) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer définitivement le tag « {{ addslashes($tag->name !== '' ? $tag->name : $tag->slug) }} » ? Il sera retiré des produits associés.');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="action-btn action-btn-delete" title="Supprimer le tag">
@@ -375,7 +383,9 @@
                             @if(!empty($tag->icon))
                                 <i class="{{ $tag->icon }}"></i>
                             @endif
-                            <span>{{ $tag->is_discount_tag ? $tag->formatDiscountLabel(25) : $tag->name }}</span>
+                            @if($tag->is_discount_tag || trim((string) $tag->name) !== '')
+                                <span>{{ $tag->is_discount_tag ? $tag->formatDiscountLabel(25) : $tag->name }}</span>
+                            @endif
                         </span>
                     </div>
 
@@ -399,7 +409,7 @@
                         <a href="{{ route('product-tags.edit', $tag) }}" class="btn btn-outline-secondary">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <form action="{{ route('product-tags.destroy', $tag) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer le tag « {{ addslashes($tag->name) }} » ?');">
+                        <form action="{{ route('product-tags.destroy', $tag) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer le tag « {{ addslashes($tag->name !== '' ? $tag->name : $tag->slug) }} » ?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-outline-danger">

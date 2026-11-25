@@ -16,12 +16,23 @@ class InventoryMovement extends Model
         'quantity',
         'stock_before',
         'stock_after',
+        'unit_cost',
+        'total_cost',
+        'cost_before',
+        'cost_after',
         'reference_type',
         'reference_id',
         'from_location_id',
         'to_location_id',
         'reason',
         'created_by',
+    ];
+
+    protected $casts = [
+        'unit_cost' => 'decimal:2',
+        'total_cost' => 'decimal:2',
+        'cost_before' => 'decimal:2',
+        'cost_after' => 'decimal:2',
     ];
 
     /**
@@ -57,11 +68,19 @@ class InventoryMovement extends Model
     }
 
     /**
-     * Get the user who created this movement.
+     * Get the creator user of this movement.
      */
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the FIFO arrival batch created by this inventory-in movement, if any.
+     */
+    public function stockBatch()
+    {
+        return $this->hasOne(StockBatch::class, 'inventory_movement_id');
     }
 
     /**

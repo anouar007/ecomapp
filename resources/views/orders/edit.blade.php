@@ -119,6 +119,103 @@
                             @enderror
                         </div>
 
+                        <!-- Détails du paiement partiel (affiché si statut = Partiel) -->
+                        @php
+                            $isPartialEdit = old('payment_status', $order->payment_status) === 'partial'
+                                || $errors->has('paid_amount')
+                                || $errors->has('payment_due_date');
+                            $editOrderTotal = round((float) $order->total, 2);
+                            $editPaidVal = old('paid_amount', number_format((float) ($order->paid_amount ?? 0), 2, '.', ''));
+                            $editDueVal = old('payment_due_date', $order->payment_due_date?->format('Y-m-d') ?? '');
+                        @endphp
+                        <div class="col-12 {{ $isPartialEdit ? '' : 'd-none' }}" id="partialPaymentWrapper">
+                            <div class="p-3 rounded-3 bg-primary-subtle border border-primary-subtle">
+                                <div class="row g-2.5 align-items-end">
+                                    <div class="col-12 col-md-7">
+                                        <label for="paid_amount" class="form-label fw-bold text-primary-emphasis mb-1">
+                                            <i class="fas fa-circle-half-stroke text-primary me-1"></i> Montant déjà payé (DH)
+                                        </label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number"
+                                                   step="0.01"
+                                                   min="0"
+                                                   max="{{ $editOrderTotal }}"
+                                                   id="paid_amount"
+                                                   name="paid_amount"
+                                                   data-order-total="{{ $editOrderTotal }}"
+                                                   value="{{ $editPaidVal }}"
+                                                   class="form-control bg-white fw-bold @error('paid_amount') is-invalid @enderror">
+                                            <span class="input-group-text fw-semibold">DH</span>
+                                        </div>
+                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-1.5 mt-1.5">
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach([25, 50, 75] as $pct)
+                                                    @php $pctAmt = round($editOrderTotal * ($pct / 100), 2); @endphp
+                                                    <button type="button"
+                                                            class="btn btn-xs btn-outline-primary bg-white rounded-pill px-2 py-0 fw-semibold edit-partial-pct-btn"
+                                                            style="font-size: 0.7rem;"
+                                                            data-amount="{{ number_format($pctAmt, 2, '.', '') }}">
+                                                        {{ $pct }}% ({{ number_format($pctAmt, 2, '.', '') }} DH)
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                            <span class="small fw-bold text-danger" id="editPartialRemainingLabel">
+                                                Reste : {{ number_format(max(0, $editOrderTotal - (float) $editPaidVal), 2, '.', '') }} DH
+                                            </span>
+                                        </div>
+                                        @error('paid_amount')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-12 col-md-5">
+                                        <label for="payment_due_date" class="form-label fw-semibold text-primary-emphasis mb-1">
+                                            Date d'échéance (optionnel)
+                                        </label>
+                                        <input type="date"
+                                               id="payment_due_date"
+                                               name="payment_due_date"
+                                               value="{{ $editDueVal }}"
+                                               class="form-control form-control-sm bg-white @error('payment_due_date') is-invalid @enderror">
+                                        @error('payment_due_date')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Raison d'annulation (obligatoire si statut = Annulée) -->
+                        @php
+                            $isCancelledEdit = old('status', $order->status) === 'cancelled' || $errors->has('cancellation_reason');
+                        @endphp
+                        <div class="col-12 {{ $isCancelledEdit ? '' : 'd-none' }}" id="cancellationReasonWrapper">
+                            <div class="p-3 rounded-3 bg-danger-subtle border border-danger-subtle">
+                                <label for="cancellation_reason" class="form-label fw-bold text-danger-emphasis mb-1.5">
+                                    <i class="fas fa-comment-slash text-danger me-1"></i> Raison d'annulation <span class="text-danger">*</span>
+                                </label>
+                                <div class="d-flex flex-wrap gap-1.5 mb-2">
+                                    @foreach(\App\Models\Order::CANCELLATION_REASONS as $presetReason)
+                                        <button type="button"
+                                                class="btn btn-xs btn-outline-danger rounded-pill px-2.5 py-0.5 fw-semibold bg-white edit-cancel-preset-btn"
+                                                style="font-size: 0.72rem;"
+                                                data-reason="{{ $presetReason }}">
+                                            {{ $presetReason }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                                <textarea id="cancellation_reason"
+                                          name="cancellation_reason"
+                                          rows="2"
+                                          maxlength="1000"
+                                          class="form-control bg-white @error('cancellation_reason') is-invalid @enderror"
+                                          placeholder="Expliquez pourquoi cette commande est annulée..."
+                                          {{ $isCancelledEdit ? 'required' : '' }}>{{ old('cancellation_reason', $order->cancellation_reason) }}</textarea>
+                                @error('cancellation_reason')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Régime Fiscal (TTC / HT) -->
                         <div class="col-12 col-sm-6">
                             <label for="tax_mode" class="form-label fw-semibold text-dark">
@@ -450,11 +547,72 @@ function syncOrderEditStatusColor(sel) {
         if (!statusSelect || statusSelect.dataset.statusBound === '1') return;
         statusSelect.dataset.statusBound = '1';
 
+        const cancelWrapper = document.getElementById('cancellationReasonWrapper');
+        const cancelTextarea = document.getElementById('cancellation_reason');
+
+        function syncCancellationReasonField(shouldFocus = false) {
+            if (!cancelWrapper || !cancelTextarea) return;
+            const isCancelled = (statusSelect.value || '').toLowerCase() === 'cancelled';
+            cancelWrapper.classList.toggle('d-none', !isCancelled);
+            cancelTextarea.required = isCancelled;
+            if (isCancelled && shouldFocus) {
+                cancelTextarea.focus();
+            }
+        }
+
+        document.querySelectorAll('.edit-cancel-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (cancelTextarea) {
+                    cancelTextarea.value = btn.dataset.reason || '';
+                    cancelTextarea.focus();
+                }
+            });
+        });
+
+        const partialWrapper = document.getElementById('partialPaymentWrapper');
+        const paidAmountInput = document.getElementById('paid_amount');
+        const partialRemainingLabel = document.getElementById('editPartialRemainingLabel');
+
+        function updateEditPartialRemaining() {
+            if (!paidAmountInput || !partialRemainingLabel) return;
+            const total = parseFloat(paidAmountInput.dataset.orderTotal || '0') || 0;
+            const paid = parseFloat(paidAmountInput.value || '0') || 0;
+            const rem = Math.max(0, total - paid);
+            partialRemainingLabel.textContent = `Reste : ${rem.toFixed(2)} DH`;
+        }
+
+        function syncPartialPaymentField() {
+            if (!partialWrapper || !paySelect) return;
+            const isPartial = (paySelect.value || '').toLowerCase() === 'partial';
+            partialWrapper.classList.toggle('d-none', !isPartial);
+            if (isPartial) updateEditPartialRemaining();
+        }
+
+        if (paySelect) {
+            syncPartialPaymentField();
+            paySelect.addEventListener('change', syncPartialPaymentField);
+        }
+        if (paidAmountInput) {
+            paidAmountInput.addEventListener('input', updateEditPartialRemaining);
+        }
+        document.querySelectorAll('.edit-partial-pct-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (paidAmountInput) {
+                    paidAmountInput.value = btn.dataset.amount || '0';
+                    updateEditPartialRemaining();
+                    paidAmountInput.focus();
+                }
+            });
+        });
+
         syncOrderEditStatusColor(statusSelect);
+        syncCancellationReasonField(false);
         statusSelect.addEventListener('change', function() {
             syncOrderEditStatusColor(this);
+            syncCancellationReasonField(true);
             if (this.value === 'delivered' && paySelect) {
                 paySelect.value = 'paid';
+                syncPartialPaymentField();
             }
         });
 

@@ -96,7 +96,10 @@
             </div>
         </div>
 
-        <div class="brand-header-actions">
+        <div class="brand-header-actions d-flex align-items-center gap-2 flex-wrap">
+            <a href="{{ route('inventory.arrivals') }}" class="btn-brand-outline">
+                <i class="fas fa-layer-group me-1.5 text-success"></i> Suivi FIFO &amp; Lots
+            </a>
             <a href="{{ route('reports.profitability.costs') }}" class="btn-brand-outline">
                 <i class="fas fa-coins me-1.5" style="color: var(--primary-color)"></i> Coûts Catalogue
             </a>
@@ -340,15 +343,27 @@
                             @endif
                         </td>
 
-                        <!-- Total Landed Cost & Margin -->
+                        <!-- Total Landed Cost & Margin + FIFO Progress -->
                         <td class="py-3 text-end">
                             <div class="fw-bold fs-6 text-dark">{{ currency($shp->total_landed_cost) }}</div>
-                            @php $avgMargin = $shp->average_margin; @endphp
+                            @php
+                                $avgMargin = $shp->average_margin;
+                                $shpFifo = $shp->fifo_summary;
+                            @endphp
                             <div class="mt-0.5">
                                 <span class="badge {{ $avgMargin >= 30 ? 'bg-success-subtle text-success' : ($avgMargin >= 15 ? 'bg-primary-subtle text-primary' : 'bg-warning-subtle text-warning') }} rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
                                     Marge moy. {{ $avgMargin }}%
                                 </span>
                             </div>
+                            @if(!empty($shpFifo['has_batches']))
+                                <div class="mt-1 small" style="font-size: 0.69rem;">
+                                    <span class="text-dark fw-semibold">{{ $shpFifo['sold_units'] }}/{{ $shpFifo['initial_units'] }} vendu</span>
+                                    @if($shpFifo['sold_units'] > 0)
+                                        · <span class="text-success fw-bold">{{ $shpFifo['realized_profit'] >= 0 ? '+' : '' }}{{ currency($shpFifo['realized_profit']) }}</span>
+                                    @endif
+                                    <div class="text-muted" style="font-size: 0.66rem;"><i class="far fa-clock me-0.5"></i>{{ $shpFifo['sell_duration_label'] }}</div>
+                                </div>
+                            @endif
                         </td>
 
                         <!-- Status & Actions -->
@@ -419,6 +434,14 @@
                         <strong class="fs-6 text-dark">{{ currency($shp->total_landed_cost) }}</strong>
                     </div>
                 </div>
+
+                @php $mobFifo = $shp->fifo_summary; @endphp
+                @if(!empty($mobFifo['has_batches']))
+                <div class="d-flex align-items-center justify-content-between p-2 rounded-3 border mb-2" style="background: #f8fafc; font-size: 0.72rem;">
+                    <span>FIFO : <strong>{{ $mobFifo['sold_units'] }}/{{ $mobFifo['initial_units'] }}</strong> · {{ $mobFifo['status_label'] }}</span>
+                    <span class="text-success fw-bold">{{ $mobFifo['realized_profit'] >= 0 ? '+' : '' }}{{ currency($mobFifo['realized_profit']) }} · {{ $mobFifo['sell_duration_label'] }}</span>
+                </div>
+                @endif
 
                 <div class="d-flex align-items-center justify-content-between pt-1">
                     <span class="badge bg-success-subtle text-success rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">

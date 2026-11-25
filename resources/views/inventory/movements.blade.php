@@ -3,6 +3,9 @@
 @section('title', 'Mouvements de stock - Historique & Audit')
 
 @section('content')
+@php
+    $canManageCost = auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability'));
+@endphp
     <!-- En-tête de page (Clean & Pro Executive Brand Header) -->
     <div class="brand-header">
         <div class="d-flex align-items-center gap-2.5">
@@ -308,6 +311,18 @@
                                 <div class="text-dark small text-truncate" style="max-width: 170px;" title="{{ $movement->reason ?? 'Aucun motif' }}">
                                     {{ $movement->reason ?? '—' }}
                                 </div>
+                                @if($canManageCost && $movement->unit_cost !== null)
+                                    <div class="d-flex flex-wrap align-items-center gap-1 mt-1" style="font-size: 0.66rem;">
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                            Coût : {{ currency($movement->unit_cost) }}/u · Lot : {{ currency($movement->total_cost ?? ($movement->unit_cost * $movement->quantity)) }}
+                                        </span>
+                                        @if($movement->cost_after !== null)
+                                            <span class="badge bg-light text-dark border">
+                                                PMP : {{ $movement->cost_before !== null ? currency($movement->cost_before) : '—' }} → {{ currency($movement->cost_after) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                @endif
                                 @if($movement->reference_type && $movement->reference_id)
                                     <div class="text-muted small font-monospace" style="font-size: 0.68rem;">
                                         #{{ $movement->reference_id }}

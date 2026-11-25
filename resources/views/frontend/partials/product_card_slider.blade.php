@@ -2,11 +2,11 @@
     $isInCart = isset(session('cart', [])[$product->id]);
     $isAr = app()->getLocale() === 'ar';
     $cardTags = $product->relationLoaded('activeTags') ? $product->activeTags : $product->activeTags()->get();
-    $tagsByPosition = $cardTags->groupBy(fn($t) => $t->position ?: 'top-left');
+    $visibleCardTags = $cardTags->filter(fn($t) => !empty($t->icon) || trim((string) $t->name) !== '');
+    $tagsByPosition = $visibleCardTags->groupBy(fn($t) => \App\Models\ProductTag::normalizePosition($t->position));
     $autoDiscountTag = \App\Models\ProductTag::discountTag();
     $hasAutoDiscount = $product->isOnSale() && $product->discount_percentage > 0 && $autoDiscountTag->status === 'active';
-    $prefDiscountPos = $autoDiscountTag->position ?: 'top-left';
-    $discountCorner = $tagsByPosition->has($prefDiscountPos) ? $prefDiscountPos : ($tagsByPosition->keys()->first() ?? $prefDiscountPos);
+    $discountCorner = \App\Models\ProductTag::normalizePosition($autoDiscountTag->position);
     $cardUrl = route('shop.show', $product->slug ?: $product->id);
     $cardCompactKeywords = method_exists($product, 'getCompactSeoKeywordsString') ? $product->getCompactSeoKeywordsString(14) : $product->name;
     $cardAltTitle = $product->name . ' — Prix Maroc WINA SHOP | شراء في المغرب | Buy in Morocco';
@@ -25,7 +25,7 @@
     </div>
     {{-- Product Image with clean white background --}}
     <div class="featured-pro-img-box mb-2 position-relative">
-        @foreach(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as $cornerPos)
+        @foreach(\App\Models\ProductTag::VALID_POSITIONS as $cornerPos)
             @php
                 $cornerTags = $tagsByPosition->get($cornerPos, collect());
                 $showDiscountHere = $hasAutoDiscount && $discountCorner === $cornerPos;
@@ -37,7 +37,9 @@
                             @if(!empty($cTag->icon))
                                 <i class="{{ $cTag->icon }}" aria-hidden="true"></i>
                             @endif
-                            <span>{{ $cTag->name }}</span>
+                            @if(trim((string) $cTag->name) !== '')
+                                <span>{{ $cTag->name }}</span>
+                            @endif
                         </span>
                     @endforeach
                     @if($showDiscountHere)

@@ -53,40 +53,17 @@
             <div class="mobile-order-price" id="mob-order-total-{{ $order->id }}">
                 {{ $order->formatted_total }}
             </div>
-            @php $mobTaxMode = $order->normalized_tax_mode; @endphp
-            <div class="dropdown d-inline-block mt-1">
-                <button type="button"
-                        class="tax-mode-pill tax-mode-{{ $mobTaxMode }} dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        data-bs-auto-close="true"
-                        data-bs-boundary="viewport"
-                        data-bs-popper-config='{"strategy":"fixed"}'
-                        aria-expanded="false"
-                        id="mob-tax-pill-{{ $order->id }}"
-                        title="Changer le régime TTC / HT">
-                    <span id="mob-tax-label-{{ $order->id }}">{{ $order->tax_mode_label }}</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu text-start" aria-labelledby="mob-tax-pill-{{ $order->id }}">
-                    <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Régime fiscal</li>
-                    <li>
-                        <button type="button" data-tax-mode="ttc" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobTaxMode === 'ttc' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'tax_mode', 'ttc')">
-                            <span><span class="status-dot tax-dot-ttc me-1.5"></span> TTC</span>
-                            @if($mobTaxMode === 'ttc') <i class="fas fa-check text-primary small"></i> @endif
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" data-tax-mode="ht" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobTaxMode === 'ht' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'tax_mode', 'ht')">
-                            <span><span class="status-dot tax-dot-ht me-1.5"></span> HT</span>
-                            @if($mobTaxMode === 'ht') <i class="fas fa-check text-warning small"></i> @endif
-                        </button>
-                    </li>
-                </ul>
-            </div>
             @php
+                $mobTaxMode = $order->normalized_tax_mode;
                 $payStatus = strtolower($order->payment_status);
                 $isPaid = in_array($payStatus, ['paid', 'payé']);
-                $payPillClass = $isPaid ? 'paid' : ($payStatus === 'failed' ? 'failed' : ($payStatus === 'refunded' ? 'refunded' : 'pending'));
+                $payPillClass = match($payStatus) {
+                    'paid', 'payé' => 'paid',
+                    'partial', 'partiel' => 'partial',
+                    'failed', 'échoué' => 'failed',
+                    'refunded', 'remboursé' => 'refunded',
+                    default => 'pending'
+                };
                 $payPillLabel = match($payStatus) {
                     'paid', 'payé' => 'Payé',
                     'partial', 'partiel' => 'Partiel',
@@ -96,18 +73,110 @@
                 };
                 $payPillIcon = match($payStatus) {
                     'paid', 'payé' => 'fa-check-circle',
+                    'partial', 'partiel' => 'fa-circle-half-stroke',
                     'failed', 'échoué' => 'fa-exclamation-circle',
                     'refunded', 'remboursé' => 'fa-undo',
                     default => 'fa-clock'
                 };
             @endphp
-            <!-- Static Payment Status Badge (Hidden on mobile) -->
-            <div class="d-inline-block d-none">
-                <span class="mobile-order-pay-pill {{ $payPillClass }} border-0"
-                      id="mob-pay-pill-{{ $order->id }}"
-                      title="Statut de paiement : {{ $payPillLabel }}">
-                    <i class="fas {{ $payPillIcon }}" id="mob-pay-icon-{{ $order->id }}"></i>
-                    <span id="mob-pay-label-{{ $order->id }}">{{ $payPillLabel }}</span>
+            <div class="mobile-order-price-badges d-flex align-items-center justify-content-end gap-1 flex-wrap mt-1">
+                <div class="dropdown d-inline-block">
+                    <button type="button"
+                            class="tax-mode-pill tax-mode-{{ $mobTaxMode }} dropdown-toggle"
+                            data-bs-toggle="dropdown"
+                            data-bs-auto-close="true"
+                            data-bs-boundary="viewport"
+                            data-bs-popper-config='{"strategy":"fixed"}'
+                            aria-expanded="false"
+                            id="mob-tax-pill-{{ $order->id }}"
+                            title="Changer le régime TTC / HT">
+                        <span id="mob-tax-label-{{ $order->id }}">{{ $order->tax_mode_label }}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu text-start" aria-labelledby="mob-tax-pill-{{ $order->id }}">
+                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Régime fiscal</li>
+                        <li>
+                            <button type="button" data-tax-mode="ttc" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobTaxMode === 'ttc' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'tax_mode', 'ttc')">
+                                <span><span class="status-dot tax-dot-ttc me-1.5"></span> TTC</span>
+                                @if($mobTaxMode === 'ttc') <i class="fas fa-check text-primary small"></i> @endif
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" data-tax-mode="ht" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobTaxMode === 'ht' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'tax_mode', 'ht')">
+                                <span><span class="status-dot tax-dot-ht me-1.5"></span> HT</span>
+                                @if($mobTaxMode === 'ht') <i class="fas fa-check text-warning small"></i> @endif
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                @php
+                    $mobNormPayStatus = match($payStatus) {
+                        'paid', 'payé' => 'paid',
+                        'partial', 'partiel' => 'partial',
+                        'failed', 'échoué' => 'failed',
+                        'refunded', 'remboursé' => 'refunded',
+                        default => 'pending'
+                    };
+                @endphp
+                <!-- Interactive Payment Status Dropdown -->
+                <div class="dropdown d-inline-block">
+                    <button type="button"
+                            class="mobile-order-pay-pill {{ $payPillClass }} dropdown-toggle"
+                            data-bs-toggle="dropdown"
+                            data-bs-auto-close="true"
+                            data-bs-boundary="viewport"
+                            data-bs-popper-config='{"strategy":"fixed"}'
+                            data-total="{{ round((float) $order->total, 2) }}"
+                            data-paid-amount="{{ round((float) ($order->paid_amount ?? 0), 2) }}"
+                            data-due-date="{{ $order->payment_due_date?->format('Y-m-d') ?? '' }}"
+                            aria-expanded="false"
+                            id="mob-pay-pill-{{ $order->id }}"
+                            title="Changer le statut de paiement">
+                        <i class="fas {{ $payPillIcon }}" id="mob-pay-icon-{{ $order->id }}"></i>
+                        <span id="mob-pay-label-{{ $order->id }}">{{ $payPillLabel }}</span>
+                        <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.55rem;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu text-start" aria-labelledby="mob-pay-pill-{{ $order->id }}">
+                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de paiement</li>
+                        <li>
+                            <button type="button" data-payment-status="pending" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobNormPayStatus === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'pending')">
+                                <span><span class="status-dot dot-amber me-1.5"></span> En attente</span>
+                                @if($mobNormPayStatus === 'pending') <i class="fas fa-check text-warning small"></i> @endif
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" data-payment-status="partial" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobNormPayStatus === 'partial' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'partial')">
+                                <span><span class="status-dot dot-blue me-1.5"></span> Partiel</span>
+                                @if($mobNormPayStatus === 'partial') <i class="fas fa-check text-primary small"></i> @endif
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" data-payment-status="paid" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobNormPayStatus === 'paid' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'paid')">
+                                <span><span class="status-dot dot-green me-1.5"></span> Payé</span>
+                                @if($mobNormPayStatus === 'paid') <i class="fas fa-check text-success small"></i> @endif
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" data-payment-status="failed" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobNormPayStatus === 'failed' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'failed')">
+                                <span><span class="status-dot dot-red me-1.5"></span> Échoué</span>
+                                @if($mobNormPayStatus === 'failed') <i class="fas fa-check text-danger small"></i> @endif
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" data-payment-status="refunded" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobNormPayStatus === 'refunded' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'refunded')">
+                                <span><span class="status-dot dot-gray me-1.5"></span> Remboursé</span>
+                                @if($mobNormPayStatus === 'refunded') <i class="fas fa-check text-secondary small"></i> @endif
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-1 {{ (float) ($order->remaining_amount ?? 0) > 0 ? '' : 'd-none' }}" id="mob-order-remaining-wrap-{{ $order->id }}">
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5"
+                      style="font-size: 0.62rem;"
+                      id="mob-order-remaining-{{ $order->id }}">
+                    Reste : {{ currency($order->remaining_amount ?? 0) }}
                 </span>
             </div>
         </div>
@@ -238,6 +307,7 @@
                     data-bs-auto-close="true"
                     data-bs-boundary="viewport"
                     data-bs-popper-config='{"strategy":"fixed"}'
+                    data-cancellation-reason="{{ $order->cancellation_reason ?? '' }}"
                     aria-expanded="false"
                     id="mob-status-pill-{{ $order->id }}"
                     style="background: {{ $statusStyle['bg'] }}; color: {{ $statusStyle['color'] }}; border: 1px solid {{ $statusStyle['border'] }} !important; cursor: pointer;"
@@ -367,6 +437,13 @@
         @endif
     </div>
 
+    <div class="mt-1.5 px-2.5 py-1.5 rounded-3 bg-danger-subtle text-danger border border-danger-subtle {{ ($normalizedStatus === 'cancelled' && $order->cancellation_reason) ? '' : 'd-none' }}"
+         id="mob-cancel-reason-wrap-{{ $order->id }}"
+         style="font-size: 0.72rem; line-height: 1.3;">
+        <i class="fas fa-comment-slash me-1"></i><strong>Raison d'annulation :</strong>
+        <span id="mob-cancel-reason-text-{{ $order->id }}">{{ $order->cancellation_reason }}</span>
+    </div>
+
     <!-- Zone 5a: Staff Attribution (Creator / First Confirmer) -->
     @if($order->createdByUser || !$order->isPosOrder() || ($order->confirmedByUser && (int) $order->confirmed_by !== (int) $order->created_by))
         <div class="mobile-order-staff-row {{ (!$order->createdByUser && !$order->confirmedByUser) ? 'd-none' : '' }}" id="mob-staff-row-{{ $order->id }}">
@@ -388,8 +465,8 @@
     @endif
 
     <!-- Zone 5b: Bottom Actions Toolbar -->
-    <div class="mobile-order-toolbar">
-        <div>
+    <div class="mobile-order-toolbar flex-wrap">
+        <div class="d-flex align-items-center gap-1.5 flex-wrap">
             @if($order->invoice)
                 <a href="{{ route('invoices.show', $order->invoice) }}" class="mobile-order-doc-btn">
                     <i class="fas fa-file-invoice text-success"></i>
@@ -400,11 +477,10 @@
                     <i class="fas fa-file-alt text-warning"></i>
                     <span>Devis</span>
                 </a>
-            @else
-                <span class="mobile-order-items-pill">
-                    <i class="fas fa-box text-muted me-1"></i>{{ $totalItemsCount }} article{{ $totalItemsCount > 1 ? 's' : '' }}
-                </span>
             @endif
+            <span class="mobile-order-items-pill">
+                <i class="fas fa-box text-muted me-1"></i>{{ $totalItemsCount }} article{{ $totalItemsCount > 1 ? 's' : '' }}
+            </span>
         </div>
 
         <div class="mobile-action-btns">

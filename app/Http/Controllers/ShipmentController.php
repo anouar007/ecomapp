@@ -7,7 +7,9 @@ use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\Shipment;
 use App\Models\ShipmentItem;
+use App\Models\StockBatch;
 use App\Models\Store;
+use App\Services\FifoBatchService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +52,13 @@ class ShipmentController extends Controller
         $activeSuppliersCount = Shipment::distinct('supplier_name')->count('supplier_name');
 
         // Query shipments with filters
-        $query = Shipment::with(['store', 'creator', 'items.product'])->orderBy('received_date', 'desc')->orderBy('id', 'desc');
+        $query = Shipment::with([
+            'store',
+            'creator',
+            'items.product',
+            'stockBatches.product',
+            'stockBatches.variant',
+        ])->orderBy('received_date', 'desc')->orderBy('id', 'desc');
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -233,7 +241,7 @@ class ShipmentController extends Controller
                     ? round((($sellingPrice - $landedUnitCost) / $sellingPrice) * 100, 1)
                     : 0;
 
-                ShipmentItem::create([
+                $shipmentItem = ShipmentItem::create([
                     'shipment_id' => $shipment->id,
                     'product_id' => $product->id,
                     'variant_id' => null,
@@ -245,6 +253,8 @@ class ShipmentController extends Controller
                     'selling_price_at_arrival' => $sellingPrice,
                     'margin_percentage' => $marginPct,
                 ]);
+
+                $costBefore = $product->cost_price !== null ? (float) $product->cost_price : null;
 
                 // Update catalog cost price if requested
                 if ($updateCatalogCosts && $landedUnitCost > 0) {
@@ -271,16 +281,28 @@ class ShipmentController extends Controller
                     }
 
                     // Audit log movement
-                    InventoryMovement::create([
+                    $movement = InventoryMovement::create([
                         'product_id' => $product->id,
                         'type' => 'in',
                         'quantity' => $qty,
-                        'stock_before' => ($product->stock ?? 0) - $qty,
-                        'stock_after' => $product->stock ?? 0,
+                        'stock_before' => $stockBefore,
+                        'stock_after' => (int) ($product->stock ?? ($stockBefore + $qty)),
+                        'unit_cost' => $landedUnitCost,
+                        'total_cost' => $subtotalLanded,
+                        'cost_before' => $costBefore,
+                        'cost_after' => ($updateCatalogCosts && $landedUnitCost > 0) ? $landedUnitCost : $costBefore,
                         'to_location_id' => $shipment->store_id,
                         'reason' => "Arrivage {$shipment->reference} ({$shipment->supplier_name})",
                         'created_by' => auth()->id(),
                     ]);
+
+                    app(FifoBatchService::class)->createBatchFromShipmentItem(
+                        $shipment,
+                        $shipmentItem,
+                        $movement,
+                        $stockBefore,
+                        $costBefore
+                    );
                 }
             }
         });
@@ -296,7 +318,18 @@ class ShipmentController extends Controller
     {
         $this->authorizeAdmin();
 
-        $shipment->load(['store', 'creator', 'items.product.images', 'items.product.primaryImage']);
+        $shipment->load([
+            'store',
+            'creator',
+            'items.product.images',
+            'items.product.primaryImage',
+            'items.stockBatch.allocations',
+            'items.stockBatch.store',
+            'items.stockBatch.product',
+            'items.stockBatch.variant',
+            'stockBatches.product',
+            'stockBatches.variant',
+        ]);
 
         return view('shipments.show', compact('shipment'));
     }
@@ -309,7 +342,28 @@ class ShipmentController extends Controller
         $this->authorizeAdmin();
 
         $ref = $shipment->reference;
-        $shipment->delete();
+
+        DB::transaction(function () use ($shipment) {
+            $batches = StockBatch::where('shipment_id', $shipment->id)->get(['id', 'product_id', 'variant_id']);
+            $touchedPairs = [];
+            foreach ($batches as $batch) {
+                $touchedPairs[$batch->product_id . ':' . ($batch->variant_id ?? 'null')] = [
+                    'product_id' => (int) $batch->product_id,
+                    'variant_id' => $batch->variant_id ? (int) $batch->variant_id : null,
+                ];
+            }
+
+            if ($batches->isNotEmpty()) {
+                StockBatch::whereIn('id', $batches->pluck('id'))->delete();
+            }
+
+            $shipment->delete();
+
+            $fifo = app(FifoBatchService::class);
+            foreach ($touchedPairs as $pair) {
+                $fifo->refreshQueueStatuses($pair['product_id'], $pair['variant_id']);
+            }
+        });
 
         return redirect()->route('shipments.index')
             ->with('success', "L'arrivage {$ref} a été supprimé.");

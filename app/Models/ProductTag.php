@@ -11,6 +11,8 @@ class ProductTag extends Model
 {
     use HasFactory;
 
+    public const VALID_POSITIONS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+
     protected $fillable = [
         'name',
         'slug',
@@ -46,9 +48,28 @@ class ProductTag extends Model
      */
     protected static ?self $runtimeDiscountTag = null;
 
+    /**
+     * Normalize a corner position to one of the 4 valid corner slots.
+     */
+    public static function normalizePosition(?string $position): string
+    {
+        $pos = trim((string) $position);
+        return in_array($pos, self::VALID_POSITIONS, true) ? $pos : 'top-left';
+    }
+
+    /**
+     * Clear the per-request in-memory discount tag cache.
+     */
+    public static function clearRuntimeCache(): void
+    {
+        static::$runtimeDiscountTag = null;
+    }
+
     protected static function booted()
     {
         static::saving(function ($tag) {
+            $tag->name = trim((string) ($tag->name ?? ''));
+            $tag->position = static::normalizePosition($tag->position);
             if ($tag->is_discount_tag) {
                 $tag->slug = 'auto-discount-percentage';
             } elseif (empty($tag->slug) || $tag->isDirty('name')) {

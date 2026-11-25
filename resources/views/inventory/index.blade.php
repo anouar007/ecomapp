@@ -117,6 +117,9 @@
 .inv-transfer-store-card.is-empty {
     opacity: 0.62;
 }
+.inv-transfer-store-card.active {
+    opacity: 1 !important;
+}
 .inv-transfer-store-card .inv-store-card-top {
     display: flex;
     align-items: center;
@@ -173,6 +176,376 @@
     background: #fee2e2;
     color: #991b1b;
 }
+
+/* Mobile-First Quick Adjust Bottom Sheet / Desktop Dialog */
+#adjustStockModal.inv-adjust-modal .modal-dialog {
+    max-width: 540px;
+}
+#adjustStockModal.inv-adjust-modal .modal-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 20px !important;
+    max-height: 90vh;
+}
+#adjustStockModal.inv-adjust-modal .inv-sheet-handle {
+    display: none;
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-header {
+    flex: 0 0 auto;
+    background: #ffffff;
+    border-bottom: 1px solid #eef2f7;
+    padding: 12px 16px;
+    z-index: 2;
+}
+#adjustStockModal.inv-adjust-modal .modal-title {
+    font-weight: 700 !important;
+    line-height: 1.25;
+}
+#adjustStockModal.inv-adjust-modal .inv-modal-close-x {
+    appearance: none;
+    width: 36px;
+    height: 36px;
+    min-height: 36px !important;
+    border-radius: 50% !important;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+#adjustStockModal.inv-adjust-modal .inv-modal-close-x:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-summary-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 9px 11px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px !important;
+}
+#adjustStockModal.inv-adjust-modal .inv-summary-product {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+}
+#adjustStockModal.inv-adjust-modal .inv-summary-thumb {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px !important;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+#adjustStockModal.inv-adjust-modal .inv-summary-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+#adjustStockModal.inv-adjust-modal .inv-summary-stock-flow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px !important;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+#adjustStockModal.inv-adjust-modal #modalProjectedStock {
+    font-weight: 800 !important;
+    font-size: 1rem;
+    line-height: 1.1;
+}
+#adjustStockModal.inv-adjust-modal .inv-delta-pill {
+    font-size: 0.72rem;
+    font-weight: 800 !important;
+    padding: 2px 8px;
+    border-radius: 999px !important;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 14px 16px 18px;
+    background: #f8fafc;
+}
+#adjustStockModal.inv-adjust-modal .inv-modal-section {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px !important;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+#adjustStockModal.inv-adjust-modal .inv-section-label {
+    font-size: 0.68rem;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+#adjustStockModal.inv-adjust-modal .inv-store-meta-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px !important;
+    padding: 8px 10px;
+    margin-top: 8px;
+}
+#adjustStockModal.inv-adjust-modal .form-control:focus,
+#adjustStockModal.inv-adjust-modal .form-select:focus {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}
+#adjustStockModal.inv-adjust-modal #modalReasonInput {
+    resize: none;
+    border-radius: 10px !important;
+    font-size: 0.85rem;
+}
+#adjustStockModal.inv-adjust-modal .inv-op-segmented {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 4px;
+    background: #e2e8f0;
+    border-radius: 12px !important;
+}
+#adjustStockModal.inv-adjust-modal .inv-op-btn.operation-pill-btn {
+    border: 1.5px solid transparent;
+    border-radius: 10px !important;
+    padding: 7px 4px;
+    min-height: 50px;
+    background: transparent;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    color: #475569;
+}
+#adjustStockModal.inv-adjust-modal .inv-op-btn.operation-pill-btn:hover {
+    background: rgba(255, 255, 255, 0.55);
+    border-color: transparent;
+}
+#adjustStockModal.inv-adjust-modal #pill-in.operation-pill-btn.active {
+    background: #ecfdf5;
+    border-color: #059669;
+    color: #065f46;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.16);
+}
+#adjustStockModal.inv-adjust-modal #pill-out.operation-pill-btn.active {
+    background: #fef2f2;
+    border-color: #dc2626;
+    color: #991b1b;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.16);
+}
+#adjustStockModal.inv-adjust-modal #pill-adjustment.operation-pill-btn.active {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #1e40af;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.16);
+}
+#adjustStockModal.inv-adjust-modal .inv-qty-stepper {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+}
+#adjustStockModal.inv-adjust-modal .inv-stepper-btn {
+    min-width: 48px;
+    height: 48px;
+    border-radius: 12px !important;
+    font-size: 1rem;
+    font-weight: 700 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+#adjustStockModal.inv-adjust-modal .inv-qty-input {
+    height: 48px;
+    border-radius: 12px !important;
+    font-size: 1.35rem;
+    font-weight: 800 !important;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    -moz-appearance: textfield;
+}
+#adjustStockModal.inv-adjust-modal .inv-qty-input::-webkit-inner-spin-button,
+#adjustStockModal.inv-adjust-modal .inv-qty-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#adjustStockModal.inv-adjust-modal .inv-quick-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+}
+#adjustStockModal.inv-adjust-modal .inv-quick-chips::-webkit-scrollbar {
+    display: none;
+}
+#adjustStockModal.inv-adjust-modal .inv-chip-btn {
+    appearance: none;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    min-height: 32px;
+    padding: 4px 12px;
+    border-radius: 999px !important;
+    font-size: 0.76rem;
+    font-weight: 700 !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+#adjustStockModal.inv-adjust-modal .inv-chip-btn:hover,
+#adjustStockModal.inv-adjust-modal .inv-chip-btn:active {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+#adjustStockModal.inv-adjust-modal .inv-reset-qty-btn {
+    appearance: none;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+    padding: 2px 8px;
+    border-radius: 999px !important;
+    font-size: 0.68rem;
+    font-weight: 600 !important;
+    cursor: pointer;
+}
+#adjustStockModal.inv-adjust-modal .inv-reset-qty-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+#adjustStockModal.inv-adjust-modal #modalAdjustStorePills {
+    gap: 8px;
+}
+#adjustStockModal.inv-adjust-modal #modalAdjustStorePills .inv-transfer-store-card {
+    min-height: 54px;
+    padding: 8px 10px;
+}
+#adjustStockModal.inv-adjust-modal #modalAdjustStorePills .inv-transfer-store-card:first-child:nth-last-child(odd) {
+    grid-column: 1 / -1;
+}
+#adjustStockModal.inv-adjust-modal #modalAdjustStorePills .inv-transfer-store-card.is-adjust.active:not(.store-box-themed) {
+    background: #fef2f2;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.16);
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-footer {
+    flex: 0 0 auto;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.05);
+    padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 2;
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-submit-btn,
+#adjustStockModal.inv-adjust-modal .inv-adjust-close-btn {
+    min-height: 48px;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    white-space: nowrap;
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-submit-btn {
+    font-size: 0.9rem;
+    color: #ffffff !important;
+    border: none !important;
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-submit-btn:disabled {
+    opacity: 0.55;
+    box-shadow: none !important;
+    cursor: not-allowed;
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-submit-btn.is-op-in {
+    background: #059669 !important;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28);
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-submit-btn.is-op-out {
+    background: #dc2626 !important;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.28);
+}
+#adjustStockModal.inv-adjust-modal .inv-adjust-submit-btn.is-op-adjustment {
+    background: #2563eb !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+@media (max-width: 575.98px) {
+    #adjustStockModal.inv-adjust-modal .modal-dialog {
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        align-items: flex-end !important;
+    }
+    #adjustStockModal.inv-adjust-modal.fade .modal-dialog {
+        transform: translateY(36px);
+        transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #adjustStockModal.inv-adjust-modal.show .modal-dialog {
+        transform: translateY(0);
+    }
+    #adjustStockModal.inv-adjust-modal .modal-content {
+        border-radius: 22px 22px 0 0 !important;
+        max-height: 92vh !important;
+        max-height: 92dvh !important;
+        height: auto;
+    }
+    #adjustStockModal.inv-adjust-modal .inv-sheet-handle {
+        display: block;
+        width: 40px;
+        height: 4px;
+        border-radius: 999px !important;
+        background: #cbd5e1;
+        margin: 2px auto 8px;
+    }
+    #adjustStockModal.inv-adjust-modal .inv-adjust-header {
+        padding: 8px 14px 10px;
+    }
+    #adjustStockModal.inv-adjust-modal .inv-adjust-body {
+        padding: 12px 14px 16px;
+    }
+    #adjustStockModal.inv-adjust-modal .inv-adjust-footer {
+        padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+    }
+    #adjustStockModal.inv-adjust-modal input.form-control,
+    #adjustStockModal.inv-adjust-modal select.form-select,
+    #adjustStockModal.inv-adjust-modal textarea.form-control {
+        font-size: 16px !important;
+    }
+}
+@media (max-width: 420px) {
+    #adjustStockModal.inv-adjust-modal .inv-adjust-summary-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    #adjustStockModal.inv-adjust-modal .inv-summary-stock-flow {
+        justify-content: space-between;
+        width: 100%;
+    }
+}
 </style>
 @endpush
 
@@ -182,7 +555,8 @@
     $selectedStore = $selectedStore ?? null;
     $stores = $stores ?? collect();
     $storeUnitStats = $storeUnitStats ?? collect();
-    $isAdmin = auth()->check() && auth()->user()->hasRole('Admin');
+    $canManageCost = auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability'));
+    $isAdmin = $canManageCost;
     $totalAllStoreUnits = (int) $storeUnitStats->sum('total_units');
 @endphp
 
@@ -276,15 +650,26 @@
     <!-- Sélecteur Rapide de Magasin / Dépôt / Point de Stockage -->
     @if($stores->isNotEmpty())
     <div class="mb-3">
-        <div class="d-flex align-items-center justify-content-between mb-1.5">
+        <div class="d-flex align-items-center justify-content-between mb-1.5 flex-wrap gap-2">
             <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.04em;">
                 <i class="fas fa-warehouse text-danger me-1"></i> Stock par Magasin &amp; Dépôt
             </span>
-            @if(auth()->user()?->hasRole('Admin') || auth()->user()?->can('manage_stores'))
-            <a href="{{ route('stores.index') }}" class="text-decoration-none small fw-semibold text-primary" style="font-size: 0.75rem;">
-                <i class="fas fa-plus-circle me-0.5"></i> Gérer les dépôts
-            </a>
-            @endif
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                @if(($zeroStoreProductsCount ?? 0) > 0 && $stores->isNotEmpty() && (auth()->user()?->hasRole('Admin') || auth()->user()?->can('manage_inventory')))
+                <form method="POST" action="{{ route('inventory.allocate-global') }}" class="d-inline" onsubmit="return confirm('Déplacer le stock global de {{ $zeroStoreProductsCount }} produit(s) à 0 sur tous les dépôts vers « {{ $stores->first()->name }} » ?');">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-outline-warning text-dark rounded-pill px-2.5 py-0.5 fw-semibold d-inline-flex align-items-center gap-1" style="font-size: 0.72rem; background: #fffbeb; border-color: #fcd34d;">
+                        <i class="fas fa-dolly text-warning"></i>
+                        <span>Affecter stock global ({{ $zeroStoreProductsCount }}) → {{ $stores->first()->name }}</span>
+                    </button>
+                </form>
+                @endif
+                @if(auth()->user()?->hasRole('Admin') || auth()->user()?->can('manage_stores'))
+                <a href="{{ route('stores.index') }}" class="text-decoration-none small fw-semibold text-primary" style="font-size: 0.75rem;">
+                    <i class="fas fa-plus-circle me-0.5"></i> Gérer les dépôts
+                </a>
+                @endif
+            </div>
         </div>
         <div class="chips-scroll-store">
             <a href="{{ route('inventory.index', request()->except(['page', 'store_id'])) }}"
@@ -388,7 +773,7 @@
                     <div>
                         @if($isAdmin)
                             <div class="stat-kpi-label">{{ $selectedStore ? 'Valeur Dépôt' : 'Valeur du Stock' }}</div>
-                            <div class="stat-kpi-value text-success" style="font-size: clamp(0.95rem, 3.5vw, 1.35rem);">{{ currency($stats['total_stock_value'] ?? 0) }}</div>
+                            <div class="stat-kpi-value text-success" id="invKpiStockValue" style="font-size: clamp(0.95rem, 3.5vw, 1.35rem);">{{ currency($stats['total_stock_value'] ?? 0) }}</div>
                             <div class="stat-kpi-sub text-muted">
                                 <i class="fas fa-coins text-success me-1"></i>{{ number_format($stats['total_units'] ?? 0, 0, ',', ' ') }} unité(s)
                             </div>
@@ -415,16 +800,28 @@
                 <div class="brand-search-wrapper flex-grow-1" style="min-width: 240px;">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" class="form-control"
-                           placeholder="Rechercher par nom d'article ou référence SKU..."
+                           placeholder="Rechercher par nom, code SKU / référence, marque ou ID..."
                            value="{{ request('search') }}">
                 </div>
 
                 @php
-                    $activeFilterKeys = ['store_id', 'category_id', 'stock_status', 'location_code', 'sort_by', 'sort_dir', 'per_page'];
-                    $hasActiveFilters = collect($activeFilterKeys)->some(fn($k) => request()->filled($k));
-                    $activeFilterCount = collect($activeFilterKeys)->filter(fn($k) => request()->filled($k))->count();
-                    $currentSortBy = $sortBy ?? request('sort_by', 'name');
-                    $currentSortDir = $sortDir ?? request('sort_dir', 'asc');
+                    $currentSortBy = $sortBy ?? '';
+                    $currentSortDir = $sortDir ?? 'asc';
+                    $hasCustomPerPage = request()->filled('per_page') && (int) request('per_page') !== 20;
+                    $hasActiveFilters = request()->filled('store_id')
+                        || request()->filled('category_id')
+                        || request()->filled('stock_status')
+                        || request()->filled('location_code')
+                        || $currentSortBy !== ''
+                        || $hasCustomPerPage;
+                    $activeFilterCount = collect([
+                        request()->filled('store_id'),
+                        request()->filled('category_id'),
+                        request()->filled('stock_status'),
+                        request()->filled('location_code'),
+                        $currentSortBy !== '',
+                        $hasCustomPerPage,
+                    ])->filter()->count();
                 @endphp
 
                 <button type="button"
@@ -454,7 +851,7 @@
                 </div>
             </div>
 
-            <div class="collapse d-md-block mt-2.5" id="inventoryFiltersCollapse">
+            <div class="collapse d-md-block {{ $hasActiveFilters ? 'show' : '' }} mt-2.5" id="inventoryFiltersCollapse">
                 <div class="row g-2 pt-2 border-top">
                     <!-- Magasin / Dépôt -->
                     <div class="col-6 col-lg-3">
@@ -506,6 +903,7 @@
                         <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Trier par</label>
                         <div class="input-group input-group-sm">
                             <select name="sort_by" class="form-select form-select-sm" onchange="onSortByChange(this)">
+                                <option value="" {{ $currentSortBy === '' ? 'selected' : '' }}>Par défaut / Pertinence</option>
                                 <option value="name" {{ $currentSortBy === 'name' ? 'selected' : '' }}>Nom du produit</option>
                                 <option value="sku" {{ $currentSortBy === 'sku' ? 'selected' : '' }}>Code SKU</option>
                                 <option value="stock" {{ $currentSortBy === 'stock' ? 'selected' : '' }}>Quantité {{ $selectedStore ? '(ce dépôt)' : '' }}</option>
@@ -546,6 +944,72 @@
             </div>
         </form>
     </div>
+
+    <!-- Active Filter Badges with Quick Removal Pills -->
+    @if(request('search') || $hasActiveFilters)
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-3 px-1">
+            <span class="text-muted small fw-semibold">
+                <i class="fas fa-filter text-primary me-1"></i> Filtres appliqués :
+            </span>
+
+            @if(request('search'))
+                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Recherche : "{{ request('search') }}" <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('store_id'))
+                @php $stFilterObj = $stores->firstWhere('id', (int) request('store_id')); @endphp
+                <a href="{{ request()->fullUrlWithQuery(['store_id' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Magasin : {{ $stFilterObj ? $stFilterObj->name : request('store_id') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('category_id'))
+                @php $catFilterObj = $categories->firstWhere('id', (int) request('category_id')); @endphp
+                <a href="{{ request()->fullUrlWithQuery(['category_id' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Catégorie : {{ $catFilterObj ? $catFilterObj->name : request('category_id') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('stock_status'))
+                @php
+                    $invStockLabels = [
+                        'in_stock' => 'En stock',
+                        'low_stock' => 'Stock faible',
+                        'out_of_stock' => 'Rupture (0)',
+                    ];
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['stock_status' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Stock : {{ $invStockLabels[request('stock_status')] ?? request('stock_status') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('location_code'))
+                <a href="{{ request()->fullUrlWithQuery(['location_code' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Emplacement : "{{ request('location_code') }}" <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if($currentSortBy !== '')
+                @php
+                    $invSortLabels = [
+                        'name' => 'Nom',
+                        'sku' => 'SKU',
+                        'stock' => 'Quantité',
+                        'sold_last_30_days' => 'Ventes (30j)',
+                    ];
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => null, 'sort_dir' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Réinitialiser le tri">
+                    Tri : {{ $invSortLabels[$currentSortBy] ?? $currentSortBy }} ({{ $currentSortDir === 'desc' ? '↓' : '↑' }}) <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            <a href="{{ route('inventory.index') }}" class="small text-danger fw-semibold text-decoration-none ms-1">
+                Effacer tout
+            </a>
+        </div>
+    @endif
 
     <!-- AFFICHAGE MOBILE -->
     <div class="d-block d-md-none">
@@ -722,7 +1186,7 @@
                         data-product-id="{{ $product->id }}"
                         data-selected-store-id="{{ $selectedStoreId ?? '' }}"
                         data-threshold="{{ $threshold }}"
-                        data-cost-price="{{ (float) ($product->cost_price ?? 0) }}">
+                        @if($canManageCost) data-cost-price="{{ (float) ($product->cost_price ?? 0) }}" @endif>
                         <!-- Checkbox -->
                         <td style="padding-left: 1rem;">
                             <input type="checkbox" class="form-check-input inv-row-checkbox" value="{{ $product->id }}" onchange="updateInvBulkBar()">
@@ -847,12 +1311,22 @@
                         </td>
 
                         <!-- Valeur marchande (Admin uniquement) / Statut -->
-                        <td class="text-end">
-                            @if($isAdmin && $isTracked && $product->cost_price)
-                                <div class="fw-bold text-dark" style="font-size: 0.84rem;">{{ currency($stock * $product->cost_price) }}</div>
-                                <div class="text-muted small" style="font-size: 0.68rem;">{{ currency($product->cost_price) }} / u.</div>
-                            @elseif($isAdmin)
-                                <span class="text-muted">—</span>
+                        <td class="text-end" @if($canManageCost) id="inv-row-val-cell-{{ $product->id }}" @endif>
+                            @if($canManageCost && $isTracked && $product->cost_price !== null && (float) $product->cost_price > 0)
+                                @php
+                                    $sellingPriceRow = (float) ($product->active_price ?? $product->price ?? 0);
+                                    $unitBenefitRow = round($sellingPriceRow - (float) $product->cost_price, 2);
+                                    $marginPctRow = $sellingPriceRow > 0 ? round(($unitBenefitRow / $sellingPriceRow) * 100, 1) : 0.0;
+                                @endphp
+                                <div class="fw-bold text-dark" id="inv-row-val-{{ $product->id }}" style="font-size: 0.84rem;">{{ currency($stock * $product->cost_price) }}</div>
+                                <div class="text-muted small" id="inv-row-unit-cost-{{ $product->id }}" style="font-size: 0.68rem;">PMP {{ currency($product->cost_price) }} / u.</div>
+                                <div class="fw-semibold small {{ $unitBenefitRow >= 0 ? 'text-success' : 'text-danger' }}" id="inv-row-profit-{{ $product->id }}" style="font-size: 0.66rem;">
+                                    Bén. {{ $unitBenefitRow >= 0 ? '+' : '' }}{{ currency($unitBenefitRow) }}/u ({{ $marginPctRow }}%)
+                                </div>
+                            @elseif($canManageCost)
+                                <div class="fw-bold text-dark {{ $isTracked ? '' : 'd-none' }}" id="inv-row-val-{{ $product->id }}" style="font-size: 0.84rem;">—</div>
+                                <div class="text-muted small d-none" id="inv-row-unit-cost-{{ $product->id }}" style="font-size: 0.68rem;"></div>
+                                <div class="fw-semibold small d-none" id="inv-row-profit-{{ $product->id }}" style="font-size: 0.66rem;"></div>
                             @else
                                 <span class="badge bg-light text-muted border font-monospace" style="font-size: 0.65rem;"><i class="fas fa-lock me-1"></i>Réservé</span>
                             @endif
@@ -876,6 +1350,13 @@
                                         title="Transférer vers un autre dépôt">
                                     <i class="fas fa-arrow-right-arrow-left text-info"></i>
                                 </button>
+                                @endif
+                                @if($canManageCost)
+                                <a href="{{ route('inventory.arrivals', ['product_id' => $product->id]) }}"
+                                   class="action-btn"
+                                   title="Lots &amp; Arrivages FIFO">
+                                    <i class="fas fa-layer-group text-success"></i>
+                                </a>
                                 @endif
                                 <a href="{{ route('inventory.movements', array_filter(['product_id' => $product->id, 'store_id' => $selectedStoreId])) }}"
                                    class="action-btn"
@@ -915,50 +1396,69 @@
     </div>
 
     <!-- MODAL AJUSTEMENT RAPIDE DE STOCK (GLOBAL OU PAR MAGASIN / DÉPÔT) -->
-    <div class="modal fade" id="adjustStockModal" tabindex="-1" aria-labelledby="adjustStockModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                <form id="adjustStockForm" method="POST" action="">
-                    @csrf
+    <div class="modal fade inv-adjust-modal" id="adjustStockModal" tabindex="-1" aria-labelledby="adjustStockModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <form id="adjustStockForm" method="POST" action="" class="modal-content border-0 shadow-lg">
+                @csrf
+                <input type="hidden" name="filter_store_id" value="{{ $selectedStoreId ?? '' }}">
 
-                    <div class="modal-header border-0 bg-light p-3.5 pb-2">
+                <!-- Sticky Header + Pinned Product & Live Stock Delta Summary -->
+                <div class="modal-header d-block inv-adjust-header">
+                    <div class="inv-sheet-handle" aria-hidden="true"></div>
+                    <div class="d-flex align-items-center justify-content-between gap-2">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="brand-header-icon" style="width: 36px; height: 36px; font-size: 16px;">
+                            <div class="brand-header-icon flex-shrink-0" style="width: 32px; height: 32px; font-size: 14px;">
                                 <i class="fas fa-sliders-h"></i>
                             </div>
                             <div>
-                                <h5 class="modal-title fw-bold text-dark fs-6" id="adjustStockModalLabel">Ajustement du Stock</h5>
-                                <div class="text-muted small" style="font-size: 0.72rem;">Mise à jour immédiate globale ou par magasin / dépôt</div>
+                                <h5 class="modal-title fw-bold text-dark mb-0" id="adjustStockModalLabel" style="font-size: 0.96rem;">Ajustement du Stock</h5>
+                                <div class="text-muted" style="font-size: 0.7rem;">Mise à jour globale ou par magasin / dépôt</div>
                             </div>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        <button type="button" class="inv-modal-close-x" data-bs-dismiss="modal" aria-label="Fermer">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
 
-                    <div class="modal-body p-3.5">
-                        <div id="modalAdjustError" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3" role="alert"></div>
-                        <div id="modalAdjustSuccess" class="alert alert-success py-2 px-3 small rounded-3 d-none mb-3 d-flex align-items-center justify-content-between" role="alert">
-                            <div><i class="fas fa-check-circle me-1.5"></i><span id="modalAdjustSuccessText">Modifications enregistrées.</span></div>
-                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.65rem;">Enregistré</span>
-                        </div>
-
-                        <!-- Product Preview Card -->
-                        <div class="p-3 mb-3 rounded-3 bg-light border d-flex align-items-center justify-content-between">
-                            <div class="min-w-0">
-                                <div class="fw-bold text-dark text-truncate" id="modalProductName" style="font-size: 0.95rem;">Nom du Produit</div>
-                                <div class="text-muted small mt-0.5" style="font-size: 0.75rem;">
-                                    <span id="modalScopeLabel">Niveau actuel</span> : <span class="fw-bold text-primary fs-6" id="modalCurrentStock">0</span> unité(s)
+                    <div class="inv-adjust-summary-bar">
+                        <div class="d-flex align-items-center gap-2 inv-summary-product">
+                            <div class="inv-summary-thumb">
+                                <img id="modalProductThumb"
+                                     src="{{ asset('images/camera/cat_cameras.jpg') }}"
+                                     alt="Produit"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                            </div>
+                            <div class="flex-grow-1 min-w-0">
+                                <div class="fw-bold text-dark text-truncate" id="modalProductName" style="font-size: 0.86rem; font-weight: 700 !important;">Nom du Produit</div>
+                                <div class="d-flex align-items-center gap-1.5 flex-wrap text-muted" style="font-size: 0.69rem;">
+                                    <span class="badge bg-white text-secondary border font-monospace px-1.5 py-0" id="modalProductSku" style="font-size: 0.63rem;">SKU</span>
+                                    <span class="text-truncate" id="modalScopeLabel">Stock global</span>
                                 </div>
                             </div>
-                            <div class="text-end ps-2">
-                                <div class="text-muted small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.04em;">Nouveau niveau</div>
-                                <div class="fw-extrabold fs-5 text-dark" id="modalProjectedStock">0</div>
-                            </div>
                         </div>
+                        <div class="inv-summary-stock-flow">
+                            <span class="fw-bold text-secondary" id="modalCurrentStock" style="font-size: 0.88rem; font-weight: 700 !important;">0</span>
+                            <i class="fas fa-arrow-right text-muted" style="font-size: 0.65rem;"></i>
+                            <span class="fw-extrabold text-success" id="modalProjectedStock">0</span>
+                            <span class="inv-delta-pill bg-success-subtle text-success border border-success-subtle" id="modalDeltaPill">+1</span>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Magasin / Dépôt Selector (1-Click Visual Cards) -->
+                <!-- Scrollable Body -->
+                <div class="modal-body inv-adjust-body">
+                    <div id="modalAdjustError" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-2.5" role="alert"></div>
+                    <div id="modalAdjustSuccess" class="alert alert-success py-2 px-3 small rounded-3 d-none mb-2.5 d-flex align-items-center justify-content-between" role="alert">
+                        <div><i class="fas fa-check-circle me-1.5"></i><span id="modalAdjustSuccessText">Modifications enregistrées.</span></div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.65rem;">Enregistré</span>
+                    </div>
+
+                    <!-- Card 1 : Magasin / Dépôt & Variante (En premier pour choisir le site ciblé) -->
+                    @if($stores->isNotEmpty() || $products->contains(fn ($p) => $p->variants->isNotEmpty()))
+                    <div class="inv-modal-section">
                         @if($stores->isNotEmpty())
-                        <div class="mb-3 p-2.5 rounded-3 bg-light border">
-                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1.5" style="font-size: 0.68rem; letter-spacing: 0.04em;">
+                        <div>
+                            <label class="form-label inv-section-label mb-1.5 d-block">
                                 <i class="fas fa-warehouse text-danger me-1"></i>Magasin / Point de stockage ciblé (1 clic)
                             </label>
                             <select name="store_id" id="modalStoreSelect" class="form-select form-select-sm d-none" onchange="onStoreSelectionChange()">
@@ -1004,107 +1504,151 @@
                                 @endforeach
                             </div>
 
-                            <div class="row g-2 mt-2" id="modalStoreMetaContainer" style="display: none;">
-                                <div class="col-7">
-                                    <label class="form-label text-muted small mb-0.5" style="font-size: 0.68rem;">Emplacement (Rayon / Casier)</label>
-                                    <input type="text" name="location_code" id="modalLocationCodeInput" class="form-control form-control-sm" placeholder="Ex: Rayon A - B2">
-                                </div>
-                                <div class="col-5">
-                                    <label class="form-label text-muted small mb-0.5" style="font-size: 0.68rem;">Seuil alerte site</label>
-                                    <input type="number" min="0" name="min_quantity" id="modalMinQtyInput" class="form-control form-control-sm" value="2">
+                            <div class="inv-store-meta-box" id="modalStoreMetaContainer" style="display: none;">
+                                <div class="row g-2 w-100 m-0">
+                                    <div class="col-7 px-1">
+                                        <label class="form-label text-muted small mb-0.5" style="font-size: 0.68rem;">Emplacement (Rayon / Casier)</label>
+                                        <input type="text" name="location_code" id="modalLocationCodeInput" class="form-control form-control-sm" placeholder="Ex: Rayon A - B2">
+                                    </div>
+                                    <div class="col-5 px-1">
+                                        <label class="form-label text-muted small mb-0.5" style="font-size: 0.68rem;">Seuil alerte site</label>
+                                        <input type="number" min="0" inputmode="numeric" name="min_quantity" id="modalMinQtyInput" class="form-control form-control-sm" value="2">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         @endif
 
                         <!-- Variant Selector -->
-                        <div class="mb-3" id="modalVariantContainer" style="display: none;">
-                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Déclinaison / Variante</label>
+                        <div class="{{ $stores->isNotEmpty() ? 'mt-2.5 pt-2.5 border-top' : '' }}" id="modalVariantContainer" style="display: none;">
+                            <label class="form-label inv-section-label mb-1 d-block">
+                                <i class="fas fa-layer-group text-primary me-1"></i>Déclinaison / Variante
+                            </label>
                             <select name="variant_id" id="modalVariantSelect" class="form-select form-select-sm" onchange="onVariantSelectionChange()">
                                 <option value="">Ajustement sans variante</option>
                             </select>
-                            <div class="form-text small" style="font-size: 0.7rem;">Sélectionnez une variante spécifique si nécessaire.</div>
-                        </div>
-
-                        <!-- Operation Type Selector -->
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1.5" style="font-size: 0.68rem; letter-spacing: 0.04em;">Type d'opération</label>
-                            <div class="row g-2">
-                                <div class="col-4">
-                                    <div class="operation-pill-btn active" id="pill-in" onclick="selectOperation('in')">
-                                        <div class="text-success fs-5 mb-0.5"><i class="fas fa-arrow-down"></i></div>
-                                        <div class="fw-bold text-dark" style="font-size: 0.78rem;">Entrée</div>
-                                        <div class="text-muted" style="font-size: 0.65rem;">+ Ajouter</div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="operation-pill-btn" id="pill-out" onclick="selectOperation('out')">
-                                        <div class="text-danger fs-5 mb-0.5"><i class="fas fa-arrow-up"></i></div>
-                                        <div class="fw-bold text-dark" style="font-size: 0.78rem;">Sortie</div>
-                                        <div class="text-muted" style="font-size: 0.65rem;">- Retirer</div>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="operation-pill-btn" id="pill-adjustment" onclick="selectOperation('adjustment')">
-                                        <div class="text-primary fs-5 mb-0.5"><i class="fas fa-equals"></i></div>
-                                        <div class="fw-bold text-dark" style="font-size: 0.78rem;">Inventaire</div>
-                                        <div class="text-muted" style="font-size: 0.65rem;">= Réel</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="hidden" name="adjustment_type" id="modalAdjustmentType" value="in">
-                        </div>
-
-                        <!-- Quantity Stepper -->
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;" id="modalQtyLabel">Quantité à ajouter</label>
-                            <div class="input-group">
-                                <button type="button" class="btn btn-outline-secondary px-3" onclick="stepQuantity(-1)">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="number"
-                                       name="quantity"
-                                       id="modalQuantityInput"
-                                       class="form-control text-center fw-bold fs-5"
-                                       value="1"
-                                       min="1"
-                                       required
-                                       oninput="recalculateProjected()">
-                                <button type="button" class="btn btn-outline-secondary px-3" onclick="stepQuantity(1)">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                            <div class="form-text small" id="modalQtyHelp" style="font-size: 0.72rem;">Nombre d'unités ajoutées à l'inventaire.</div>
-                        </div>
-
-                        <!-- Reason (Optional) -->
-                        <div class="mb-2">
-                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Motif de l'ajustement (Optionnel)</label>
-                            <div class="d-flex flex-wrap gap-1 mb-2">
-                                <button type="button" class="badge bg-light text-secondary border py-1 px-2 text-decoration-none" onclick="setReason('Arrivage fournisseur')">Arrivage</button>
-                                <button type="button" class="badge bg-light text-secondary border py-1 px-2 text-decoration-none" onclick="setReason('Retour client')">Retour client</button>
-                                <button type="button" class="badge bg-light text-secondary border py-1 px-2 text-decoration-none" onclick="setReason('Inventaire physique dépôt')">Inventaire audit</button>
-                                <button type="button" class="badge bg-light text-secondary border py-1 px-2 text-decoration-none" onclick="setReason('Produit cassé / défectueux')">Casse / Perte</button>
-                            </div>
-                            <textarea name="reason"
-                                      id="modalReasonInput"
-                                      class="form-control"
-                                      rows="2"
-                                      placeholder="Motif optionnel (ex: Arrivage, Retour client...)"
-                                      style="border-radius: 12px; font-size: 0.85rem;"></textarea>
+                            <div class="form-text small" style="font-size: 0.69rem;">Sélectionnez une variante spécifique si nécessaire.</div>
                         </div>
                     </div>
+                    @else
+                        <div class="d-none" id="modalVariantContainer">
+                            <select name="variant_id" id="modalVariantSelect" class="form-select form-select-sm" onchange="onVariantSelectionChange()">
+                                <option value="">Ajustement sans variante</option>
+                            </select>
+                        </div>
+                    @endif
 
-                    <div class="modal-footer border-0 p-3.5 pt-0">
-                        <button type="submit" id="modalAdjustSubmitBtn" class="btn btn-brand-primary w-100 py-2.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-2">
-                            <i class="fas fa-check"></i> <span>Enregistrer l'ajustement</span>
-                        </button>
-                        <button type="button" class="btn btn-link text-muted small w-100 text-decoration-none mt-1" data-bs-dismiss="modal">
+                    <!-- Card 2 : Opération & Quantité -->
+                    <div class="inv-modal-section">
+                        <label class="form-label inv-section-label mb-1.5 d-block">
+                            Type d'opération
+                        </label>
+                        <div class="inv-op-segmented mb-3" role="tablist">
+                            <button type="button" role="tab" aria-selected="true" class="inv-op-btn operation-pill-btn active" id="pill-in" onclick="selectOperation('in')">
+                                <span class="d-inline-flex align-items-center gap-1 fw-bold" style="font-size: 0.8rem;">
+                                    <i class="fas fa-arrow-down text-success"></i> Entrée
+                                </span>
+                                <span style="font-size: 0.63rem; opacity: 0.8;">+ Ajouter</span>
+                            </button>
+                            <button type="button" role="tab" aria-selected="false" class="inv-op-btn operation-pill-btn" id="pill-out" onclick="selectOperation('out')">
+                                <span class="d-inline-flex align-items-center gap-1 fw-bold" style="font-size: 0.8rem;">
+                                    <i class="fas fa-arrow-up text-danger"></i> Sortie
+                                </span>
+                                <span style="font-size: 0.63rem; opacity: 0.8;">- Retirer</span>
+                            </button>
+                            <button type="button" role="tab" aria-selected="false" class="inv-op-btn operation-pill-btn" id="pill-adjustment" onclick="selectOperation('adjustment')">
+                                <span class="d-inline-flex align-items-center gap-1 fw-bold" style="font-size: 0.8rem;">
+                                    <i class="fas fa-equals text-primary"></i> Inventaire
+                                </span>
+                                <span style="font-size: 0.63rem; opacity: 0.8;">= Réel</span>
+                            </button>
+                        </div>
+                        <input type="hidden" name="adjustment_type" id="modalAdjustmentType" value="in">
+
+                        <div class="d-flex align-items-center justify-content-between gap-2 mb-1.5">
+                            <label class="form-label inv-section-label mb-0" id="modalQtyLabel">
+                                Quantité à ajouter
+                            </label>
+                            <button type="button" id="modalResetQtyBtn" class="inv-reset-qty-btn d-none" onclick="resetModalQty()">
+                                <i class="fas fa-rotate-left me-1"></i>Réinit. (1)
+                            </button>
+                        </div>
+
+                        <div class="inv-qty-stepper mb-2">
+                            <button type="button" class="btn btn-outline-secondary inv-stepper-btn" onclick="stepQuantity(-1)" aria-label="Diminuer la quantité">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number"
+                                   name="quantity"
+                                   id="modalQuantityInput"
+                                   inputmode="numeric"
+                                   class="form-control inv-qty-input"
+                                   value="1"
+                                   min="1"
+                                   required
+                                   onfocus="this.select()"
+                                   oninput="hideModalFeedbackBanners(); recalculateProjected();">
+                            <button type="button" class="btn btn-outline-secondary inv-stepper-btn" onclick="stepQuantity(1)" aria-label="Augmenter la quantité">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+
+                        <div class="inv-quick-chips" id="modalQuickQtyChips">
+                            <button type="button" class="inv-chip-btn" data-qty-mode="in" onclick="addModalChipQty(1)">+1</button>
+                            <button type="button" class="inv-chip-btn" data-qty-mode="in" onclick="addModalChipQty(5)">+5</button>
+                            <button type="button" class="inv-chip-btn" data-qty-mode="in" onclick="addModalChipQty(10)">+10</button>
+                            <button type="button" class="inv-chip-btn" data-qty-mode="in" onclick="addModalChipQty(20)">+20</button>
+                            <button type="button" class="inv-chip-btn" data-qty-mode="in" onclick="addModalChipQty(50)">+50</button>
+                            <button type="button" class="inv-chip-btn d-none" id="modalMaxOutChip" data-qty-mode="out" onclick="setModalQtyExact(currentProductStock)">
+                                Tout (<span id="modalMaxOutVal">0</span>)
+                            </button>
+                            <button type="button" class="inv-chip-btn d-none" data-qty-mode="adjustment" onclick="setModalQtyExact(0)">
+                                0 (Rupture)
+                            </button>
+                            <button type="button" class="inv-chip-btn d-none" id="modalInvCurrentChip" data-qty-mode="adjustment" onclick="setModalQtyExact(currentProductStock)">
+                                Actuel (<span id="modalInvCurrentVal">0</span>)
+                            </button>
+                        </div>
+                        <div class="form-text small mt-1.5" id="modalQtyHelp" style="font-size: 0.71rem;">Unités ajoutées au stock sélectionné.</div>
+                    </div>
+
+                    @if($canManageCost)
+                        @include('inventory.partials.cost-benefit-section', ['prefix' => 'modal'])
+                    @endif
+
+                    <!-- Card 4 : Motif (Optionnel) -->
+                    <div class="inv-modal-section mb-0">
+                        <label class="form-label inv-section-label mb-1.5 d-block">
+                            Motif de l'ajustement (Optionnel)
+                        </label>
+                        <div class="inv-quick-chips mb-2">
+                            <button type="button" class="inv-chip-btn" onclick="setReason('Arrivage fournisseur')">Arrivage</button>
+                            <button type="button" class="inv-chip-btn" onclick="setReason('Retour client')">Retour client</button>
+                            <button type="button" class="inv-chip-btn" onclick="setReason('Inventaire physique dépôt')">Inventaire audit</button>
+                            <button type="button" class="inv-chip-btn" onclick="setReason('Produit cassé / défectueux')">Casse / Perte</button>
+                        </div>
+                        <textarea name="reason"
+                                  id="modalReasonInput"
+                                  class="form-control"
+                                  rows="2"
+                                  placeholder="Motif optionnel (ex: Arrivage, Retour client...)"
+                                  style="border-radius: 12px; font-size: 0.85rem;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Sticky Footer CTA -->
+                <div class="modal-footer inv-adjust-footer">
+                    <div class="d-flex align-items-center gap-2 flex-nowrap w-100 m-0">
+                        <button type="button" class="btn btn-light border px-3 inv-adjust-close-btn" data-bs-dismiss="modal">
                             <span id="modalAdjustCloseLabel">Fermer</span>
                         </button>
+                        <button type="submit" id="modalAdjustSubmitBtn" class="btn btn-success flex-grow-1 inv-adjust-submit-btn is-op-in d-inline-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-plus-circle" id="modalSubmitIcon"></i>
+                            <span id="modalSubmitText">Ajouter +1 au stock</span>
+                        </button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1265,11 +1809,16 @@
     foreach ($products as $prodItem) {
         $variantList = [];
         foreach ($prodItem->variants as $v) {
-            $variantList[] = [
+            $vRow = [
                 'id' => $v->id,
                 'name' => $v->name,
                 'stock' => (int) ($v->stock ?? 0),
             ];
+            if ($canManageCost) {
+                $vRow['price'] = (float) ($v->price ?? 0);
+                $vRow['cost_price'] = $v->cost_price !== null ? (float) $v->cost_price : null;
+            }
+            $variantList[] = $vRow;
         }
         $storeStockList = [];
         foreach ($prodItem->storeStocks as $ss) {
@@ -1280,12 +1829,19 @@
                 'min_quantity' => (int) ($ss->min_quantity ?? 2),
             ];
         }
-        $invMetaMap[$prodItem->id] = [
+        $metaRow = [
             'name' => $prodItem->name,
+            'sku' => $prodItem->sku ?: 'SANS-SKU',
+            'thumbnail' => $prodItem->thumbnail,
             'stock' => (int) ($prodItem->stock ?? 0),
             'variants' => $variantList,
             'storeStocks' => $storeStockList,
         ];
+        if ($canManageCost) {
+            $metaRow['selling_price'] = (float) ($prodItem->active_price ?? $prodItem->price ?? 0);
+            $metaRow['cost_price'] = $prodItem->cost_price !== null ? (float) $prodItem->cost_price : null;
+        }
+        $invMetaMap[$prodItem->id] = $metaRow;
     }
 
     $transferStockMap = [];
@@ -1394,6 +1950,12 @@
         modalStoreStocks = meta.storeStocks || [];
 
         document.getElementById('modalProductName').textContent = meta.name;
+        const skuEl = document.getElementById('modalProductSku');
+        if (skuEl) skuEl.textContent = meta.sku || 'SANS-SKU';
+        const thumbEl = document.getElementById('modalProductThumb');
+        if (thumbEl) thumbEl.src = meta.thumbnail || @json(asset('images/camera/cat_cameras.jpg'));
+        const bodyEl = document.querySelector('#adjustStockModal .inv-adjust-body');
+        if (bodyEl) bodyEl.scrollTop = 0;
         const errBox = document.getElementById('modalAdjustError');
         if (errBox) {
             errBox.classList.add('d-none');
@@ -1428,14 +1990,28 @@
             variantContainer.style.display = 'none';
         }
 
+        const firstActiveStoreId = @json($stores->first()?->id);
         const storeSelect = document.getElementById('modalStoreSelect');
         if (storeSelect) {
-            storeSelect.value = preferredStoreId ? String(preferredStoreId) : '';
+            let targetStoreId = preferredStoreId ? String(preferredStoreId) : '';
+            if (!targetStoreId && firstActiveStoreId) {
+                const allZeroStores = !modalStoreStocks || modalStoreStocks.every(s => (parseInt(s.quantity, 10) || 0) <= 0);
+                if (allZeroStores) {
+                    targetStoreId = String(firstActiveStoreId);
+                }
+            }
+            storeSelect.value = targetStoreId;
         }
         refreshModalSelectLabels();
 
         document.getElementById('modalQuantityInput').value = 1;
         document.getElementById('modalReasonInput').value = '';
+        const modalArrivedAt = document.getElementById('modalArrivedAtInput');
+        if (modalArrivedAt) modalArrivedAt.value = '';
+        if (window.__invCostEngine) {
+            clearModalCostInput();
+            setModalCostMode('unit');
+        }
         selectOperation('in');
         syncModalStockContext();
 
@@ -1477,6 +2053,7 @@
         const storeSelect = document.getElementById('modalStoreSelect');
         if (!storeSelect) return;
         storeSelect.value = storeId ? String(storeId) : '';
+        hideModalFeedbackBanners();
         syncModalStockContext();
     }
 
@@ -1542,10 +2119,12 @@
     }
 
     function onStoreSelectionChange() {
+        hideModalFeedbackBanners();
         syncModalStockContext();
     }
 
     function onVariantSelectionChange() {
+        hideModalFeedbackBanners();
         syncModalStockContext();
     }
 
@@ -1555,32 +2134,157 @@
         ['in', 'out', 'adjustment'].forEach(type => {
             const pill = document.getElementById('pill-' + type);
             if (pill) {
-                pill.classList.toggle('active', type === op);
+                const active = type === op;
+                pill.classList.toggle('active', active);
+                pill.setAttribute('aria-selected', active ? 'true' : 'false');
             }
         });
 
         const qtyLabel = document.getElementById('modalQtyLabel');
         const qtyHelp = document.getElementById('modalQtyHelp');
         const qtyInput = document.getElementById('modalQuantityInput');
+        const quickChips = document.getElementById('modalQuickQtyChips');
+        const submitBtn = document.getElementById('modalAdjustSubmitBtn');
+        const submitIcon = document.getElementById('modalSubmitIcon');
+
+        if (quickChips) {
+            quickChips.querySelectorAll('.inv-chip-btn').forEach(btn => {
+                const mode = btn.dataset.qtyMode || 'in';
+                const show = op === 'adjustment'
+                    ? mode === 'adjustment'
+                    : (mode === 'in' || (op === 'out' && mode === 'out'));
+                if (op === 'out' && mode === 'in' && parseInt(btn.textContent.replace(/\D/g, ''), 10) > 10) {
+                    btn.classList.add('d-none');
+                } else {
+                    btn.classList.toggle('d-none', !show);
+                }
+            });
+        }
 
         if (op === 'in') {
             qtyLabel.textContent = "Quantité à ajouter";
             qtyHelp.textContent = "Unités ajoutées au stock sélectionné.";
             qtyInput.min = 1;
             if (parseInt(qtyInput.value, 10) < 1) qtyInput.value = 1;
+            if (submitBtn) {
+                submitBtn.classList.remove('is-op-out', 'is-op-adjustment');
+                submitBtn.classList.add('is-op-in');
+            }
+            if (submitIcon) submitIcon.className = 'fas fa-plus-circle';
         } else if (op === 'out') {
             qtyLabel.textContent = "Quantité à retirer";
             qtyHelp.textContent = "Unités déduites du stock sélectionné.";
             qtyInput.min = 1;
             if (parseInt(qtyInput.value, 10) < 1) qtyInput.value = 1;
+            if (submitBtn) {
+                submitBtn.classList.remove('is-op-in', 'is-op-adjustment');
+                submitBtn.classList.add('is-op-out');
+            }
+            if (submitIcon) submitIcon.className = 'fas fa-minus-circle';
         } else {
             qtyLabel.textContent = "Nouveau stock réel (exact)";
             qtyHelp.textContent = "Valeur exacte comptée dans le dépôt / produit.";
             qtyInput.min = 0;
             qtyInput.value = currentProductStock;
+            if (submitBtn) {
+                submitBtn.classList.remove('is-op-in', 'is-op-out');
+                submitBtn.classList.add('is-op-adjustment');
+            }
+            if (submitIcon) submitIcon.className = 'fas fa-check-circle';
         }
 
+        if (op !== 'in') {
+            clearModalCostInput();
+        }
+
+        hideModalFeedbackBanners();
         recalculateProjected();
+    }
+
+    function hideModalFeedbackBanners() {
+        const okBox = document.getElementById('modalAdjustSuccess');
+        if (okBox) okBox.classList.add('d-none');
+        const errBox = document.getElementById('modalAdjustError');
+        if (errBox) {
+            errBox.classList.add('d-none');
+            errBox.textContent = '';
+        }
+    }
+
+    function addModalChipQty(amount) {
+        const input = document.getElementById('modalQuantityInput');
+        if (!input) return;
+        const current = Math.max(0, parseInt(input.value, 10) || 0);
+        input.value = Math.max(1, current + amount);
+        hideModalFeedbackBanners();
+        recalculateProjected();
+    }
+
+    function setModalQtyExact(val) {
+        const input = document.getElementById('modalQuantityInput');
+        if (!input) return;
+        const minVal = parseInt(input.min, 10) || 0;
+        input.value = Math.max(minVal, parseInt(val, 10) || 0);
+        hideModalFeedbackBanners();
+        recalculateProjected();
+    }
+
+    function resetModalQty() {
+        setModalQtyExact(1);
+    }
+
+    function setModalCostMode(mode) {
+        if (window.__invCostEngine) {
+            window.__invCostEngine.setMode('modal', mode);
+            recalculateModalCostBenefit();
+        }
+    }
+
+    function prefillModalCurrentCost() {
+        recalculateModalCostBenefit();
+        if (window.__invCostEngine) {
+            window.__invCostEngine.prefill('modal');
+        }
+    }
+
+    function clearModalCostInput() {
+        const input = document.getElementById('modalUnitCostInput');
+        if (input) input.value = '';
+        recalculateModalCostBenefit();
+    }
+
+    function recalculateModalCostBenefit() {
+        if (!window.__invCostEngine || !currentModalProductId) return;
+        const meta = window.__invProducts[currentModalProductId] || {};
+        const op = document.getElementById('modalAdjustmentType')?.value || 'in';
+        const addedQty = Math.max(0, parseInt(document.getElementById('modalQuantityInput')?.value || '0', 10) || 0);
+        const variantSelect = document.getElementById('modalVariantSelect');
+        const variantId = variantSelect && variantSelect.value ? variantSelect.value : null;
+
+        let sellingPrice = parseFloat(meta.selling_price || 0) || 0;
+        let existingCost = meta.cost_price !== undefined ? meta.cost_price : null;
+        let existingStock = parseInt(meta.stock || 0, 10) || 0;
+
+        if (variantId) {
+            const v = (modalVariantsList || []).find(item => String(item.id) === String(variantId));
+            if (v) {
+                if (v.price !== undefined && parseFloat(v.price) > 0) {
+                    sellingPrice = parseFloat(v.price);
+                }
+                if (v.cost_price !== undefined && v.cost_price !== null) {
+                    existingCost = parseFloat(v.cost_price);
+                }
+                existingStock = parseInt(v.stock || 0, 10) || 0;
+            }
+        }
+
+        window.__invCostEngine.recalc('modal', {
+            op,
+            addedQty,
+            sellingPrice,
+            existingCost,
+            existingStock
+        });
     }
 
     function stepQuantity(delta) {
@@ -1589,27 +2293,75 @@
         const minVal = parseInt(input.min, 10) || 0;
         let next = Math.max(minVal, current + delta);
         input.value = next;
+        hideModalFeedbackBanners();
         recalculateProjected();
     }
 
     function recalculateProjected() {
         const op = document.getElementById('modalAdjustmentType').value;
-        const qty = parseInt(document.getElementById('modalQuantityInput').value, 10) || 0;
+        const rawQty = String(document.getElementById('modalQuantityInput').value || '').trim();
+        const qty = rawQty === '' ? 0 : Math.max(0, parseInt(rawQty, 10) || 0);
         const projEl = document.getElementById('modalProjectedStock');
+        const deltaEl = document.getElementById('modalDeltaPill');
+        const submitBtn = document.getElementById('modalAdjustSubmitBtn');
+        const submitText = document.getElementById('modalSubmitText');
+        const resetBtn = document.getElementById('modalResetQtyBtn');
+        const maxOutChip = document.getElementById('modalMaxOutChip');
+        const maxOutVal = document.getElementById('modalMaxOutVal');
+        const invCurVal = document.getElementById('modalInvCurrentVal');
+
+        if (resetBtn) {
+            resetBtn.classList.toggle('d-none', op === 'adjustment' || qty <= 1);
+        }
+        if (maxOutVal) maxOutVal.textContent = currentProductStock;
+        if (maxOutChip) {
+            maxOutChip.classList.toggle('d-none', op !== 'out' || currentProductStock <= 0);
+        }
+        if (invCurVal) invCurVal.textContent = currentProductStock;
 
         let projected = currentProductStock;
         if (op === 'in') {
             projected = currentProductStock + qty;
-            projEl.className = 'fw-extrabold fs-5 text-success';
+            const invalid = qty <= 0;
+            projEl.className = 'fw-extrabold text-success';
+            if (deltaEl) {
+                deltaEl.textContent = `+${qty}`;
+                deltaEl.className = 'inv-delta-pill bg-success-subtle text-success border border-success-subtle';
+            }
+            if (submitText) submitText.textContent = invalid ? 'Saisir une quantité (≥ 1)' : `Ajouter +${qty} au stock`;
+            if (submitBtn) submitBtn.disabled = invalid;
         } else if (op === 'out') {
             projected = currentProductStock - qty;
-            projEl.className = projected < 0 ? 'fw-extrabold fs-5 text-danger' : 'fw-extrabold fs-5 text-warning';
+            const negative = projected < 0;
+            const invalid = qty <= 0 || negative;
+            projEl.className = negative ? 'fw-extrabold text-danger' : 'fw-extrabold text-warning';
+            if (deltaEl) {
+                deltaEl.textContent = `-${qty}`;
+                deltaEl.className = negative
+                    ? 'inv-delta-pill bg-danger text-white'
+                    : 'inv-delta-pill bg-danger-subtle text-danger border border-danger-subtle';
+            }
+            if (submitText) {
+                submitText.textContent = negative
+                    ? `Stock insuffisant (${projected})`
+                    : (qty <= 0 ? 'Saisir une quantité (≥ 1)' : `Retirer -${qty} du stock`);
+            }
+            if (submitBtn) submitBtn.disabled = invalid;
         } else {
             projected = qty;
-            projEl.className = 'fw-extrabold fs-5 text-primary';
+            const diff = qty - currentProductStock;
+            const invalid = rawQty === '';
+            projEl.className = 'fw-extrabold text-primary';
+            if (deltaEl) {
+                deltaEl.textContent = diff === 0 ? `=${qty}` : `${diff > 0 ? '+' : ''}${diff}`;
+                deltaEl.className = 'inv-delta-pill bg-primary-subtle text-primary border border-primary-subtle';
+            }
+            if (submitText) submitText.textContent = invalid ? 'Saisir le stock réel' : `Définir le stock à ${qty}`;
+            if (submitBtn) submitBtn.disabled = invalid;
         }
 
         projEl.textContent = projected;
+        recalculateModalCostBenefit();
     }
 
     function setReason(text) {
@@ -1866,6 +2618,12 @@
         const meta = window.__invProducts[productId] || { name: '', stock: 0, variants: [], storeStocks: [] };
         const globalStock = parseInt(data.new_stock, 10) || 0;
         meta.stock = globalStock;
+        if ('cost_price' in data) {
+            meta.cost_price = data.cost_price !== null ? parseFloat(data.cost_price) : null;
+        }
+        if ('selling_price' in data && data.selling_price !== null) {
+            meta.selling_price = parseFloat(data.selling_price);
+        }
 
         if (Array.isArray(data.variants)) {
             meta.variants = data.variants;
@@ -2074,6 +2832,79 @@
                 pill.className = `badge ${pillBadge} border d-inline-flex align-items-center gap-1 px-2 py-1`;
             });
         }
+
+        // Update cost, stock valuation, and dynamic unit benefit on desktop/mobile rows & KPI card
+        if ('cost_price' in data && typeof window.formatInvCurrency === 'function') {
+            const kpiValEl = document.getElementById('invKpiStockValue');
+            if (kpiValEl && data.kpi_total_stock_value_formatted) {
+                kpiValEl.textContent = data.kpi_total_stock_value_formatted;
+            }
+
+            const costNum = data.cost_price !== null ? parseFloat(data.cost_price) : null;
+            const sellNum = data.selling_price !== undefined ? parseFloat(data.selling_price) : parseFloat(meta.selling_price || 0);
+            const hasPositiveCost = costNum !== null && costNum > 0;
+
+            if (row) {
+                row.dataset.costPrice = costNum !== null ? String(costNum) : '0';
+                const valEl = document.getElementById('inv-row-val-' + productId);
+                const unitCostEl = document.getElementById('inv-row-unit-cost-' + productId);
+                const profitEl = document.getElementById('inv-row-profit-' + productId);
+
+                if (hasPositiveCost) {
+                    const unitBen = data.unit_benefit !== null && data.unit_benefit !== undefined
+                        ? parseFloat(data.unit_benefit)
+                        : (sellNum - costNum);
+                    const mrgPct = data.margin_percentage !== null && data.margin_percentage !== undefined
+                        ? data.margin_percentage
+                        : (sellNum > 0 ? ((unitBen / sellNum) * 100).toFixed(1) : '0.0');
+
+                    if (valEl) {
+                        valEl.textContent = window.formatInvCurrency(activeStock * costNum);
+                        valEl.classList.remove('d-none');
+                    }
+                    if (unitCostEl) {
+                        unitCostEl.textContent = `PMP ${window.formatInvCurrency(costNum)} / u.`;
+                        unitCostEl.classList.remove('d-none');
+                    }
+                    if (profitEl) {
+                        const sign = unitBen >= 0 ? '+' : '';
+                        profitEl.textContent = `Bén. ${sign}${window.formatInvCurrency(unitBen)}/u (${mrgPct}%)`;
+                        profitEl.className = `fw-semibold small ${unitBen >= 0 ? 'text-success' : 'text-danger'}`;
+                    }
+                } else {
+                    if (valEl) valEl.textContent = '—';
+                    if (unitCostEl) unitCostEl.classList.add('d-none');
+                    if (profitEl) profitEl.classList.add('d-none');
+                }
+            }
+
+            const mobStockValEl = document.getElementById('mob-stock-val-cost-' + productId);
+            const mobPmpLineEl = document.getElementById('mob-pmp-line-' + productId);
+            const mobPmpValEl = document.getElementById('mob-pmp-val-' + productId);
+            const mobBenValEl = document.getElementById('mob-benefit-val-' + productId);
+
+            if (hasPositiveCost) {
+                const unitBen = data.unit_benefit !== null && data.unit_benefit !== undefined
+                    ? parseFloat(data.unit_benefit)
+                    : (sellNum - costNum);
+                const mrgPct = data.margin_percentage !== null && data.margin_percentage !== undefined
+                    ? data.margin_percentage
+                    : (sellNum > 0 ? ((unitBen / sellNum) * 100).toFixed(1) : '0.0');
+                const sign = unitBen >= 0 ? '+' : '';
+
+                if (mobStockValEl) mobStockValEl.textContent = window.formatInvCurrency(activeStock * costNum);
+                if (mobPmpLineEl) mobPmpLineEl.classList.remove('d-none');
+                if (mobPmpValEl) mobPmpValEl.textContent = window.formatInvCurrency(costNum);
+                if (mobBenValEl) {
+                    mobBenValEl.textContent = `Bén. ${sign}${window.formatInvCurrency(unitBen)}/u (${mrgPct}%)`;
+                    mobBenValEl.className = `badge ${unitBen >= 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'}`;
+                }
+            } else {
+                if (mobStockValEl) mobStockValEl.textContent = '—';
+                if (mobPmpLineEl) mobPmpLineEl.classList.add('d-none');
+                if (mobBenValEl) mobBenValEl.className = 'badge d-none';
+            }
+        }
     }
 
     if (!window.__invAdjustListenerBound) {
@@ -2121,6 +2952,7 @@
                     if (errBox) {
                         errBox.textContent = msg;
                         errBox.classList.remove('d-none');
+                        document.querySelector('#adjustStockModal .inv-adjust-body')?.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                     return;
                 }
@@ -2135,6 +2967,8 @@
                     modalVariantsList = updatedMeta.variants || [];
                     modalStoreStocks = updatedMeta.storeStocks || [];
                 }
+                const unitCostInputEl = document.getElementById('modalUnitCostInput');
+                if (unitCostInputEl) unitCostInputEl.value = '';
                 refreshModalSelectLabels();
                 syncModalStockContext();
 
@@ -2142,6 +2976,7 @@
                 if (okBox && okText) {
                     okText.textContent = successMsg;
                     okBox.classList.remove('d-none');
+                    document.querySelector('#adjustStockModal .inv-adjust-body')?.scrollTo({ top: 0, behavior: 'smooth' });
                 }
                 if (window.Toast) {
                     window.Toast.fire({
@@ -2153,12 +2988,14 @@
                 if (errBox) {
                     errBox.textContent = 'Erreur réseau lors de l\'enregistrement.';
                     errBox.classList.remove('d-none');
+                    document.querySelector('#adjustStockModal .inv-adjust-body')?.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = origHtml;
                 }
+                recalculateProjected();
             }
         });
     }

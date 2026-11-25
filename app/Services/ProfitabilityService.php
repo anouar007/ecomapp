@@ -14,27 +14,49 @@ use Illuminate\Support\Facades\DB;
 class ProfitabilityService
 {
     /**
+     * Subquery aggregating exact FIFO allocated quantities and costs per order item.
+     */
+    private function fifoAllocationsSubquery()
+    {
+        return DB::table('stock_batch_allocations')
+            ->whereNotNull('order_item_id')
+            ->groupBy('order_item_id')
+            ->selectRaw('order_item_id, SUM(quantity) as fifo_qty, SUM(total_cost) as fifo_cost');
+    }
+
+    /**
+     * SQL expression combining FIFO allocated cost with fallback catalog cost for unallocated units.
+     */
+    private function itemCostSqlExpression(): string
+    {
+        return 'COALESCE(fifo_alloc.fifo_cost, 0) + (GREATEST(0, order_items.quantity - COALESCE(fifo_alloc.fifo_qty, 0)) * COALESCE(products.cost_price, 0))';
+    }
+
+    /**
      * Compute overall financial benefits and margins over a period, factoring in Operating Expenses.
      */
     public function getOverallBenefits(Carbon $startDate, Carbon $endDate, ?int $storeId = null): array
     {
         $from = $startDate->copy()->startOfDay();
         $to = $endDate->copy()->endOfDay();
+        $fifoAlloc = $this->fifoAllocationsSubquery();
+        $costExpr = $this->itemCostSqlExpression();
 
         $data = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->leftJoinSub($fifoAlloc, 'fifo_alloc', fn ($join) => $join->on('order_items.id', '=', 'fifo_alloc.order_item_id'))
             ->whereBetween('orders.created_at', [$from, $to])
             ->whereNotIn('orders.status', ['cancelled'])
             ->when($storeId, fn($q) => $q->where('order_items.store_id', $storeId))
-            ->selectRaw('
+            ->selectRaw("
                 COUNT(DISTINCT orders.id) as orders_count,
                 SUM(order_items.quantity) as items_sold,
                 SUM(order_items.price * order_items.quantity) as total_revenue,
-                SUM(COALESCE(products.cost_price, 0) * order_items.quantity) as total_cost,
-                SUM(CASE WHEN products.cost_price IS NULL OR products.cost_price <= 0 THEN order_items.price * order_items.quantity ELSE 0 END) as uncosted_revenue,
-                COUNT(DISTINCT CASE WHEN products.cost_price IS NULL OR products.cost_price <= 0 THEN products.id END) as uncosted_products_sold
-            ')
+                SUM({$costExpr}) as total_cost,
+                SUM(CASE WHEN COALESCE(fifo_alloc.fifo_cost, 0) <= 0 AND (products.cost_price IS NULL OR products.cost_price <= 0) THEN order_items.price * order_items.quantity ELSE 0 END) as uncosted_revenue,
+                COUNT(DISTINCT CASE WHEN COALESCE(fifo_alloc.fifo_cost, 0) <= 0 AND (products.cost_price IS NULL OR products.cost_price <= 0) THEN products.id END) as uncosted_products_sold
+            ")
             ->first();
 
         // Total Operating Expenses in this period (optionally scoped by store)
@@ -117,19 +139,24 @@ class ProfitabilityService
     ): Collection {
         $from = $startDate->copy()->startOfDay();
         $to = $endDate->copy()->endOfDay();
+        $fifoAlloc = $this->fifoAllocationsSubquery();
+        $costExpr = $this->itemCostSqlExpression();
 
         $salesSub = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->leftJoinSub($fifoAlloc, 'fifo_alloc', fn ($join) => $join->on('order_items.id', '=', 'fifo_alloc.order_item_id'))
             ->whereBetween('orders.created_at', [$from, $to])
             ->whereNotIn('orders.status', ['cancelled'])
             ->when($storeId, fn($q) => $q->where('order_items.store_id', $storeId))
             ->groupBy('order_items.product_id')
-            ->selectRaw('
+            ->selectRaw("
                 order_items.product_id,
                 SUM(order_items.quantity) as quantity_sold,
                 AVG(order_items.price) as avg_selling_price,
-                SUM(order_items.price * order_items.quantity) as total_revenue
-            ');
+                SUM(order_items.price * order_items.quantity) as total_revenue,
+                SUM({$costExpr}) as total_cost
+            ");
 
         $query = DB::table('products')
             ->leftJoinSub($salesSub, 'sales', fn($join) => $join->on('products.id', '=', 'sales.product_id'))
@@ -169,8 +196,8 @@ class ProfitabilityService
                 COALESCE(sales.quantity_sold, 0) as quantity_sold,
                 COALESCE(sales.avg_selling_price, products.price, 0) as avg_selling_price,
                 COALESCE(sales.total_revenue, 0) as total_revenue,
-                (COALESCE(products.cost_price, 0) * COALESCE(sales.quantity_sold, 0)) as total_cost,
-                (COALESCE(sales.total_revenue, 0) - (COALESCE(products.cost_price, 0) * COALESCE(sales.quantity_sold, 0))) as net_profit
+                COALESCE(sales.total_cost, 0) as total_cost,
+                (COALESCE(sales.total_revenue, 0) - COALESCE(sales.total_cost, 0)) as net_profit
             ');
 
         $results = $query->get();
@@ -182,11 +209,11 @@ class ProfitabilityService
             $cost = (float) $item->total_cost;
             $profit = (float) $item->net_profit;
             $unitSell = (float) $item->avg_selling_price;
-            $unitCost = (float) $item->cost_price;
+            $unitCost = $qty > 0 && $cost > 0 ? round($cost / $qty, 2) : (float) $item->cost_price;
 
             $item->quantity_sold = $qty;
             $item->catalog_stock = (int) $item->catalog_stock;
-            $item->has_cost = $unitCost > 0;
+            $item->has_cost = ((float) $item->cost_price > 0) || ($qty > 0 && $cost > 0);
             $item->is_sold = $qty > 0;
 
             if ($qty > 0 && $revenue > 0) {
@@ -239,23 +266,27 @@ class ProfitabilityService
      */
     public function getBrandBenefits(Carbon $startDate, Carbon $endDate, ?int $storeId = null): Collection
     {
+        $fifoAlloc = $this->fifoAllocationsSubquery();
+        $costExpr = $this->itemCostSqlExpression();
+
         $brands = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->leftJoinSub($fifoAlloc, 'fifo_alloc', fn ($join) => $join->on('order_items.id', '=', 'fifo_alloc.order_item_id'))
             ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
             ->whereBetween('orders.created_at', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
             ->whereNotIn('orders.status', ['cancelled'])
             ->when($storeId, fn($q) => $q->where('order_items.store_id', $storeId))
-            ->selectRaw('
+            ->selectRaw("
                 COALESCE(brands.id, 0) as brand_id,
-                COALESCE(brands.name, "Sans Marque") as brand_name,
+                COALESCE(brands.name, 'Sans Marque') as brand_name,
                 brands.logo as brand_logo,
                 COUNT(DISTINCT products.id) as products_count,
                 SUM(order_items.quantity) as items_sold,
                 SUM(order_items.price * order_items.quantity) as total_revenue,
-                SUM(COALESCE(products.cost_price, 0) * order_items.quantity) as total_cost,
-                (SUM(order_items.price * order_items.quantity) - SUM(COALESCE(products.cost_price, 0) * order_items.quantity)) as net_profit
-            ')
+                SUM({$costExpr}) as total_cost,
+                (SUM(order_items.price * order_items.quantity) - SUM({$costExpr})) as net_profit
+            ")
             ->groupBy('brands.id', 'brands.name', 'brands.logo')
             ->orderBy('net_profit', 'desc')
             ->get();
@@ -277,22 +308,26 @@ class ProfitabilityService
      */
     public function getCategoryBenefits(Carbon $startDate, Carbon $endDate, ?int $storeId = null): Collection
     {
+        $fifoAlloc = $this->fifoAllocationsSubquery();
+        $costExpr = $this->itemCostSqlExpression();
+
         $categories = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->leftJoinSub($fifoAlloc, 'fifo_alloc', fn ($join) => $join->on('order_items.id', '=', 'fifo_alloc.order_item_id'))
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->whereBetween('orders.created_at', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
             ->whereNotIn('orders.status', ['cancelled'])
             ->when($storeId, fn($q) => $q->where('order_items.store_id', $storeId))
-            ->selectRaw('
+            ->selectRaw("
                 COALESCE(categories.id, 0) as category_id,
-                COALESCE(categories.name, "Non Catégorisé") as category_name,
+                COALESCE(categories.name, 'Non Catégorisé') as category_name,
                 COUNT(DISTINCT products.id) as products_count,
                 SUM(order_items.quantity) as items_sold,
                 SUM(order_items.price * order_items.quantity) as total_revenue,
-                SUM(COALESCE(products.cost_price, 0) * order_items.quantity) as total_cost,
-                (SUM(order_items.price * order_items.quantity) - SUM(COALESCE(products.cost_price, 0) * order_items.quantity)) as net_profit
-            ')
+                SUM({$costExpr}) as total_cost,
+                (SUM(order_items.price * order_items.quantity) - SUM({$costExpr})) as net_profit
+            ")
             ->groupBy('categories.id', 'categories.name')
             ->orderBy('net_profit', 'desc')
             ->get();
@@ -317,17 +352,20 @@ class ProfitabilityService
         $diffDays = $startDate->diffInDays($endDate);
         $groupByFormat = $diffDays > 62 ? '%Y-%m' : '%Y-%m-%d';
         $displayFormat = $diffDays > 62 ? 'M Y' : 'd/m';
+        $fifoAlloc = $this->fifoAllocationsSubquery();
+        $costExpr = $this->itemCostSqlExpression();
 
         $rawTrends = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->leftJoinSub($fifoAlloc, 'fifo_alloc', fn ($join) => $join->on('order_items.id', '=', 'fifo_alloc.order_item_id'))
             ->whereBetween('orders.created_at', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
             ->whereNotIn('orders.status', ['cancelled'])
             ->when($storeId, fn($q) => $q->where('order_items.store_id', $storeId))
             ->selectRaw("
                 DATE_FORMAT(orders.created_at, '{$groupByFormat}') as period_key,
                 SUM(order_items.price * order_items.quantity) as revenue,
-                SUM(COALESCE(products.cost_price, 0) * order_items.quantity) as cost
+                SUM({$costExpr}) as cost
             ")
             ->groupBy('period_key')
             ->orderBy('period_key', 'asc')
@@ -485,19 +523,23 @@ class ProfitabilityService
             ->get()
             ->keyBy('store_id');
 
+        $fifoAlloc = $this->fifoAllocationsSubquery();
+        $costExpr = $this->itemCostSqlExpression();
+
         $salesByStore = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->leftJoinSub($fifoAlloc, 'fifo_alloc', fn ($join) => $join->on('order_items.id', '=', 'fifo_alloc.order_item_id'))
             ->whereNotNull('order_items.store_id')
             ->whereBetween('orders.created_at', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
             ->whereNotIn('orders.status', ['cancelled'])
-            ->selectRaw('
+            ->selectRaw("
                 order_items.store_id,
                 COUNT(DISTINCT orders.id) as orders_count,
                 SUM(order_items.quantity) as items_sold,
                 SUM(order_items.price * order_items.quantity) as total_revenue,
-                SUM(COALESCE(products.cost_price, 0) * order_items.quantity) as total_cost
-            ')
+                SUM({$costExpr}) as total_cost
+            ")
             ->groupBy('order_items.store_id')
             ->get()
             ->keyBy('store_id');

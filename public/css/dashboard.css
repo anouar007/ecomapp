@@ -2427,6 +2427,13 @@ body {
     border-color: #a7f3d0;
 }
 
+.brand-badge.partial,
+.brand-badge.pay-badge-partial {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
 .brand-badge.pending,
 .brand-badge.pay-badge-pending {
     background: #fffbeb;
@@ -4108,10 +4115,20 @@ i.fa-sparkles:before {
     transition: all 0.15s ease;
 }
 
+.mobile-order-price-badges .mobile-order-pay-pill {
+    margin-top: 0;
+}
+
 .mobile-order-pay-pill.paid {
     background: #ecfdf5;
     color: #047857;
     border: 1px solid #a7f3d0;
+}
+
+.mobile-order-pay-pill.partial {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
 }
 
 .mobile-order-pay-pill.pending {
@@ -5475,6 +5492,12 @@ i.fa-sparkles:before {
     background: #ecfdf5 !important;
     color: #047857 !important;
     border: 1px solid #a7f3d0 !important;
+}
+
+.pay-badge-partial {
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border: 1px solid #bfdbfe !important;
 }
 
 .pay-badge-pending {

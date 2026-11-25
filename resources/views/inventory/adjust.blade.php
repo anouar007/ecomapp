@@ -159,6 +159,7 @@
                         $stores = $stores ?? collect();
                         $selectedStoreId = $selectedStoreId ?? null;
                         $storeStockMap = $product->storeStocks->keyBy('store_id');
+                        $canManageCost = auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability'));
                     @endphp
 
                     @if($stores->isNotEmpty())
@@ -254,7 +255,11 @@
                         <select name="variant_id" id="variantSelectAdjust" class="form-select" onchange="onAdjustVariantChange(this)">
                             <option value="" data-stock="{{ $product->stock ?? 0 }}">Produit complet (Stock total : {{ $product->stock ?? 0 }})</option>
                             @foreach($product->variants as $var)
-                                <option value="{{ $var->id }}" data-stock="{{ $var->stock ?? 0 }}" data-name="{{ $var->name }}">
+                                <option value="{{ $var->id }}"
+                                        data-stock="{{ $var->stock ?? 0 }}"
+                                        data-name="{{ $var->name }}"
+                                        data-price="{{ (float) ($var->price ?? $product->active_price ?? 0) }}"
+                                        @if($canManageCost) data-cost="{{ $var->cost_price !== null ? (float) $var->cost_price : '' }}" @endif>
                                     Variante : {{ $var->name }} (Stock : {{ $var->stock ?? 0 }} | {{ currency($var->price) }})
                                 </option>
                             @endforeach
@@ -330,6 +335,10 @@
                             Unités ajoutées au stock existant.
                         </div>
                     </div>
+
+                    @if($canManageCost)
+                        @include('inventory.partials.cost-benefit-section', ['prefix' => 'adjust'])
+                    @endif
 
                     <!-- Motif (Optionnel) -->
                     <div class="mb-3.5">
@@ -422,10 +431,22 @@
                         <span class="fw-bold text-dark">{{ currency($product->active_price) }}</span>
                     </div>
 
-                    @if(auth()->check() && auth()->user()->hasRole('Admin') && $product->cost_price)
+                    @if($canManageCost && $product->cost_price !== null && (float) $product->cost_price > 0)
+                    @php
+                        $adjSellPrice = (float) ($product->active_price ?? $product->price ?? 0);
+                        $adjUnitBenefit = round($adjSellPrice - (float) $product->cost_price, 2);
+                        $adjMarginPct = $adjSellPrice > 0 ? round(($adjUnitBenefit / $adjSellPrice) * 100, 1) : 0.0;
+                    @endphp
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2.5">
-                        <span class="text-muted"><i class="fas fa-lock text-danger me-1"></i> Prix de revient / d'achat :</span>
+                        <span class="text-muted"><i class="fas fa-lock text-danger me-1"></i> Prix de revient (PMP) :</span>
                         <span class="fw-semibold text-secondary">{{ currency($product->cost_price) }}</span>
+                    </div>
+
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2.5">
+                        <span class="text-muted"><i class="fas fa-chart-line text-success me-1"></i> Bénéfice unitaire :</span>
+                        <span class="fw-bold {{ $adjUnitBenefit >= 0 ? 'text-success' : 'text-danger' }}">
+                            {{ $adjUnitBenefit >= 0 ? '+' : '' }}{{ currency($adjUnitBenefit) }} ({{ $adjMarginPct }}%)
+                        </span>
                     </div>
 
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2.5">
@@ -507,6 +528,64 @@
             </div>
             @endif
 
+            @if($canManageCost)
+            <!-- Lots & Arrivages FIFO de cet article (Admin / view_profitability uniquement) -->
+            <div class="bg-white border rounded-4 p-4 shadow-sm mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-bold text-dark m-0" style="font-size: 0.95rem;">
+                        <i class="fas fa-layer-group text-success me-1.5"></i>Lots &amp; Arrivages FIFO ({{ isset($fifoBatches) ? $fifoBatches->count() : 0 }})
+                    </h6>
+                    <a href="{{ route('inventory.arrivals', ['product_id' => $product->id]) }}" class="small text-primary text-decoration-none fw-semibold">
+                        Vue complète <i class="fas fa-arrow-right ms-0.5"></i>
+                    </a>
+                </div>
+
+                @if(isset($fifoBatches) && $fifoBatches->isNotEmpty())
+                    <div class="d-flex flex-column gap-2">
+                        @foreach($fifoBatches as $idx => $fBatch)
+                            <div class="p-2.5 rounded-3 border bg-light bg-opacity-75">
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                    <div class="d-flex align-items-center gap-1.5 min-w-0">
+                                        <span class="badge bg-dark text-white rounded-pill" style="font-size: 0.64rem;">#{{ $idx + 1 }}</span>
+                                        <span class="font-monospace fw-bold text-dark text-truncate" style="font-size: 0.76rem;">
+                                            {{ $fBatch->reference ?? ('LOT #' . $fBatch->id) }}
+                                        </span>
+                                        @if($fBatch->variant)
+                                            <span class="badge bg-primary-subtle text-primary" style="font-size: 0.62rem;">{{ $fBatch->variant->name }}</span>
+                                        @endif
+                                    </div>
+                                    <span class="badge {{ $fBatch->status === 'sold_out' ? 'bg-secondary-subtle text-secondary' : ($fBatch->status === 'selling' ? 'bg-primary-subtle text-primary' : ($fBatch->status === 'active' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning')) }} rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
+                                        {{ $fBatch->status_label }}
+                                    </span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between text-muted" style="font-size: 0.71rem;">
+                                    <span>Arrivé : <strong class="text-dark">{{ $fBatch->arrived_at ? $fBatch->arrived_at->format('d/m/Y') : '—' }}</strong></span>
+                                    <span>{{ $fBatch->sold_quantity }}/{{ $fBatch->initial_quantity }} vendu (Reste {{ $fBatch->remaining_quantity }})</span>
+                                </div>
+                                <div class="progress my-1.5" style="height: 5px;">
+                                    <div class="progress-bar {{ $fBatch->status === 'sold_out' ? 'bg-secondary' : ($fBatch->status === 'selling' ? 'bg-primary' : 'bg-success') }}"
+                                         style="width: {{ min(100, $fBatch->consumed_percent) }}%"></div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-1" style="font-size: 0.71rem;">
+                                    <span class="text-muted">Coût : <strong class="text-dark">{{ currency($fBatch->total_cost) }}</strong> ({{ currency($fBatch->unit_cost) }}/u)</span>
+                                    <span class="{{ $fBatch->realized_profit >= 0 ? 'text-success' : 'text-danger' }} fw-bold">
+                                        Bén. {{ $fBatch->realized_profit >= 0 ? '+' : '' }}{{ currency($fBatch->realized_profit) }}
+                                    </span>
+                                </div>
+                                <div class="text-muted mt-0.5" style="font-size: 0.67rem;">
+                                    <i class="far fa-clock me-1"></i>{{ $fBatch->sell_duration_label }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-3 text-muted small">
+                        Aucun lot FIFO enregistré pour cet article.
+                    </div>
+                @endif
+            </div>
+            @endif
+
             <!-- Historique des 5 derniers mouvements pour cet article -->
             <div class="bg-white border rounded-4 p-4 shadow-sm">
                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -560,6 +639,18 @@
                                 <i class="fas fa-comment-dots opacity-50 me-1"></i>{{ $mov->reason }}
                             </div>
                         @endif
+                        @if($canManageCost && $mov->unit_cost !== null)
+                            <div class="mt-1 d-flex flex-wrap align-items-center gap-1" style="font-size: 0.68rem;">
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                    Coût : {{ currency($mov->unit_cost) }}/u (Lot : {{ currency($mov->total_cost ?? ($mov->unit_cost * $mov->quantity)) }})
+                                </span>
+                                @if($mov->cost_after !== null)
+                                    <span class="badge bg-light text-dark border">
+                                        PMP : {{ $mov->cost_before !== null ? currency($mov->cost_before) : '—' }} → {{ currency($mov->cost_after) }}
+                                    </span>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                     @empty
                     <div class="text-center py-4 text-muted small">
@@ -576,12 +667,16 @@
 @push('scripts')
 <script>
     var currentStock = {{ $product->stock ?? 0 }};
+    var adjustBaseStock = {{ (int) ($product->stock ?? 0) }};
+    var adjustBaseSellPrice = {{ (float) ($product->active_price ?? $product->price ?? 0) }};
+    var adjustBaseCost = @json($canManageCost && $product->cost_price !== null ? (float) $product->cost_price : null);
 
     document.addEventListener('DOMContentLoaded', function() {
         const storeSelect = document.getElementById('storeSelectAdjust');
         if (storeSelect && storeSelect.value) {
             onAdjustStoreChange(storeSelect);
         }
+        updateAdjustCostBenefit();
     });
 
     function selectStoreForAdjust(storeId) {
@@ -694,7 +789,62 @@
             chipsWrap.style.display = 'none';
         }
 
+        if (op !== 'in') {
+            clearAdjustCostInput();
+        }
+
         updateLiveCalc();
+    }
+
+    function setAdjustCostMode(mode) {
+        if (window.__invCostEngine) {
+            window.__invCostEngine.setMode('adjust', mode);
+            updateAdjustCostBenefit();
+        }
+    }
+
+    function prefillAdjustCurrentCost() {
+        updateAdjustCostBenefit();
+        if (window.__invCostEngine) {
+            window.__invCostEngine.prefill('adjust');
+        }
+    }
+
+    function clearAdjustCostInput() {
+        const input = document.getElementById('adjustUnitCostInput');
+        if (input) input.value = '';
+        updateAdjustCostBenefit();
+    }
+
+    function updateAdjustCostBenefit() {
+        if (!window.__invCostEngine) return;
+        const op = document.getElementById('mainAdjustmentType')?.value || 'in';
+        const addedQty = Math.max(0, parseInt(document.getElementById('mainQuantityInput')?.value || '0', 10) || 0);
+        const variantSelect = document.getElementById('variantSelectAdjust');
+        const vOpt = (variantSelect && variantSelect.value) ? variantSelect.options[variantSelect.selectedIndex] : null;
+
+        let sellingPrice = adjustBaseSellPrice;
+        let existingCost = adjustBaseCost;
+        let existingStock = adjustBaseStock;
+
+        if (vOpt) {
+            const vPrice = parseFloat(vOpt.dataset.price || '0');
+            if (Number.isFinite(vPrice) && vPrice > 0) {
+                sellingPrice = vPrice;
+            }
+            if (vOpt.dataset.cost !== undefined && vOpt.dataset.cost !== '') {
+                existingCost = parseFloat(vOpt.dataset.cost);
+            }
+            existingStock = parseInt(vOpt.dataset.stock || '0', 10) || 0;
+        }
+
+        window.__invCostEngine.recalc('adjust', {
+            op,
+            addedQty,
+            sellingPrice,
+            existingCost,
+            existingStock
+        });
     }
 
     function stepMainQty(delta) {
@@ -744,6 +894,7 @@
         }
 
         projEl.textContent = projected;
+        updateAdjustCostBenefit();
     }
 
     function setMainReason(text) {

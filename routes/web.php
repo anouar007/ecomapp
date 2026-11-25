@@ -191,6 +191,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/inventory/export', [\App\Http\Controllers\InventoryController::class, 'export'])->name('inventory.export');
         Route::post('/inventory/bulk-action', [\App\Http\Controllers\InventoryController::class, 'bulkAction'])->name('inventory.bulk-action');
         Route::get('/inventory', [\App\Http\Controllers\InventoryController::class, 'index'])->name('inventory.index');
+        Route::post('/inventory/allocate-global-to-first-store', [\App\Http\Controllers\InventoryController::class, 'allocateGlobalToFirstStore'])->name('inventory.allocate-global');
+        Route::get('/inventory/arrivals', [\App\Http\Controllers\StockBatchController::class, 'index'])->name('inventory.arrivals');
+        Route::get('/inventory/arrivals/{stockBatch}/allocations', [\App\Http\Controllers\StockBatchController::class, 'allocations'])->name('inventory.arrivals.allocations');
         Route::get('/inventory/movements', [\App\Http\Controllers\InventoryController::class, 'movements'])->name('inventory.movements');
         Route::get('/inventory/alerts', [\App\Http\Controllers\InventoryController::class, 'alerts'])->name('inventory.alerts');
         Route::get('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'adjust'])->name('inventory.adjust');

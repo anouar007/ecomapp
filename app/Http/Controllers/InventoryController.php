@@ -28,148 +28,23 @@ class InventoryController extends Controller
     }
 
     /**
-     * Build a shared filtered Product query for both index() and export().
+     * Determine whether the authenticated user is allowed to view or update product cost & benefit metrics.
      */
-    protected function buildFilteredProductQuery(Request $request, ?int $selectedStoreId = null)
+    protected function canManageCosts(): bool
     {
-        $query = Product::query();
-
-        if ($request->filled('track_inventory')) {
-            $query->where('track_inventory', $request->track_inventory == '1');
-        }
-
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        if ($request->filled('location_code')) {
-            $loc = trim($request->location_code);
-            $query->whereHas('storeStocks', function ($sq) use ($loc, $selectedStoreId) {
-                $sq->where('location_code', 'LIKE', "%{$loc}%");
-                if ($selectedStoreId) {
-                    $sq->where('store_id', $selectedStoreId);
-                }
-            });
-        }
-
-        if ($request->filled('stock_status')) {
-            if ($selectedStoreId) {
-                switch ($request->stock_status) {
-                    case 'in_stock':
-                        $query->where('track_inventory', true)
-                            ->whereHas('storeStocks', function ($sq) use ($selectedStoreId) {
-                                $sq->where('store_id', $selectedStoreId)->where('quantity', '>', 0);
-                            });
-                        break;
-                    case 'low_stock':
-                        $query->where('track_inventory', true)
-                            ->whereHas('storeStocks', function ($sq) use ($selectedStoreId) {
-                                $sq->where('store_id', $selectedStoreId)
-                                   ->where('quantity', '>', 0)
-                                   ->whereRaw('quantity <= COALESCE(min_quantity, 2)');
-                            });
-                        break;
-                    case 'out_of_stock':
-                        $query->where('track_inventory', true)
-                            ->where(function ($outer) use ($selectedStoreId) {
-                                $outer->whereDoesntHave('storeStocks', function ($sq) use ($selectedStoreId) {
-                                    $sq->where('store_id', $selectedStoreId);
-                                })->orWhereHas('storeStocks', function ($sq) use ($selectedStoreId) {
-                                    $sq->where('store_id', $selectedStoreId)->where('quantity', '<=', 0);
-                                });
-                            });
-                        break;
-                }
-            } else {
-                switch ($request->stock_status) {
-                    case 'in_stock':
-                        $query->where('track_inventory', true)->where('stock', '>', 0);
-                        break;
-                    case 'low_stock':
-                        $query->where('track_inventory', true)
-                            ->where('stock', '>', 0)
-                            ->whereRaw('stock <= COALESCE(low_stock_threshold, min_stock, 10)');
-                        break;
-                    case 'out_of_stock':
-                        $query->where('track_inventory', true)->where('stock', '<=', 0);
-                        break;
-                }
-            }
-        }
-
-        if ($request->filled('search')) {
-            $search = trim($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('sku', 'LIKE', "%{$search}%");
-            });
-        }
-
-        return $query;
+        return Auth::check() && (Auth::user()->hasRole('Admin') || Auth::user()->can('view_profitability'));
     }
 
     /**
-     * Display inventory overview (global or filtered by specific store/magasin/depot).
+     * Compute aggregate inventory KPIs globally or scoped to a specific store.
      */
-    public function index(Request $request)
+    protected function computeInventoryStats(?int $selectedStoreId): array
     {
-        $stores = $this->activeStores();
-        $selectedStoreId = $request->filled('store_id') ? (int) $request->store_id : null;
-        $selectedStore = $selectedStoreId ? $stores->firstWhere('id', $selectedStoreId) : null;
-        if (!$selectedStore) {
-            $selectedStoreId = null;
-        }
-
-        $query = $this->buildFilteredProductQuery($request, $selectedStoreId);
-        $query->with(['productCategory', 'variants', 'storeStocks.store', 'primaryImage', 'images']);
-
-        // 30-day sales velocity
-        $startDate = now()->subDays(30);
-        $query->withSum(['orderItems as sold_last_30_days' => function ($q) use ($startDate) {
-            $q->where('created_at', '>=', $startDate);
-        }], 'quantity');
-
-        // Sorting
-        $sortBy = $request->get('sort_by', 'name');
-        $defaultDir = $sortBy === 'sold_last_30_days' ? 'desc' : 'asc';
-        $sortDir = strtolower($request->get('sort_dir', $defaultDir)) === 'desc' ? 'desc' : 'asc';
-        $allowedSorts = ['name', 'sku', 'stock', 'sold_last_30_days'];
-        if (!in_array($sortBy, $allowedSorts)) {
-            $sortBy = 'name';
-        }
-
-        if ($sortBy === 'stock' && $selectedStoreId) {
-            $query->orderBy(
-                DB::raw("COALESCE((SELECT quantity FROM product_stocks WHERE product_stocks.product_id = products.id AND product_stocks.store_id = {$selectedStoreId} LIMIT 1), 0)"),
-                $sortDir
-            );
-        } elseif ($sortBy === 'sold_last_30_days') {
-            $query->orderByRaw("COALESCE(sold_last_30_days, 0) {$sortDir}");
-        } else {
-            $query->orderBy($sortBy, $sortDir);
-        }
-
-        $perPage = (int) $request->get('per_page', 20);
-        if (!in_array($perPage, [20, 50, 100])) {
-            $perPage = 20;
-        }
-        $products = $query->paginate($perPage)->withQueryString();
-        $categories = Category::orderBy('name')->get();
-
-        // Store pill unit counts (tracked products only, matching KPI stats 100%)
-        $storeUnitStats = ProductStock::join('products', 'product_stocks.product_id', '=', 'products.id')
-            ->where('products.track_inventory', true)
-            ->selectRaw('product_stocks.store_id, SUM(product_stocks.quantity) as total_units, COUNT(CASE WHEN product_stocks.quantity > 0 THEN 1 END) as stocked_count')
-            ->groupBy('product_stocks.store_id')
-            ->get()
-            ->keyBy('store_id');
-
-        // Statistics via SQL aggregates (store-scoped when a store is selected, otherwise global)
         $stats = [
             'total_products' => 0,
             'low_stock' => 0,
             'out_of_stock' => 0,
-            'total_stock_value' => 0,
+            'total_stock_value' => 0.0,
             'total_units' => 0,
             'stocked_products' => 0,
         ];
@@ -217,9 +92,192 @@ class InventoryController extends Controller
             // Keep safe defaults
         }
 
+        return $stats;
+    }
+
+    /**
+     * Resolve ranked product IDs using the catalog's smart search engine (active + inactive items).
+     */
+    protected function resolveSearchProductIds(string $search): array
+    {
+        return \App\Services\ProductSearchService::getSearchProductIds($search, false);
+    }
+
+    /**
+     * Build a shared filtered Product query for both index() and export().
+     */
+    protected function buildFilteredProductQuery(Request $request, ?int $selectedStoreId = null, ?array &$matchedSearchIds = null)
+    {
+        $query = Product::query();
+
+        if ($request->filled('track_inventory')) {
+            $query->where('products.track_inventory', $request->track_inventory == '1');
+        }
+
+        $catParam = $request->filled('category_id') ? $request->category_id : $request->get('category');
+        if (!empty($catParam)) {
+            $cat = Category::with('children')->find($catParam);
+            $targetCategoryIds = ($cat && $cat->children->isNotEmpty())
+                ? $cat->children->pluck('id')->push($cat->id)->all()
+                : [(int) $catParam];
+
+            $query->where(function ($q) use ($targetCategoryIds) {
+                $q->whereIn('products.category_id', $targetCategoryIds)
+                  ->orWhereHas('categories', function ($sub) use ($targetCategoryIds) {
+                      $sub->whereIn('categories.id', $targetCategoryIds);
+                  });
+            });
+        }
+
+        if ($request->filled('location_code')) {
+            $loc = trim($request->location_code);
+            $query->whereHas('storeStocks', function ($sq) use ($loc, $selectedStoreId) {
+                $sq->where('location_code', 'LIKE', "%{$loc}%");
+                if ($selectedStoreId) {
+                    $sq->where('store_id', $selectedStoreId);
+                }
+            });
+        }
+
+        if ($request->filled('stock_status')) {
+            if ($selectedStoreId) {
+                switch ($request->stock_status) {
+                    case 'in_stock':
+                        $query->where('products.track_inventory', true)
+                            ->whereHas('storeStocks', function ($sq) use ($selectedStoreId) {
+                                $sq->where('store_id', $selectedStoreId)->where('quantity', '>', 0);
+                            });
+                        break;
+                    case 'low_stock':
+                        $query->where('products.track_inventory', true)
+                            ->whereHas('storeStocks', function ($sq) use ($selectedStoreId) {
+                                $sq->where('store_id', $selectedStoreId)
+                                   ->where('quantity', '>', 0)
+                                   ->whereRaw('quantity <= COALESCE(min_quantity, 2)');
+                            });
+                        break;
+                    case 'out_of_stock':
+                        $query->where('products.track_inventory', true)
+                            ->where(function ($outer) use ($selectedStoreId) {
+                                $outer->whereDoesntHave('storeStocks', function ($sq) use ($selectedStoreId) {
+                                    $sq->where('store_id', $selectedStoreId);
+                                })->orWhereHas('storeStocks', function ($sq) use ($selectedStoreId) {
+                                    $sq->where('store_id', $selectedStoreId)->where('quantity', '<=', 0);
+                                });
+                            });
+                        break;
+                }
+            } else {
+                switch ($request->stock_status) {
+                    case 'in_stock':
+                        $query->where('products.track_inventory', true)->where('products.stock', '>', 0);
+                        break;
+                    case 'low_stock':
+                        $query->where('products.track_inventory', true)
+                            ->where('products.stock', '>', 0)
+                            ->whereRaw('products.stock <= COALESCE(products.low_stock_threshold, products.min_stock, 10)');
+                        break;
+                    case 'out_of_stock':
+                        $query->where('products.track_inventory', true)->where('products.stock', '<=', 0);
+                        break;
+                }
+            }
+        }
+
+        if ($request->filled('search')) {
+            $cleanSearch = trim((string) $request->search);
+            $smartIds = $this->resolveSearchProductIds($cleanSearch);
+            $locIds = ProductStock::where('location_code', 'LIKE', "%{$cleanSearch}%")
+                ->when($selectedStoreId, fn ($q) => $q->where('store_id', $selectedStoreId))
+                ->pluck('product_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+
+            $matchedSearchIds = array_values(array_unique(array_merge($smartIds, $locIds)));
+
+            if (empty($matchedSearchIds)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereIn('products.id', $matchedSearchIds);
+            }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Display inventory overview (global or filtered by specific store/magasin/depot).
+     */
+    public function index(Request $request)
+    {
+        $stores = $this->activeStores();
+        $selectedStoreId = $request->filled('store_id') ? (int) $request->store_id : null;
+        $selectedStore = $selectedStoreId ? $stores->firstWhere('id', $selectedStoreId) : null;
+        if (!$selectedStore) {
+            $selectedStoreId = null;
+        }
+
+        $matchedSearchIds = null;
+        $query = $this->buildFilteredProductQuery($request, $selectedStoreId, $matchedSearchIds);
+        $query->with(['productCategory', 'categories', 'variants', 'storeStocks.store', 'primaryImage', 'images']);
+
+        // 30-day sales velocity
+        $startDate = now()->subDays(30);
+        $query->withSum(['orderItems as sold_last_30_days' => function ($q) use ($startDate) {
+            $q->where('created_at', '>=', $startDate);
+        }], 'quantity');
+
+        // Sorting (default: relevance order during search, flagship sort_order + newest otherwise — matching products.index)
+        $rawSortBy = (string) $request->get('sort_by', '');
+        $allowedExplicitSorts = ['name', 'sku', 'stock', 'sold_last_30_days'];
+        $sortBy = in_array($rawSortBy, $allowedExplicitSorts, true) ? $rawSortBy : '';
+        $defaultDir = $sortBy === 'sold_last_30_days' ? 'desc' : 'asc';
+        $sortDir = strtolower((string) $request->get('sort_dir', $defaultDir)) === 'desc' ? 'desc' : 'asc';
+
+        if ($sortBy === '') {
+            if ($request->filled('search') && !empty($matchedSearchIds)) {
+                $idList = implode(',', array_map('intval', $matchedSearchIds));
+                $query->orderByRaw("FIELD(products.id, {$idList})");
+            } else {
+                $query->orderByRaw('CASE WHEN products.sort_order > 0 THEN 0 ELSE 1 END ASC')
+                    ->orderBy('products.sort_order', 'asc')
+                    ->orderByDesc('products.id');
+            }
+        } elseif ($sortBy === 'stock' && $selectedStoreId) {
+            $query->orderBy(
+                DB::raw("COALESCE((SELECT quantity FROM product_stocks WHERE product_stocks.product_id = products.id AND product_stocks.store_id = {$selectedStoreId} LIMIT 1), 0)"),
+                $sortDir
+            );
+        } elseif ($sortBy === 'sold_last_30_days') {
+            $query->orderByRaw("COALESCE(sold_last_30_days, 0) {$sortDir}");
+        } else {
+            $query->orderBy("products.{$sortBy}", $sortDir);
+        }
+
+        $perPage = (int) $request->get('per_page', 20);
+        if (!in_array($perPage, [20, 50, 100])) {
+            $perPage = 20;
+        }
+        $products = $query->paginate($perPage)->withQueryString();
+        $categories = Category::orderBy('name')->get();
+
+        // Store pill unit counts (tracked products only, matching KPI stats 100%)
+        $storeUnitStats = ProductStock::join('products', 'product_stocks.product_id', '=', 'products.id')
+            ->where('products.track_inventory', true)
+            ->selectRaw('product_stocks.store_id, SUM(product_stocks.quantity) as total_units, COUNT(CASE WHEN product_stocks.quantity > 0 THEN 1 END) as stocked_count')
+            ->groupBy('product_stocks.store_id')
+            ->get()
+            ->keyBy('store_id');
+
+        // Statistics via SQL aggregates (store-scoped when a store is selected, otherwise global)
+        $stats = $this->computeInventoryStats($selectedStoreId);
+
         $allocatedUnits = (int) $storeUnitStats->sum('total_units');
         $globalTrackedUnits = (int) Product::where('track_inventory', true)->sum('stock');
         $unallocatedUnits = max(0, $globalTrackedUnits - $allocatedUnits);
+        $zeroStoreProductsCount = Product::where(function ($q) {
+            $q->where('stock', '>', 0)->orWhere('stock_quantity', '>', 0);
+        })->whereDoesntHave('storeStocks', fn ($q) => $q->where('quantity', '>', 0))->count();
         $unacknowledgedAlertsCount = StockAlert::unacknowledged()->count();
 
         $transferProducts = $stores->count() >= 2
@@ -239,6 +297,7 @@ class InventoryController extends Controller
             'selectedStoreId',
             'storeUnitStats',
             'unallocatedUnits',
+            'zeroStoreProductsCount',
             'unacknowledgedAlertsCount',
             'transferProducts',
             'sortBy',
@@ -370,12 +429,16 @@ class InventoryController extends Controller
         }
 
         $search = $request->search ?? $request->product;
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('product', function ($sub) use ($search) {
-                    $sub->where('name', 'LIKE', "%{$search}%")
-                        ->orWhere('sku', 'LIKE', "%{$search}%");
-                })->orWhere('reason', 'LIKE', "%{$search}%");
+        if ($search !== null && trim((string) $search) !== '') {
+            $cleanSearch = trim((string) $search);
+            $matchedProductIds = $this->resolveSearchProductIds($cleanSearch);
+            $query->where(function ($q) use ($cleanSearch, $matchedProductIds) {
+                if (!empty($matchedProductIds)) {
+                    $q->whereIn('product_id', $matchedProductIds)
+                      ->orWhere('reason', 'LIKE', "%{$cleanSearch}%");
+                } else {
+                    $q->where('reason', 'LIKE', "%{$cleanSearch}%");
+                }
             });
         }
 
@@ -414,11 +477,13 @@ class InventoryController extends Controller
         }
 
         $search = $request->search ?? $request->product;
-        if ($search) {
-            $query->whereHas('product', function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('sku', 'LIKE', "%{$search}%");
-            });
+        if ($search !== null && trim((string) $search) !== '') {
+            $matchedProductIds = $this->resolveSearchProductIds(trim((string) $search));
+            if (empty($matchedProductIds)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereIn('product_id', $matchedProductIds);
+            }
         }
 
         $alerts = $query->orderBy('triggered_at', 'desc')->paginate(20)->withQueryString();
@@ -443,8 +508,16 @@ class InventoryController extends Controller
         $product->load(['variants', 'storeStocks.store', 'images', 'primaryImage']);
         $stores = $this->activeStores();
         $selectedStoreId = $request->filled('store_id') ? (int) $request->store_id : null;
+        $fifoBatches = $this->canManageCosts()
+            ? $product->stockBatches()
+                ->with(['store', 'variant', 'shipment'])
+                ->withCount('allocations')
+                ->orderBy('arrived_at', 'asc')
+                ->orderBy('id', 'asc')
+                ->get()
+            : collect();
 
-        return view('inventory.adjust', compact('product', 'stores', 'selectedStoreId'));
+        return view('inventory.adjust', compact('product', 'stores', 'selectedStoreId', 'fifoBatches'));
     }
 
     /**
@@ -468,9 +541,17 @@ class InventoryController extends Controller
                 Rule::exists('product_variants', 'id')->where('product_id', $product->id),
             ],
             'store_id' => 'nullable|exists:stores,id',
+            'filter_store_id' => 'nullable|integer|exists:stores,id',
             'location_code' => 'nullable|string|max:100',
             'min_quantity' => 'nullable|integer|min:0',
+            'unit_cost' => 'nullable|numeric|min:0|max:99999999.99',
+            'cost_input_mode' => 'nullable|in:unit,total',
+            'arrived_at' => 'nullable|date',
+            'supplier_name' => 'nullable|string|max:255',
+            'reference' => 'nullable|string|max:100',
         ]);
+
+        $canManageCost = $this->canManageCosts();
 
         $options = [
             'reason' => !empty($validated['reason']) ? trim((string) $validated['reason']) : null,
@@ -495,7 +576,37 @@ class InventoryController extends Controller
         }
 
         if ($request->filled('reference')) {
-            $options['reference_id'] = $request->input('reference');
+            $refStr = trim((string) $request->input('reference'));
+            $options['batch_reference'] = $refStr;
+            if (ctype_digit($refStr)) {
+                $options['reference_id'] = (int) $refStr;
+            } else {
+                $options['reason'] = $options['reason']
+                    ? "{$options['reason']} (Réf: {$refStr})"
+                    : "Réf: {$refStr}";
+            }
+        }
+
+        if ($canManageCost && $validated['adjustment_type'] === 'in') {
+            if ($request->filled('arrived_at')) {
+                $options['arrived_at'] = $validated['arrived_at'];
+            }
+            if ($request->filled('supplier_name')) {
+                $options['supplier_name'] = trim((string) $validated['supplier_name']);
+            }
+            if ($request->filled('unit_cost')) {
+                $rawCost = (float) $validated['unit_cost'];
+                $qty = (int) $validated['quantity'];
+                $mode = $validated['cost_input_mode'] ?? 'unit';
+
+                if ($mode === 'total' && $qty > 0) {
+                    $options['total_cost'] = round($rawCost, 2);
+                    $options['unit_cost'] = round($rawCost / $qty, 2);
+                } else {
+                    $options['unit_cost'] = round($rawCost, 2);
+                    $options['total_cost'] = round($rawCost * $qty, 2);
+                }
+            }
         }
 
         $success = $product->adjustStock(
@@ -515,12 +626,19 @@ class InventoryController extends Controller
                     ? $refreshed->storeStocks->firstWhere('store_id', (int) $validated['store_id'])
                     : null;
 
-                $variantsPayload = $refreshed->variants->map(fn ($v) => [
-                    'id' => (int) $v->id,
-                    'name' => $v->name,
-                    'stock' => (int) ($v->stock ?? 0),
-                    'min_stock' => (int) ($v->min_stock ?: 5),
-                ])->values()->all();
+                $variantsPayload = $refreshed->variants->map(function ($v) use ($canManageCost) {
+                    $row = [
+                        'id' => (int) $v->id,
+                        'name' => $v->name,
+                        'stock' => (int) ($v->stock ?? 0),
+                        'min_stock' => (int) ($v->min_stock ?: 5),
+                        'price' => (float) ($v->price ?? 0),
+                    ];
+                    if ($canManageCost) {
+                        $row['cost_price'] = $v->cost_price !== null ? (float) $v->cost_price : null;
+                    }
+                    return $row;
+                })->values()->all();
 
                 $storeStocksPayload = $refreshed->storeStocks->map(fn ($ss) => [
                     'store_id' => (int) $ss->store_id,
@@ -529,13 +647,12 @@ class InventoryController extends Controller
                     'min_quantity' => (int) ($ss->min_quantity ?? 2),
                 ])->values()->all();
 
-                return response()->json([
+                $responsePayload = [
                     'success' => true,
                     'message' => 'Stock ajusté avec succès.',
                     'product_id' => (int) $refreshed->id,
                     'new_stock' => (int) ($refreshed->stock ?? 0),
                     'threshold' => (int) ($refreshed->low_stock_threshold ?? $refreshed->min_stock ?? 10),
-                    'cost_price' => (float) ($refreshed->cost_price ?? 0),
                     'variant_id' => $variant ? (int) $variant->id : null,
                     'variant_stock' => $variant ? (int) ($variant->stock ?? 0) : null,
                     'store_id' => $storeStock ? (int) $storeStock->store_id : null,
@@ -544,7 +661,53 @@ class InventoryController extends Controller
                     'min_quantity' => $storeStock ? (int) ($storeStock->min_quantity ?? 2) : null,
                     'variants' => $variantsPayload,
                     'store_stocks' => $storeStocksPayload,
-                ]);
+                ];
+
+                if ($canManageCost) {
+                    $newCost = $refreshed->cost_price !== null ? (float) $refreshed->cost_price : null;
+                    $sellingPrice = (float) ($refreshed->active_price ?? $refreshed->price ?? 0);
+                    $unitBenefit = $newCost !== null ? round($sellingPrice - $newCost, 2) : null;
+                    $marginPct = ($newCost !== null && $sellingPrice > 0)
+                        ? round((($sellingPrice - $newCost) / $sellingPrice) * 100, 1)
+                        : null;
+
+                    $kpiStoreId = !empty($validated['filter_store_id']) ? (int) $validated['filter_store_id'] : null;
+                    $kpiStats = $this->computeInventoryStats($kpiStoreId);
+                    $totalStockValue = (float) ($kpiStats['total_stock_value'] ?? 0);
+
+                    $batchUnitCost = $options['unit_cost'] ?? null;
+                    $batchTotalCost = $options['total_cost'] ?? null;
+                    $batchSellPrice = (float) ($variant ? ($variant->price ?? $sellingPrice) : $sellingPrice);
+                    $batchBenefit = $batchUnitCost !== null
+                        ? round(($batchSellPrice - (float) $batchUnitCost) * (int) $validated['quantity'], 2)
+                        : null;
+
+                    $responsePayload = array_merge($responsePayload, [
+                        'cost_price' => $newCost,
+                        'cost_price_formatted' => $newCost !== null ? currency($newCost) : null,
+                        'selling_price' => $sellingPrice,
+                        'unit_benefit' => $unitBenefit,
+                        'unit_benefit_formatted' => $unitBenefit !== null ? (($unitBenefit >= 0 ? '+' : '') . currency($unitBenefit)) : null,
+                        'margin_percentage' => $marginPct,
+                        'batch_unit_cost' => $batchUnitCost,
+                        'batch_total_cost' => $batchTotalCost,
+                        'batch_benefit' => $batchBenefit,
+                        'kpi_total_stock_value' => $totalStockValue,
+                        'kpi_total_stock_value_formatted' => currency($totalStockValue),
+                    ]);
+
+                    if ($batchUnitCost !== null && $newCost !== null) {
+                        $responsePayload['message'] = 'Stock ajusté avec succès — Nouveau PMP : '
+                            . currency($newCost)
+                            . ' (Bénéfice : '
+                            . ($unitBenefit >= 0 ? '+' : '')
+                            . currency($unitBenefit)
+                            . ($marginPct !== null ? " / {$marginPct}%" : '')
+                            . ').';
+                    }
+                }
+
+                return response()->json($responsePayload);
             }
 
             return response()->json([
@@ -554,9 +717,26 @@ class InventoryController extends Controller
         }
 
         if ($success) {
+            $flashMessage = 'Stock ajusté avec succès !';
+            if ($canManageCost && isset($options['unit_cost'])) {
+                $refreshed = $product->fresh();
+                if ($refreshed && $refreshed->cost_price !== null) {
+                    $newCost = (float) $refreshed->cost_price;
+                    $sellingPrice = (float) ($refreshed->active_price ?? $refreshed->price ?? 0);
+                    $unitBenefit = round($sellingPrice - $newCost, 2);
+                    $marginPct = $sellingPrice > 0 ? round(($unitBenefit / $sellingPrice) * 100, 1) : 0.0;
+                    $flashMessage = 'Stock ajusté avec succès ! Nouveau PMP : '
+                        . currency($newCost)
+                        . ' — Bénéfice unitaire : '
+                        . ($unitBenefit >= 0 ? '+' : '')
+                        . currency($unitBenefit)
+                        . " ({$marginPct}%).";
+                }
+            }
+
             return redirect()->route('inventory.index', array_filter([
                 'store_id' => $validated['store_id'] ?? null,
-            ]))->with('success', 'Stock ajusté avec succès !');
+            ]))->with('success', $flashMessage);
         }
 
         return back()->with('error', 'Impossible d\'ajuster le stock en dessous de zéro.');
@@ -655,5 +835,29 @@ class InventoryController extends Controller
         }
 
         return back()->with($updated > 0 ? 'success' : 'error', $message);
+    }
+
+    /**
+     * Move global stock into the first active store/point for all products that have
+     * global stock while having 0 across every store/point.
+     */
+    public function allocateGlobalToFirstStore(Request $request)
+    {
+        abort_unless(Auth::check() && (Auth::user()->hasRole('Admin') || Auth::user()->can('manage_inventory')), 403);
+
+        $result = Product::allocateUnassignedGlobalStockToFirstStore(Auth::id());
+
+        if (!$result['store']) {
+            return back()->with('error', 'Aucun magasin ou dépôt actif trouvé.');
+        }
+
+        if ($result['products_count'] > 0) {
+            return back()->with(
+                'success',
+                "{$result['products_count']} produit(s) ({$result['units_moved']} unités) ont été affectés du stock global vers « {$result['store']->name} »."
+            );
+        }
+
+        return back()->with('success', 'Tous les produits ayant du stock global sont déjà affectés à un magasin / point de stockage.');
     }
 }

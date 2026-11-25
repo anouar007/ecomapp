@@ -30,6 +30,7 @@ class ProductFactory extends Factory
             'description' => fake()->paragraph(),
             'price' => $price,
             'stock' => fake()->numberBetween(0, 100),
+            'force_in_stock' => true,
             'category' => null,
             'status' => 'active',
             'image' => null,
@@ -55,6 +56,7 @@ class ProductFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'stock' => 0,
+            'force_in_stock' => false,
         ]);
     }
 

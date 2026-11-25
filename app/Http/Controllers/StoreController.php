@@ -195,18 +195,39 @@ class StoreController extends Controller
 
         $query = Product::with(['productCategory', 'brand', 'storeStocks.store', 'images', 'primaryImage']);
 
-        // Search
+        // Search (smart catalog search + relevance ordering)
         if ($request->filled('search')) {
-            $search = trim($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('sku', 'LIKE', "%{$search}%");
-            });
+            $matchedIds = \App\Services\ProductSearchService::getSearchProductIds(
+                search: (string) $request->search,
+                activeOnly: false
+            );
+            if (empty($matchedIds)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $idList = implode(',', array_map('intval', $matchedIds));
+                $query->whereIn('products.id', $matchedIds)
+                      ->orderByRaw("FIELD(products.id, {$idList})");
+            }
+        } else {
+            $query->orderByRaw('CASE WHEN products.sort_order > 0 THEN 0 ELSE 1 END ASC')
+                  ->orderBy('products.sort_order', 'asc')
+                  ->orderByDesc('products.id');
         }
 
-        // Category filter
+        // Category filter (supports parent category with subcategories & multiple categories)
         if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+            $catId = $request->category_id;
+            $cat = Category::with('children')->find($catId);
+            $targetCategoryIds = ($cat && $cat->children->isNotEmpty())
+                ? $cat->children->pluck('id')->push($cat->id)->all()
+                : [(int) $catId];
+
+            $query->where(function ($q) use ($targetCategoryIds) {
+                $q->whereIn('products.category_id', $targetCategoryIds)
+                  ->orWhereHas('categories', function ($sub) use ($targetCategoryIds) {
+                      $sub->whereIn('categories.id', $targetCategoryIds);
+                  });
+            });
         }
 
         // Store specific filter

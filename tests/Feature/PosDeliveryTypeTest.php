@@ -483,7 +483,7 @@ class PosDeliveryTypeTest extends TestCase
             'customer_name' => 'Shipping POS Client',
             'customer_email' => 'ship-pos@example.test',
             'customer_phone' => '0622334455',
-            'shipping_address' => 'Point de Vente',
+            'shipping_address' => 'Vente en boutique (POS)',
             'shipping_city' => 'Casablanca',
             'shipping_zip' => '20000',
             'shipping_country' => 'Morocco',
@@ -544,5 +544,103 @@ class PosDeliveryTypeTest extends TestCase
         $this->assertSame('store', $posOrder->normalized_delivery_type);
         $this->assertEquals(0.00, (float) $posOrder->shipping_cost);
         $this->assertEquals(300.00, (float) $posOrder->total);
+    }
+
+    public function test_payment_status_is_visible_on_each_website_and_pos_order(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $webPartial = Order::create([
+            'order_number' => 'ORD-PAY-' . strtoupper(uniqid()),
+            'customer_name' => 'Web Partial Client',
+            'customer_email' => 'web-partial@example.test',
+            'customer_phone' => '0611223344',
+            'shipping_address' => '12 Rue Atlas',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 400.00,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'discount' => 0,
+            'total' => 400.00,
+            'paid_amount' => 150.00,
+            'remaining_amount' => 250.00,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'ozon',
+            'status' => 'pending',
+            'payment_status' => 'partial',
+            'payment_method' => 'virement',
+        ]);
+
+        $webPaid = Order::create([
+            'order_number' => 'ORD-PAID-' . strtoupper(uniqid()),
+            'customer_name' => 'Web Paid Client',
+            'customer_email' => 'web-paid@example.test',
+            'customer_phone' => '0611223355',
+            'shipping_address' => '15 Rue Atlas',
+            'shipping_city' => 'Rabat',
+            'shipping_zip' => '10000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 300.00,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'discount' => 0,
+            'total' => 300.00,
+            'paid_amount' => 300.00,
+            'remaining_amount' => 0,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'ozon',
+            'status' => 'delivered',
+            'payment_status' => 'paid',
+            'payment_method' => 'card',
+        ]);
+
+        $posPending = Order::create([
+            'order_number' => 'POS-PAY-' . strtoupper(uniqid()),
+            'customer_name' => 'POS Pending Client',
+            'customer_email' => 'pos-pend@example.test',
+            'customer_phone' => '0622334455',
+            'shipping_address' => 'Vente en boutique (POS)',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 250.00,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'discount' => 0,
+            'total' => 250.00,
+            'paid_amount' => 0,
+            'remaining_amount' => 250.00,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'store',
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'payment_method' => 'cheque',
+        ]);
+
+        $webRes = $this->actingAs($admin)->get(route('orders.index'));
+        $webRes->assertOk()
+            ->assertSee('<th class="text-center" style="min-width: 130px;">Paiement</th>', false)
+            ->assertDontSee('<th class="text-center d-none" style="min-width: 130px;">Paiement</th>', false)
+            ->assertDontSee('<div class="d-inline-block d-none">', false)
+            ->assertSee('id="dt-pay-pill-' . $webPartial->id . '"', false)
+            ->assertSee('id="mob-pay-pill-' . $webPartial->id . '"', false)
+            ->assertSee('pay-badge-partial', false)
+            ->assertSee('mobile-order-pay-pill partial', false)
+            ->assertSee('id="mob-order-remaining-' . $webPartial->id . '"', false)
+            ->assertSee('id="dt-pay-pill-' . $webPaid->id . '"', false)
+            ->assertSee('id="mob-pay-pill-' . $webPaid->id . '"', false)
+            ->assertSee('pay-badge-paid', false);
+
+        $posRes = $this->actingAs($admin)->get(route('orders.pos'));
+        $posRes->assertOk()
+            ->assertSee('<th class="text-center" style="min-width: 130px;">Paiement</th>', false)
+            ->assertDontSee('<th class="text-center d-none" style="min-width: 130px;">Paiement</th>', false)
+            ->assertDontSee('<div class="d-inline-block d-none">', false)
+            ->assertSee('id="dt-pay-pill-' . $posPending->id . '"', false)
+            ->assertSee('id="mob-pay-pill-' . $posPending->id . '"', false)
+            ->assertSee('pay-badge-pending', false)
+            ->assertSee('mobile-order-pay-pill pending', false);
     }
 }

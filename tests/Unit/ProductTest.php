@@ -53,9 +53,22 @@ class ProductTest extends TestCase
     #[Test]
     public function is_out_of_stock_returns_true_when_stock_is_zero()
     {
-        $product = Product::factory()->create(['stock' => 0]);
+        $product = Product::factory()->create([
+            'stock' => 0,
+            'force_in_stock' => false,
+        ]);
 
         $this->assertTrue($product->isOutOfStock());
+    }
+
+    #[Test]
+    public function force_in_stock_is_enabled_by_default_even_when_stock_is_zero()
+    {
+        $product = Product::factory()->create(['stock' => 0]);
+
+        $this->assertTrue($product->force_in_stock);
+        $this->assertTrue($product->isInStock());
+        $this->assertFalse($product->isOutOfStock());
     }
 
     #[Test]

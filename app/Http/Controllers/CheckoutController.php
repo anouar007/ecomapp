@@ -401,7 +401,7 @@ class CheckoutController extends Controller
                         $variantObj = $variantId ? \App\Models\ProductVariant::find($variantId) : null;
                         $itemSku = $variantObj && !empty($variantObj->sku) ? $variantObj->sku : ($product && !empty($product->sku) ? $product->sku : 'N/A');
 
-                        OrderItem::create([
+                        $createdItem = OrderItem::create([
                             'order_id' => $order->id,
                             'product_id' => $productId,
                             'variant_id' => $variantId,
@@ -471,6 +471,7 @@ class CheckoutController extends Controller
                                     ->orderByDesc('id')
                                     ->limit(1)
                                     ->update(['store_id' => $usedStoreId]);
+                                $createdItem->store_id = $usedStoreId;
                             }
 
                             $newGlobal = $product->syncStockFromStores(-$qty);
@@ -490,6 +491,8 @@ class CheckoutController extends Controller
                                 ]);
                             }
                         }
+
+                        app(\App\Services\FifoBatchService::class)->allocateForOrderItem($createdItem);
                     }
 
                     // Record coupon usage and award affiliate points

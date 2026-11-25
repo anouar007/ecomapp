@@ -65,8 +65,18 @@
         $badgeType = 'danger';
     }
 
-    $isAdmin = auth()->check() && auth()->user()->hasRole('Admin');
-    $stockVal = ($isAdmin && $isTracked && $product->cost_price) ? ($stock * $product->cost_price) : null;
+    $canManageCost = auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability'));
+    $isAdmin = $canManageCost;
+    $stockVal = ($canManageCost && $isTracked && $product->cost_price !== null && (float) $product->cost_price > 0)
+        ? ($stock * (float) $product->cost_price)
+        : null;
+    $sellingPriceMob = (float) ($product->active_price ?? $product->price ?? 0);
+    $unitBenefitMob = ($canManageCost && $product->cost_price !== null && (float) $product->cost_price > 0)
+        ? round($sellingPriceMob - (float) $product->cost_price, 2)
+        : null;
+    $marginPctMob = ($unitBenefitMob !== null && $sellingPriceMob > 0)
+        ? round(($unitBenefitMob / $sellingPriceMob) * 100, 1)
+        : null;
 @endphp
 
 <div class="mobile-inventory-card my-2 p-3 bg-white border rounded-3 shadow-sm" id="mobile-inventory-card-{{ $product->id }}">
@@ -171,8 +181,8 @@
             @endif
         </div>
         <div class="text-end flex-shrink-0 ps-1">
-            @if($stockVal !== null)
-                <span class="fw-bold text-dark font-heading">{{ currency($stockVal) }}</span>
+            @if($canManageCost)
+                <span class="fw-bold text-dark font-heading" id="mob-stock-val-cost-{{ $product->id }}">{{ $stockVal !== null ? currency($stockVal) : '—' }}</span>
             @else
                 <span class="text-muted">—</span>
             @endif
@@ -181,9 +191,15 @@
 
     <!-- Actions Toolbar -->
     <div class="d-flex align-items-center justify-content-between pt-1">
-        <div class="text-muted small" style="font-size: 0.72rem;">
-            @if($isAdmin && $product->cost_price)
-                <span>PMP : <strong class="text-dark">{{ currency($product->cost_price) }}</strong></span>
+        <div class="text-muted small d-flex flex-wrap align-items-center gap-1.5" style="font-size: 0.72rem;" @if($canManageCost) id="mob-pmp-wrap-{{ $product->id }}" @endif>
+            @if($canManageCost && $product->cost_price !== null && (float) $product->cost_price > 0)
+                <span id="mob-pmp-line-{{ $product->id }}">PMP : <strong class="text-dark" id="mob-pmp-val-{{ $product->id }}">{{ currency($product->cost_price) }}</strong></span>
+                <span class="badge {{ $unitBenefitMob >= 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle' }}" id="mob-benefit-val-{{ $product->id }}" style="font-size: 0.65rem;">
+                    Bén. {{ $unitBenefitMob >= 0 ? '+' : '' }}{{ currency($unitBenefitMob) }}/u ({{ $marginPctMob }}%)
+                </span>
+            @elseif($canManageCost)
+                <span class="d-none" id="mob-pmp-line-{{ $product->id }}">PMP : <strong class="text-dark" id="mob-pmp-val-{{ $product->id }}"></strong></span>
+                <span class="badge d-none" id="mob-benefit-val-{{ $product->id }}" style="font-size: 0.65rem;"></span>
             @endif
         </div>
 
@@ -205,6 +221,14 @@
                     title="Transférer entre magasins">
                 <i class="fas fa-arrow-right-arrow-left text-primary"></i>
             </button>
+            @endif
+
+            @if($canManageCost)
+            <a href="{{ route('inventory.arrivals', ['product_id' => $product->id]) }}"
+               class="mobile-act-btn mobile-act-view"
+               title="Lots &amp; Arrivages FIFO">
+                <i class="fas fa-layer-group text-success"></i>
+            </a>
             @endif
 
             <a href="{{ route('inventory.movements', array_filter(['product_id' => $product->id, 'store_id' => $selectedStoreId])) }}"

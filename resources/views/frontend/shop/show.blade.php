@@ -1139,11 +1139,11 @@
                 {{-- IMAGE PANEL --}}
                 @php
                     $pdpTags = $product->relationLoaded('activeTags') ? $product->activeTags : $product->activeTags()->get();
-                    $pdpTagsByPos = $pdpTags->groupBy(fn($t) => $t->position ?: 'top-left');
+                    $visiblePdpTags = $pdpTags->filter(fn($t) => !empty($t->icon) || trim((string) $t->name) !== '');
+                    $pdpTagsByPos = $visiblePdpTags->groupBy(fn($t) => \App\Models\ProductTag::normalizePosition($t->position));
                     $pdpAutoDiscountTag = \App\Models\ProductTag::discountTag();
                     $pdpHasDiscount = $product->isOnSale() && $product->discount_percentage > 0 && $pdpAutoDiscountTag->status === 'active';
-                    $pdpPrefDiscountPos = $pdpAutoDiscountTag->position ?: 'top-left';
-                    $pdpDiscountCorner = $pdpTagsByPos->has($pdpPrefDiscountPos) ? $pdpPrefDiscountPos : ($pdpTagsByPos->keys()->first() ?? $pdpPrefDiscountPos);
+                    $pdpDiscountCorner = \App\Models\ProductTag::normalizePosition($pdpAutoDiscountTag->position);
                 @endphp
                 <div class="col-lg-6 pdp-image-panel">
                     @php
@@ -1151,7 +1151,7 @@
                     @endphp
 
                     <div class="pdp-main-image-wrap product-card-tag-container" id="zoomWrap">
-                        @foreach(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as $cornerPos)
+                        @foreach(\App\Models\ProductTag::VALID_POSITIONS as $cornerPos)
                             @php
                                 $pdpCornerTags = $pdpTagsByPos->get($cornerPos, collect());
                                 $showPdpDiscountHere = $pdpHasDiscount && $pdpDiscountCorner === $cornerPos;
@@ -1163,7 +1163,9 @@
                                             @if(!empty($pTag->icon))
                                                 <i class="{{ $pTag->icon }}" aria-hidden="true"></i>
                                             @endif
-                                            <span>{{ $pTag->name }}</span>
+                                            @if(trim((string) $pTag->name) !== '')
+                                                <span>{{ $pTag->name }}</span>
+                                            @endif
                                         </span>
                                     @endforeach
                                     @if($showPdpDiscountHere)

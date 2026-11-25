@@ -18,6 +18,16 @@ class Order extends Model
         'autre' => 'Autre',
     ];
 
+    public const CANCELLATION_REASONS = [
+        'Client injoignable / Ne répond pas',
+        'Client a changé d\'avis',
+        'Produit en rupture de stock',
+        'Commande en double',
+        'Adresse / Téléphone invalide',
+        'Délai de livraison trop long',
+        'Prix / Frais de livraison refusés',
+    ];
+
     protected $fillable = [
         'order_number',
         'user_id',
@@ -46,6 +56,9 @@ class Order extends Model
         'paid_amount',
         'remaining_amount',
         'status',
+        'cancellation_reason',
+        'cancelled_at',
+        'cancelled_by',
         'stock_deducted',
         'payment_status',
         'payment_method',
@@ -66,6 +79,7 @@ class Order extends Model
         'payment_due_date' => 'date',
         'payment_attachments' => 'array',
         'confirmed_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'stock_deducted' => 'boolean',
     ];
 
@@ -201,6 +215,14 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the admin/staff user who cancelled the order.
+     */
+    public function cancelledByUser()
+    {
+        return $this->belongsTo(User::class, 'cancelled_by');
     }
 
     /**
@@ -543,6 +565,8 @@ class Order extends Model
 
                     $product->checkStockLevel();
                 }
+
+                app(\App\Services\FifoBatchService::class)->allocateForOrderItem($item);
             }
 
             $this->stock_deducted = true;
@@ -624,6 +648,8 @@ class Order extends Model
                     $product->checkStockLevel();
                 }
             }
+
+            app(\App\Services\FifoBatchService::class)->reverseAllocationsForOrder($this);
 
             $this->stock_deducted = false;
             $this->saveQuietly();
@@ -840,6 +866,8 @@ class Order extends Model
                         $oldProduct->checkStockLevel();
                     }
                 }
+
+                app(\App\Services\FifoBatchService::class)->reverseAllocationsForOrderItem($item);
             }
 
             // 3. Lock & validate new product, variant & store stock
@@ -858,7 +886,7 @@ class Order extends Model
             }
 
             $newTrackInventory = (bool) ($newProduct->track_inventory ?? true);
-            $newForceInStock = (bool) ($newProduct->force_in_stock ?? false);
+            $newForceInStock = (bool) ($newProduct->force_in_stock ?? true);
 
             if ($newTrackInventory && !$newForceInStock) {
                 if ($newVariant) {
@@ -968,6 +996,10 @@ class Order extends Model
                 'quantity' => $newQuantity,
                 'subtotal' => $newSubtotal,
             ]);
+
+            if ($this->stock_deducted) {
+                app(\App\Services\FifoBatchService::class)->allocateForOrderItem($item->fresh());
+            }
 
             // 6. Recalculate Order subtotal, tax, total & payment amounts
             $this->load('items');

@@ -998,7 +998,7 @@
                         <th style="min-width: 180px;">Articles</th>
                         <th class="text-end" style="min-width: 120px;">Total</th>
                         <th class="text-center" style="min-width: 130px;">Livraison</th>
-                        <th class="text-center d-none" style="min-width: 130px;">Paiement</th>
+                        <th class="text-center" style="min-width: 130px;">Paiement</th>
                         <th style="min-width: 100px;">Date</th>
                         <th class="text-end" style="min-width: 110px; padding-right: 1.25rem;">Actions</th>
                     </tr>
@@ -1161,18 +1161,14 @@
                                     </li>
                                 </ul>
                             </div>
-                            @if((float) ($order->remaining_amount ?? 0) > 0)
-                                <div class="mt-1" id="dt-order-remaining-wrap-{{ $order->id }}">
-                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5" style="font-size: 0.65rem;" id="dt-order-remaining-{{ $order->id }}">
-                                        Reste : {{ currency($order->remaining_amount) }}
-                                    </span>
-                                    @if($order->payment_due_date)
-                                        <div class="text-muted" style="font-size: 0.64rem;">
-                                            Éch. {{ $order->payment_due_date->format('d/m/Y') }}
-                                        </div>
-                                    @endif
+                            <div class="mt-1 {{ (float) ($order->remaining_amount ?? 0) > 0 ? '' : 'd-none' }}" id="dt-order-remaining-wrap-{{ $order->id }}">
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5" style="font-size: 0.65rem;" id="dt-order-remaining-{{ $order->id }}">
+                                    Reste : {{ currency($order->remaining_amount ?? 0) }}
+                                </span>
+                                <div class="text-muted {{ $order->payment_due_date ? '' : 'd-none' }}" style="font-size: 0.64rem;" id="dt-order-due-{{ $order->id }}">
+                                    {{ $order->payment_due_date ? 'Éch. ' . $order->payment_due_date->format('d/m/Y') : '' }}
                                 </div>
-                            @endif
+                            </div>
                         </td>
                         <td class="text-center">
                             @php
@@ -1221,6 +1217,7 @@
                                         data-bs-auto-close="true"
                                         data-bs-boundary="viewport"
                                         data-bs-popper-config='{"strategy":"fixed"}'
+                                        data-cancellation-reason="{{ $order->cancellation_reason ?? '' }}"
                                         aria-expanded="false"
                                         id="dt-status-pill-{{ $order->id }}"
                                         title="Changer le statut de livraison">
@@ -1330,13 +1327,22 @@
                                     </ul>
                                 </div>
                             </div>
+                            <div class="mt-1 {{ ($normalizedStatus === 'cancelled' && $order->cancellation_reason) ? '' : 'd-none' }}" id="dt-cancel-reason-wrap-{{ $order->id }}">
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle text-wrap text-start px-2 py-1"
+                                      style="font-size: 0.64rem; max-width: 170px; line-height: 1.25;"
+                                      id="dt-cancel-reason-text-{{ $order->id }}"
+                                      title="{{ $order->cancellation_reason }}">
+                                    <i class="fas fa-comment-slash me-1"></i>{{ \Illuminate\Support\Str::limit($order->cancellation_reason, 55) }}
+                                </span>
+                            </div>
                         </td>
-                        <td class="text-center d-none">
+                        <td class="text-center">
                             @php
                                 $payStatus = strtolower($order->payment_status);
                                 $isPaid = in_array($payStatus, ['paid', 'payé']);
                                 $pClass = match($payStatus) {
                                     'paid', 'payé' => 'paid',
+                                    'partial', 'partiel' => 'partial',
                                     'failed', 'échoué' => 'failed',
                                     'refunded', 'remboursé' => 'refunded',
                                     default => 'pending'
@@ -1350,19 +1356,87 @@
                                 };
                                 $pIcon = match($payStatus) {
                                     'paid', 'payé' => 'fa-check-circle',
+                                    'partial', 'partiel' => 'fa-circle-half-stroke',
                                     'failed', 'échoué' => 'fa-exclamation-circle',
                                     'refunded', 'remboursé' => 'fa-undo',
                                     default => 'fa-clock'
                                 };
+                                $dtPayMethodLabel = $order->payment_method ? match(strtolower((string) $order->payment_method)) {
+                                    'cod', 'cash_on_delivery' => 'COD',
+                                    'cash' => 'Espèces',
+                                    'card' => 'Carte',
+                                    'virement', 'bank_transfer' => 'Virement',
+                                    'cheque', 'chèque' => 'Chèque',
+                                    'credit' => 'Crédit',
+                                    'other' => 'Autre',
+                                    default => ucfirst(str_replace('_', ' ', (string) $order->payment_method)),
+                                } : null;
                             @endphp
-                            <div class="d-inline-block">
-                                <span class="brand-badge pay-badge-{{ $pClass }} py-1 px-2.5" 
-                                      id="dt-pay-pill-{{ $order->id }}"
-                                      title="Statut de paiement : {{ $pText }}">
+                            @php
+                                $normalizedPayStatus = match($payStatus) {
+                                    'paid', 'payé' => 'paid',
+                                    'partial', 'partiel' => 'partial',
+                                    'failed', 'échoué' => 'failed',
+                                    'refunded', 'remboursé' => 'refunded',
+                                    default => 'pending'
+                                };
+                            @endphp
+                            <div class="dropdown d-inline-block">
+                                <button type="button"
+                                        class="brand-badge brand-badge-btn pay-badge-{{ $pClass }} py-1 px-2.5 dropdown-toggle"
+                                        data-bs-toggle="dropdown"
+                                        data-bs-auto-close="true"
+                                        data-bs-boundary="viewport"
+                                        data-bs-popper-config='{"strategy":"fixed"}'
+                                        data-total="{{ round((float) $order->total, 2) }}"
+                                        data-paid-amount="{{ round((float) ($order->paid_amount ?? 0), 2) }}"
+                                        data-due-date="{{ $order->payment_due_date?->format('Y-m-d') ?? '' }}"
+                                        aria-expanded="false"
+                                        id="dt-pay-pill-{{ $order->id }}"
+                                        title="Changer le statut de paiement">
                                     <i class="fas {{ $pIcon }}" id="dt-pay-icon-{{ $order->id }}"></i>
                                     <span id="dt-pay-label-{{ $order->id }}">{{ $pText }}</span>
-                                </span>
+                                    <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.55rem;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu text-start" aria-labelledby="dt-pay-pill-{{ $order->id }}">
+                                    <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de paiement</li>
+                                    <li>
+                                        <button type="button" data-payment-status="pending" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedPayStatus === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'pending')">
+                                            <span><span class="status-dot dot-amber me-1.5"></span> En attente</span>
+                                            @if($normalizedPayStatus === 'pending') <i class="fas fa-check text-warning small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" data-payment-status="partial" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedPayStatus === 'partial' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'partial')">
+                                            <span><span class="status-dot dot-blue me-1.5"></span> Partiel</span>
+                                            @if($normalizedPayStatus === 'partial') <i class="fas fa-check text-primary small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" data-payment-status="paid" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedPayStatus === 'paid' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'paid')">
+                                            <span><span class="status-dot dot-green me-1.5"></span> Payé</span>
+                                            @if($normalizedPayStatus === 'paid') <i class="fas fa-check text-success small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" data-payment-status="failed" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedPayStatus === 'failed' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'failed')">
+                                            <span><span class="status-dot dot-red me-1.5"></span> Échoué</span>
+                                            @if($normalizedPayStatus === 'failed') <i class="fas fa-check text-danger small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" data-payment-status="refunded" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedPayStatus === 'refunded' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'refunded')">
+                                            <span><span class="status-dot dot-gray me-1.5"></span> Remboursé</span>
+                                            @if($normalizedPayStatus === 'refunded') <i class="fas fa-check text-secondary small"></i> @endif
+                                        </button>
+                                    </li>
+                                </ul>
                             </div>
+                            @if($dtPayMethodLabel)
+                                <div class="text-muted mt-1" style="font-size: 0.68rem;">
+                                    <i class="fas fa-wallet opacity-75 me-0.5"></i>{{ $dtPayMethodLabel }}
+                                </div>
+                            @endif
                         </td>
                         <td class="tabular-nums">
                             <div class="text-dark fw-semibold small">{{ $order->created_at->format('d/m/Y') }}</div>
@@ -1583,6 +1657,155 @@
         return result.isConfirmed ? result.value : null;
     }
 
+    const ORDER_CANCELLATION_PRESETS = @json(\App\Models\Order::CANCELLATION_REASONS);
+
+    async function promptCancellationReason(existingReason = '') {
+        if (typeof Swal === 'undefined') {
+            while (true) {
+                const raw = window.prompt("Raison d'annulation (obligatoire) :", existingReason || '');
+                if (raw === null) return null;
+                const clean = String(raw).trim();
+                if (clean !== '') return clean;
+                alert("La raison d'annulation est obligatoire.");
+            }
+        }
+
+        const chipsHtml = ORDER_CANCELLATION_PRESETS.map(r => {
+            const safe = String(r).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return `<button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 py-1 fw-semibold swal-cancel-preset" data-reason="${safe}" style="font-size:0.74rem;">${safe}</button>`;
+        }).join('');
+
+        const res = await Swal.fire({
+            title: "Raison d'annulation (obligatoire)",
+            html: `
+                <div class="text-muted small mb-2.5">Indiquez pourquoi cette commande est annulée :</div>
+                <div class="d-flex flex-wrap justify-content-center gap-1.5 mb-3">${chipsHtml}</div>
+                <textarea id="swal-cancel-reason-input" class="form-control text-start" rows="3" maxlength="1000" placeholder="Saisissez la raison d'annulation..."></textarea>
+            `,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-times-circle me-1"></i> Confirmer l\'annulation',
+            cancelButtonText: 'Retour',
+            confirmButtonColor: '#dc2626',
+            focusConfirm: false,
+            didOpen: () => {
+                const inp = document.getElementById('swal-cancel-reason-input');
+                if (inp) {
+                    inp.value = existingReason || '';
+                    inp.focus();
+                }
+                document.querySelectorAll('.swal-cancel-preset').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (inp) {
+                            inp.value = btn.dataset.reason || '';
+                            inp.focus();
+                        }
+                    });
+                });
+            },
+            preConfirm: () => {
+                const inp = document.getElementById('swal-cancel-reason-input');
+                const val = String(inp ? inp.value : '').trim();
+                if (!val) {
+                    Swal.showValidationMessage("Veuillez indiquer la raison d'annulation.");
+                    return false;
+                }
+                return val;
+            }
+        });
+
+        return res.isConfirmed ? res.value : null;
+    }
+
+    async function promptPartialPaymentDetails(orderTotal, currentPaid = 0, currentDueDate = '') {
+        const total = Math.max(0, Math.round((parseFloat(orderTotal) || 0) * 100) / 100);
+        const existingPaid = Math.min(total, Math.max(0, Math.round((parseFloat(currentPaid) || 0) * 100) / 100));
+        const defaultPaid = existingPaid > 0 && existingPaid < total
+            ? existingPaid
+            : Math.round((total * 0.5) * 100) / 100;
+
+        if (typeof Swal === 'undefined') {
+            const raw = window.prompt(`Montant déjà payé en DH (Total : ${total.toFixed(2)} DH) :`, String(defaultPaid));
+            if (raw === null) return null;
+            const parsed = parseFloat(String(raw).replace(',', '.'));
+            if (Number.isNaN(parsed) || parsed < 0 || parsed > total) return null;
+            return { paid_amount: Math.round(parsed * 100) / 100, payment_due_date: currentDueDate || '' };
+        }
+
+        const pctButtons = [25, 50, 75].map(pct => {
+            const amt = Math.round((total * (pct / 100)) * 100) / 100;
+            return `<button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 fw-semibold swal-partial-pct" data-amount="${amt}" style="font-size:0.75rem;">${pct}% (${amt.toFixed(2)} DH)</button>`;
+        }).join('');
+
+        const res = await Swal.fire({
+            title: 'Paiement Partiel',
+            html: `
+                <div class="text-muted small mb-2">Total commande : <strong class="text-dark">${total.toFixed(2)} DH</strong></div>
+                <div class="mb-2 text-start">
+                    <label class="form-label small fw-semibold mb-1">Montant payé (DH)</label>
+                    <div class="input-group">
+                        <input type="number" id="swal-partial-paid-input" class="form-control fw-bold" step="0.01" min="0" max="${total}" value="${defaultPaid.toFixed(2)}">
+                        <span class="input-group-text fw-bold bg-light">DH</span>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-center gap-1.5 mb-2.5">${pctButtons}</div>
+                <div class="small fw-semibold mb-3 text-danger" id="swal-partial-remaining-preview">
+                    Reste à payer : ${Math.max(0, total - defaultPaid).toFixed(2)} DH
+                </div>
+                <div class="text-start">
+                    <label class="form-label small fw-semibold mb-1">Date d'échéance (optionnel)</label>
+                    <input type="date" id="swal-partial-due-input" class="form-control form-control-sm" value="${currentDueDate || ''}">
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-check me-1"></i> Enregistrer',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#2563eb',
+            focusConfirm: false,
+            didOpen: () => {
+                const inp = document.getElementById('swal-partial-paid-input');
+                const remEl = document.getElementById('swal-partial-remaining-preview');
+                const updateRem = () => {
+                    const v = parseFloat(String(inp?.value || '0').replace(',', '.')) || 0;
+                    const rem = Math.max(0, total - v);
+                    if (remEl) remEl.textContent = `Reste à payer : ${rem.toFixed(2)} DH`;
+                };
+                if (inp) {
+                    inp.focus();
+                    inp.select();
+                    inp.addEventListener('input', updateRem);
+                }
+                document.querySelectorAll('.swal-partial-pct').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (inp) {
+                            inp.value = btn.dataset.amount || '0';
+                            updateRem();
+                            inp.focus();
+                        }
+                    });
+                });
+            },
+            preConfirm: () => {
+                const inp = document.getElementById('swal-partial-paid-input');
+                const dueInp = document.getElementById('swal-partial-due-input');
+                const val = parseFloat(String(inp ? inp.value : '').replace(',', '.'));
+                if (Number.isNaN(val) || val < 0 || val > total) {
+                    Swal.showValidationMessage(`Veuillez saisir un montant entre 0 et ${total.toFixed(2)} DH.`);
+                    return false;
+                }
+                if (total > 0 && val >= total) {
+                    Swal.showValidationMessage("Pour un paiement total, choisissez plutôt « Payé ».");
+                    return false;
+                }
+                return {
+                    paid_amount: Math.round(val * 100) / 100,
+                    payment_due_date: dueInp ? dueInp.value : ''
+                };
+            }
+        });
+
+        return res.isConfirmed ? res.value : null;
+    }
+
     /**
      * Quick Update Order Status, Payment Status, Tax Mode or Delivery Type via AJAX
      */
@@ -1593,7 +1816,29 @@
         closeOrderDropdowns(orderId);
 
         let shippingCostPayload = undefined;
-        if (field === 'delivery_type') {
+        let cancellationReasonPayload = undefined;
+        let partialPaidPayload = undefined;
+        let partialDueDatePayload = undefined;
+        if (field === 'status' && value === 'cancelled') {
+            const sourceStatusPill = document.getElementById(`dt-status-pill-${orderId}`) || document.getElementById(`mob-status-pill-${orderId}`);
+            const existingReason = sourceStatusPill?.dataset.cancellationReason || '';
+            const chosenReason = await promptCancellationReason(existingReason);
+            if (chosenReason === null) {
+                return;
+            }
+            cancellationReasonPayload = chosenReason;
+        } else if (field === 'payment_status' && value === 'partial') {
+            const sourcePayPill = document.getElementById(`dt-pay-pill-${orderId}`) || document.getElementById(`mob-pay-pill-${orderId}`);
+            const total = parseFloat(sourcePayPill?.dataset.total ?? '0') || 0;
+            const curPaid = parseFloat(sourcePayPill?.dataset.paidAmount ?? '0') || 0;
+            const curDue = sourcePayPill?.dataset.dueDate || '';
+            const chosenPartial = await promptPartialPaymentDetails(total, curPaid, curDue);
+            if (chosenPartial === null) {
+                return;
+            }
+            partialPaidPayload = chosenPartial.paid_amount;
+            partialDueDatePayload = chosenPartial.payment_due_date;
+        } else if (field === 'delivery_type') {
             if (value === 'store') {
                 shippingCostPayload = 0;
             } else {
@@ -1643,6 +1888,13 @@
             };
             if (shippingCostPayload !== undefined) {
                 bodyPayload.shipping_cost = shippingCostPayload;
+            }
+            if (cancellationReasonPayload !== undefined) {
+                bodyPayload.cancellation_reason = cancellationReasonPayload;
+            }
+            if (partialPaidPayload !== undefined) {
+                bodyPayload.paid_amount = partialPaidPayload;
+                bodyPayload.payment_due_date = partialDueDatePayload || null;
             }
 
             fetch(`/orders/${orderId}/quick-status`, {
@@ -1738,6 +1990,7 @@
         // Desktop Delivery Badge
         const dtStatusPill = document.getElementById(`dt-status-pill-${orderId}`);
         if (dtStatusPill) {
+            dtStatusPill.dataset.cancellationReason = order.cancellation_reason || '';
             dtStatusPill.className = `brand-badge brand-badge-btn ${sInfo.badgeClass} dropdown-toggle`;
             const dtLabel = document.getElementById(`dt-status-label-${orderId}`);
             if (dtLabel) dtLabel.textContent = sInfo.label;
@@ -1792,6 +2045,7 @@
         // Mobile Delivery Badge
         const mobStatusPill = document.getElementById(`mob-status-pill-${orderId}`);
         if (mobStatusPill) {
+            mobStatusPill.dataset.cancellationReason = order.cancellation_reason || '';
             mobStatusPill.style.background = sInfo.mobBg;
             mobStatusPill.style.color = sInfo.mobColor;
             mobStatusPill.style.setProperty('border', `1px solid ${sInfo.mobBorder}`, 'important');
@@ -1815,35 +2069,95 @@
             }
         }
 
+        // --- Cancellation Reason Badge / Banner ---
+        const cancelReason = (order.cancellation_reason || '').trim();
+        const showCancelReason = st === 'cancelled' && cancelReason !== '';
+
+        const dtCancelWrap = document.getElementById(`dt-cancel-reason-wrap-${orderId}`);
+        const dtCancelText = document.getElementById(`dt-cancel-reason-text-${orderId}`);
+        if (dtCancelWrap && dtCancelText) {
+            dtCancelWrap.classList.toggle('d-none', !showCancelReason);
+            if (showCancelReason) {
+                const truncated = cancelReason.length > 55 ? `${cancelReason.slice(0, 52)}...` : cancelReason;
+                dtCancelText.title = cancelReason;
+                dtCancelText.innerHTML = '';
+                const ic = document.createElement('i');
+                ic.className = 'fas fa-comment-slash me-1';
+                dtCancelText.appendChild(ic);
+                dtCancelText.appendChild(document.createTextNode(truncated));
+            }
+        }
+
+        const mobCancelWrap = document.getElementById(`mob-cancel-reason-wrap-${orderId}`);
+        const mobCancelText = document.getElementById(`mob-cancel-reason-text-${orderId}`);
+        if (mobCancelWrap && mobCancelText) {
+            mobCancelWrap.classList.toggle('d-none', !showCancelReason);
+            if (showCancelReason) {
+                mobCancelText.textContent = cancelReason;
+            }
+        }
+
         // --- Payment Status ---
         const pst = (order.payment_status || '').toLowerCase();
         const pstMap = {
             'paid': { label: 'Payé', icon: 'fa-check-circle', badgeClass: 'paid', textClass: 'text-success', mobClass: 'paid' },
-            'partial': { label: 'Partiel', icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' },
+            'partial': { label: 'Partiel', icon: 'fa-circle-half-stroke', badgeClass: 'partial', textClass: 'text-primary', mobClass: 'partial' },
             'pending': { label: 'En attente', icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' },
             'failed': { label: 'Échoué', icon: 'fa-exclamation-circle', badgeClass: 'failed', textClass: 'text-danger', mobClass: 'failed' },
             'refunded': { label: 'Remboursé', icon: 'fa-undo', badgeClass: 'refunded', textClass: 'text-secondary', mobClass: 'refunded' }
         };
         const pInfo = pstMap[pst] || { label: order.payment_status_label || pst, icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' };
 
-        // Desktop Payment Badge (Static read-only pill)
+        // Desktop Payment Badge (Interactive dropdown pill)
         const dtPayPill = document.getElementById(`dt-pay-pill-${orderId}`);
         if (dtPayPill) {
-            dtPayPill.className = `brand-badge pay-badge-${pInfo.badgeClass} py-1 px-2.5`;
+            dtPayPill.className = `brand-badge brand-badge-btn pay-badge-${pInfo.badgeClass} py-1 px-2.5 dropdown-toggle`;
+            if (order.total !== undefined) dtPayPill.dataset.total = String(order.total);
+            if (order.paid_amount !== undefined) dtPayPill.dataset.paidAmount = String(order.paid_amount);
+            dtPayPill.dataset.dueDate = order.payment_due_date || '';
             const dtPayLabel = document.getElementById(`dt-pay-label-${orderId}`);
             if (dtPayLabel) dtPayLabel.textContent = pInfo.label;
             const dtPayIcon = document.getElementById(`dt-pay-icon-${orderId}`);
             if (dtPayIcon) dtPayIcon.className = `fas ${pInfo.icon}`;
+
+            const dtPayMenu = dtPayPill.closest('.dropdown')?.querySelector('.dropdown-menu');
+            if (dtPayMenu) {
+                dtPayMenu.querySelectorAll('.dropdown-item').forEach(item => {
+                    const isSel = item.dataset.paymentStatus === pst;
+                    item.classList.toggle('active', isSel);
+                    const chk = item.querySelector('.fa-check');
+                    if (chk) chk.remove();
+                    if (isSel) {
+                        item.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${pInfo.textClass} small"></i>`);
+                    }
+                });
+            }
         }
 
-        // Mobile Payment Pill (Static read-only pill)
+        // Mobile Payment Pill (Interactive dropdown pill)
         const mobPayPill = document.getElementById(`mob-pay-pill-${orderId}`);
         if (mobPayPill) {
-            mobPayPill.className = `mobile-order-pay-pill ${pInfo.mobClass} border-0`;
+            mobPayPill.className = `mobile-order-pay-pill ${pInfo.mobClass} dropdown-toggle`;
+            if (order.total !== undefined) mobPayPill.dataset.total = String(order.total);
+            if (order.paid_amount !== undefined) mobPayPill.dataset.paidAmount = String(order.paid_amount);
+            mobPayPill.dataset.dueDate = order.payment_due_date || '';
             const mobPayLabel = document.getElementById(`mob-pay-label-${orderId}`);
             if (mobPayLabel) mobPayLabel.textContent = pInfo.label;
             const mobPayIcon = document.getElementById(`mob-pay-icon-${orderId}`);
             if (mobPayIcon) mobPayIcon.className = `fas ${pInfo.icon}`;
+
+            const mobPayMenu = mobPayPill.closest('.dropdown')?.querySelector('.dropdown-menu');
+            if (mobPayMenu) {
+                mobPayMenu.querySelectorAll('.dropdown-item').forEach(item => {
+                    const isSel = item.dataset.paymentStatus === pst;
+                    item.classList.toggle('active', isSel);
+                    const chk = item.querySelector('.fa-check');
+                    if (chk) chk.remove();
+                    if (isSel) {
+                        item.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${pInfo.textClass} small"></i>`);
+                    }
+                });
+            }
         }
 
         // --- TTC / HT Fiscal Tag ---
@@ -1946,6 +2260,24 @@
             }
             if (dtRemWrap) {
                 dtRemWrap.classList.toggle('d-none', Number(order.remaining_amount) <= 0);
+            }
+            const dtDueEl = document.getElementById(`dt-order-due-${orderId}`);
+            if (dtDueEl) {
+                if (order.payment_due_date_formatted && Number(order.remaining_amount) > 0) {
+                    dtDueEl.textContent = `Éch. ${order.payment_due_date_formatted}`;
+                    dtDueEl.classList.remove('d-none');
+                } else {
+                    dtDueEl.textContent = '';
+                    dtDueEl.classList.add('d-none');
+                }
+            }
+            const mobRemWrap = document.getElementById(`mob-order-remaining-wrap-${orderId}`);
+            const mobRemEl = document.getElementById(`mob-order-remaining-${orderId}`);
+            if (mobRemEl && order.remaining_amount_formatted) {
+                mobRemEl.textContent = `Reste : ${order.remaining_amount_formatted}`;
+            }
+            if (mobRemWrap) {
+                mobRemWrap.classList.toggle('d-none', Number(order.remaining_amount) <= 0);
             }
         }
 

@@ -1,4 +1,5 @@
 @php
+    $canManageCost = auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability'));
     $typeColor = match($movement->type) {
         'in' => 'success',
         'out' => 'danger',
@@ -107,8 +108,20 @@
     </div>
 
     <!-- Reason & Reference -->
-    @if($movement->reason || ($movement->reference_type && $movement->reference_id))
+    @if($movement->reason || ($movement->reference_type && $movement->reference_id) || ($canManageCost && $movement->unit_cost !== null))
     <div class="small text-muted mb-2" style="font-size: 0.75rem;">
+        @if($canManageCost && $movement->unit_cost !== null)
+            <div class="d-flex flex-wrap align-items-center gap-1 mb-1" style="font-size: 0.68rem;">
+                <span class="badge bg-success-subtle text-success border border-success-subtle">
+                    Coût : {{ currency($movement->unit_cost) }}/u · Lot : {{ currency($movement->total_cost ?? ($movement->unit_cost * $movement->quantity)) }}
+                </span>
+                @if($movement->cost_after !== null)
+                    <span class="badge bg-light text-dark border">
+                        PMP : {{ $movement->cost_before !== null ? currency($movement->cost_before) : '—' }} → {{ currency($movement->cost_after) }}
+                    </span>
+                @endif
+            </div>
+        @endif
         @if($movement->reason)
             <div class="text-dark"><i class="fas fa-comment-alt text-secondary opacity-50 me-1"></i>{{ $movement->reason }}</div>
         @endif

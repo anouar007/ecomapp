@@ -219,9 +219,19 @@ class InvoiceController extends Controller
 
             // Deduct stock if paid
             if ($invoice->type === 'invoice' && $invoice->payment_status === 'paid' && !$invoice->stock_deducted) {
+                $fifo = app(\App\Services\FifoBatchService::class);
                 foreach ($invoice->items as $item) {
                     if ($item->product) {
                         $item->product->decrement('stock', $item->quantity);
+                        $fifo->allocateForSale(
+                            $item->product,
+                            (int) $item->quantity,
+                            (float) $item->unit_price,
+                            [
+                                'invoice_id' => $invoice->id,
+                                'variant_id' => $item->variant_id ? (int) $item->variant_id : null,
+                            ]
+                        );
                     }
                 }
                 $invoice->update(['stock_deducted' => true]);
@@ -326,9 +336,19 @@ class InvoiceController extends Controller
                 if ($invoice->order_id && $invoice->order) {
                     $invoice->order->deductStock(Auth::id(), "Facture payée #{$invoice->invoice_number}");
                 } else {
+                    $fifo = app(\App\Services\FifoBatchService::class);
                     foreach ($invoice->items as $item) {
                         if ($item->product) {
                             $item->product->decrement('stock', $item->quantity);
+                            $fifo->allocateForSale(
+                                $item->product,
+                                (int) $item->quantity,
+                                (float) $item->unit_price,
+                                [
+                                    'invoice_id' => $invoice->id,
+                                    'variant_id' => $item->variant_id ? (int) $item->variant_id : null,
+                                ]
+                            );
                         }
                     }
                 }
@@ -345,6 +365,7 @@ class InvoiceController extends Controller
                             $item->product->increment('stock', $item->quantity);
                         }
                     }
+                    app(\App\Services\FifoBatchService::class)->reverseAllocationsForInvoice($invoice);
                 }
                 $invoice->update(['stock_deducted' => false]);
             }
@@ -383,6 +404,7 @@ class InvoiceController extends Controller
                         $item->product->increment('stock', $item->quantity);
                     }
                 }
+                app(\App\Services\FifoBatchService::class)->reverseAllocationsForInvoice($invoice);
             }
         }
 

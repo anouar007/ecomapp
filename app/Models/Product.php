@@ -56,6 +56,10 @@ class Product extends Model
         'force_in_stock' => 'boolean',
     ];
 
+    protected $attributes = [
+        'force_in_stock' => true,
+    ];
+
     /**
      * Booted method to flush relevant front-end caches (except on simple view counter increments).
      */
@@ -953,6 +957,27 @@ class Product extends Model
     }
 
     /**
+     * Get FIFO arrival batches for this product, oldest first.
+     */
+    public function stockBatches()
+    {
+        return $this->hasMany(StockBatch::class)
+            ->orderBy('arrived_at', 'asc')
+            ->orderBy('id', 'asc');
+    }
+
+    /**
+     * Get open FIFO batches (with unsold units remaining), oldest first.
+     */
+    public function openStockBatches()
+    {
+        return $this->hasMany(StockBatch::class)
+            ->where('remaining_quantity', '>', 0)
+            ->orderBy('arrived_at', 'asc')
+            ->orderBy('id', 'asc');
+    }
+
+    /**
      * Get stock alerts for this product.
      */
     public function stockAlerts()
@@ -1027,17 +1052,66 @@ class Product extends Model
     }
 
     /**
+     * Compute weighted-average cost (PMP / CUMP) after adding a batch of new stock.
+     */
+    public static function calculateWeightedAverageCost(
+        int $existingStock,
+        ?float $existingCost,
+        int $addedQty,
+        float $newUnitCost,
+        ?float $newTotalCost = null
+    ): float {
+        $addedQty = max(0, $addedQty);
+        $batchTotal = $newTotalCost !== null ? max(0.0, $newTotalCost) : ($addedQty * max(0.0, $newUnitCost));
+        if ($addedQty === 0) {
+            return round((float) ($existingCost ?? $newUnitCost), 2);
+        }
+        $oldQty = max(0, $existingStock);
+        $oldCost = ($existingCost !== null && $existingCost > 0) ? (float) $existingCost : null;
+        if ($oldQty > 0 && $oldCost !== null) {
+            return round((($oldQty * $oldCost) + $batchTotal) / ($oldQty + $addedQty), 2);
+        }
+
+        return round($batchTotal / $addedQty, 2);
+    }
+
+    /**
+     * Normalize optional incoming batch cost metadata for stock-in adjustments.
+     *
+     * @return array{unit_cost: float, total_cost: float}|null
+     */
+    public static function resolveBatchCostOptions(int $quantity, string $type, array $options): ?array
+    {
+        if ($type !== 'in' || !array_key_exists('unit_cost', $options) || $options['unit_cost'] === null || $options['unit_cost'] === '') {
+            return null;
+        }
+
+        $unitCost = round(max(0.0, (float) $options['unit_cost']), 2);
+        $totalCost = (isset($options['total_cost']) && $options['total_cost'] !== null && $options['total_cost'] !== '')
+            ? round(max(0.0, (float) $options['total_cost']), 2)
+            : round($unitCost * abs($quantity), 2);
+
+        return [
+            'unit_cost' => $unitCost,
+            'total_cost' => $totalCost,
+        ];
+    }
+
+    /**
      * Adjust stock quantity (globally, per variant, or per store/magasin/depot) and record movement.
      */
     public function adjustStock(int $quantity, string $type, $userId, array $options = []): bool
     {
         $storeId = !empty($options['store_id']) ? (int) $options['store_id'] : null;
+        $batchCost = static::resolveBatchCostOptions($quantity, $type, $options);
 
         // Variant-level adjustment (with optional store sync)
         if (!empty($options['variant_id'])) {
             $variant = $this->variants()->find($options['variant_id']);
             if ($variant) {
-                return DB::transaction(function () use ($variant, $quantity, $type, $userId, $options, $storeId) {
+                return DB::transaction(function () use ($variant, $quantity, $type, $userId, $options, $storeId, $batchCost) {
+                    $globalBefore = (int) ($this->stock ?? 0);
+                    $productCostBefore = $this->cost_price !== null ? (float) $this->cost_price : null;
                     $variantBefore = (int) ($variant->stock ?? 0);
                     $variantTarget = ($type === 'adjustment')
                         ? $quantity
@@ -1077,6 +1151,28 @@ class Product extends Model
                         $storeStock->save();
                     }
 
+                    if ($batchCost !== null) {
+                        $stockedVariants = $this->variants()->get()->filter(fn ($v) => (int) ($v->stock ?? 0) > 0);
+                        $allCosted = $stockedVariants->isNotEmpty()
+                            && $stockedVariants->every(fn ($v) => $v->cost_price !== null && (float) $v->cost_price > 0);
+
+                        if ($allCosted) {
+                            $totalUnits = (int) $stockedVariants->sum(fn ($v) => (int) $v->stock);
+                            $totalVal = (float) $stockedVariants->sum(fn ($v) => (int) $v->stock * (float) $v->cost_price);
+                            $newParentCost = $totalUnits > 0 ? round($totalVal / $totalUnits, 2) : $batchCost['unit_cost'];
+                        } else {
+                            $newParentCost = static::calculateWeightedAverageCost(
+                                $globalBefore,
+                                $productCostBefore,
+                                abs($quantity),
+                                $batchCost['unit_cost'],
+                                $batchCost['total_cost']
+                            );
+                        }
+
+                        $this->update(['cost_price' => $newParentCost]);
+                    }
+
                     return true;
                 });
             }
@@ -1084,7 +1180,7 @@ class Product extends Model
 
         // Per-store / magasin / depot stock adjustment
         if ($storeId) {
-            return DB::transaction(function () use ($storeId, $quantity, $type, $userId, $options) {
+            return DB::transaction(function () use ($storeId, $quantity, $type, $userId, $options, $batchCost) {
                 $sumStoresBefore = (int) ProductStock::where('product_id', $this->id)->sum('quantity');
 
                 $storeStock = ProductStock::firstOrNew([
@@ -1133,24 +1229,72 @@ class Product extends Model
                     ? $sumStoresAfter
                     : max($sumStoresAfter, max(0, $globalBefore + $delta));
 
-                $this->update([
+                $costBefore = $this->cost_price !== null ? (float) $this->cost_price : null;
+                $costAfter = null;
+                $productUpdate = [
                     'stock' => $newGlobalStock,
                     'stock_quantity' => $newGlobalStock,
-                ]);
+                ];
 
-                $this->inventoryMovements()->create([
+                if ($batchCost !== null) {
+                    $costAfter = static::calculateWeightedAverageCost(
+                        $globalBefore,
+                        $costBefore,
+                        $movementQty,
+                        $batchCost['unit_cost'],
+                        $batchCost['total_cost']
+                    );
+                    $productUpdate['cost_price'] = $costAfter;
+                }
+
+                $this->update($productUpdate);
+
+                $movement = $this->inventoryMovements()->create([
                     'variant_id' => null,
                     'type' => $type,
                     'quantity' => $movementQty,
                     'stock_before' => $storeBefore,
                     'stock_after' => $storeAfter,
+                    'unit_cost' => $batchCost['unit_cost'] ?? null,
+                    'total_cost' => $batchCost['total_cost'] ?? null,
+                    'cost_before' => $batchCost !== null ? $costBefore : null,
+                    'cost_after' => $costAfter,
                     'reference_type' => $options['reference_type'] ?? null,
-                    'reference_id' => $options['reference_id'] ?? null,
+                    'reference_id' => (isset($options['reference_id']) && ctype_digit((string) $options['reference_id'])) ? (int) $options['reference_id'] : null,
                     'from_location_id' => ($delta < 0 || $type === 'out') ? $storeId : null,
                     'to_location_id' => ($delta >= 0 && $type !== 'out') ? $storeId : null,
                     'reason' => $options['reason'] ?? null,
                     'created_by' => $userId,
                 ]);
+
+                $fifo = app(\App\Services\FifoBatchService::class);
+                if ($type === 'in' && $movementQty > 0) {
+                    $fifo->createBatchFromInventoryIn(
+                        $this,
+                        $movement,
+                        null,
+                        $storeId,
+                        $globalBefore,
+                        $costBefore,
+                        $options
+                    );
+                } elseif ($type === 'out' && $movementQty > 0) {
+                    $fifo->consumeManualOut($this, $movementQty, null, $storeId);
+                } elseif ($type === 'adjustment') {
+                    if ($delta < 0) {
+                        $fifo->consumeManualOut($this, abs($delta), null, $storeId);
+                    } elseif ($delta > 0 && StockBatch::where('product_id', $this->id)->whereNull('variant_id')->exists()) {
+                        $fifo->createBatchFromInventoryIn(
+                            $this,
+                            $movement,
+                            null,
+                            $storeId,
+                            $globalBefore,
+                            $costBefore,
+                            $options
+                        );
+                    }
+                }
 
                 $this->checkStockLevel();
 
@@ -1159,7 +1303,7 @@ class Product extends Model
         }
 
         // Fallback: Global stock adjustment
-        $stockBefore = $this->stock ?? 0;
+        $stockBefore = (int) ($this->stock ?? 0);
         if ($type === 'adjustment') {
             $newStock = $quantity;
             $movementQty = abs($newStock - $stockBefore);
@@ -1172,23 +1316,72 @@ class Product extends Model
             return false; // Cannot have negative stock
         }
 
-        $this->update([
+        $costBefore = $this->cost_price !== null ? (float) $this->cost_price : null;
+        $costAfter = null;
+        $productUpdate = [
             'stock' => $newStock,
             'stock_quantity' => $newStock,
-        ]);
+        ];
+
+        if ($batchCost !== null) {
+            $costAfter = static::calculateWeightedAverageCost(
+                $stockBefore,
+                $costBefore,
+                $movementQty,
+                $batchCost['unit_cost'],
+                $batchCost['total_cost']
+            );
+            $productUpdate['cost_price'] = $costAfter;
+        }
+
+        $this->update($productUpdate);
 
         // Record the movement
-        $this->inventoryMovements()->create([
+        $movement = $this->inventoryMovements()->create([
             'variant_id' => $options['variant_id'] ?? null,
             'type' => $type,
             'quantity' => $movementQty,
             'stock_before' => $stockBefore,
             'stock_after' => $newStock,
+            'unit_cost' => $batchCost['unit_cost'] ?? null,
+            'total_cost' => $batchCost['total_cost'] ?? null,
+            'cost_before' => $batchCost !== null ? $costBefore : null,
+            'cost_after' => $costAfter,
             'reference_type' => $options['reference_type'] ?? null,
-            'reference_id' => $options['reference_id'] ?? null,
+            'reference_id' => (isset($options['reference_id']) && ctype_digit((string) $options['reference_id'])) ? (int) $options['reference_id'] : null,
             'reason' => $options['reason'] ?? null,
             'created_by' => $userId,
         ]);
+
+        $fifo = app(\App\Services\FifoBatchService::class);
+        $globalDelta = $newStock - $stockBefore;
+        if ($type === 'in' && $movementQty > 0) {
+            $fifo->createBatchFromInventoryIn(
+                $this,
+                $movement,
+                null,
+                null,
+                $stockBefore,
+                $costBefore,
+                $options
+            );
+        } elseif ($type === 'out' && $movementQty > 0) {
+            $fifo->consumeManualOut($this, $movementQty, null, null);
+        } elseif ($type === 'adjustment') {
+            if ($globalDelta < 0) {
+                $fifo->consumeManualOut($this, abs($globalDelta), null, null);
+            } elseif ($globalDelta > 0 && StockBatch::where('product_id', $this->id)->whereNull('variant_id')->exists()) {
+                $fifo->createBatchFromInventoryIn(
+                    $this,
+                    $movement,
+                    null,
+                    null,
+                    $stockBefore,
+                    $costBefore,
+                    $options
+                );
+            }
+        }
 
         // Check and trigger alerts if needed
         $this->checkStockLevel();
@@ -1257,6 +1450,129 @@ class Product extends Model
             return false;
         }
         return ($this->stock ?? 0) <= 0;
+    }
+
+    /**
+     * Resolve the first active storage site in display priority order.
+     */
+    public static function firstActiveStore(): ?Store
+    {
+        return Store::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->orderBy('id')
+            ->first();
+    }
+
+    /**
+     * Move global stock into the first active store/point for all products that have
+     * positive global stock while having 0 across every store allocation.
+     *
+     * @return array{store: ?Store, products_count: int, units_moved: int}
+     */
+    public static function allocateUnassignedGlobalStockToFirstStore(?int $userId = null): array
+    {
+        $firstStore = static::firstActiveStore();
+        if (!$firstStore) {
+            return [
+                'store' => null,
+                'products_count' => 0,
+                'units_moved' => 0,
+            ];
+        }
+
+        $productsCount = 0;
+        $unitsMoved = 0;
+
+        DB::transaction(function () use ($firstStore, $userId, &$productsCount, &$unitsMoved) {
+            $candidateIds = static::where(function ($q) {
+                $q->where('stock', '>', 0)->orWhere('stock_quantity', '>', 0);
+            })
+                ->whereDoesntHave('storeStocks', fn ($q) => $q->where('quantity', '>', 0))
+                ->orderBy('id')
+                ->pluck('id');
+
+            $hasStockBatches = \Illuminate\Support\Facades\Schema::hasTable('stock_batches');
+
+            foreach ($candidateIds as $productId) {
+                $product = static::whereKey($productId)->lockForUpdate()->first();
+                if (!$product) {
+                    continue;
+                }
+
+                $qty = max((int) ($product->stock ?? 0), (int) ($product->stock_quantity ?? 0));
+                if ($qty <= 0) {
+                    continue;
+                }
+
+                $alreadyAllocated = ProductStock::where('product_id', $product->id)
+                    ->where('quantity', '>', 0)
+                    ->exists();
+                if ($alreadyAllocated) {
+                    continue;
+                }
+
+                $storeStock = ProductStock::firstOrNew([
+                    'product_id' => $product->id,
+                    'store_id' => $firstStore->id,
+                ]);
+                if (!$storeStock->exists) {
+                    $storeStock->min_quantity = 2;
+                }
+                $storeStock->quantity = $qty;
+                $storeStock->save();
+
+                if ((int) ($product->stock ?? 0) !== $qty || (int) ($product->stock_quantity ?? 0) !== $qty) {
+                    DB::table('products')
+                        ->where('id', $product->id)
+                        ->update([
+                            'stock' => $qty,
+                            'stock_quantity' => $qty,
+                            'updated_at' => now(),
+                        ]);
+                }
+
+                if ($hasStockBatches) {
+                    StockBatch::where('product_id', $product->id)
+                        ->whereNull('store_id')
+                        ->where('remaining_quantity', '>', 0)
+                        ->update(['store_id' => $firstStore->id]);
+                }
+
+                InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'variant_id' => null,
+                    'type' => 'transfer',
+                    'quantity' => $qty,
+                    'stock_before' => 0,
+                    'stock_after' => $qty,
+                    'to_location_id' => $firstStore->id,
+                    'reason' => "Affectation du stock global vers {$firstStore->name}",
+                    'created_by' => $userId,
+                ]);
+
+                $productsCount++;
+                $unitsMoved += $qty;
+            }
+        });
+
+        if ($productsCount > 0) {
+            $fileCache = \Illuminate\Support\Facades\Cache::store('file');
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+            $fileCache->forget('shop_instock_pool_v1');
+            $fileCache->forget('home_featured_products_v1');
+            $fileCache->forget('home_new_arrival_products_v1');
+            $fileCache->forget('home_occasion_products_v1');
+            \App\Http\Middleware\FastGuestPageCache::flush();
+        }
+
+        return [
+            'store' => $firstStore,
+            'products_count' => $productsCount,
+            'units_moved' => $unitsMoved,
+        ];
     }
 
     /**

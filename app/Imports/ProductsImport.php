@@ -79,6 +79,9 @@ class ProductsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOn
             'cost_price' => $row['cost_price'] ?? null,
             'stock' => $row['stock'] ?? 0,
             'min_stock' => $row['min_stock'] ?? 5,
+            'force_in_stock' => (array_key_exists('force_in_stock', $row) && $row['force_in_stock'] !== null && $row['force_in_stock'] !== '')
+                ? (bool) $row['force_in_stock']
+                : true,
             'category_id' => $categoryId,
             'status' => $this->normalizeStatus($row['status'] ?? 'active'),
         ]);

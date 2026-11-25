@@ -1,25 +1,16 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Database\Seeders\CameraProductsSeeder;
-use Illuminate\Support\Facades\Artisan;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        $seeder = new CameraProductsSeeder();
-        $seeder->run();
+        // Product seeding/mutation permanently disabled to protect live catalog data.
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        // Keep products intact or remove Camera products if rollback requested
+        // No-op.
     }
 };

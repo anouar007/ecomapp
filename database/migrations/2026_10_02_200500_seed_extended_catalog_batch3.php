@@ -1,24 +1,16 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Database\Seeders\ExtendedCatalogBatch3Seeder;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        $seeder = new ExtendedCatalogBatch3Seeder();
-        $seeder->run();
+        // Product seeding/mutation permanently disabled to protect live catalog data.
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
+        // No-op.
     }
 };

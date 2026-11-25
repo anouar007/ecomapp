@@ -18,7 +18,13 @@
     @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability') || auth()->user()->can('view_reports')))
     <a href="{{ route('shipments.index') }}" class="subnav-pill {{ request()->routeIs('shipments.*') ? 'active' : '' }}">
         <i class="fas fa-truck-ramp-box text-primary"></i>
-        <span>Arrivages & Coûts Douane</span>
+        <span>Arrivages &amp; Coûts Douane</span>
+    </a>
+    @endif
+    @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability')))
+    <a href="{{ route('inventory.arrivals') }}" class="subnav-pill {{ request()->routeIs('inventory.arrivals*') ? 'active' : '' }}">
+        <i class="fas fa-layer-group text-success"></i>
+        <span>Lots FIFO &amp; Bénéfices</span>
     </a>
     @endif
     @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting')))

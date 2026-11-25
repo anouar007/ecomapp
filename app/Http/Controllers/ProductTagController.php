@@ -84,7 +84,7 @@ class ProductTagController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:60',
+            'name' => 'nullable|string|max:60',
             'icon' => 'nullable|string|max:80',
             'style_type' => 'required|in:solid,gradient,outline,soft,glass',
             'bg_color' => 'required|string|max:30',
@@ -104,7 +104,7 @@ class ProductTagController extends Controller
             'product_ids.*' => 'integer|exists:products,id',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']) ?: 'tag-' . time();
+        $validated['name'] = trim((string) ($validated['name'] ?? ''));
         $validated['uppercase'] = $request->boolean('uppercase');
         $validated['pulse_animation'] = $request->boolean('pulse_animation');
         $validated['has_shadow'] = $request->boolean('has_shadow');
@@ -118,8 +118,10 @@ class ProductTagController extends Controller
 
         $this->flushProductTagCaches();
 
+        $label = $tag->name !== '' ? "« {$tag->name} »" : "({$tag->slug})";
+
         return redirect()->route('product-tags.index')
-            ->with('success', "Le tag « {$tag->name} » a été créé avec succès.");
+            ->with('success', "Le tag {$label} a été créé avec succès.");
     }
 
     /**
@@ -142,7 +144,7 @@ class ProductTagController extends Controller
     public function update(Request $request, ProductTag $productTag)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:60',
+            'name' => 'nullable|string|max:60',
             'icon' => 'nullable|string|max:80',
             'style_type' => 'required|in:solid,gradient,outline,soft,glass',
             'bg_color' => 'required|string|max:30',
@@ -162,6 +164,7 @@ class ProductTagController extends Controller
             'product_ids.*' => 'integer|exists:products,id',
         ]);
 
+        $validated['name'] = trim((string) ($validated['name'] ?? ''));
         $validated['uppercase'] = $request->boolean('uppercase');
         $validated['pulse_animation'] = $request->boolean('pulse_animation');
         $validated['has_shadow'] = $request->boolean('has_shadow');
@@ -175,8 +178,10 @@ class ProductTagController extends Controller
 
         $this->flushProductTagCaches();
 
+        $label = $productTag->name !== '' ? "« {$productTag->name} »" : "({$productTag->slug})";
+
         return redirect()->route('product-tags.index')
-            ->with('success', "Le tag « {$productTag->name} » a été mis à jour.");
+            ->with('success', "Le tag {$label} a été mis à jour.");
     }
 
     /**
@@ -189,14 +194,14 @@ class ProductTagController extends Controller
                 ->with('error', "Le badge de réduction automatique (−%) est un badge système : vous pouvez le personnaliser ou le désactiver, mais pas le supprimer.");
         }
 
-        $name = $productTag->name;
+        $label = trim((string) $productTag->name) !== '' ? "« {$productTag->name} »" : "({$productTag->slug})";
         $productTag->products()->detach();
         $productTag->delete();
 
         $this->flushProductTagCaches();
 
         return redirect()->route('product-tags.index')
-            ->with('success', "Le tag « {$name} » a été supprimé.");
+            ->with('success', "Le tag {$label} a été supprimé.");
     }
 
     /**
@@ -204,12 +209,15 @@ class ProductTagController extends Controller
      */
     private function flushProductTagCaches(): void
     {
+        ProductTag::clearRuntimeCache();
         Cache::forget('frontend_home_data');
         Cache::forget('home_featured_products_v1');
         Cache::forget('home_new_arrival_products_v1');
         Cache::forget('home_occasion_products_v1');
         Cache::forget('active_product_tags_v1');
         Cache::forget('auto_discount_product_tag_v1');
+        Cache::store('file')->forget('auto_discount_product_tag_v1');
+        \App\Http\Middleware\FastGuestPageCache::flush();
     }
 }
 

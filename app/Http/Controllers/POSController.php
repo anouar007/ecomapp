@@ -641,7 +641,7 @@ class POSController extends Controller
                 $targetStoreId = $itemData['item_store_id'] ?? $storeId;
                 unset($itemData['item_store_id']);
 
-                OrderItem::create(array_merge($itemData, [
+                $createdItem = OrderItem::create(array_merge($itemData, [
                     'order_id' => $order->id,
                     'store_id' => $targetStoreId,
                 ]));
@@ -686,6 +686,8 @@ class POSController extends Controller
                         'reason' => "Vente POS #{$order->order_number}",
                         'created_by' => Auth::id(),
                     ]);
+
+                    app(\App\Services\FifoBatchService::class)->allocateForOrderItem($createdItem);
                 }
             }
 

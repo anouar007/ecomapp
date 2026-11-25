@@ -86,6 +86,16 @@ class ProductVariant extends Model
     }
 
     /**
+     * FIFO arrival batches for this variant, oldest first.
+     */
+    public function stockBatches()
+    {
+        return $this->hasMany(StockBatch::class, 'variant_id')
+            ->orderBy('arrived_at', 'asc')
+            ->orderBy('id', 'asc');
+    }
+
+    /**
      * Stock alerts for this variant.
      */
     public function stockAlerts()
@@ -135,26 +145,75 @@ class ProductVariant extends Model
             return false;
         }
 
-        $this->update(['stock' => $newStock]);
+        $batchCost = Product::resolveBatchCostOptions($movementQty, $type, $options);
+        $costBefore = $this->cost_price !== null ? (float) $this->cost_price : null;
+        $costAfter = null;
+        $variantUpdate = ['stock' => $newStock];
 
-        // Record inventory movement with variant_id
+        if ($batchCost !== null) {
+            $costAfter = Product::calculateWeightedAverageCost(
+                (int) $stockBefore,
+                $costBefore,
+                $movementQty,
+                $batchCost['unit_cost'],
+                $batchCost['total_cost']
+            );
+            $variantUpdate['cost_price'] = $costAfter;
+        }
+
+        $this->update($variantUpdate);
+
+        // Record inventory movement with variant_id and sync FIFO batch queue
         if ($this->product) {
             $delta = $newStock - $stockBefore;
             $storeId = !empty($options['store_id']) ? (int) $options['store_id'] : null;
 
-            $this->product->inventoryMovements()->create([
+            $movement = $this->product->inventoryMovements()->create([
                 'variant_id' => $this->id,
                 'type' => $type,
                 'quantity' => $movementQty,
                 'stock_before' => $stockBefore,
                 'stock_after' => $newStock,
+                'unit_cost' => $batchCost['unit_cost'] ?? null,
+                'total_cost' => $batchCost['total_cost'] ?? null,
+                'cost_before' => $batchCost !== null ? $costBefore : null,
+                'cost_after' => $costAfter,
                 'reference_type' => $options['reference_type'] ?? null,
-                'reference_id' => $options['reference_id'] ?? null,
+                'reference_id' => (isset($options['reference_id']) && ctype_digit((string) $options['reference_id'])) ? (int) $options['reference_id'] : null,
                 'from_location_id' => $options['from_location_id'] ?? (($storeId && ($delta < 0 || $type === 'out')) ? $storeId : null),
                 'to_location_id' => $options['to_location_id'] ?? (($storeId && ($delta >= 0 && $type !== 'out')) ? $storeId : null),
                 'reason' => ($options['reason'] ?? 'Ajustement variante') . " [Variante: {$this->name}]",
                 'created_by' => $userId,
             ]);
+
+            $fifo = app(\App\Services\FifoBatchService::class);
+            if ($type === 'in' && $movementQty > 0) {
+                $fifo->createBatchFromInventoryIn(
+                    $this->product,
+                    $movement,
+                    $this,
+                    $storeId,
+                    (int) $stockBefore,
+                    $costBefore,
+                    $options
+                );
+            } elseif ($type === 'out' && $movementQty > 0) {
+                $fifo->consumeManualOut($this->product, $movementQty, $this->id, $storeId);
+            } elseif ($type === 'adjustment') {
+                if ($delta < 0) {
+                    $fifo->consumeManualOut($this->product, abs($delta), $this->id, $storeId);
+                } elseif ($delta > 0 && StockBatch::where('product_id', $this->product->id)->where('variant_id', $this->id)->exists()) {
+                    $fifo->createBatchFromInventoryIn(
+                        $this->product,
+                        $movement,
+                        $this,
+                        $storeId,
+                        (int) $stockBefore,
+                        $costBefore,
+                        $options
+                    );
+                }
+            }
         }
 
         $this->syncParentProductStock();

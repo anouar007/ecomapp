@@ -50,6 +50,16 @@ class Shipment extends Model
     }
 
     /**
+     * FIFO stock batches generated from this shipment.
+     */
+    public function stockBatches(): HasMany
+    {
+        return $this->hasMany(StockBatch::class)
+            ->orderBy('arrived_at', 'asc')
+            ->orderBy('id', 'asc');
+    }
+
+    /**
      * Destination Store / Warehouse.
      */
     public function store(): BelongsTo
@@ -149,5 +159,98 @@ class Shipment extends Model
             'draft' => 'bg-secondary-subtle text-secondary border border-secondary-subtle',
             default => 'bg-light text-dark border',
         };
+    }
+
+    /**
+     * Aggregate FIFO sell-through, realized benefit, and timing across all batches of this shipment.
+     */
+    public function getFifoSummaryAttribute(): array
+    {
+        $batches = $this->relationLoaded('stockBatches')
+            ? $this->stockBatches
+            : $this->stockBatches()->with(['product', 'variant'])->get();
+
+        if ($batches->isEmpty()) {
+            return [
+                'has_batches' => false,
+                'initial_units' => 0,
+                'sold_units' => 0,
+                'remaining_units' => 0,
+                'sold_percent' => 0.0,
+                'realized_revenue' => 0.0,
+                'realized_cost' => 0.0,
+                'realized_profit' => 0.0,
+                'realized_margin_pct' => 0.0,
+                'estimated_remaining_profit' => 0.0,
+                'status' => 'none',
+                'status_label' => 'Non mis en stock FIFO',
+                'status_badge_class' => 'fifo-badge-waiting',
+                'sell_duration_label' => '—',
+            ];
+        }
+
+        $initialUnits = (int) $batches->sum('initial_quantity');
+        $soldUnits = (int) $batches->sum('sold_quantity');
+        $remainingUnits = (int) $batches->sum('remaining_quantity');
+        $soldPercent = $initialUnits > 0 ? round(($soldUnits / $initialUnits) * 100, 1) : 0.0;
+
+        $realizedRevenue = round((float) $batches->sum('realized_revenue'), 2);
+        $realizedCost = round((float) $batches->sum('realized_cost'), 2);
+        $realizedProfit = round((float) $batches->sum('realized_profit'), 2);
+        $realizedMarginPct = $realizedRevenue > 0 ? round(($realizedProfit / $realizedRevenue) * 100, 1) : 0.0;
+        $estRemainingProfit = round((float) $batches->sum(fn (StockBatch $b) => $b->estimated_remaining_profit), 2);
+
+        $allSoldOut = $remainingUnits <= 0;
+        $hasSelling = $batches->contains(fn (StockBatch $b) => $b->status === 'selling' || ($b->sold_quantity > 0 && $b->remaining_quantity > 0));
+        $hasActive = $batches->contains(fn (StockBatch $b) => $b->status === 'active');
+
+        if ($allSoldOut) {
+            $status = 'sold_out';
+            $statusLabel = 'Vendu / Épuisé';
+            $badgeClass = 'fifo-badge-sold-out';
+        } elseif ($hasSelling || ($soldUnits > 0 && $remainingUnits > 0)) {
+            $status = 'selling';
+            $statusLabel = 'En cours de vente';
+            $badgeClass = 'fifo-badge-selling';
+        } elseif ($hasActive) {
+            $status = 'active';
+            $statusLabel = 'Actif · Prochain FIFO';
+            $badgeClass = 'fifo-badge-active';
+        } else {
+            $status = 'waiting';
+            $statusLabel = "En file d'attente";
+            $badgeClass = 'fifo-badge-waiting';
+        }
+
+        $earliestArrival = $batches->pluck('arrived_at')->filter()->sort()->first();
+        $latestSoldOut = $batches->pluck('sold_out_at')->filter()->sort()->last();
+
+        if ($allSoldOut && $earliestArrival && $latestSoldOut) {
+            $sellDurationLabel = StockBatch::formatDuration(
+                max(0, (int) $earliestArrival->diffInSeconds($latestSoldOut))
+            );
+        } elseif ($earliestArrival) {
+            $elapsed = StockBatch::formatDuration(max(0, (int) $earliestArrival->diffInSeconds(now())));
+            $sellDurationLabel = ($status === 'selling' ? 'En vente · ' : 'En stock · ') . $elapsed;
+        } else {
+            $sellDurationLabel = '—';
+        }
+
+        return [
+            'has_batches' => true,
+            'initial_units' => $initialUnits,
+            'sold_units' => $soldUnits,
+            'remaining_units' => $remainingUnits,
+            'sold_percent' => $soldPercent,
+            'realized_revenue' => $realizedRevenue,
+            'realized_cost' => $realizedCost,
+            'realized_profit' => $realizedProfit,
+            'realized_margin_pct' => $realizedMarginPct,
+            'estimated_remaining_profit' => $estRemainingProfit,
+            'status' => $status,
+            'status_label' => $statusLabel,
+            'status_badge_class' => $badgeClass,
+            'sell_duration_label' => $sellDurationLabel,
+        ];
     }
 }

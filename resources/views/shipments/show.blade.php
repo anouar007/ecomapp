@@ -34,6 +34,9 @@
                     <a href="{{ route('shipments.index') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
                         <i class="fas fa-arrow-left me-1.5"></i> Tous les Arrivages
                     </a>
+                    <a href="{{ route('inventory.arrivals', ['search' => $shipment->reference]) }}" class="btn btn-outline-warning rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
+                        <i class="fas fa-layer-group me-1.5"></i> Suivi FIFO global
+                    </a>
                     <button type="button" class="btn btn-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs text-dark" onclick="window.print()" style="font-size: 0.85rem;">
                         <i class="fas fa-print me-1.5"></i> Imprimer le Bon
                     </button>
@@ -41,6 +44,61 @@
             </div>
         </div>
     </div>
+
+    @php $fifoSummary = $shipment->fifo_summary; @endphp
+
+    @if(!empty($fifoSummary['has_batches']))
+    <!-- Suivi FIFO & Bénéfices Réels de cet Arrivage -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="border-left: 4px solid #0f172a !important;">
+        <div class="card-body p-3.5">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="fw-bold text-dark"><i class="fas fa-layer-group text-primary me-1.5"></i>Suivi FIFO &amp; Bénéfices Réels</span>
+                    <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1" style="font-size: 0.74rem; font-weight: 700 !important;">
+                        {{ $fifoSummary['status_label'] }}
+                    </span>
+                </div>
+                <div class="text-muted small">
+                    <i class="far fa-clock me-1"></i>Durée d'écoulement : <strong class="text-dark">{{ $fifoSummary['sell_duration_label'] }}</strong>
+                </div>
+            </div>
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-4">
+                    <div class="d-flex align-items-center justify-content-between small mb-1">
+                        <span class="text-muted">Progression FIFO :</span>
+                        <span class="fw-bold text-dark">{{ $fifoSummary['sold_units'] }} / {{ $fifoSummary['initial_units'] }} vendu(s) ({{ $fifoSummary['sold_percent'] }}%)</span>
+                    </div>
+                    <div class="progress" style="height: 8px; border-radius: 999px;">
+                        <div class="progress-bar {{ $fifoSummary['status'] === 'sold_out' ? 'bg-secondary' : ($fifoSummary['status'] === 'selling' ? 'bg-primary' : 'bg-success') }}"
+                             style="width: {{ min(100, $fifoSummary['sold_percent']) }}%"></div>
+                    </div>
+                    <div class="small text-muted mt-1">Stock restant sur cet arrivage : <strong class="text-dark">{{ $fifoSummary['remaining_units'] }} u.</strong></div>
+                </div>
+                <div class="col-6 col-md-2">
+                    <div class="p-2.5 rounded-3 bg-light border text-center">
+                        <div class="text-muted text-uppercase" style="font-size: 0.65rem;">CA Réalisé</div>
+                        <div class="fw-bold text-dark">{{ currency($fifoSummary['realized_revenue']) }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-2.5 rounded-3 border text-center" style="background: #ecfdf5; border-color: #a7f3d0 !important;">
+                        <div class="text-muted text-uppercase" style="font-size: 0.65rem;">Bénéfice Réalisé FIFO</div>
+                        <div class="fw-bold {{ $fifoSummary['realized_profit'] >= 0 ? 'text-success' : 'text-danger' }}">
+                            {{ $fifoSummary['realized_profit'] >= 0 ? '+' : '' }}{{ currency($fifoSummary['realized_profit']) }}
+                            <span class="small fw-normal">({{ $fifoSummary['realized_margin_pct'] }}%)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="p-2.5 rounded-3 bg-light border text-center">
+                        <div class="text-muted text-uppercase" style="font-size: 0.65rem;">Potentiel sur Restant</div>
+                        <div class="fw-bold {{ $fifoSummary['estimated_remaining_profit'] >= 0 ? 'text-primary' : 'text-danger' }}">{{ $fifoSummary['estimated_remaining_profit'] >= 0 ? '+' : '' }}{{ currency($fifoSummary['estimated_remaining_profit']) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- 4 Financial Breakdown Cards -->
     <div class="row g-3 mb-4">
@@ -131,17 +189,19 @@
             <table class="table align-middle mb-0">
                 <thead class="bg-light border-bottom">
                     <tr>
-                        <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 30%;">Article</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem; width: 8%;">Qté</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 13%;">Achat Fournisseur</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Frais Annexe / pc</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 13%;">Coût Rendu Unitaire</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Total Coût Rendu</th>
-                        <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Marge Projetée</th>
+                        <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 24%;">Article</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem; width: 7%;">Qté</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 11%;">Achat Fourn.</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 10%;">Frais / pc</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 11%;">Coût Rendu</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 11%;">Total Coût</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 14%;">Écoulement FIFO</th>
+                        <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Bénéfice &amp; Temps</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
                     @foreach($shipment->items as $item)
+                    @php $batch = $item->stockBatch; @endphp
                     <tr class="hover-bg-light">
                         <td class="ps-3 py-3">
                             <div class="d-flex align-items-center gap-2.5">
@@ -149,11 +209,16 @@
                                      class="shadow-xs" style="width: 40px; height: 40px; object-fit: contain; background: #fff; padding: 2px; border-radius: 8px; border: 1px solid #e2e8f0;"
                                      onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                 <div class="min-w-0">
-                                    <div class="fw-bold text-dark text-truncate" style="max-width: 280px;" title="{{ $item->product->name }}">
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 240px;" title="{{ $item->product->name }}">
                                         {{ $item->product->name }}
                                     </div>
-                                    <div class="text-muted small" style="font-size: 0.72rem;">
-                                        SKU: <span class="font-monospace text-secondary">{{ $item->product->sku ?? 'SANS SKU' }}</span>
+                                    <div class="text-muted small d-flex align-items-center gap-1.5 flex-wrap" style="font-size: 0.72rem;">
+                                        <span>SKU: <span class="font-monospace text-secondary">{{ $item->product->sku ?? 'SANS SKU' }}</span></span>
+                                        @if($batch)
+                                            <a href="{{ route('inventory.arrivals', ['product_id' => $item->product_id]) }}" class="text-primary text-decoration-none">
+                                                · File FIFO <i class="fas fa-arrow-up-right-from-square" style="font-size: 0.62rem;"></i>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -165,13 +230,39 @@
                             <span class="fw-bold fs-6 text-dark">{{ currency($item->landed_unit_cost) }}</span>
                         </td>
                         <td class="py-3 text-end fw-bold text-dark">{{ currency($item->subtotal_cost) }}</td>
+                        <td class="py-3">
+                            @if($batch)
+                                <div class="mb-1">
+                                    <span class="badge {{ $batch->status === 'sold_out' ? 'bg-secondary-subtle text-secondary' : ($batch->status === 'selling' ? 'bg-primary-subtle text-primary' : ($batch->status === 'active' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning')) }} rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                        {{ $batch->status_label }}
+                                    </span>
+                                </div>
+                                <div class="small text-dark" style="font-size: 0.74rem;">
+                                    <strong>{{ $batch->sold_quantity }}</strong>/{{ $batch->initial_quantity }} vendu · Reste <strong>{{ $batch->remaining_quantity }}</strong>
+                                </div>
+                            @else
+                                <span class="text-muted small">Stock non appliqué</span>
+                            @endif
+                        </td>
                         <td class="pe-3 py-3 text-end">
-                            <div class="fw-bold {{ $item->unit_profit >= 0 ? 'text-success' : 'text-danger' }}">
-                                {{ currency($item->unit_profit) }} / pc
-                            </div>
-                            <span class="badge {{ $item->margin_percentage >= 30 ? 'bg-success-subtle text-success' : ($item->margin_percentage >= 15 ? 'bg-primary-subtle text-primary' : 'bg-warning-subtle text-warning') }} rounded-pill px-2 py-0.5 mt-0.5" style="font-size: 0.7rem;">
-                                {{ $item->margin_percentage }}% marge
-                            </span>
+                            @if($batch && $batch->sold_quantity > 0)
+                                <div class="fw-bold {{ $batch->realized_profit >= 0 ? 'text-success' : 'text-danger' }}">
+                                    {{ $batch->realized_profit >= 0 ? '+' : '' }}{{ currency($batch->realized_profit) }}
+                                </div>
+                                <div class="text-muted small" style="font-size: 0.69rem;">
+                                    <i class="far fa-clock me-0.5"></i>{{ $batch->sell_duration_label }}
+                                </div>
+                            @else
+                                <div class="fw-bold {{ $item->unit_profit >= 0 ? 'text-success' : 'text-danger' }}">
+                                    {{ currency($item->unit_profit) }} / pc
+                                </div>
+                                <span class="badge {{ $item->margin_percentage >= 30 ? 'bg-success-subtle text-success' : ($item->margin_percentage >= 15 ? 'bg-primary-subtle text-primary' : 'bg-warning-subtle text-warning') }} rounded-pill px-2 py-0.5 mt-0.5" style="font-size: 0.7rem;">
+                                    {{ $item->margin_percentage }}% prévu
+                                </span>
+                                @if($batch)
+                                    <div class="text-muted small mt-0.5" style="font-size: 0.68rem;">{{ $batch->sell_duration_label }}</div>
+                                @endif
+                            @endif
                         </td>
                     </tr>
                     @endforeach

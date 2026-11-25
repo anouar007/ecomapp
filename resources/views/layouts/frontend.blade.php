@@ -665,25 +665,43 @@
         .product-card-tags-slot.pos-top-left {
             top: clamp(5px, 3.2cqw, 10px) !important;
             left: clamp(5px, 3.2cqw, 10px) !important;
+            right: auto !important;
+            bottom: auto !important;
             align-items: flex-start !important;
         }
 
         .product-card-tags-slot.pos-top-right {
             top: clamp(5px, 3.2cqw, 10px) !important;
             right: clamp(5px, 3.2cqw, 10px) !important;
+            left: auto !important;
+            bottom: auto !important;
             align-items: flex-end !important;
         }
 
         .product-card-tags-slot.pos-bottom-left {
             bottom: clamp(5px, 3.2cqw, 10px) !important;
             left: clamp(5px, 3.2cqw, 10px) !important;
+            top: auto !important;
+            right: auto !important;
             align-items: flex-start !important;
         }
 
         .product-card-tags-slot.pos-bottom-right {
             bottom: clamp(5px, 3.2cqw, 10px) !important;
             right: clamp(5px, 3.2cqw, 10px) !important;
+            top: auto !important;
+            left: auto !important;
             align-items: flex-end !important;
+        }
+
+        [dir="rtl"] .product-card-tags-slot.pos-top-left,
+        [dir="rtl"] .product-card-tags-slot.pos-bottom-left {
+            align-items: flex-end !important;
+        }
+
+        [dir="rtl"] .product-card-tags-slot.pos-top-right,
+        [dir="rtl"] .product-card-tags-slot.pos-bottom-right {
+            align-items: flex-start !important;
         }
 
         .product-card-tag-badge {
@@ -718,21 +736,35 @@
         }
 
         /* Product Detail Page (PDP) Proportional Tag Scaling */
+        .pdp-main-image-wrap {
+            position: relative !important;
+        }
         .pdp-main-image-wrap .pdp-image-tags-slot.pos-top-left {
             top: clamp(10px, 2.8cqw, 16px) !important;
             left: clamp(10px, 2.8cqw, 16px) !important;
+            right: auto !important;
+            bottom: auto !important;
         }
         .pdp-main-image-wrap .pdp-image-tags-slot.pos-top-right {
             top: clamp(10px, 2.8cqw, 16px) !important;
             right: clamp(10px, 2.8cqw, 16px) !important;
+            left: auto !important;
+            bottom: auto !important;
         }
         .pdp-main-image-wrap .pdp-image-tags-slot.pos-bottom-left {
             bottom: clamp(10px, 2.8cqw, 16px) !important;
             left: clamp(10px, 2.8cqw, 16px) !important;
+            top: auto !important;
+            right: auto !important;
         }
         .pdp-main-image-wrap .pdp-image-tags-slot.pos-bottom-right {
             bottom: clamp(10px, 2.8cqw, 16px) !important;
             right: clamp(10px, 2.8cqw, 16px) !important;
+            top: auto !important;
+            left: auto !important;
+        }
+        .pdp-main-image-wrap .pdp-image-tag-badge.pdp-discount-badge {
+            margin-bottom: 0 !important;
         }
         .pdp-main-image-wrap .pdp-image-tag-badge {
             font-size: calc(clamp(0.66rem, 2.4cqw, 0.88rem) * var(--tag-scale, 1)) !important;

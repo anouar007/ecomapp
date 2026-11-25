@@ -191,7 +191,9 @@ class ProductController extends Controller
         ]);
 
         $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
-        $validated['force_in_stock'] = $request->boolean('force_in_stock');
+        $validated['force_in_stock'] = $request->has('force_in_stock')
+            ? $request->boolean('force_in_stock')
+            : true;
         $validated['availability_status'] = $request->input('availability_status', 'standard') ?: 'standard';
         $validated['custom_stock_tag'] = trim((string) $request->input('custom_stock_tag', '')) ?: null;
         $validated['custom_stock_button_text'] = trim((string) $request->input('custom_stock_button_text', '')) ?: null;
@@ -335,7 +337,8 @@ class ProductController extends Controller
             }
 
             DB::commit();
-            
+            \App\Http\Middleware\FastGuestPageCache::flush();
+
             return redirect()->route('products.index')
                 ->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
@@ -430,7 +433,9 @@ class ProductController extends Controller
         if (array_key_exists('sort_order', $validated)) {
             $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
         }
-        $validated['force_in_stock'] = $request->boolean('force_in_stock');
+        $validated['force_in_stock'] = $request->has('force_in_stock')
+            ? $request->boolean('force_in_stock')
+            : (bool) ($product->force_in_stock ?? true);
         $validated['availability_status'] = $request->input('availability_status', 'standard') ?: 'standard';
         $validated['custom_stock_tag'] = trim((string) $request->input('custom_stock_tag', '')) ?: null;
         $validated['custom_stock_button_text'] = trim((string) $request->input('custom_stock_button_text', '')) ?: null;

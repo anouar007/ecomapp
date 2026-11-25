@@ -69,6 +69,14 @@ class OrderItem extends Model
     }
 
     /**
+     * Get FIFO stock batch allocations consumed by this order item.
+     */
+    public function batchAllocations()
+    {
+        return $this->hasMany(StockBatchAllocation::class, 'order_item_id');
+    }
+
+    /**
      * Get decoded plain-text product name (prevents HTML entity double-encoding like &amp;).
      */
     public function getCleanProductNameAttribute(): string

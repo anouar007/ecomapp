@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ShipmentItem extends Model
 {
@@ -55,6 +56,14 @@ class ShipmentItem extends Model
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
+    }
+
+    /**
+     * FIFO batch generated for this shipment item.
+     */
+    public function stockBatch(): HasOne
+    {
+        return $this->hasOne(StockBatch::class, 'shipment_item_id');
     }
 
     /**

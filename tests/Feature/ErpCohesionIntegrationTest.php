@@ -812,6 +812,7 @@ class ErpCohesionIntegrationTest extends TestCase
         $this->actingAs($this->adminUser)
             ->postJson(route('orders.quick-status', $order), [
                 'status' => 'cancelled',
+                'cancellation_reason' => 'Client a annulé la commande',
             ])
             ->assertStatus(200)
             ->assertJson(['success' => true]);

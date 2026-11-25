@@ -3,10 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\Product;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class OutOfStockProductTest extends TestCase
 {
+    use DatabaseTransactions;
+
     public function test_out_of_stock_products_do_not_have_add_to_cart_button_on_home_page(): void
     {
         $product = Product::find(14);
@@ -14,7 +18,9 @@ class OutOfStockProductTest extends TestCase
             $this->markTestSkipped('Product 14 not found');
         }
         $product->stock = 0;
+        $product->force_in_stock = false;
         $product->save();
+        Cache::forget('frontend_home_data');
 
         $response = $this->get(route('home'));
         $response->assertStatus(200);
@@ -30,12 +36,10 @@ class OutOfStockProductTest extends TestCase
 
     public function test_out_of_stock_product_on_product_detail_page(): void
     {
-        $product = Product::where('stock', 0)->first();
-        if (!$product) {
-            $product = Product::first();
-            $product->stock = 0;
-            $product->save();
-        }
+        $product = Product::where('stock', 0)->first() ?? Product::first();
+        $product->stock = 0;
+        $product->force_in_stock = false;
+        $product->save();
 
         $response = $this->get(route('shop.show', $product->slug ?: $product->id));
         $response->assertStatus(200);
