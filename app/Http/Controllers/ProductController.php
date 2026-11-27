@@ -97,6 +97,58 @@ class ProductController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Parse strict Y-m-d date filter helper
+        $parseDateFilter = static function (?string $raw): ?string {
+            $raw = trim((string) $raw);
+            if ($raw === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $raw)) {
+                return null;
+            }
+            try {
+                $dt = \Carbon\Carbon::createFromFormat('Y-m-d', $raw);
+                return ($dt && $dt->format('Y-m-d') === $raw) ? $raw : null;
+            } catch (\Throwable $e) {
+                return null;
+            }
+        };
+
+        // Created Date Range Filter
+        $createdFrom = $parseDateFilter($request->input('created_from'));
+        $createdTo = $parseDateFilter($request->input('created_to'));
+        if ($createdFrom && $createdTo && $createdFrom > $createdTo) {
+            [$createdFrom, $createdTo] = [$createdTo, $createdFrom];
+        }
+        if ($createdFrom) {
+            $query->whereDate('products.created_at', '>=', $createdFrom);
+        }
+        if ($createdTo) {
+            $query->whereDate('products.created_at', '<=', $createdTo);
+        }
+
+        // Updated Date Range Filter
+        $updatedFrom = $parseDateFilter($request->input('updated_from'));
+        $updatedTo = $parseDateFilter($request->input('updated_to'));
+        if ($updatedFrom && $updatedTo && $updatedFrom > $updatedTo) {
+            [$updatedFrom, $updatedTo] = [$updatedTo, $updatedFrom];
+        }
+        if ($updatedFrom) {
+            $query->whereDate('products.updated_at', '>=', $updatedFrom);
+        }
+        if ($updatedTo) {
+            $query->whereDate('products.updated_at', '<=', $updatedTo);
+        }
+
+        // Optional Date Sorting
+        $sortBy = (string) $request->input('sort_by', '');
+        if ($sortBy === 'created_desc') {
+            $query->reorder()->orderBy('products.created_at', 'desc')->orderBy('products.id', 'desc');
+        } elseif ($sortBy === 'created_asc') {
+            $query->reorder()->orderBy('products.created_at', 'asc')->orderBy('products.id', 'asc');
+        } elseif ($sortBy === 'updated_desc') {
+            $query->reorder()->orderBy('products.updated_at', 'desc')->orderBy('products.id', 'desc');
+        } elseif ($sortBy === 'updated_asc') {
+            $query->reorder()->orderBy('products.updated_at', 'asc')->orderBy('products.id', 'asc');
+        }
+
         $products = $query->paginate(20)->withQueryString();
         
         $categories = \App\Models\Category::where('status', 'active')->orderBy('name')->get();

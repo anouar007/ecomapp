@@ -880,7 +880,7 @@ class InvoiceController extends Controller
                 'status_label' => match($invoice->payment_status) {
                     'paid' => 'Payé',
                     'unpaid' => 'Impayé',
-                    'partial' => 'Partiel',
+                    'partial' => 'Avance',
                     'cancelled' => 'Annulé',
                     default => ucfirst($invoice->payment_status)
                 },

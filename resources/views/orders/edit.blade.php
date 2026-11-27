@@ -106,7 +106,7 @@
                             </label>
                             <select id="payment_status" name="payment_status" class="form-select @error('payment_status') is-invalid @enderror" required>
                                 <option value="pending" {{ old('payment_status', $order->payment_status) == 'pending' ? 'selected' : '' }}>⏳ En attente de règlement</option>
-                                <option value="partial" {{ old('payment_status', $order->payment_status) == 'partial' ? 'selected' : '' }}>🌗 Paiement partiel</option>
+                                <option value="partial" {{ old('payment_status', $order->payment_status) == 'partial' ? 'selected' : '' }}>🌗 Avance</option>
                                 <option value="paid" {{ old('payment_status', $order->payment_status) == 'paid' ? 'selected' : '' }}>💳 Payé / Encaissé</option>
                                 <option value="failed" {{ old('payment_status', $order->payment_status) == 'failed' ? 'selected' : '' }}>⚠️ Échoué / Refusé</option>
                                 <option value="refunded" {{ old('payment_status', $order->payment_status) == 'refunded' ? 'selected' : '' }}>↩️ Remboursé</option>
@@ -119,7 +119,7 @@
                             @enderror
                         </div>
 
-                        <!-- Détails du paiement partiel (affiché si statut = Partiel) -->
+                        <!-- Détails du paiement partiel (affiché si statut = Avance) -->
                         @php
                             $isPartialEdit = old('payment_status', $order->payment_status) === 'partial'
                                 || $errors->has('paid_amount')

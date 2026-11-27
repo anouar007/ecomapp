@@ -154,6 +154,9 @@
             </div>
         </div>
         <div class="brand-header-actions">
+            <a href="{{ route('orders.all') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 fw-semibold" style="font-size: 0.84rem;">
+                <i class="fas fa-layer-group" style="color: #4f46e5;"></i> <span>Toutes les commandes</span>
+            </a>
             <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-globe text-primary"></i> <span>Commandes Site Web</span>
             </a>

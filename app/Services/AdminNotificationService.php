@@ -328,7 +328,7 @@ class AdminNotificationService
                     'icon' => 'fas fa-file-invoice-dollar',
                     'color' => $priority === 'critical' ? '#dc2626' : '#d97706',
                     'title' => "Facture #{$inv->invoice_number} — {$inv->customer_name}",
-                    'message' => "Solde restant {$amountStr} (" . ($inv->payment_status === 'partial' ? 'paiement partiel' : 'impayée') . ').',
+                    'message' => "Solde restant {$amountStr} (" . ($inv->payment_status === 'partial' ? 'avance' : 'impayée') . ').',
                     'meta' => $amountStr,
                     'due_label' => $this->formatDueCountdown($dueDate, $today),
                     'due_timestamp' => $dueDate->timestamp,

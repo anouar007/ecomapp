@@ -168,19 +168,31 @@
                 'other' => 'AUTRE',
                 default => strtoupper((string) $order->payment_method),
             };
+            $posPayStatusRaw = strtolower((string) ($order->payment_status ?? 'paid'));
+            $posPayStatusLabel = match($posPayStatusRaw) {
+                'paid', 'payé' => 'PAYÉ',
+                'partial', 'partiel' => 'AVANCE',
+                'refunded', 'remboursé' => 'REMBOURSÉ',
+                'failed', 'échoué' => 'ÉCHOUÉ',
+                default => 'EN ATTENTE',
+            };
         @endphp
         <div class="row" style="margin-top: 4px;">
             <span>Paiement :</span>
             <span class="bold">{{ $posMethodLabel }}</span>
         </div>
-        @if((float) ($order->remaining_amount ?? 0) > 0)
+        <div class="row" style="margin-top: 2px;">
+            <span>Statut paiement :</span>
+            <span class="bold">{{ $posPayStatusLabel }}</span>
+        </div>
+        @if($posPayStatusRaw === 'partial' || (float) ($order->remaining_amount ?? 0) > 0)
         <div class="row" style="margin-top: 4px;">
             <span>Montant payé :</span>
             <span class="bold">{{ currency($order->paid_amount ?? 0) }}</span>
         </div>
         <div class="row" style="margin-top: 2px;">
             <span>Reste à payer :</span>
-            <span class="bold">{{ currency($order->remaining_amount) }}</span>
+            <span class="bold">{{ currency($order->remaining_amount ?? 0) }}</span>
         </div>
         @if($order->payment_due_date)
         <div class="row" style="margin-top: 2px;">

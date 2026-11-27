@@ -576,7 +576,7 @@
                     @php
                         $payBadges = [
                             'paid' => ['class' => 'success', 'label' => 'Payée'],
-                            'partial' => ['class' => 'warning', 'label' => 'Partielle'],
+                            'partial' => ['class' => 'warning', 'label' => 'Avance'],
                             'unpaid' => ['class' => 'danger', 'label' => 'Impayée'],
                         ];
                         $payInfo = $payBadges[$invoice->payment_status] ?? ['class' => 'secondary', 'label' => ucfirst($invoice->payment_status)];
@@ -615,7 +615,7 @@
                 @php
                     $payBadges = [
                         'paid' => ['class' => 'success', 'label' => 'Payée'],
-                        'partial' => ['class' => 'warning', 'label' => 'Partielle'],
+                        'partial' => ['class' => 'warning', 'label' => 'Avance'],
                         'unpaid' => ['class' => 'danger', 'label' => 'Impayée'],
                     ];
                     $payInfo = $payBadges[$invoice->payment_status] ?? ['class' => 'secondary', 'label' => ucfirst($invoice->payment_status)];

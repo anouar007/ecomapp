@@ -253,6 +253,12 @@ class ExportController extends Controller
         ];
 
         $filters = array_filter([
+            'Canal' => match ($request->input('channel')) {
+                'pos' => 'Caisse POS',
+                'website' => 'Site Web',
+                'all' => 'Site Web & POS',
+                default => null,
+            },
             'Du' => $request->input('date_from') ?: $request->input('start_date'),
             'Au' => $request->input('date_to') ?: $request->input('end_date'),
             'Statut' => $request->input('status'),

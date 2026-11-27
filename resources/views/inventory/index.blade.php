@@ -454,6 +454,165 @@
     border-color: #dc2626;
     box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.16);
 }
+.inv-variant-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+.inv-variant-card {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px !important;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    user-select: none;
+}
+.inv-variant-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+}
+.inv-variant-card.is-all-variants {
+    grid-column: 1 / -1;
+}
+.inv-variant-card.active {
+    background: #eff6ff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+}
+.inv-variant-card.is-empty {
+    background: #fafafa;
+}
+.inv-var-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+.inv-var-name {
+    font-size: 0.78rem;
+    font-weight: 700 !important;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.inv-var-check {
+    display: none;
+    font-size: 0.74rem;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+.inv-variant-card.active .inv-var-check {
+    display: inline-block;
+}
+.inv-var-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    font-size: 0.69rem;
+    color: #475569;
+    font-variant-numeric: tabular-nums;
+}
+.inv-var-qty {
+    font-weight: 700 !important;
+    padding: 1px 7px;
+    border-radius: 999px !important;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 0.66rem;
+}
+.inv-variant-card.is-has-stock .inv-var-qty {
+    background: #dcfce7;
+    color: #166534;
+}
+.inv-variant-card.is-empty .inv-var-qty {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.inv-var-cost-box {
+    margin-top: 3px;
+    padding-top: 5px;
+    border-top: 1px dashed #cbd5e1;
+    cursor: default;
+}
+.inv-var-cost-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.inv-var-cost-input-group {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px !important;
+    padding: 2px 6px;
+    min-height: 28px;
+}
+.inv-var-cost-input-group:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+.inv-var-cost-input {
+    width: 100%;
+    min-width: 0;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    color: #0f172a;
+    padding: 0;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+}
+.inv-var-cost-input::-webkit-inner-spin-button,
+.inv-var-cost-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.inv-var-cost-save-btn {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px !important;
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700 !important;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.inv-var-cost-save-btn:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+}
+.inv-var-cost-save-btn.is-dirty {
+    background: #059669;
+    border-color: #059669;
+    color: #ffffff;
+}
+.inv-var-benefit-line {
+    margin-top: 3px;
+    font-size: 0.64rem;
+    font-weight: 600 !important;
+    line-height: 1.25;
+}
 #adjustStockModal.inv-adjust-modal .inv-adjust-footer {
     flex: 0 0 auto;
     background: #ffffff;
@@ -536,6 +695,9 @@
     }
 }
 @media (max-width: 420px) {
+    .inv-variant-card-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
     #adjustStockModal.inv-adjust-modal .inv-adjust-summary-bar {
         flex-direction: column;
         align-items: stretch;
@@ -1454,7 +1616,6 @@
                     </div>
 
                     <!-- Card 1 : Magasin / Dépôt & Variante (En premier pour choisir le site ciblé) -->
-                    @if($stores->isNotEmpty() || $products->contains(fn ($p) => $p->variants->isNotEmpty()))
                     <div class="inv-modal-section">
                         @if($stores->isNotEmpty())
                         <div>
@@ -1519,24 +1680,35 @@
                         </div>
                         @endif
 
-                        <!-- Variant Selector -->
+                        <!-- Variant Selector (Small 1-Click Cards + Per-Variant Cost Option) -->
                         <div class="{{ $stores->isNotEmpty() ? 'mt-2.5 pt-2.5 border-top' : '' }}" id="modalVariantContainer" style="display: none;">
-                            <label class="form-label inv-section-label mb-1 d-block">
-                                <i class="fas fa-layer-group text-primary me-1"></i>Déclinaison / Variante
-                            </label>
-                            <select name="variant_id" id="modalVariantSelect" class="form-select form-select-sm" onchange="onVariantSelectionChange()">
-                                <option value="">Ajustement sans variante</option>
+                            <div class="d-flex align-items-center justify-content-between gap-2 mb-1.5">
+                                <label class="form-label inv-section-label mb-0">
+                                    <i class="fas fa-layer-group text-primary me-1"></i>Déclinaison / Variante ciblée (1 clic)
+                                </label>
+                                @if($canManageCost)
+                                    <button type="button"
+                                            id="modalSaveAllVariantCostsBtn"
+                                            class="btn btn-xs btn-outline-primary rounded-pill px-2.5 py-0.5 fw-semibold d-none"
+                                            style="font-size: 0.68rem;"
+                                            onclick="saveAllModalVariantCosts()">
+                                        <i class="fas fa-save me-1"></i>Enregistrer coûts
+                                    </button>
+                                @endif
+                            </div>
+                            <select name="variant_id" id="modalVariantSelect" class="form-select form-select-sm d-none" onchange="onVariantSelectionChange()">
+                                <option value="">Produit complet</option>
                             </select>
-                            <div class="form-text small" style="font-size: 0.69rem;">Sélectionnez une variante spécifique si nécessaire.</div>
+                            <div id="modalVariantScopeNote" class="text-muted mb-1.5" style="font-size: 0.68rem;"></div>
+                            <div class="inv-variant-card-grid" id="modalAdjustVariantCards"></div>
+                            <div id="modalVariantWholeHint" class="mt-1.5 px-2 py-1.5 rounded-3 bg-warning-subtle border border-warning-subtle text-warning-emphasis" style="font-size: 0.68rem; font-weight: 600 !important;">
+                                <i class="fas fa-info-circle me-1"></i>« Produit complet » n'est lié à aucune variante : choisissez une variante pour que le stock soit attribué à la bonne déclinaison.
+                            </div>
+                            <div class="form-text small mt-1" style="font-size: 0.69rem;">
+                                Cliquez sur une variante pour cibler son stock{{ $canManageCost ? ' et ajuster son coût unitaire' : '' }}.
+                            </div>
                         </div>
                     </div>
-                    @else
-                        <div class="d-none" id="modalVariantContainer">
-                            <select name="variant_id" id="modalVariantSelect" class="form-select form-select-sm" onchange="onVariantSelectionChange()">
-                                <option value="">Ajustement sans variante</option>
-                            </select>
-                        </div>
-                    @endif
 
                     <!-- Card 2 : Opération & Quantité -->
                     <div class="inv-modal-section">
@@ -1813,9 +1985,10 @@
                 'id' => $v->id,
                 'name' => $v->name,
                 'stock' => (int) ($v->stock ?? 0),
+                'price' => (float) ($v->price ?? $prodItem->active_price ?? 0),
+                'store_stocks' => (object) $v->storeQuantityMap(),
             ];
             if ($canManageCost) {
-                $vRow['price'] = (float) ($v->price ?? 0);
                 $vRow['cost_price'] = $v->cost_price !== null ? (float) $v->cost_price : null;
             }
             $variantList[] = $vRow;
@@ -1856,6 +2029,23 @@
 <script>
     window.__invProducts = Object.assign(window.__invProducts || {}, @json($invMetaMap));
     window.__transferStoreStocks = @json($transferStockMap);
+    window.__invCanManageCost = @json($canManageCost);
+    window.__invCurrencySymbol = @json(setting('currency_symbol', 'DH'));
+
+    function escapeInvHtml(str) {
+        return String(str ?? '').replace(/[&<>"']/g, s => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+        }[s]));
+    }
+
+    function formatModalCurrency(amount) {
+        if (typeof window.formatInvCurrency === 'function') {
+            return window.formatInvCurrency(amount);
+        }
+        const num = Number(amount);
+        const safe = Number.isFinite(num) ? num : 0;
+        return `${safe.toFixed(2)} ${window.__invCurrencySymbol || 'DH'}`;
+    }
 
     function onSortByChange(selectEl) {
         const dirInput = document.getElementById('inventorySortDirInput');
@@ -1968,10 +2158,10 @@
         const form = document.getElementById('adjustStockForm');
         form.action = `/inventory/${productId}/adjust`;
 
-        // Populate Variants Dropdown
+        // Populate Variants Dropdown (hidden backing select) & Small Cards
         const variantContainer = document.getElementById('modalVariantContainer');
         const variantSelect = document.getElementById('modalVariantSelect');
-        variantSelect.innerHTML = '<option value="">Ajustement produit (sans variante ciblée)</option>';
+        variantSelect.innerHTML = '<option value="">Produit complet</option>';
 
         if (modalVariantsList && modalVariantsList.length > 0) {
             variantContainer.style.display = 'block';
@@ -1981,12 +2171,18 @@
                 opt.textContent = `${v.name} (Stock global: ${v.stock ?? 0})`;
                 opt.dataset.name = v.name;
                 opt.dataset.stock = v.stock ?? 0;
+                opt.dataset.price = v.price ?? 0;
                 if (selectedVariantId && String(v.id) === String(selectedVariantId)) {
                     opt.selected = true;
                 }
                 variantSelect.appendChild(opt);
             });
+            variantSelect.value = selectedVariantId ? String(selectedVariantId) : '';
+            renderModalVariantCards(selectedVariantId);
         } else {
+            variantSelect.value = '';
+            const gridEl = document.getElementById('modalAdjustVariantCards');
+            if (gridEl) gridEl.innerHTML = '';
             variantContainer.style.display = 'none';
         }
 
@@ -2018,6 +2214,295 @@
         bootstrap.Modal.getOrCreateInstance(document.getElementById('adjustStockModal')).show();
     }
 
+    function renderModalVariantCards(explicitSelectedId = null) {
+        const gridEl = document.getElementById('modalAdjustVariantCards');
+        const variantSelect = document.getElementById('modalVariantSelect');
+        if (!gridEl) return;
+
+        const saveAllBtn = document.getElementById('modalSaveAllVariantCostsBtn');
+        if (saveAllBtn) saveAllBtn.classList.add('d-none');
+
+        const activeVal = explicitSelectedId !== null && explicitSelectedId !== undefined
+            ? String(explicitSelectedId)
+            : (variantSelect ? String(variantSelect.value || '') : '');
+
+        let html = `
+            <div role="button"
+                 tabindex="0"
+                 class="inv-variant-card is-all-variants ${activeVal === '' ? 'active' : ''} ${modalBaseStock > 0 ? 'is-has-stock' : 'is-empty'}"
+                 data-variant-id=""
+                 onclick="selectAdjustVariantCard('')"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAdjustVariantCard('');}">
+                <div class="inv-var-card-top">
+                    <span class="inv-var-name">Produit complet</span>
+                    <i class="fas fa-check-circle inv-var-check"></i>
+                </div>
+                <div class="inv-var-card-meta">
+                    <span>Toutes variantes</span>
+                    <span class="inv-var-qty" data-adjust-var-qty="">${getModalWholeQty()} pcs</span>
+                </div>
+            </div>
+        `;
+
+        (modalVariantsList || []).forEach(v => {
+            const vStock = getModalVariantQty(v);
+            const vPrice = parseFloat(v.price ?? 0) || 0;
+            const isSel = String(v.id) === activeVal;
+            const costBoxHtml = typeof buildModalVariantCostBoxHtml === 'function' ? buildModalVariantCostBoxHtml(v) : '';
+            html += `
+                <div role="button"
+                     tabindex="0"
+                     class="inv-variant-card ${isSel ? 'active' : ''} ${vStock > 0 ? 'is-has-stock' : 'is-empty'}"
+                     data-variant-id="${v.id}"
+                     onclick="selectAdjustVariantCard('${v.id}')"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAdjustVariantCard('${v.id}');}">
+                    <div class="inv-var-card-top">
+                        <span class="inv-var-name" title="${escapeInvHtml(v.name)}">${escapeInvHtml(v.name)}</span>
+                        <i class="fas fa-check-circle inv-var-check"></i>
+                    </div>
+                    <div class="inv-var-card-meta">
+                        <span>${escapeInvHtml(formatModalCurrency(vPrice))}</span>
+                        <span class="inv-var-qty" data-adjust-var-qty="${v.id}">${vStock} pcs</span>
+                    </div>
+                    ${costBoxHtml}
+                </div>
+            `;
+        });
+
+        gridEl.innerHTML = html;
+    }
+
+    function selectAdjustVariantCard(variantId) {
+        const variantSelect = document.getElementById('modalVariantSelect');
+        if (!variantSelect) return;
+        variantSelect.value = variantId ? String(variantId) : '';
+        hideModalFeedbackBanners();
+        syncModalStockContext();
+    }
+
+    function getModalSelectedStoreId() {
+        const storeSelect = document.getElementById('modalStoreSelect');
+        return storeSelect ? String(storeSelect.value || '') : '';
+    }
+
+    // Variant quantity in the selected Magasin / Point de stockage (or global variant stock when none)
+    function getModalVariantQty(v) {
+        if (!v) return 0;
+        const storeId = getModalSelectedStoreId();
+        if (storeId !== '') {
+            const map = v.store_stocks || {};
+            return parseInt(map[storeId] ?? 0, 10) || 0;
+        }
+        return parseInt(v.stock ?? 0, 10) || 0;
+    }
+
+    function getModalWholeQty() {
+        const storeId = getModalSelectedStoreId();
+        if (storeId !== '') {
+            const rec = (modalStoreStocks || []).find(s => String(s.store_id) === storeId);
+            return rec ? (parseInt(rec.quantity, 10) || 0) : 0;
+        }
+        return modalBaseStock;
+    }
+
+    function syncAdjustVariantCards() {
+        const variantSelect = document.getElementById('modalVariantSelect');
+        const activeVal = variantSelect ? String(variantSelect.value || '') : '';
+        const storeId = getModalSelectedStoreId();
+        document.querySelectorAll('#modalAdjustVariantCards .inv-variant-card').forEach(card => {
+            const vid = String(card.dataset.variantId || '');
+            card.classList.toggle('active', vid === activeVal);
+
+            let qty = getModalWholeQty();
+            let globalQty = modalBaseStock;
+            if (vid !== '') {
+                const v = (modalVariantsList || []).find(item => String(item.id) === vid);
+                qty = getModalVariantQty(v);
+                globalQty = v ? (parseInt(v.stock, 10) || 0) : 0;
+            }
+            const qtyEl = card.querySelector('[data-adjust-var-qty]');
+            if (qtyEl) {
+                qtyEl.textContent = `${qty} pcs`;
+                qtyEl.title = storeId !== '' ? `${qty} dans ce dépôt · ${globalQty} au total` : `${qty} au total (tous dépôts)`;
+            }
+            card.classList.toggle('is-empty', qty <= 0);
+            card.classList.toggle('is-has-stock', qty > 0);
+        });
+
+        const scopeNote = document.getElementById('modalVariantScopeNote');
+        if (scopeNote) {
+            if (storeId !== '') {
+                const storeSelect = document.getElementById('modalStoreSelect');
+                const opt = storeSelect ? storeSelect.options[storeSelect.selectedIndex] : null;
+                const storeName = opt ? (opt.dataset.baseLabel || opt.textContent).replace(/\s*—\s*\d+\s*pcs$/, '') : 'ce dépôt';
+                scopeNote.innerHTML = `<i class="fas fa-warehouse me-1"></i>Quantités dans : <strong>${escapeInvHtml(storeName)}</strong>`;
+            } else {
+                scopeNote.innerHTML = '<i class="fas fa-globe me-1"></i>Quantités : stock global (tous dépôts)';
+            }
+        }
+
+        const wholeHint = document.getElementById('modalVariantWholeHint');
+        if (wholeHint) wholeHint.classList.toggle('d-none', activeVal !== '');
+    }
+
+    @if($canManageCost)
+    function formatModalVariantBenefitHtml(sellPrice, rawCostVal) {
+        const str = String(rawCostVal ?? '').trim();
+        const cost = str !== '' ? parseFloat(str) : NaN;
+        if (str === '' || !Number.isFinite(cost) || cost < 0) {
+            return '<span class="text-muted">Coût non défini</span>';
+        }
+        const benefit = sellPrice - cost;
+        const margin = sellPrice > 0 ? ((benefit / sellPrice) * 100).toFixed(1) : '0.0';
+        const sign = benefit >= 0 ? '+' : '';
+        const cls = benefit >= 0 ? 'text-success' : 'text-danger';
+        return `<span class="${cls}">Bén. ${sign}${escapeInvHtml(formatModalCurrency(benefit))} (${margin}%)</span>`;
+    }
+
+    function buildModalVariantCostBoxHtml(v) {
+        const sym = window.__invCurrencySymbol || 'DH';
+        const hasCost = v.cost_price !== null && v.cost_price !== undefined && v.cost_price !== '';
+        const costValStr = hasCost ? Number(v.cost_price).toFixed(2) : '';
+        const sellPrice = parseFloat(v.price ?? 0) || 0;
+        const benefitHtml = formatModalVariantBenefitHtml(sellPrice, costValStr);
+        return `
+            <div class="inv-var-cost-box" onclick="event.stopPropagation()">
+                <div class="inv-var-cost-row">
+                    <div class="inv-var-cost-input-group">
+                        <input type="number"
+                               step="0.01"
+                               min="0"
+                               inputmode="decimal"
+                               name="variant_costs[${v.id}]"
+                               class="inv-var-cost-input"
+                               data-variant-cost-input="${v.id}"
+                               data-sell-price="${sellPrice}"
+                               value="${escapeInvHtml(costValStr)}"
+                               placeholder="Coût/u."
+                               onclick="event.stopPropagation()"
+                               onfocus="this.select()"
+                               oninput="onModalVariantCostInput('${v.id}', this)">
+                        <span class="text-muted fw-semibold" style="font-size: 0.62rem;">${escapeInvHtml(sym)}</span>
+                    </div>
+                    <button type="button"
+                            class="inv-var-cost-save-btn"
+                            data-variant-cost-save="${v.id}"
+                            onclick="event.stopPropagation(); saveSingleVariantCost(${currentModalProductId}, ${v.id}, this)"
+                            title="Enregistrer le coût de cette variante">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+                <div class="inv-var-benefit-line" data-var-benefit-line="${v.id}">${benefitHtml}</div>
+            </div>
+        `;
+    }
+
+    function onModalVariantCostInput(variantId, inputEl) {
+        const v = (modalVariantsList || []).find(item => String(item.id) === String(variantId));
+        const sellPrice = v ? (parseFloat(v.price ?? 0) || 0) : (parseFloat(inputEl?.dataset.sellPrice || '0') || 0);
+        const benefitEl = document.querySelector(`[data-var-benefit-line="${variantId}"]`);
+        if (benefitEl) {
+            benefitEl.innerHTML = formatModalVariantBenefitHtml(sellPrice, inputEl ? inputEl.value : '');
+        }
+        const saveBtn = document.querySelector(`[data-variant-cost-save="${variantId}"]`);
+        if (saveBtn) saveBtn.classList.add('is-dirty');
+        const saveAllBtn = document.getElementById('modalSaveAllVariantCostsBtn');
+        if (saveAllBtn) saveAllBtn.classList.remove('d-none');
+
+        const selectedVarId = document.getElementById('modalVariantSelect')?.value || '';
+        if (String(selectedVarId) === String(variantId)) {
+            recalculateModalCostBenefit();
+        }
+    }
+
+    async function persistModalVariantCosts(productId, costsMap, triggerBtn = null) {
+        if (!productId || !costsMap || Object.keys(costsMap).length === 0) return;
+        const errBox = document.getElementById('modalAdjustError');
+        const okBox = document.getElementById('modalAdjustSuccess');
+        const okText = document.getElementById('modalAdjustSuccessText');
+        hideModalFeedbackBanners();
+
+        const origHtml = triggerBtn ? triggerBtn.innerHTML : '';
+        if (triggerBtn) {
+            triggerBtn.disabled = true;
+            triggerBtn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:11px;height:11px;"></span>';
+        }
+
+        try {
+            const filterStoreId = document.querySelector('#adjustStockForm input[name="filter_store_id"]')?.value || null;
+            const resp = await fetch(`/inventory/${productId}/variant-costs`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify({
+                    variant_costs: costsMap,
+                    filter_store_id: filterStoreId || null
+                })
+            });
+            const data = await resp.json();
+            if (!resp.ok || !data.success) {
+                let msg = data.message || 'Impossible d\'enregistrer les coûts des variantes.';
+                if (data.errors) msg = Object.values(data.errors).flat().join(' ');
+                if (errBox) {
+                    errBox.textContent = msg;
+                    errBox.classList.remove('d-none');
+                }
+                return;
+            }
+
+            updateInventoryDomAfterSave(productId, data);
+            const updatedMeta = window.__invProducts[productId];
+            if (updatedMeta) {
+                modalVariantsList = updatedMeta.variants || [];
+            }
+            const curVar = document.getElementById('modalVariantSelect')?.value || '';
+            renderModalVariantCards(curVar);
+            syncModalStockContext();
+
+            const successMsg = data.message || 'Coût des variantes enregistré avec succès.';
+            if (okBox && okText) {
+                okText.textContent = successMsg;
+                okBox.classList.remove('d-none');
+            }
+            if (window.Toast) {
+                window.Toast.fire({ icon: 'success', title: successMsg });
+            }
+        } catch (err) {
+            if (errBox) {
+                errBox.textContent = 'Erreur réseau lors de l\'enregistrement des coûts.';
+                errBox.classList.remove('d-none');
+            }
+        } finally {
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.innerHTML = origHtml;
+            }
+        }
+    }
+
+    function saveSingleVariantCost(productId, variantId, btnEl) {
+        const input = document.querySelector(`#modalAdjustVariantCards [data-variant-cost-input="${variantId}"]`);
+        if (!input) return;
+        const costsMap = {};
+        costsMap[String(variantId)] = input.value !== '' ? input.value : null;
+        persistModalVariantCosts(productId, costsMap, btnEl);
+    }
+
+    function saveAllModalVariantCosts() {
+        const costsMap = {};
+        document.querySelectorAll('#modalAdjustVariantCards [data-variant-cost-input]').forEach(inp => {
+            const vid = inp.dataset.variantCostInput;
+            if (vid) costsMap[String(vid)] = inp.value !== '' ? inp.value : null;
+        });
+        const btn = document.getElementById('modalSaveAllVariantCostsBtn');
+        persistModalVariantCosts(currentModalProductId, costsMap, btn);
+    }
+    @endif
+
     function refreshModalSelectLabels() {
         const storeSelect = document.getElementById('modalStoreSelect');
         if (storeSelect) {
@@ -2036,17 +2521,23 @@
 
         const variantSelect = document.getElementById('modalVariantSelect');
         if (variantSelect && Array.isArray(modalVariantsList)) {
+            const currentVarVal = variantSelect.value || '';
             Array.from(variantSelect.options).forEach(opt => {
                 if (!opt.value) return;
                 const v = modalVariantsList.find(item => String(item.id) === String(opt.value));
                 if (v) {
                     opt.dataset.stock = v.stock ?? 0;
+                    opt.dataset.price = v.price ?? 0;
                     opt.textContent = `${v.name} (Stock global: ${v.stock ?? 0})`;
                 }
             });
+            if (modalVariantsList.length > 0) {
+                renderModalVariantCards(currentVarVal);
+            }
         }
 
         syncAdjustStoreCards();
+        syncAdjustVariantCards();
     }
 
     function selectAdjustStoreCard(storeId) {
@@ -2091,8 +2582,15 @@
             const storeOpt = storeSelect.options[storeSelect.selectedIndex];
             const storeName = storeOpt ? (storeOpt.dataset.baseLabel || storeOpt.textContent) : 'Dépôt';
             const rec = modalStoreStocks.find(s => String(s.store_id) === String(selectedStoreId));
-            currentProductStock = rec ? (parseInt(rec.quantity, 10) || 0) : 0;
-            scopeLabel.textContent = `Stock sur ${storeName}`;
+            if (selectedVariant) {
+                const selV = (modalVariantsList || []).find(item => String(item.id) === String(selectedVariant.value));
+                currentProductStock = getModalVariantQty(selV);
+            } else {
+                currentProductStock = rec ? (parseInt(rec.quantity, 10) || 0) : 0;
+            }
+            scopeLabel.textContent = selectedVariant
+                ? `Stock sur ${storeName} · ${selectedVariant.dataset.name}`
+                : `Stock sur ${storeName}`;
 
             if (storeMetaBox) {
                 storeMetaBox.style.display = 'flex';
@@ -2103,7 +2601,7 @@
             if (storeMetaBox) storeMetaBox.style.display = 'none';
             if (selectedVariant) {
                 currentProductStock = parseInt(selectedVariant.dataset.stock, 10) || 0;
-                scopeLabel.textContent = 'Stock variante (global)';
+                scopeLabel.textContent = `Variante : ${selectedVariant.dataset.name}`;
             } else {
                 currentProductStock = modalBaseStock;
                 scopeLabel.textContent = 'Stock global';
@@ -2115,6 +2613,7 @@
             document.getElementById('modalQuantityInput').value = currentProductStock;
         }
         syncAdjustStoreCards();
+        syncAdjustVariantCards();
         recalculateProjected();
     }
 
@@ -2264,16 +2763,18 @@
         let sellingPrice = parseFloat(meta.selling_price || 0) || 0;
         let existingCost = meta.cost_price !== undefined ? meta.cost_price : null;
         let existingStock = parseInt(meta.stock || 0, 10) || 0;
+        let variantName = '';
 
         if (variantId) {
             const v = (modalVariantsList || []).find(item => String(item.id) === String(variantId));
             if (v) {
+                variantName = v.name || '';
                 if (v.price !== undefined && parseFloat(v.price) > 0) {
                     sellingPrice = parseFloat(v.price);
                 }
-                if (v.cost_price !== undefined && v.cost_price !== null) {
-                    existingCost = parseFloat(v.cost_price);
-                }
+                existingCost = (v.cost_price !== undefined && v.cost_price !== null && v.cost_price !== '')
+                    ? parseFloat(v.cost_price)
+                    : null;
                 existingStock = parseInt(v.stock || 0, 10) || 0;
             }
         }
@@ -2283,7 +2784,8 @@
             addedQty,
             sellingPrice,
             existingCost,
-            existingStock
+            existingStock,
+            variantName
         });
     }
 

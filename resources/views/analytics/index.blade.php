@@ -310,7 +310,10 @@
                 </h5>
                 <small class="text-muted">Comparaison séparée des commandes et du chiffre d'affaires sur la période</small>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="{{ route('orders.all') }}" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-semibold">
+                    <i class="fas fa-layer-group me-1"></i> Toutes
+                </a>
                 <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
                     <i class="fas fa-globe me-1"></i> Commandes Web
                 </a>

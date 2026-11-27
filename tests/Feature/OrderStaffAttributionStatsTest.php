@@ -163,6 +163,9 @@ class OrderStaffAttributionStatsTest extends TestCase
             'customer_name' => 'Client POS Staff',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
+            'delivery_type' => 'store',
             'items' => [
                 [
                     'product_id' => $product->id,

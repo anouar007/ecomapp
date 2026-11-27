@@ -579,7 +579,7 @@
                             <select name="payment_status" required class="form-select">
                                 <option value="unpaid" {{ old('payment_status') == 'unpaid' ? 'selected' : '' }}>⏳ Impayé (En attente)</option>
                                 <option value="paid" {{ old('payment_status') == 'paid' ? 'selected' : '' }}>✅ Payé (Encaissé)</option>
-                                <option value="partial" {{ old('payment_status') == 'partial' ? 'selected' : '' }}>🔄 Partiellement payé</option>
+                                <option value="partial" {{ old('payment_status') == 'partial' ? 'selected' : '' }}>🔄 Avance</option>
                             </select>
                         </div>
 

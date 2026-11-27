@@ -73,7 +73,7 @@ class OrderPaymentStatusManagementTest extends TestCase
         ])->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('order.payment_status', 'partial')
-            ->assertJsonPath('order.payment_status_label', 'Partiel')
+            ->assertJsonPath('order.payment_status_label', 'Avance')
             ->assertJsonPath('order.paid_amount', 350)
             ->assertJsonPath('order.remaining_amount', 650)
             ->assertJsonPath('order.payment_due_date', $due)
@@ -165,6 +165,8 @@ class OrderPaymentStatusManagementTest extends TestCase
             ->assertSee('id="dt-pay-pill-' . $webOrder->id . '"', false)
             ->assertSee('id="mob-pay-pill-' . $webOrder->id . '"', false)
             ->assertSee('data-payment-status="partial"', false)
+            ->assertSee('Avance')
+            ->assertDontSee('> Partiel</span>', false)
             ->assertSee('<span>Facture</span>', false)
             ->assertSee('class="mobile-order-items-pill"', false);
 
@@ -189,6 +191,8 @@ class OrderPaymentStatusManagementTest extends TestCase
         $this->actingAs($admin)->get(route('orders.show', $posOrder))
             ->assertOk()
             ->assertSee('id="show-pay-pill-' . $posOrder->id . '"', false)
+            ->assertSee('Avance')
+            ->assertDontSee('> Partiel</span>', false)
             ->assertSee('quickUpdateShowPaymentStatus(' . $posOrder->id, false);
     }
 
@@ -249,5 +253,107 @@ class OrderPaymentStatusManagementTest extends TestCase
         $this->assertSame('paid', $order->payment_status);
         $this->assertEquals(800.00, (float) $order->paid_amount);
         $this->assertEquals(0.00, (float) $order->remaining_amount);
+    }
+
+    public function test_multi_article_order_highlights_article_count_box_in_gold(): void
+    {
+        $admin = $this->makeAdmin();
+        $productA = \App\Models\Product::factory()->create(['price' => 200.00, 'status' => 'active']);
+        $productB = \App\Models\Product::factory()->create(['price' => 300.00, 'status' => 'active']);
+
+        $singleOrder = Order::create([
+            'order_number' => 'ORD-SINGLE-' . strtoupper(uniqid()),
+            'customer_name' => 'Single Item Client',
+            'shipping_address' => '10 Rue Test',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 200.00,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'discount' => 0,
+            'total' => 200.00,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'store',
+            'status' => 'delivered',
+            'payment_status' => 'paid',
+            'payment_method' => 'cash',
+        ]);
+
+        \App\Models\OrderItem::create([
+            'order_id' => $singleOrder->id,
+            'product_id' => $productA->id,
+            'product_name' => 'Single Article Test',
+            'product_sku' => 'SKU-S-1',
+            'price' => 200.00,
+            'quantity' => 1,
+            'subtotal' => 200.00,
+        ]);
+
+        $multiOrder = Order::create([
+            'order_number' => 'ORD-MULTI-' . strtoupper(uniqid()),
+            'customer_name' => 'Multi Item Client',
+            'shipping_address' => '20 Rue Test',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'Morocco',
+            'subtotal' => 500.00,
+            'tax' => 0,
+            'shipping_cost' => 0,
+            'discount' => 0,
+            'total' => 500.00,
+            'tax_mode' => 'ht',
+            'delivery_type' => 'store',
+            'status' => 'delivered',
+            'payment_status' => 'paid',
+            'payment_method' => 'cash',
+        ]);
+
+        \App\Models\OrderItem::create([
+            'order_id' => $multiOrder->id,
+            'product_id' => $productA->id,
+            'product_name' => 'Multi Article One',
+            'product_sku' => 'SKU-M-1',
+            'price' => 200.00,
+            'quantity' => 1,
+            'subtotal' => 200.00,
+        ]);
+        \App\Models\OrderItem::create([
+            'order_id' => $multiOrder->id,
+            'product_id' => $productB->id,
+            'product_name' => 'Multi Article Two',
+            'product_sku' => 'SKU-M-2',
+            'price' => 300.00,
+            'quantity' => 1,
+            'subtotal' => 300.00,
+        ]);
+
+        $indexRes = $this->actingAs($admin)->get(route('orders.index'))->assertOk();
+        $html = $indexRes->getContent();
+
+        $extractCard = function (int $orderId) use ($html): string {
+            $pos = strpos($html, 'id="mobile-order-card-' . $orderId . '"');
+            $this->assertNotFalse($pos);
+            $nextPos = strpos($html, 'id="mobile-order-card-', $pos + 30);
+            return $nextPos !== false ? substr($html, $pos, $nextPos - $pos) : substr($html, $pos, 25000);
+        };
+
+        $singleCard = $extractCard($singleOrder->id);
+        $this->assertStringContainsString('class="mobile-order-items-pill"', $singleCard);
+        $this->assertStringContainsString('1 article', $singleCard);
+        $this->assertStringNotContainsString('is-multi-items', $singleCard);
+
+        $multiCard = $extractCard($multiOrder->id);
+        $this->assertStringContainsString('class="mobile-order-items-pill is-multi-items"', $multiCard);
+        $this->assertStringContainsString('2 articles', $multiCard);
+        $this->assertStringContainsString('order-multi-items-gold-badge', $html);
+
+        $this->actingAs($admin)->get(route('orders.show', $multiOrder))
+            ->assertOk()
+            ->assertSee('order-multi-items-gold-badge', false);
+
+        $this->actingAs($admin)->get(route('orders.show', $singleOrder))
+            ->assertOk()
+            ->assertDontSee('order-multi-items-gold-badge', false);
     }
 }

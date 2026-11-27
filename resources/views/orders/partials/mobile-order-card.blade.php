@@ -35,6 +35,13 @@
                         title="Copier le N°">
                     <i class="far fa-copy"></i>
                 </button>
+                @if(!empty($showChannelBadge))
+                    @php $cardIsPos = $order->isPosOrder(); @endphp
+                    <span class="order-channel-pill is-compact {{ $cardIsPos ? 'is-pos' : 'is-web' }}">
+                        <i class="fas {{ $cardIsPos ? 'fa-cash-register' : 'fa-globe' }}"></i>
+                        <span>{{ $cardIsPos ? 'POS' : 'Site Web' }}</span>
+                    </span>
+                @endif
                 @php $forcedOosItems = $order->forcedOutOfStockItems(); @endphp
                 @if($forcedOosItems->isNotEmpty())
                     <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5"
@@ -66,7 +73,7 @@
                 };
                 $payPillLabel = match($payStatus) {
                     'paid', 'payé' => 'Payé',
-                    'partial', 'partiel' => 'Partiel',
+                    'partial', 'partiel' => 'Avance',
                     'failed', 'échoué' => 'Échoué',
                     'refunded', 'remboursé' => 'Remboursé',
                     default => 'En attente'
@@ -147,7 +154,7 @@
                         </li>
                         <li>
                             <button type="button" data-payment-status="partial" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $mobNormPayStatus === 'partial' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'partial')">
-                                <span><span class="status-dot dot-blue me-1.5"></span> Partiel</span>
+                                <span><span class="status-dot dot-blue me-1.5"></span> Avance</span>
                                 @if($mobNormPayStatus === 'partial') <i class="fas fa-check text-primary small"></i> @endif
                             </button>
                         </li>
@@ -478,8 +485,8 @@
                     <span>Devis</span>
                 </a>
             @endif
-            <span class="mobile-order-items-pill">
-                <i class="fas fa-box text-muted me-1"></i>{{ $totalItemsCount }} article{{ $totalItemsCount > 1 ? 's' : '' }}
+            <span class="mobile-order-items-pill{{ $totalItemsCount > 1 ? ' is-multi-items' : '' }}">
+                <i class="fas fa-box {{ $totalItemsCount > 1 ? '' : 'text-muted' }} me-1"></i>{{ $totalItemsCount }} article{{ $totalItemsCount > 1 ? 's' : '' }}
             </span>
         </div>
 

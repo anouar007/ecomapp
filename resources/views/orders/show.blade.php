@@ -148,14 +148,14 @@
         };
         $showPayShortLabel = match ($showPayLower) {
             'paid', 'payé' => 'Payé',
-            'partial', 'partiel' => 'Partiel',
+            'partial', 'partiel' => 'Avance',
             'failed', 'échoué' => 'Échoué',
             'refunded', 'remboursé' => 'Remboursé',
             default => 'En attente',
         };
         $showPayFullText = match ($showPayLower) {
             'paid', 'payé' => 'Règlement Confirmé (Payé)',
-            'partial', 'partiel' => 'Paiement Partiel',
+            'partial', 'partiel' => 'Avance',
             'failed', 'échoué' => 'Paiement Échoué',
             'refunded', 'remboursé' => 'Commande Remboursée',
             default => 'En attente de paiement',
@@ -430,7 +430,7 @@
                                         </li>
                                         <li>
                                             <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedShowPayStatus === 'partial' ? 'active' : '' }}" onclick="quickUpdateShowPaymentStatus({{ $order->id }}, 'partial')">
-                                                <span><span class="status-dot dot-blue me-1.5"></span> Partiel</span>
+                                                <span><span class="status-dot dot-blue me-1.5"></span> Avance</span>
                                                 @if($normalizedShowPayStatus === 'partial') <i class="fas fa-check text-primary small"></i> @endif
                                             </button>
                                         </li>
@@ -777,7 +777,7 @@
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <h2 class="product-form-card-title m-0">
                             <i class="fas fa-box-open text-danger"></i> Articles commandés
-                            <span class="badge rounded-pill bg-light text-secondary border px-2.5 ms-1" style="font-size: 0.72rem;">
+                            <span class="badge rounded-pill {{ $order->items->count() > 1 ? 'order-multi-items-gold-badge' : 'bg-light text-secondary border' }} px-2.5 ms-1" style="font-size: 0.72rem;">
                                 {{ $order->items->count() }} article{{ $order->items->count() > 1 ? 's' : '' }}
                             </span>
                         </h2>
@@ -2109,7 +2109,7 @@ window.quickUpdateShowPaymentStatus = async function(orderId, value) {
             }).join('');
 
             const promptRes = await Swal.fire({
-                title: 'Paiement Partiel',
+                title: 'Avance',
                 html: `
                     <div class="text-muted small mb-2">Total commande : <strong class="text-dark">${total.toFixed(2)} DH</strong></div>
                     <div class="mb-2 text-start">

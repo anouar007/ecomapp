@@ -70,6 +70,24 @@ class ProductVariant extends Model
     }
 
     /**
+     * Per-store stock of this variant.
+     */
+    public function storeStocks()
+    {
+        return $this->hasMany(ProductVariantStock::class, 'product_variant_id');
+    }
+
+    /**
+     * Map of store_id => quantity for this variant.
+     */
+    public function storeQuantityMap(): array
+    {
+        $rows = $this->relationLoaded('storeStocks') ? $this->storeStocks : $this->storeStocks()->get();
+
+        return $rows->mapWithKeys(fn ($s) => [(int) $s->store_id => (int) $s->quantity])->all();
+    }
+
+    /**
      * Order items associated with this variant.
      */
     public function orderItems()

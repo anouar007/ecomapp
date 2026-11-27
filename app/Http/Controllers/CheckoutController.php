@@ -679,6 +679,7 @@ class CheckoutController extends Controller
 
         $paymentLabel = match($paymentStatus) {
             'paid' => __('Payé'),
+            'partial' => __('Avance'),
             'failed' => __('Échoué'),
             'refunded' => __('Remboursé'),
             default => __('Commande validée'),
@@ -686,6 +687,7 @@ class CheckoutController extends Controller
 
         $paymentBadgeClass = match($paymentStatus) {
             'paid' => 'bg-success-subtle text-success border border-success-subtle',
+            'partial' => 'bg-primary-subtle text-primary border border-primary-subtle',
             'failed' => 'bg-danger-subtle text-danger border border-danger-subtle',
             'refunded' => 'bg-secondary-subtle text-secondary border border-secondary-subtle',
             default => 'bg-white text-success border border-success-subtle',

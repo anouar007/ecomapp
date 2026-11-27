@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Customer;
+use App\Models\CustomerTransaction;
 use App\Models\InventoryMovement;
+use App\Models\Invoice;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\StockAlert;
@@ -54,10 +57,14 @@ class PosTerminalTest extends TestCase
             'quantity' => 10,
         ]);
 
-        // 1. POS terminal page renders cleanly without duplicate top-level const declarations
+        // 1. POS terminal page renders cleanly without duplicate top-level const declarations or pre-selected payment/delivery/status
         $indexRes = $this->actingAs($admin)->get(route('pos.index'));
         $indexRes->assertStatus(200)
             ->assertSee('Caisse POS')
+            ->assertSee('id="paymentMethod" value=""', false)
+            ->assertSee('id="paymentStatus" value=""', false)
+            ->assertSee('id="orderStatus" value=""', false)
+            ->assertSee('id="orderDeliveryType" value=""', false)
             ->assertDontSee('const HELD_STORAGE_KEY');
 
         // 2. POS product search returns product & store stock
@@ -78,6 +85,9 @@ class PosTerminalTest extends TestCase
                 'save_customer' => true,
                 'store_id' => $store->id,
                 'payment_method' => 'cash',
+                'payment_status' => 'paid',
+                'status' => 'delivered',
+                'delivery_type' => 'store',
                 'amount_received' => 3000,
                 'discount_amount' => 10,
                 'discount_type' => 'percent',
@@ -198,6 +208,8 @@ class PosTerminalTest extends TestCase
                 'customer_name' => 'Client Après Restock',
                 'store_id' => $store->id,
                 'payment_method' => 'cash',
+                'payment_status' => 'paid',
+                'status' => 'delivered',
                 'delivery_type' => 'store',
                 'items' => [
                     [
@@ -261,6 +273,9 @@ class PosTerminalTest extends TestCase
                 'customer_phone' => '0612345678',
                 'store_id' => $store->id,
                 'payment_method' => 'cheque',
+                'payment_status' => 'paid',
+                'status' => 'delivered',
+                'delivery_type' => 'store',
                 'save_customer' => '0',
                 'is_partial_payment' => '0',
                 'items' => json_encode([
@@ -309,6 +324,9 @@ class PosTerminalTest extends TestCase
                 'customer_phone' => '0622334455',
                 'store_id' => $store->id,
                 'payment_method' => 'cod',
+                'payment_status' => 'paid',
+                'status' => 'delivered',
+                'delivery_type' => 'store',
                 'items' => [
                     [
                         'product_id' => $product->id,
@@ -332,6 +350,207 @@ class PosTerminalTest extends TestCase
             ->get(route('pos.receipt', $codOrder))
             ->assertStatus(200)
             ->assertSee('COD');
+    }
+
+    public function test_pos_partial_payment_and_payment_status_updates_match_orders_workflow(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $store = Store::firstOrCreate(
+            ['code' => 'POS-PARTIAL-ST'],
+            ['name' => 'Dépôt Partiel POS', 'is_active' => true, 'is_default' => false, 'sort_order' => 89]
+        );
+
+        $product = Product::create([
+            'name' => 'PosPartialParityCamera',
+            'slug' => 'pos-partial-parity-' . uniqid(),
+            'sku' => 'POS-PART-' . uniqid(),
+            'price' => 1000,
+            'stock' => 20,
+            'stock_quantity' => 20,
+            'status' => 'active',
+        ]);
+
+        ProductStock::create([
+            'product_id' => $product->id,
+            'store_id' => $store->id,
+            'quantity' => 20,
+        ]);
+
+        // 1. POS page exposes interactive payment status pill, 25/50/75% presets, and optional due date
+        $this->actingAs($admin)
+            ->get(route('pos.index'))
+            ->assertOk()
+            ->assertSee('id="posPaymentStatusPill"', false)
+            ->assertSee('Avance', false)
+            ->assertSee('setPosPartialPercent(25)', false)
+            ->assertSee('setPosPartialPercent(50)', false)
+            ->assertSee('setPosPartialPercent(75)', false)
+            ->assertSee("Date d'échéance (optionnel)", false);
+
+        // 2. Partial payment with named customer WITHOUT payment_due_date (optional)
+        $partialPhone = '0698' . str_pad((string) random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
+        $partialRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Partiel Sans Échéance',
+            'customer_phone' => $partialPhone,
+            'customer_city' => 'Casablanca',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'store',
+            'status' => 'delivered',
+            'payment_status' => 'partial',
+            'is_partial_payment' => true,
+            'paid_amount' => 400.00,
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 1000,
+                ],
+            ],
+        ]);
+
+        $partialRes->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('order.payment_status', 'partial')
+            ->assertJsonPath('order.payment_status_label', 'Avance')
+            ->assertJsonPath('order.paid_amount', 400)
+            ->assertJsonPath('order.remaining_amount', 600)
+            ->assertJsonPath('order.payment_due_date', null);
+
+        $partialOrder = Order::findOrFail($partialRes->json('order.id'));
+        $this->assertSame('partial', $partialOrder->payment_status);
+        $this->assertEquals(400.00, (float) $partialOrder->paid_amount);
+        $this->assertEquals(600.00, (float) $partialOrder->remaining_amount);
+        $this->assertNull($partialOrder->payment_due_date);
+
+        $invoice = Invoice::where('order_id', $partialOrder->id)->first();
+        $this->assertNotNull($invoice);
+        $this->assertSame('partial', $invoice->payment_status);
+        $this->assertNull($invoice->due_date);
+
+        $payment = Payment::where('invoice_id', $invoice->id)->first();
+        $this->assertNotNull($payment);
+        $this->assertEquals(400.00, (float) $payment->amount);
+
+        $customer = Customer::where('phone', $partialPhone)->first();
+        $this->assertNotNull($customer);
+        $this->assertEquals(600.00, (float) $customer->current_balance);
+
+        $trx = CustomerTransaction::where('order_id', $partialOrder->id)->first();
+        $this->assertNotNull($trx);
+        $this->assertSame('credit_given', $trx->type);
+        $this->assertStringNotContainsString('Échéance', (string) $trx->notes);
+
+        $this->actingAs($admin)
+            ->get(route('pos.receipt', $partialOrder))
+            ->assertOk()
+            ->assertSee('AVANCE')
+            ->assertSee('Reste à payer')
+            ->assertDontSee('Échéance :');
+
+        // 3. Partial payment on walk-in ("Client de passage") without phone succeeds and creates no fake Customer row
+        $walkInCountBefore = Customer::whereRaw("LOWER(name) = 'client de passage'")->count();
+
+        $walkInRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client de passage',
+            'store_id' => $store->id,
+            'payment_method' => 'virement',
+            'delivery_type' => 'store',
+            'status' => 'delivered',
+            'payment_status' => 'partial',
+            'is_partial_payment' => true,
+            'paid_amount' => 300.00,
+            'payment_due_date' => '2026-12-20',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 1000,
+                ],
+            ],
+        ]);
+
+        $walkInRes->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('order.payment_status', 'partial')
+            ->assertJsonPath('order.paid_amount', 300)
+            ->assertJsonPath('order.remaining_amount', 700)
+            ->assertJsonPath('order.payment_due_date', '20/12/2026');
+
+        $walkInOrder = Order::findOrFail($walkInRes->json('order.id'));
+        $this->assertSame('partial', $walkInOrder->payment_status);
+        $this->assertDatabaseHas('invoices', [
+            'order_id' => $walkInOrder->id,
+            'payment_status' => 'partial',
+        ]);
+        $this->assertSame(
+            $walkInCountBefore,
+            Customer::whereRaw("LOWER(name) = 'client de passage'")->count()
+        );
+
+        // 4. payment_status = 'pending' sets pending order with 0 paid & 0 remaining
+        $pendingRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Attente POS',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'store',
+            'status' => 'delivered',
+            'payment_status' => 'pending',
+            'is_partial_payment' => false,
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 1000,
+                ],
+            ],
+        ]);
+
+        $pendingRes->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('order.payment_status', 'pending')
+            ->assertJsonPath('order.payment_status_label', 'En attente')
+            ->assertJsonPath('order.paid_amount', 0)
+            ->assertJsonPath('order.remaining_amount', 0);
+
+        // 5. Partial payment with paid_amount >= total returns 422
+        $invalidPartialRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Trop Payé',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'store',
+            'status' => 'delivered',
+            'payment_status' => 'partial',
+            'is_partial_payment' => true,
+            'paid_amount' => 1000.00,
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 1000,
+                ],
+            ],
+        ]);
+
+        $invalidPartialRes->assertStatus(422)
+            ->assertJsonPath('success', false);
+
+        // 6. Quick-status transition from orders page updates both POS Order and POS Invoice to paid
+        $this->actingAs($admin)->postJson(route('orders.quick-status', $partialOrder), [
+            'payment_status' => 'paid',
+            'channel' => 'pos',
+        ])->assertOk()
+            ->assertJsonPath('order.payment_status', 'paid')
+            ->assertJsonPath('order.paid_amount', 1000)
+            ->assertJsonPath('order.remaining_amount', 0);
+
+        $partialOrder->refresh();
+        $invoice->refresh();
+        $this->assertSame('paid', $partialOrder->payment_status);
+        $this->assertEquals(1000.00, (float) $partialOrder->paid_amount);
+        $this->assertEquals(0.00, (float) $partialOrder->remaining_amount);
+        $this->assertSame('paid', $invoice->payment_status);
     }
 }
 

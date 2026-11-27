@@ -114,6 +114,13 @@ class Order extends Model
 
         static::created(function ($order) {
             if (empty($order->customer_id)) {
+                $cleanName = mb_strtolower(trim((string) ($order->customer_name ?? '')));
+                $hasContact = !empty(trim((string) ($order->customer_phone ?? '')))
+                    || !empty(trim((string) ($order->customer_email ?? '')));
+                if (!$hasContact && in_array($cleanName, ['', 'client de passage', 'walk-in customer'], true)) {
+                    return;
+                }
+
                 try {
                     $customer = Customer::findOrCreateFromOrder($order);
                     $order->customer_id = $customer->id;
@@ -453,11 +460,14 @@ class Order extends Model
     /**
      * Adjust store-level ProductStock quantity without mutating global products.stock directly.
      */
-    protected function adjustStoreStockDelta(int $productId, int $storeId, int $delta): ?array
+    protected function adjustStoreStockDelta(int $productId, int $storeId, int $delta, ?int $variantId = null): ?array
     {
         if ($delta === 0) {
             return null;
         }
+
+        // Keep the per-store variant (déclinaison) quantity in sync with the store movement
+        ProductVariantStock::applyDelta($variantId, $storeId, $delta);
 
         $storeStock = ProductStock::where('product_id', $productId)
             ->where('store_id', $storeId)
@@ -526,7 +536,7 @@ class Order extends Model
                     }
                     $variant?->syncParentProductStock();
 
-                    $storeRes = $storeId ? $this->adjustStoreStockDelta($product->id, $storeId, -$qty) : null;
+                    $storeRes = $storeId ? $this->adjustStoreStockDelta($product->id, $storeId, -$qty, (int) $item->variant_id) : null;
                     InventoryMovement::create([
                         'product_id' => $product->id,
                         'variant_id' => $item->variant_id,
@@ -608,7 +618,7 @@ class Order extends Model
                         $variant->syncParentProductStock();
                     }
 
-                    $storeRes = $storeId ? $this->adjustStoreStockDelta($product->id, $storeId, $qty) : null;
+                    $storeRes = $storeId ? $this->adjustStoreStockDelta($product->id, $storeId, $qty, (int) $item->variant_id) : null;
                     InventoryMovement::create([
                         'product_id' => $product->id,
                         'variant_id' => $item->variant_id,
@@ -707,7 +717,7 @@ class Order extends Model
             // without changing global products.stock.
             if ($this->stock_deducted && $qty > 0 && $item->product_id && $trackInventory) {
                 if ($oldStoreId) {
-                    $resOld = $this->adjustStoreStockDelta($item->product_id, $oldStoreId, $qty);
+                    $resOld = $this->adjustStoreStockDelta($item->product_id, $oldStoreId, $qty, $item->variant_id ? (int) $item->variant_id : null);
                     InventoryMovement::create([
                         'product_id' => $item->product_id,
                         'variant_id' => $item->variant_id,
@@ -724,7 +734,7 @@ class Order extends Model
                 }
 
                 if ($newStoreId) {
-                    $resNew = $this->adjustStoreStockDelta($item->product_id, $newStoreId, -$qty);
+                    $resNew = $this->adjustStoreStockDelta($item->product_id, $newStoreId, -$qty, $item->variant_id ? (int) $item->variant_id : null);
                     InventoryMovement::create([
                         'product_id' => $item->product_id,
                         'variant_id' => $item->variant_id,
@@ -826,7 +836,7 @@ class Order extends Model
                             $oldVariant->syncParentProductStock();
                         }
 
-                        $storeRes = $oldStoreId ? $this->adjustStoreStockDelta($oldProduct->id, $oldStoreId, $oldQty) : null;
+                        $storeRes = $oldStoreId ? $this->adjustStoreStockDelta($oldProduct->id, $oldStoreId, $oldQty, (int) $oldVariantId) : null;
                         InventoryMovement::create([
                             'product_id' => $oldProduct->id,
                             'variant_id' => $oldVariantId,
@@ -928,7 +938,7 @@ class Order extends Model
                     }
                     $newVariant->syncParentProductStock();
 
-                    $storeRes = $newStoreId ? $this->adjustStoreStockDelta($newProduct->id, $newStoreId, -$newQuantity) : null;
+                    $storeRes = $newStoreId ? $this->adjustStoreStockDelta($newProduct->id, $newStoreId, -$newQuantity, (int) $newVariant->id) : null;
                     InventoryMovement::create([
                         'product_id' => $newProduct->id,
                         'variant_id' => $newVariant->id,

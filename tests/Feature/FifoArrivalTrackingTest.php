@@ -294,6 +294,8 @@ class FifoArrivalTrackingTest extends TestCase
             'customer_name' => 'Client Comptoir',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'delivery_type' => 'store',
             'status' => 'delivered',
             'items' => [
                 [

@@ -4269,6 +4269,21 @@ i.fa-sparkles:before {
     border-radius: 6px;
 }
 
+.mobile-order-items-pill.is-multi-items,
+.mobile-order-card[class*="mobile-order-status-"] .mobile-order-items-pill.is-multi-items,
+.order-multi-items-gold-badge {
+    background: linear-gradient(135deg, #fef08a 0%, #facc15 55%, #eab308 100%) !important;
+    border: 1px solid #ca8a04 !important;
+    color: #713f12 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 1px 3px rgba(202, 138, 4, 0.28);
+}
+
+.mobile-order-items-pill.is-multi-items i,
+.order-multi-items-gold-badge i {
+    color: #713f12 !important;
+}
+
 .mobile-order-toolbar {
     display: flex;
     align-items: center;
@@ -5315,6 +5330,13 @@ i.fa-sparkles:before {
     background: #eff6ff;
     color: #1d4ed8;
     border-color: #bfdbfe;
+}
+
+.order-channel-pill.is-compact {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    gap: 4px;
+    line-height: 1.2;
 }
 
 .order-show-kpi-grid {
@@ -7333,6 +7355,13 @@ dt,
         font-weight: 600;
     }
 
+    .mobile-order-card[class*="mobile-order-status-"] .mobile-order-items-pill.is-multi-items {
+        background: linear-gradient(135deg, #fef08a 0%, #facc15 55%, #eab308 100%) !important;
+        border-color: #ca8a04 !important;
+        color: #713f12 !important;
+        font-weight: 700 !important;
+    }
+
     .mobile-order-card .mobile-order-badge.dropdown-toggle {
         min-height: 30px;
         padding: 4px 10px;
@@ -7455,6 +7484,10 @@ dt,
     border-top-color: #dc2626;
 }
 
+.orders-index-page .orders-hero-card.is-all {
+    border-top-color: #4f46e5;
+}
+
 .orders-index-page .orders-hero-main {
     padding: 16px 18px;
     display: flex;
@@ -7488,6 +7521,12 @@ dt,
     border-color: #fecaca;
 }
 
+.orders-index-page .orders-hero-card.is-all .orders-hero-icon {
+    background: #eef2ff;
+    color: #4338ca;
+    border-color: #c7d2fe;
+}
+
 .orders-index-page .orders-hero-title {
     font-size: 1.32rem !important;
     font-weight: 700 !important;
@@ -7509,7 +7548,7 @@ dt,
 
 .orders-index-page .orders-channel-tabs {
     display: inline-grid;
-    grid-template-columns: repeat(3, minmax(0, auto));
+    grid-template-columns: repeat(4, minmax(0, auto));
     background: #e2e8f0;
     padding: 3px;
     border-radius: 9999px !important;
@@ -7842,7 +7881,8 @@ dt,
     .orders-index-page .orders-channel-tabs {
         display: grid;
         width: 100%;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-radius: 14px !important;
     }
 
     .orders-index-page .orders-channel-tab {

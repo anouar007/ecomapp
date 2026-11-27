@@ -136,6 +136,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('orders/{order}', [\App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');
     });
     Route::middleware('permission:access_pos|manage_orders|view_orders')->group(function () {
+        Route::get('orders/all', [\App\Http\Controllers\OrderController::class, 'allOrders'])->name('orders.all');
         Route::get('orders/pos', [\App\Http\Controllers\OrderController::class, 'posOrders'])->name('orders.pos');
     });
     Route::middleware('permission:access_pos|manage_orders|view_orders|create_orders|edit_orders')->group(function () {
@@ -198,6 +199,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/inventory/alerts', [\App\Http\Controllers\InventoryController::class, 'alerts'])->name('inventory.alerts');
         Route::get('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'adjust'])->name('inventory.adjust');
         Route::post('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'processAdjustment'])->name('inventory.process-adjustment');
+        Route::post('/inventory/{product}/variant-costs', [\App\Http\Controllers\InventoryController::class, 'updateVariantCosts'])->name('inventory.update-variant-costs');
         Route::post('/inventory/alerts/{alert}/acknowledge', [\App\Http\Controllers\InventoryController::class, 'acknowledgeAlert'])->name('inventory.acknowledge-alert');
         Route::post('/inventory/alerts/bulk-acknowledge', [\App\Http\Controllers\InventoryController::class, 'bulkAcknowledge'])->name('inventory.bulk-acknowledge');
     });

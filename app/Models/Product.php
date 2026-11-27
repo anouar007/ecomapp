@@ -1098,11 +1098,68 @@ class Product extends Model
     }
 
     /**
+     * Recalculate and update the parent product's cost price from its variants.
+     */
+    public function recalculateCostFromVariants(): ?float
+    {
+        $variants = $this->variants()->get();
+        if ($variants->isEmpty()) {
+            return $this->cost_price !== null ? (float) $this->cost_price : null;
+        }
+
+        $stockedCosted = $variants->filter(
+            fn ($v) => (int) ($v->stock ?? 0) > 0 && $v->cost_price !== null && (float) $v->cost_price > 0
+        );
+        $anyCosted = $variants->filter(
+            fn ($v) => $v->cost_price !== null && (float) $v->cost_price > 0
+        );
+
+        $newParentCost = null;
+        if ($stockedCosted->isNotEmpty()) {
+            $totalUnits = (int) $stockedCosted->sum(fn ($v) => (int) $v->stock);
+            $totalVal = (float) $stockedCosted->sum(fn ($v) => (int) $v->stock * (float) $v->cost_price);
+            $newParentCost = $totalUnits > 0 ? round($totalVal / $totalUnits, 2) : null;
+        } elseif ($anyCosted->isNotEmpty()) {
+            $newParentCost = round((float) $anyCosted->avg(fn ($v) => (float) $v->cost_price), 2);
+        }
+
+        if ($newParentCost !== null) {
+            $this->update(['cost_price' => $newParentCost]);
+            return $newParentCost;
+        }
+
+        return $this->cost_price !== null ? (float) $this->cost_price : null;
+    }
+
+    /**
      * Adjust stock quantity (globally, per variant, or per store/magasin/depot) and record movement.
      */
     public function adjustStock(int $quantity, string $type, $userId, array $options = []): bool
     {
         $storeId = !empty($options['store_id']) ? (int) $options['store_id'] : null;
+
+        // Variant + store "Inventaire" (exact count): the counted value is the variant's quantity
+        // in THIS store, so convert it to an in/out delta against that store-level quantity.
+        if (!empty($options['variant_id']) && $storeId && $type === 'adjustment') {
+            $variantStoreQty = ProductVariantStock::quantityFor((int) $options['variant_id'], $storeId);
+            $diff = $quantity - $variantStoreQty;
+            if ($diff === 0) {
+                $existingStore = ProductStock::where('product_id', $this->id)->where('store_id', $storeId)->first();
+                if ($existingStore) {
+                    if (!empty($options['location_code'])) {
+                        $existingStore->location_code = $options['location_code'];
+                    }
+                    if (isset($options['min_quantity']) && $options['min_quantity'] !== '' && $options['min_quantity'] !== null) {
+                        $existingStore->min_quantity = (int) $options['min_quantity'];
+                    }
+                    $existingStore->save();
+                }
+                return true;
+            }
+            $type = $diff > 0 ? 'in' : 'out';
+            $quantity = abs($diff);
+        }
+
         $batchCost = static::resolveBatchCostOptions($quantity, $type, $options);
 
         // Variant-level adjustment (with optional store sync)
@@ -1149,6 +1206,8 @@ class Product extends Model
                             $storeStock->min_quantity = (int) $options['min_quantity'];
                         }
                         $storeStock->save();
+
+                        ProductVariantStock::applyDelta((int) $variant->id, $storeId, (int) $delta);
                     }
 
                     if ($batchCost !== null) {

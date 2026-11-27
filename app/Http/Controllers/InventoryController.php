@@ -219,7 +219,7 @@ class InventoryController extends Controller
 
         $matchedSearchIds = null;
         $query = $this->buildFilteredProductQuery($request, $selectedStoreId, $matchedSearchIds);
-        $query->with(['productCategory', 'categories', 'variants', 'storeStocks.store', 'primaryImage', 'images']);
+        $query->with(['productCategory', 'categories', 'variants.storeStocks', 'storeStocks.store', 'primaryImage', 'images']);
 
         // 30-day sales velocity
         $startDate = now()->subDays(30);
@@ -505,7 +505,7 @@ class InventoryController extends Controller
      */
     public function adjust(Request $request, Product $product)
     {
-        $product->load(['variants', 'storeStocks.store', 'images', 'primaryImage']);
+        $product->load(['variants.storeStocks', 'storeStocks.store', 'images', 'primaryImage']);
         $stores = $this->activeStores();
         $selectedStoreId = $request->filled('store_id') ? (int) $request->store_id : null;
         $fifoBatches = $this->canManageCosts()
@@ -549,6 +549,8 @@ class InventoryController extends Controller
             'arrived_at' => 'nullable|date',
             'supplier_name' => 'nullable|string|max:255',
             'reference' => 'nullable|string|max:100',
+            'variant_costs' => 'nullable|array',
+            'variant_costs.*' => 'nullable|numeric|min:0|max:99999999.99',
         ]);
 
         $canManageCost = $this->canManageCosts();
@@ -609,6 +611,40 @@ class InventoryController extends Controller
             }
         }
 
+        $hasSavedAnyVariantCost = false;
+        if ($canManageCost && !empty($validated['variant_costs']) && is_array($validated['variant_costs'])) {
+            $targetVarId = !empty($validated['variant_id']) ? (int) $validated['variant_id'] : null;
+            foreach ($validated['variant_costs'] as $rawVarId => $rawVarCost) {
+                if ($rawVarCost === null || $rawVarCost === '') {
+                    continue;
+                }
+                $varModel = $product->variants()->where('id', (int) $rawVarId)->first();
+                if (!$varModel) {
+                    continue;
+                }
+                $cleanVarCost = round((float) $rawVarCost, 2);
+
+                if ($targetVarId !== null && (int) $varModel->id === $targetVarId && $validated['adjustment_type'] === 'in') {
+                    if ($request->filled('unit_cost')) {
+                        // Leave existing cost_price untouched before adjustStock() so weighted average uses the previous cost
+                        continue;
+                    }
+                    if ($varModel->cost_price === null) {
+                        $options['unit_cost'] = $cleanVarCost;
+                        $options['total_cost'] = round($cleanVarCost * (int) $validated['quantity'], 2);
+                        $hasSavedAnyVariantCost = true;
+                        continue;
+                    }
+                }
+
+                if ($varModel->cost_price === null || round((float) $varModel->cost_price, 2) !== $cleanVarCost) {
+                    // Cost-only update: bypass model events so parent stock is NOT re-synced from variants
+                    \App\Models\ProductVariant::whereKey($varModel->id)->update(['cost_price' => $cleanVarCost]);
+                    $hasSavedAnyVariantCost = true;
+                }
+            }
+        }
+
         $success = $product->adjustStock(
             (int) $validated['quantity'],
             $validated['adjustment_type'],
@@ -616,9 +652,13 @@ class InventoryController extends Controller
             $options
         );
 
+        if ($success && $canManageCost && $hasSavedAnyVariantCost) {
+            $product->recalculateCostFromVariants();
+        }
+
         if ($request->ajax() || $request->wantsJson()) {
             if ($success) {
-                $refreshed = $product->fresh(['variants', 'storeStocks']);
+                $refreshed = $product->fresh(['variants.storeStocks', 'storeStocks']);
                 $variant = !empty($validated['variant_id'])
                     ? $refreshed->variants->firstWhere('id', (int) $validated['variant_id'])
                     : null;
@@ -626,54 +666,30 @@ class InventoryController extends Controller
                     ? $refreshed->storeStocks->firstWhere('store_id', (int) $validated['store_id'])
                     : null;
 
-                $variantsPayload = $refreshed->variants->map(function ($v) use ($canManageCost) {
-                    $row = [
-                        'id' => (int) $v->id,
-                        'name' => $v->name,
-                        'stock' => (int) ($v->stock ?? 0),
-                        'min_stock' => (int) ($v->min_stock ?: 5),
-                        'price' => (float) ($v->price ?? 0),
-                    ];
-                    if ($canManageCost) {
-                        $row['cost_price'] = $v->cost_price !== null ? (float) $v->cost_price : null;
-                    }
-                    return $row;
-                })->values()->all();
-
-                $storeStocksPayload = $refreshed->storeStocks->map(fn ($ss) => [
-                    'store_id' => (int) $ss->store_id,
-                    'quantity' => (int) $ss->quantity,
-                    'location_code' => $ss->location_code,
-                    'min_quantity' => (int) ($ss->min_quantity ?? 2),
-                ])->values()->all();
-
-                $responsePayload = [
-                    'success' => true,
-                    'message' => 'Stock ajusté avec succès.',
-                    'product_id' => (int) $refreshed->id,
-                    'new_stock' => (int) ($refreshed->stock ?? 0),
-                    'threshold' => (int) ($refreshed->low_stock_threshold ?? $refreshed->min_stock ?? 10),
-                    'variant_id' => $variant ? (int) $variant->id : null,
-                    'variant_stock' => $variant ? (int) ($variant->stock ?? 0) : null,
-                    'store_id' => $storeStock ? (int) $storeStock->store_id : null,
-                    'store_stock' => $storeStock ? (int) $storeStock->quantity : null,
-                    'location_code' => $storeStock ? $storeStock->location_code : null,
-                    'min_quantity' => $storeStock ? (int) ($storeStock->min_quantity ?? 2) : null,
-                    'variants' => $variantsPayload,
-                    'store_stocks' => $storeStocksPayload,
-                ];
+                $kpiStoreId = !empty($validated['filter_store_id']) ? (int) $validated['filter_store_id'] : null;
+                $responsePayload = array_merge(
+                    [
+                        'success' => true,
+                        'message' => 'Stock ajusté avec succès.',
+                        'variant_id' => $variant ? (int) $variant->id : null,
+                        'variant_stock' => $variant ? (int) ($variant->stock ?? 0) : null,
+                        'store_id' => $storeStock ? (int) $storeStock->store_id : null,
+                        'store_stock' => $storeStock ? (int) $storeStock->quantity : null,
+                        'location_code' => $storeStock ? $storeStock->location_code : null,
+                        'min_quantity' => $storeStock ? (int) ($storeStock->min_quantity ?? 2) : null,
+                    ],
+                    $this->buildVariantAndCostPayload($refreshed, $kpiStoreId, $canManageCost)
+                );
 
                 if ($canManageCost) {
-                    $newCost = $refreshed->cost_price !== null ? (float) $refreshed->cost_price : null;
-                    $sellingPrice = (float) ($refreshed->active_price ?? $refreshed->price ?? 0);
-                    $unitBenefit = $newCost !== null ? round($sellingPrice - $newCost, 2) : null;
-                    $marginPct = ($newCost !== null && $sellingPrice > 0)
-                        ? round((($sellingPrice - $newCost) / $sellingPrice) * 100, 1)
+                    $responsePayload['variant_cost_price'] = ($variant && $variant->cost_price !== null)
+                        ? (float) $variant->cost_price
                         : null;
 
-                    $kpiStoreId = !empty($validated['filter_store_id']) ? (int) $validated['filter_store_id'] : null;
-                    $kpiStats = $this->computeInventoryStats($kpiStoreId);
-                    $totalStockValue = (float) ($kpiStats['total_stock_value'] ?? 0);
+                    $newCost = $responsePayload['cost_price'] ?? null;
+                    $sellingPrice = $responsePayload['selling_price'] ?? (float) ($refreshed->active_price ?? $refreshed->price ?? 0);
+                    $unitBenefit = $responsePayload['unit_benefit'] ?? null;
+                    $marginPct = $responsePayload['margin_percentage'] ?? null;
 
                     $batchUnitCost = $options['unit_cost'] ?? null;
                     $batchTotalCost = $options['total_cost'] ?? null;
@@ -682,19 +698,9 @@ class InventoryController extends Controller
                         ? round(($batchSellPrice - (float) $batchUnitCost) * (int) $validated['quantity'], 2)
                         : null;
 
-                    $responsePayload = array_merge($responsePayload, [
-                        'cost_price' => $newCost,
-                        'cost_price_formatted' => $newCost !== null ? currency($newCost) : null,
-                        'selling_price' => $sellingPrice,
-                        'unit_benefit' => $unitBenefit,
-                        'unit_benefit_formatted' => $unitBenefit !== null ? (($unitBenefit >= 0 ? '+' : '') . currency($unitBenefit)) : null,
-                        'margin_percentage' => $marginPct,
-                        'batch_unit_cost' => $batchUnitCost,
-                        'batch_total_cost' => $batchTotalCost,
-                        'batch_benefit' => $batchBenefit,
-                        'kpi_total_stock_value' => $totalStockValue,
-                        'kpi_total_stock_value_formatted' => currency($totalStockValue),
-                    ]);
+                    $responsePayload['batch_unit_cost'] = $batchUnitCost;
+                    $responsePayload['batch_total_cost'] = $batchTotalCost;
+                    $responsePayload['batch_benefit'] = $batchBenefit;
 
                     if ($batchUnitCost !== null && $newCost !== null) {
                         $responsePayload['message'] = 'Stock ajusté avec succès — Nouveau PMP : '
@@ -740,6 +746,112 @@ class InventoryController extends Controller
         }
 
         return back()->with('error', 'Impossible d\'ajuster le stock en dessous de zéro.');
+    }
+
+    /**
+     * Save per-variant cost prices independently of stock adjustment and recalculate parent PMP.
+     */
+    public function updateVariantCosts(Request $request, Product $product)
+    {
+        abort_unless($this->canManageCosts(), 403);
+
+        $validated = $request->validate([
+            'variant_costs' => 'required|array|min:1',
+            'variant_costs.*' => 'nullable|numeric|min:0|max:99999999.99',
+            'filter_store_id' => 'nullable|integer|exists:stores,id',
+        ]);
+
+        DB::transaction(function () use ($product, $validated) {
+            foreach ($validated['variant_costs'] as $varId => $costVal) {
+                $variant = $product->variants()->where('id', (int) $varId)->first();
+                if (!$variant) {
+                    continue;
+                }
+                $newVal = ($costVal !== null && $costVal !== '') ? round((float) $costVal, 2) : null;
+                // Cost-only update: bypass model events so parent stock is NOT re-synced from variants
+                \App\Models\ProductVariant::whereKey($variant->id)->update(['cost_price' => $newVal]);
+            }
+
+            $product->recalculateCostFromVariants();
+        });
+
+        $refreshed = $product->fresh(['variants.storeStocks', 'storeStocks']);
+        $kpiStoreId = !empty($validated['filter_store_id']) ? (int) $validated['filter_store_id'] : null;
+
+        $payload = array_merge(
+            [
+                'success' => true,
+                'message' => 'Coût des variantes enregistré avec succès.',
+            ],
+            $this->buildVariantAndCostPayload($refreshed, $kpiStoreId, true)
+        );
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json($payload);
+        }
+
+        return back()->with('success', 'Coût des variantes enregistré avec succès.');
+    }
+
+    /**
+     * Build shared JSON response metrics for product variants, store stocks, and cost/profitability.
+     */
+    private function buildVariantAndCostPayload(Product $refreshed, ?int $kpiStoreId, bool $canManageCost): array
+    {
+        $variantsPayload = $refreshed->variants->map(function ($v) use ($canManageCost) {
+            $row = [
+                'id' => (int) $v->id,
+                'name' => $v->name,
+                'stock' => (int) ($v->stock ?? 0),
+                'min_stock' => (int) ($v->min_stock ?: 5),
+                'price' => (float) ($v->price ?? 0),
+                'store_stocks' => (object) $v->storeQuantityMap(),
+            ];
+            if ($canManageCost) {
+                $row['cost_price'] = $v->cost_price !== null ? (float) $v->cost_price : null;
+            }
+            return $row;
+        })->values()->all();
+
+        $storeStocksPayload = $refreshed->storeStocks->map(fn ($ss) => [
+            'store_id' => (int) $ss->store_id,
+            'quantity' => (int) $ss->quantity,
+            'location_code' => $ss->location_code,
+            'min_quantity' => (int) ($ss->min_quantity ?? 2),
+        ])->values()->all();
+
+        $payload = [
+            'product_id' => (int) $refreshed->id,
+            'new_stock' => (int) ($refreshed->stock ?? 0),
+            'threshold' => (int) ($refreshed->low_stock_threshold ?? $refreshed->min_stock ?? 10),
+            'variants' => $variantsPayload,
+            'store_stocks' => $storeStocksPayload,
+        ];
+
+        if ($canManageCost) {
+            $newCost = $refreshed->cost_price !== null ? (float) $refreshed->cost_price : null;
+            $sellingPrice = (float) ($refreshed->active_price ?? $refreshed->price ?? 0);
+            $unitBenefit = $newCost !== null ? round($sellingPrice - $newCost, 2) : null;
+            $marginPct = ($newCost !== null && $sellingPrice > 0)
+                ? round((($sellingPrice - $newCost) / $sellingPrice) * 100, 1)
+                : null;
+
+            $kpiStats = $this->computeInventoryStats($kpiStoreId);
+            $totalStockValue = (float) ($kpiStats['total_stock_value'] ?? 0);
+
+            $payload = array_merge($payload, [
+                'cost_price' => $newCost,
+                'cost_price_formatted' => $newCost !== null ? currency($newCost) : null,
+                'selling_price' => $sellingPrice,
+                'unit_benefit' => $unitBenefit,
+                'unit_benefit_formatted' => $unitBenefit !== null ? (($unitBenefit >= 0 ? '+' : '') . currency($unitBenefit)) : null,
+                'margin_percentage' => $marginPct,
+                'kpi_total_stock_value' => $totalStockValue,
+                'kpi_total_stock_value_formatted' => currency($totalStockValue),
+            ]);
+        }
+
+        return $payload;
     }
 
     /**

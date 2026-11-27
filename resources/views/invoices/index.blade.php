@@ -192,7 +192,7 @@
                             <option value="">Tous les statuts</option>
                             <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Payé</option>
                             <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>Impayé</option>
-                            <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>Règlement partiel</option>
+                            <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>Avance</option>
                             <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Annulé</option>
                         </select>
                     </div>
@@ -274,7 +274,7 @@
 
             @if(request('status'))
                 @php
-                    $statusNames = ['paid' => 'Payé', 'unpaid' => 'Impayé', 'partial' => 'Partiel', 'cancelled' => 'Annulé'];
+                    $statusNames = ['paid' => 'Payé', 'unpaid' => 'Impayé', 'partial' => 'Avance', 'cancelled' => 'Annulé'];
                 @endphp
                 <a href="{{ request()->fullUrlWithQuery(['status' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
                     Statut : {{ $statusNames[request('status')] ?? request('status') }} <i class="fas fa-times text-muted ms-0.5"></i>
@@ -491,7 +491,7 @@
                                 $pText = match($pStatus) {
                                     'paid' => 'Payé',
                                     'unpaid' => 'Impayé',
-                                    'partial' => 'Partiel',
+                                    'partial' => 'Avance',
                                     'cancelled' => 'Annulé',
                                     default => ucfirst($invoice->payment_status)
                                 };
@@ -530,7 +530,7 @@
                                     </li>
                                     <li>
                                         <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $pStatus === 'partial' ? 'active' : '' }}" onclick="quickUpdateInvoice({{ $invoice->id }}, 'partial')">
-                                            <span><span class="status-dot dot-blue me-1.5"></span> Partiel</span>
+                                            <span><span class="status-dot dot-blue me-1.5"></span> Avance</span>
                                             @if($pStatus === 'partial') <i class="fas fa-check text-primary small"></i> @endif
                                         </button>
                                     </li>
@@ -917,7 +917,7 @@
         const stMap = {
             'paid': { label: 'Payé', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobClass: 'paid', icon: 'fa-check-circle' },
             'unpaid': { label: 'Impayé', dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobClass: 'pending', icon: 'fa-clock' },
-            'partial': { label: 'Partiel', dot: 'blue', badgeClass: 'info', textClass: 'text-info', mobClass: 'pending', icon: 'fa-adjust' },
+            'partial': { label: 'Avance', dot: 'blue', badgeClass: 'info', textClass: 'text-info', mobClass: 'pending', icon: 'fa-adjust' },
             'cancelled': { label: 'Annulé', dot: 'red', badgeClass: 'danger', textClass: 'text-danger', mobClass: 'failed', icon: 'fa-times-circle' }
         };
         const sInfo = stMap[st] || { label: invoice.status_label || st, dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobClass: 'pending', icon: 'fa-clock' };

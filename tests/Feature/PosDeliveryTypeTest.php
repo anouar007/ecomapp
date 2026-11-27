@@ -33,7 +33,12 @@ class PosDeliveryTypeTest extends TestCase
         $res->assertStatus(200)
             ->assertSee('Statut commande')
             ->assertSee('Type de livraison')
-            ->assertSee('id="orderDeliveryType"', false)
+            ->assertSee('id="paymentMethod" value=""', false)
+            ->assertSee('id="paymentStatus" value=""', false)
+            ->assertSee('id="orderStatus" value=""', false)
+            ->assertSee('id="orderDeliveryType" value=""', false)
+            ->assertDontSee('class="payment-pill active"', false)
+            ->assertDontSee('class="pos-delivery-toggle-btn active"', false)
             ->assertSee('id="posDeliveryTypeGroup"', false)
             ->assertSee('Store')
             ->assertSee('Livreur')
@@ -41,7 +46,7 @@ class PosDeliveryTypeTest extends TestCase
             ->assertSee('Autre');
     }
 
-    public function test_pos_checkout_defaults_to_store_and_persists_our_team_or_ozon(): void
+    public function test_pos_checkout_requires_payment_and_delivery_and_persists_selected_types(): void
     {
         $admin = $this->makeAdmin();
         $store = Store::where('is_active', true)->first() ?? Store::create([
@@ -59,10 +64,13 @@ class PosDeliveryTypeTest extends TestCase
             'status' => 'active',
         ]);
 
-        $defaultRes = $this->actingAs($admin)->postJson(route('pos.order'), [
-            'customer_name' => 'Client Store Default',
+        // Missing delivery_type is rejected
+        $missingDeliveryRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Missing Delivery',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
             'items' => [
                 [
                     'product_id' => $product->id,
@@ -72,7 +80,64 @@ class PosDeliveryTypeTest extends TestCase
             ],
         ]);
 
-        $defaultRes->assertStatus(200)
+        $missingDeliveryRes->assertStatus(422)
+            ->assertJsonValidationErrors(['delivery_type']);
+
+        // Missing payment_method is rejected
+        $missingPaymentRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Missing Payment',
+            'store_id' => $store->id,
+            'payment_status' => 'paid',
+            'status' => 'delivered',
+            'delivery_type' => 'store',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $missingPaymentRes->assertStatus(422)
+            ->assertJsonValidationErrors(['payment_method']);
+
+        // Missing payment_status and status are rejected
+        $missingStatusesRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Missing Statuses',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'delivery_type' => 'store',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $missingStatusesRes->assertStatus(422)
+            ->assertJsonValidationErrors(['payment_status', 'status']);
+
+        // Explicit delivery_type='store' persists Store
+        $storeRes = $this->actingAs($admin)->postJson(route('pos.order'), [
+            'customer_name' => 'Client Store Explicit',
+            'store_id' => $store->id,
+            'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
+            'delivery_type' => 'store',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'price' => 500.00,
+                ],
+            ],
+        ]);
+
+        $storeRes->assertStatus(200)
             ->assertJsonPath('success', true)
             ->assertJsonPath('order.delivery_type', 'store')
             ->assertJsonPath('order.delivery_type_label', 'Store');
@@ -81,6 +146,8 @@ class PosDeliveryTypeTest extends TestCase
             'customer_name' => 'Client Livreur',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
             'delivery_type' => 'our_team',
             'items' => [
                 [
@@ -99,6 +166,8 @@ class PosDeliveryTypeTest extends TestCase
             'customer_name' => 'Client Livreur Alias',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
             'delivery_type' => 'livreur',
             'items' => [
                 [
@@ -117,6 +186,8 @@ class PosDeliveryTypeTest extends TestCase
             'customer_name' => 'Client Ozon',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
             'delivery_type' => 'ozon',
             'items' => [
                 [
@@ -139,6 +210,8 @@ class PosDeliveryTypeTest extends TestCase
             'customer_name' => 'Client Autre Delivery',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
             'delivery_type' => 'autre',
             'items' => [
                 [
@@ -161,6 +234,8 @@ class PosDeliveryTypeTest extends TestCase
             'customer_name' => 'Client Invalid Delivery',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
             'delivery_type' => 'invalid_carrier',
             'items' => [
                 [

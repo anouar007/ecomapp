@@ -347,6 +347,8 @@ class ErpCohesionIntegrationTest extends TestCase
                 'customer_email' => $customer->email,
                 'store_id' => $retailStore->id,
                 'payment_method' => 'credit',
+                'status' => 'delivered',
+                'delivery_type' => 'store',
                 'items' => [
                     [
                         'product_id' => $product->id,
@@ -964,6 +966,9 @@ class ErpCohesionIntegrationTest extends TestCase
                 'save_customer' => true,
                 'store_id' => $store->id,
                 'payment_method' => 'cash',
+                'payment_status' => 'paid',
+                'status' => 'delivered',
+                'delivery_type' => 'store',
                 'discount_amount' => 50,
                 'discount_type' => 'fixed',
                 'items' => [

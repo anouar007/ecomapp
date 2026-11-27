@@ -315,26 +315,37 @@
 @extends('layouts.app')
 
 @php
-    $isPosChannel = ($channel ?? 'website') === 'pos';
-    $indexRoute = $indexRoute ?? ($isPosChannel ? 'orders.pos' : 'orders.index');
-    $exportParams = array_merge(request()->all(), ['channel' => $isPosChannel ? 'pos' : 'website']);
+    $activeChannel = $channel ?? 'website';
+    $isPosChannel = $activeChannel === 'pos';
+    $isAllChannel = $activeChannel === 'all';
+    $isWebChannel = !$isPosChannel && !$isAllChannel;
+    $indexRoute = $indexRoute ?? ($isPosChannel ? 'orders.pos' : ($isAllChannel ? 'orders.all' : 'orders.index'));
+    $exportParams = array_merge(request()->all(), ['channel' => $activeChannel]);
+    $pageTitle = $isAllChannel
+        ? 'Toutes les commandes (Site Web & POS)'
+        : ($isPosChannel ? 'Commandes POS (Caisse)' : 'Commandes Site Web');
+    $heroSubtitle = $isAllChannel
+        ? 'Vue unifiée de toutes les commandes provenant du site web et de la caisse POS'
+        : ($isPosChannel ? 'Ventes effectuées en boutique depuis la caisse POS' : 'Suivi complet des commandes clients provenant du site web');
+    $heroClass = $isAllChannel ? 'is-all' : ($isPosChannel ? 'is-pos' : 'is-web');
+    $heroIcon = $isAllChannel ? 'fa-layer-group' : ($isPosChannel ? 'fa-cash-register' : 'fa-shopping-bag');
 @endphp
 
-@section('title', $isPosChannel ? 'Commandes POS (Caisse)' : 'Commandes Site Web')
+@section('title', $pageTitle)
 
 @section('content')
 <div class="orders-index-page">
     <!-- En-tête Exécutif Mobile-First -->
-    <div class="orders-hero-card {{ $isPosChannel ? 'is-pos' : 'is-web' }}">
+    <div class="orders-hero-card {{ $heroClass }}">
         <div class="orders-hero-main">
             <div class="d-flex align-items-center gap-2.5 min-w-0">
                 <div class="orders-hero-icon">
-                    <i class="fas {{ $isPosChannel ? 'fa-cash-register' : 'fa-shopping-bag' }}"></i>
+                    <i class="fas {{ $heroIcon }}"></i>
                 </div>
                 <div class="min-w-0">
-                    <h1 class="orders-hero-title text-truncate">{{ $isPosChannel ? 'Commandes POS (Caisse)' : 'Commandes Site Web' }}</h1>
+                    <h1 class="orders-hero-title text-truncate">{{ $pageTitle }}</h1>
                     <p class="text-muted small mb-0 d-none d-md-block">
-                        {{ $isPosChannel ? 'Ventes effectuées en boutique depuis la caisse POS' : 'Suivi complet des commandes clients provenant du site web' }}
+                        {{ $heroSubtitle }}
                     </p>
                 </div>
             </div>
@@ -355,6 +366,13 @@
                     <a href="{{ route('pos.index') }}" class="btn-brand-primary justify-content-center text-nowrap px-3 py-2" style="font-size: 0.82rem;">
                         <i class="fas fa-cash-register me-1"></i> <span class="d-none d-sm-inline">Ouvrir la caisse POS</span><span class="d-sm-none">Caisse</span>
                     </a>
+                @elseif($isAllChannel)
+                    <a href="{{ route('pos.index') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2 d-none d-lg-inline-flex align-items-center gap-1.5 fw-semibold text-nowrap" style="font-size: 0.82rem;">
+                        <i class="fas fa-cash-register"></i> <span>Caisse POS</span>
+                    </a>
+                    <a href="{{ route('orders.create') }}" class="btn-brand-primary justify-content-center text-nowrap px-3 py-2" style="font-size: 0.82rem;">
+                        <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouvelle commande</span><span class="d-sm-none">Créer</span>
+                    </a>
                 @else
                     <a href="{{ route('orders.create') }}" class="btn-brand-primary justify-content-center text-nowrap px-3 py-2" style="font-size: 0.82rem;">
                         <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouvelle commande</span><span class="d-sm-none">Créer</span>
@@ -365,8 +383,12 @@
 
         <div class="orders-hero-subbar">
             <div class="orders-channel-tabs" role="navigation" aria-label="Navigation Commandes">
-                <a href="{{ route('orders.index') }}" class="orders-channel-tab {{ !$isPosChannel ? 'active' : '' }}">
-                    <i class="fas fa-globe {{ !$isPosChannel ? 'text-primary' : '' }}"></i>
+                <a href="{{ route('orders.all') }}" class="orders-channel-tab {{ $isAllChannel ? 'active' : '' }}">
+                    <i class="fas fa-layer-group" style="{{ $isAllChannel ? 'color: #4f46e5;' : '' }}"></i>
+                    <span>Toutes</span>
+                </a>
+                <a href="{{ route('orders.index') }}" class="orders-channel-tab {{ $isWebChannel ? 'active' : '' }}">
+                    <i class="fas fa-globe {{ $isWebChannel ? 'text-primary' : '' }}"></i>
                     <span>Site Web</span>
                 </a>
                 <a href="{{ route('orders.pos') }}" class="orders-channel-tab {{ $isPosChannel ? 'active' : '' }}">
@@ -380,6 +402,18 @@
             </div>
 
             <div class="orders-hero-metrics tabular-nums">
+                @if($isAllChannel && isset($stats['web_count'], $stats['pos_count']))
+                    <a href="{{ route('orders.index', request()->except('page')) }}" class="orders-metric-chip text-decoration-none" title="Voir uniquement les commandes Site Web">
+                        <i class="fas fa-globe text-primary"></i>
+                        <strong class="orders-strong text-dark">{{ number_format($stats['web_count'], 0, ',', ' ') }}</strong>
+                        <span>Web</span>
+                    </a>
+                    <a href="{{ route('orders.pos', request()->except('page')) }}" class="orders-metric-chip text-decoration-none" title="Voir uniquement les commandes POS">
+                        <i class="fas fa-cash-register text-danger"></i>
+                        <strong class="orders-strong text-dark">{{ number_format($stats['pos_count'], 0, ',', ' ') }}</strong>
+                        <span>POS</span>
+                    </a>
+                @endif
                 <span class="orders-metric-chip">
                     <i class="fas fa-receipt text-primary"></i>
                     <strong class="orders-strong text-dark" id="kpi-total-orders">{{ number_format($stats['total'] ?? $orders->total(), 0, ',', ' ') }}</strong>
@@ -673,7 +707,7 @@
                                 @php
                                     $paymentStatusNames = [
                                         'pending' => '⏳ En attente',
-                                        'partial' => '⏳ Partiel',
+                                        'partial' => '⏳ Avance',
                                         'paid' => '💳 Payé',
                                         'failed' => '⚠️ Échoué',
                                         'refunded' => '↩️ Remboursé'
@@ -715,7 +749,7 @@
                     <!-- Utilisateur (Confirmée par / Créée par) -->
                     <div class="col-6 col-md-4 col-xl-2">
                         <div class="orders-filter-field">
-                            <span class="orders-filter-label">{{ $isPosChannel ? 'Créée par' : 'Confirmée par' }}</span>
+                            <span class="orders-filter-label">{{ $isAllChannel ? 'Utilisateur' : ($isPosChannel ? 'Créée par' : 'Confirmée par') }}</span>
                             <select name="staff_id" class="form-select form-select-sm fw-semibold">
                                 <option value="">Tous utilisateurs</option>
                                 @if(!$isPosChannel)
@@ -845,7 +879,7 @@
                 @php
                     $payBadgeLabels = [
                         'pending' => 'En attente',
-                        'partial' => 'Partiel',
+                        'partial' => 'Avance',
                         'paid' => 'Payé',
                         'failed' => 'Échoué',
                         'refunded' => 'Remboursé'
@@ -882,7 +916,7 @@
                         : ($selStaffObj?->name ?? '#' . request('staff_id'));
                 @endphp
                 <a href="{{ request()->fullUrlWithQuery(['staff_id' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
-                    <i class="fas fa-user-check text-success me-0.5"></i> {{ $isPosChannel ? 'Créée par' : 'Confirmée par' }} : {{ $staffFilterLabel }} <i class="fas fa-times text-muted ms-0.5"></i>
+                    <i class="fas fa-user-check text-success me-0.5"></i> {{ $isAllChannel ? 'Utilisateur' : ($isPosChannel ? 'Créée par' : 'Confirmée par') }} : {{ $staffFilterLabel }} <i class="fas fa-times text-muted ms-0.5"></i>
                 </a>
             @endif
 
@@ -958,7 +992,7 @@
         </div>
 
         @forelse($orders as $order)
-            @include('orders.partials.mobile-order-card', ['order' => $order])
+            @include('orders.partials.mobile-order-card', ['order' => $order, 'showChannelBadge' => $isAllChannel])
         @empty
             <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-sm">
                 <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 20px;">
@@ -1018,6 +1052,15 @@
                                     <i class="far fa-copy"></i>
                                 </button>
                             </div>
+                            @if($isAllChannel)
+                                @php $rowIsPos = $order->isPosOrder(); @endphp
+                                <div class="mt-1">
+                                    <span class="order-channel-pill is-compact {{ $rowIsPos ? 'is-pos' : 'is-web' }}">
+                                        <i class="fas {{ $rowIsPos ? 'fa-cash-register' : 'fa-globe' }}"></i>
+                                        <span>{{ $rowIsPos ? 'POS' : 'Site Web' }}</span>
+                                    </span>
+                                </div>
+                            @endif
                             @php $forcedOosItems = $order->forcedOutOfStockItems(); @endphp
                             @if($forcedOosItems->isNotEmpty())
                                 <div class="mt-1">
@@ -1104,7 +1147,7 @@
                                             @endif
                                             <span>x{{ $firstItem->quantity }}</span>
                                             @if($order->items->count() > 1)
-                                                <span class="text-muted ms-1">({{ $order->items->count() }} art.)</span>
+                                                <span class="badge order-multi-items-gold-badge px-1.5 py-0 ms-1" style="font-size: 0.64rem;">{{ $order->items->count() }} art.</span>
                                             @endif
                                         </div>
                                         @php
@@ -1349,7 +1392,7 @@
                                 };
                                 $pText = match($payStatus) {
                                     'paid', 'payé' => 'Payé',
-                                    'partial', 'partiel' => 'Partiel',
+                                    'partial', 'partiel' => 'Avance',
                                     'failed', 'échoué' => 'Échoué',
                                     'refunded', 'remboursé' => 'Remboursé',
                                     default => 'En attente'
@@ -1408,7 +1451,7 @@
                                     </li>
                                     <li>
                                         <button type="button" data-payment-status="partial" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $normalizedPayStatus === 'partial' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'partial')">
-                                            <span><span class="status-dot dot-blue me-1.5"></span> Partiel</span>
+                                            <span><span class="status-dot dot-blue me-1.5"></span> Avance</span>
                                             @if($normalizedPayStatus === 'partial') <i class="fas fa-check text-primary small"></i> @endif
                                         </button>
                                     </li>
@@ -1737,7 +1780,7 @@
         }).join('');
 
         const res = await Swal.fire({
-            title: 'Paiement Partiel',
+            title: 'Avance',
             html: `
                 <div class="text-muted small mb-2">Total commande : <strong class="text-dark">${total.toFixed(2)} DH</strong></div>
                 <div class="mb-2 text-start">
@@ -2101,7 +2144,7 @@
         const pst = (order.payment_status || '').toLowerCase();
         const pstMap = {
             'paid': { label: 'Payé', icon: 'fa-check-circle', badgeClass: 'paid', textClass: 'text-success', mobClass: 'paid' },
-            'partial': { label: 'Partiel', icon: 'fa-circle-half-stroke', badgeClass: 'partial', textClass: 'text-primary', mobClass: 'partial' },
+            'partial': { label: 'Avance', icon: 'fa-circle-half-stroke', badgeClass: 'partial', textClass: 'text-primary', mobClass: 'partial' },
             'pending': { label: 'En attente', icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' },
             'failed': { label: 'Échoué', icon: 'fa-exclamation-circle', badgeClass: 'failed', textClass: 'text-danger', mobClass: 'failed' },
             'refunded': { label: 'Remboursé', icon: 'fa-undo', badgeClass: 'refunded', textClass: 'text-secondary', mobClass: 'refunded' }

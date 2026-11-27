@@ -476,6 +476,61 @@
     background: #fef2f2;
 }
 
+.pos-partial-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px !important;
+    padding: 10px;
+    margin-top: 8px;
+}
+
+.pos-partial-pct-btn,
+.pos-partial-due-btn {
+    border: 1px solid #93c5fd;
+    background: #ffffff;
+    color: #1d4ed8;
+    border-radius: 999px !important;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1.4;
+}
+
+.pos-partial-pct-btn:hover,
+.pos-partial-pct-btn.active {
+    background: #2563eb;
+    border-color: #1d4ed8;
+    color: #ffffff;
+    font-weight: 700 !important;
+}
+
+.pos-partial-due-btn {
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+.pos-partial-due-btn:hover,
+.pos-partial-due-btn.active {
+    background: #dbeafe;
+    border-color: #60a5fa;
+    color: #1e40af;
+    font-weight: 700 !important;
+}
+
+.pos-partial-due-clear {
+    border-color: #fecaca;
+    color: #b91c1c;
+    background: #fff5f5;
+}
+
+.pos-partial-due-clear:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
 .categories-wrapper {
     flex-shrink: 0;
     padding: 8px 16px;
@@ -1168,6 +1223,66 @@
     cursor: not-allowed;
 }
 
+.pos-req-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.pos-req-badge.is-selected {
+    display: none;
+}
+
+.pos-req-badge.is-missing {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fca5a5;
+}
+
+.pos-selection-missing {
+    border-radius: 10px;
+    padding: 4px 6px;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.35);
+    background: #fff5f5;
+}
+
+.pos-pill-unselected {
+    background: #fef3c7 !important;
+    color: #b45309 !important;
+    border: 1px solid #fde68a !important;
+}
+
+.pos-pill-missing {
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+    border: 1px solid #fca5a5 !important;
+}
+
+#posPaymentStatusPill.dropdown-toggle::after {
+    display: none !important;
+}
+
+.pos-checkout-req-hint {
+    margin-top: 8px;
+    padding: 5px 8px;
+    border-radius: 7px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #b45309;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-align: center;
+}
+
 .pos-docs-box {
     margin-top: 6px;
     padding: 6px 8px;
@@ -1664,10 +1779,11 @@
             <div class="pos-card-box" id="posStepPaymentBox">
                 <div class="pos-section-label">
                     <span><i class="fas fa-credit-card me-1 text-danger"></i> Mode de paiement</span>
+                    <span id="posPaymentRequiredBadge" class="pos-req-badge">À sélectionner</span>
                 </div>
-                <input type="hidden" id="paymentMethod" value="cash">
-                <div class="payment-pills mb-2">
-                    <button type="button" class="payment-pill active" data-method="cash" onclick="selectPaymentMethod('cash', this)">💵 Espèces</button>
+                <input type="hidden" id="paymentMethod" value="">
+                <div class="payment-pills mb-2" id="posPaymentMethodGroup">
+                    <button type="button" class="payment-pill" data-method="cash" onclick="selectPaymentMethod('cash', this)">💵 Espèces</button>
                     <button type="button" class="payment-pill" data-method="card" onclick="selectPaymentMethod('card', this)">💳 Carte</button>
                     <button type="button" class="payment-pill" data-method="virement" onclick="selectPaymentMethod('virement', this)">🏛️ Virement</button>
                     <button type="button" class="payment-pill" data-method="cheque" onclick="selectPaymentMethod('cheque', this)">🧾 Chèque</button>
@@ -1709,32 +1825,64 @@
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input" type="checkbox" id="isPartialPayment" onchange="togglePartialPaymentBox()" style="cursor: pointer;">
                         <label class="form-check-label" for="isPartialPayment" style="font-size: 12px; font-weight: 700; color: #0f172a; cursor: pointer;">
-                            <i class="fas fa-calendar-alt text-warning me-1"></i> Paiement partiel (Acompte + Échéance)
+                            <i class="fas fa-circle-half-stroke text-primary me-1"></i> Avance (Acompte + Échéance)
                         </label>
                     </div>
-                    <div id="partialPaymentFields" style="display: none; margin-top: 8px; padding: 9px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;">
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <label for="partialPaidAmount" style="font-size: 11px; color: #78350f; font-weight: 700; display: block; margin-bottom: 3px;">
-                                    Payé maintenant ({{ $currencySymbol }})
-                                </label>
-                                <input type="number" id="partialPaidAmount" class="compact-input" placeholder="0.00" min="0" step="0.01" oninput="updatePartialPaymentSummary()" style="font-weight: 700; text-align: right;">
+                    <div id="partialPaymentFields" class="pos-partial-box" style="display: none;">
+                        <div class="mb-2">
+                            <label for="partialPaidAmount" style="font-size: 11px; color: #1e3a8a; font-weight: 700 !important; display: block; margin-bottom: 3px;">
+                                Montant déjà payé ({{ $currencySymbol }})
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <input type="number"
+                                       id="partialPaidAmount"
+                                       class="form-control bg-white"
+                                       placeholder="0.00"
+                                       min="0"
+                                       step="0.01"
+                                       oninput="updatePartialPaymentSummary()"
+                                       style="font-weight: 700 !important; text-align: right;">
+                                <span class="input-group-text fw-semibold bg-white">{{ $currencySymbol }}</span>
                             </div>
-                            <div class="col-6">
-                                <label for="paymentDueDate" style="font-size: 11px; color: #78350f; font-weight: 700; display: block; margin-bottom: 3px;">
-                                    Date limite (Échéance) *
-                                </label>
-                                <input type="date" id="paymentDueDate" class="compact-input" min="{{ now()->toDateString() }}" value="{{ now()->addDays(15)->toDateString() }}" style="font-size: 12px;">
+                            <div class="d-flex flex-wrap gap-1 mt-1.5" id="posPartialPctBtns">
+                                <button type="button" class="pos-partial-pct-btn" data-pct="25" onclick="setPosPartialPercent(25)">25%</button>
+                                <button type="button" class="pos-partial-pct-btn" data-pct="50" onclick="setPosPartialPercent(50)">50%</button>
+                                <button type="button" class="pos-partial-pct-btn" data-pct="75" onclick="setPosPartialPercent(75)">75%</button>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mt-2 pt-1.5 border-top" style="border-color: #fde68a !important; font-size: 12px;">
-                            <span style="color: #92400e; font-weight: 600;">Reste à payer :</span>
-                            <strong id="partialRemainingDisplay" style="color: #dc2626; font-size: 13.5px;">{{ currency(0) }}</strong>
+
+                        <div class="mb-2">
+                            <label for="paymentDueDate" style="font-size: 11px; color: #1e3a8a; font-weight: 600 !important; display: block; margin-bottom: 3px;">
+                                Date d'échéance (optionnel)
+                            </label>
+                            <input type="date"
+                                   id="paymentDueDate"
+                                   class="compact-input bg-white"
+                                   min="{{ now()->toDateString() }}"
+                                   value=""
+                                   oninput="updatePartialPaymentSummary()"
+                                   onchange="updatePartialPaymentSummary()"
+                                   style="font-size: 12px;">
+                            <div class="d-flex flex-wrap gap-1 mt-1.5">
+                                <button type="button" class="pos-partial-due-btn" data-days="7" onclick="setPosPartialDueDays(7)">+7j</button>
+                                <button type="button" class="pos-partial-due-btn" data-days="15" onclick="setPosPartialDueDays(15)">+15j</button>
+                                <button type="button" class="pos-partial-due-btn" data-days="30" onclick="setPosPartialDueDays(30)">+30j</button>
+                                <button type="button" class="pos-partial-due-btn pos-partial-due-clear" onclick="setPosPartialDueDays(0)">Effacer</button>
+                            </div>
                         </div>
-                        <div id="partialClientNotice" style="display: none; margin-top: 6px; padding: 6px 8px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; color: #991b1b; font-size: 11px; font-weight: 600;">
+
+                        <div class="pt-1.5 border-top" style="border-color: #bfdbfe !important; font-size: 12px;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span style="color: #1e40af; font-weight: 600 !important;">Reste à payer :</span>
+                                <strong id="partialRemainingDisplay" style="color: #dc2626; font-size: 13.5px; font-weight: 700 !important;">{{ currency(0) }}</strong>
+                            </div>
+                            <div id="partialDuePreview" class="text-primary mt-0.5" style="display: none; font-size: 10.5px; font-weight: 600 !important;"></div>
+                        </div>
+
+                        <div id="partialClientNotice" style="display: none; margin-top: 6px; padding: 6px 8px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; color: #92400e; font-size: 11px; font-weight: 600 !important;">
                             <div class="d-flex align-items-center justify-content-between gap-2">
-                                <span><i class="fas fa-exclamation-triangle me-1"></i> Nom réel et téléphone du client requis.</span>
-                                <button type="button" onclick="goToMobileStep(3)" class="btn btn-link btn-sm p-0 text-danger fw-bold d-lg-none text-decoration-none" style="font-size: 11px;">Compléter</button>
+                                <span><i class="fas fa-info-circle me-1"></i> Conseil : renseignez le nom/tél du client pour suivre ce reste sur sa fiche crédit.</span>
+                                <button type="button" onclick="goToMobileStep(3)" class="btn btn-link btn-sm p-0 text-primary fw-bold d-lg-none text-decoration-none flex-shrink-0" style="font-size: 11px;">Renseigner</button>
                             </div>
                         </div>
                     </div>
@@ -1758,17 +1906,60 @@
                     </div>
                 </div>
 
-                <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-color: #f1f5f9 !important;">
-                    <input type="hidden" id="orderStatus" value="delivered">
+                <div id="posPaymentStatusRow" class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-color: #f1f5f9 !important;">
+                    <input type="hidden" id="paymentStatus" value="">
+                    <div style="min-width: 0;">
+                        <div style="font-size: 11.5px; color: #334155; font-weight: 700; line-height: 1.25;">
+                            <i class="fas fa-wallet me-1 text-danger"></i> Statut de paiement
+                        </div>
+                        <div id="paymentStatusHint" style="font-size: 10.5px; font-weight: 600; color: #b45309; line-height: 1.25;">À sélectionner</div>
+                    </div>
+                    <div class="dropdown d-inline-block flex-shrink-0">
+                        <button type="button"
+                                class="brand-badge brand-badge-btn pos-pill-unselected dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                data-bs-auto-close="true"
+                                data-bs-boundary="viewport"
+                                data-bs-popper-config='{"strategy":"fixed"}'
+                                aria-expanded="false"
+                                id="posPaymentStatusPill"
+                                title="Changer le statut de paiement">
+                            <i class="fas fa-exclamation-circle" id="posPaymentStatusIcon"></i>
+                            <span id="posPaymentStatusLabel">À sélectionner</span>
+                            <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.6rem;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="posPaymentStatusPill" id="posPaymentStatusMenu">
+                            <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de paiement</li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-payment-status="pending" onclick="setPosPaymentStatus('pending')">
+                                    <span><span class="status-dot dot-amber me-1.5"></span> En attente</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-payment-status="partial" onclick="setPosPaymentStatus('partial')">
+                                    <span><span class="status-dot dot-blue me-1.5"></span> Avance</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-payment-status="paid" onclick="setPosPaymentStatus('paid')">
+                                    <span><span class="status-dot dot-green me-1.5"></span> Payé</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="posOrderStatusRow" class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-color: #f1f5f9 !important;">
+                    <input type="hidden" id="orderStatus" value="">
                     <div style="min-width: 0;">
                         <div style="font-size: 11.5px; color: #334155; font-weight: 700; line-height: 1.25;">
                             <i class="fas fa-truck-fast me-1 text-danger"></i> Statut commande
                         </div>
-                        <div id="orderStatusStockHint" style="font-size: 10.5px; font-weight: 600; color: #16a34a; line-height: 1.25;">Stock déduit</div>
+                        <div id="orderStatusStockHint" style="font-size: 10.5px; font-weight: 600; color: #b45309; line-height: 1.25;">À sélectionner</div>
                     </div>
                     <div class="dropdown d-inline-block flex-shrink-0">
                         <button type="button"
-                                class="brand-badge brand-badge-btn success status-pill-delivered dropdown-toggle"
+                                class="brand-badge brand-badge-btn pos-pill-unselected dropdown-toggle"
                                 data-bs-toggle="dropdown"
                                 data-bs-auto-close="true"
                                 data-bs-boundary="viewport"
@@ -1776,8 +1967,8 @@
                                 aria-expanded="false"
                                 id="posStatusPill"
                                 title="Changer le statut de livraison">
-                            <span class="status-dot dot-green" id="posStatusDot"></span>
-                            <span id="posStatusLabel">Livrée</span>
+                            <span class="status-dot dot-amber" id="posStatusDot"></span>
+                            <span id="posStatusLabel">À sélectionner</span>
                             <i class="fas fa-chevron-down ms-0.5" style="font-size: 0.6rem;"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="posStatusPill" id="posStatusMenu">
@@ -1808,9 +1999,8 @@
                                 </button>
                             </li>
                             <li>
-                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between active" data-status="delivered" onclick="setPosOrderStatus('delivered')">
+                                <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between" data-status="delivered" onclick="setPosOrderStatus('delivered')">
                                     <span><span class="status-dot dot-green me-1.5"></span> Livrée</span>
-                                    <i class="fas fa-check text-success small"></i>
                                 </button>
                             </li>
                         </ul>
@@ -1818,14 +2008,15 @@
                 </div>
 
                 <div class="mt-2 pt-2 border-top" style="border-color: #f1f5f9 !important;">
-                    <input type="hidden" id="orderDeliveryType" value="store">
+                    <input type="hidden" id="orderDeliveryType" value="">
                     <div class="d-flex align-items-center justify-content-between mb-1.5">
                         <span style="font-size: 11.5px; color: #334155; font-weight: 700; line-height: 1.25;">
                             <i class="fas fa-shipping-fast me-1 text-danger"></i> Type de livraison
                         </span>
+                        <span id="posDeliveryRequiredBadge" class="pos-req-badge">À sélectionner</span>
                     </div>
                     <div class="pos-delivery-toggle-group" id="posDeliveryTypeGroup" role="group" aria-label="Type de livraison">
-                        <button type="button" class="pos-delivery-toggle-btn active" data-delivery-type="store" onclick="setPosDeliveryType('store')">
+                        <button type="button" class="pos-delivery-toggle-btn" data-delivery-type="store" onclick="setPosDeliveryType('store')">
                             <i class="fas fa-store"></i>
                             <span>Store</span>
                         </button>
@@ -1884,6 +2075,16 @@
                 <span>Total</span>
                 <span id="total" style="color: #dc2626;">{{ currency(0) }}</span>
             </div>
+            <div id="posTotalsPartialSummary" class="mt-1 pt-1 border-top" style="display: none; border-color: #f1f5f9 !important;">
+                <div class="bill-row mb-0.5">
+                    <span style="color: #1e40af; font-weight: 600 !important;">Acompte encaissé</span>
+                    <span id="posTotalsPaidNow" style="font-weight: 700 !important; color: #059669;">{{ currency(0) }}</span>
+                </div>
+                <div class="bill-row mb-0">
+                    <span style="color: #991b1b; font-weight: 600 !important;">Reste à payer</span>
+                    <span id="posTotalsRemaining" style="font-weight: 700 !important; color: #dc2626;">{{ currency(0) }}</span>
+                </div>
+            </div>
 
             <div class="d-none d-lg-block" style="margin-top: 8px; font-size: 10.5px; color: #64748b; text-align: center;">
                 <kbd style="background: #f1f5f9; color: #334155; padding: 1px 5px; border-radius: 3px; border: 1px solid #cbd5e1;">F2</kbd> Rechercher
@@ -1893,6 +2094,7 @@
                 <kbd style="background: #f1f5f9; color: #334155; padding: 1px 5px; border-radius: 3px; border: 1px solid #cbd5e1;">F9</kbd> Encaisser
             </div>
 
+            <div id="posCheckoutSelectionHint" class="pos-checkout-req-hint" style="display: none;"></div>
             <button type="button" class="pay-btn" id="checkoutBtn" onclick="checkout()" disabled>
                 <i class="fas fa-check-circle"></i>
                 <span id="checkoutBtnLabel">Encaisser {{ currency(0) }}</span>
@@ -2015,11 +2217,13 @@ window.holdCurrentCart = function() {
         customerId: document.getElementById('customerId')?.value || '',
         discountAmount: document.getElementById('discountAmount')?.value || '',
         discountType: document.getElementById('discountType')?.value || 'fixed',
+        paymentMethod: document.getElementById('paymentMethod')?.value || '',
+        paymentStatus: document.getElementById('paymentStatus')?.value || '',
         isPartialPayment: !!document.getElementById('isPartialPayment')?.checked,
         partialPaidAmount: document.getElementById('partialPaidAmount')?.value || '',
         paymentDueDate: document.getElementById('paymentDueDate')?.value || '',
-        orderStatus: document.getElementById('orderStatus')?.value || 'delivered',
-        deliveryType: document.getElementById('orderDeliveryType')?.value || 'store',
+        orderStatus: document.getElementById('orderStatus')?.value || '',
+        deliveryType: document.getElementById('orderDeliveryType')?.value || '',
         taxMode: document.getElementById('orderTaxMode')?.value || 'ht',
         notes: document.getElementById('orderNotes')?.value || '',
         total: window.posState.currentTotal,
@@ -2032,10 +2236,11 @@ window.holdCurrentCart = function() {
     document.getElementById('discountType').value = 'fixed';
     if (document.getElementById('isPartialPayment')) document.getElementById('isPartialPayment').checked = false;
     if (document.getElementById('partialPaidAmount')) document.getElementById('partialPaidAmount').value = '';
-    if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
-    togglePartialPaymentBox();
-    setPosOrderStatus('delivered');
-    setPosDeliveryType('store');
+    if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '';
+    setPosPaymentStatus('', { preserveEmpty: true });
+    selectPaymentMethod('', null);
+    setPosOrderStatus('');
+    setPosDeliveryType('');
     setPosTaxMode('ht');
     document.getElementById('orderNotes').value = '';
     resetCustomerFields();
@@ -2105,12 +2310,18 @@ window.resumeHeldOrder = function(idx) {
     }
     document.getElementById('discountAmount').value = held.discountAmount || '';
     document.getElementById('discountType').value = held.discountType || 'fixed';
-    if (document.getElementById('isPartialPayment')) document.getElementById('isPartialPayment').checked = !!held.isPartialPayment;
+    if (held.paymentMethod) {
+        const methodPill = document.querySelector(`.payment-pill[data-method="${held.paymentMethod}"]`);
+        selectPaymentMethod(held.paymentMethod, methodPill || null);
+    } else {
+        selectPaymentMethod('', null);
+    }
     if (document.getElementById('partialPaidAmount')) document.getElementById('partialPaidAmount').value = held.partialPaidAmount || '';
-    if (document.getElementById('paymentDueDate') && held.paymentDueDate) document.getElementById('paymentDueDate').value = held.paymentDueDate;
-    togglePartialPaymentBox();
-    setPosOrderStatus(held.orderStatus || 'delivered');
-    setPosDeliveryType(held.deliveryType || 'store');
+    if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = held.paymentDueDate || '';
+    const heldPayStatus = held.paymentStatus || (held.isPartialPayment ? 'partial' : '');
+    setPosPaymentStatus(heldPayStatus, { preserveEmpty: true });
+    setPosOrderStatus(held.orderStatus || '');
+    setPosDeliveryType(held.deliveryType || '');
     setPosTaxMode(held.taxMode || 'ht');
     document.getElementById('orderNotes').value = held.notes || '';
     renderCart();
@@ -2175,20 +2386,18 @@ window.goToMobileStep = function(step) {
         }
     }
 
-    if (targetStep === 5 && document.getElementById('isPartialPayment')?.checked) {
-        if (!validatePartialClientInfo()) {
-            return;
-        }
+    if (targetStep === 5 && !validatePosPaymentAndDelivery({ isMobileStep: true })) {
+        return;
+    }
+
+    const stepPayStatus = document.getElementById('paymentStatus')?.value || '';
+    const isStepPartial = (!!document.getElementById('isPartialPayment')?.checked || stepPayStatus === 'partial')
+        && (document.getElementById('paymentMethod')?.value || '') !== 'credit';
+    if (targetStep === 5 && isStepPartial) {
         const total = window.posState?.currentTotal || 0;
         const paidNow = parseFloat(document.getElementById('partialPaidAmount')?.value) || 0;
-        const dueDate = (document.getElementById('paymentDueDate')?.value || '').trim();
-        if (paidNow < 0 || paidNow >= total) {
-            Swal.fire({ icon: 'warning', title: 'Acompte invalide', text: 'Le montant payé maintenant doit être inférieur au total.' });
-            if (window.posState.mobileStep !== 4) window.goToMobileStep(4);
-            return;
-        }
-        if (!dueDate) {
-            Swal.fire({ icon: 'warning', title: 'Échéance requise', text: 'Veuillez indiquer la date limite pour le reste à payer.' });
+        if (paidNow < 0 || (total > 0 && paidNow >= total) || (total <= 0 && paidNow > 0)) {
+            Swal.fire({ icon: 'warning', title: 'Acompte invalide', text: 'Pour un paiement total, choisissez plutôt « Payé » — le montant payé maintenant doit être inférieur au total.' });
             if (window.posState.mobileStep !== 4) window.goToMobileStep(4);
             return;
         }
@@ -2261,20 +2470,26 @@ function renderMobileConfirmSummary() {
     const cName = (document.getElementById('customerName')?.value || 'Client de passage').trim();
     const cPhone = (document.getElementById('customerPhone')?.value || '').trim();
     const cCity = (document.getElementById('customerCity')?.value || '').trim();
-    const method = document.getElementById('paymentMethod')?.value || 'cash';
+    const method = document.getElementById('paymentMethod')?.value || '';
     const methodLabels = {
         cash: '💵 Espèces',
         card: '💳 Carte bancaire',
         virement: '🏛️ Virement bancaire',
+        cheque: '🧾 Chèque',
+        cod: '🚚 COD',
         credit: '🏦 À crédit',
         other: '⚪ Autre'
     };
-    const isPartial = !!document.getElementById('isPartialPayment')?.checked && method !== 'credit';
+    const paymentStatusVal = method === 'credit'
+        ? 'pending'
+        : (document.getElementById('paymentStatus')?.value || '');
+    const isPartial = (paymentStatusVal === 'partial' || !!document.getElementById('isPartialPayment')?.checked) && method !== 'credit';
     const partialPaidNow = Math.max(0, parseFloat(document.getElementById('partialPaidAmount')?.value) || 0);
     const partialDueDate = (document.getElementById('paymentDueDate')?.value || '').trim();
-    const orderStatus = document.getElementById('orderStatus')?.value || 'delivered';
+    const paymentStatusBadgeHtml = formatPosPaymentStatusBadgeHtml(isPartial ? 'partial' : paymentStatusVal);
+    const orderStatus = document.getElementById('orderStatus')?.value || '';
     const orderStatusBadgeHtml = formatPosStatusBadgeHtml(orderStatus);
-    const orderDeliveryType = document.getElementById('orderDeliveryType')?.value || 'store';
+    const orderDeliveryType = document.getElementById('orderDeliveryType')?.value || '';
     const orderDeliveryBadgeHtml = formatPosDeliveryBadgeHtml(orderDeliveryType);
     const orderTaxMode = document.getElementById('orderTaxMode')?.value || 'ht';
     const orderTaxBadgeHtml = formatPosTaxBadgeHtml(orderTaxMode);
@@ -2284,8 +2499,8 @@ function renderMobileConfirmSummary() {
     const total = pricing.total;
 
     const partialHtml = isPartial
-        ? `<div class="mt-1 small" style="color:#92400e;">
-               Paiement partiel — Payé : <strong>${formatCurrency(partialPaidNow)}</strong> • Reste : <strong class="text-danger">${formatCurrency(Math.max(0, total - partialPaidNow))}</strong>
+        ? `<div class="mt-1 small" style="color:#1e40af;">
+               Avance — Payé : <strong class="text-success">${formatCurrency(partialPaidNow)}</strong> • Reste : <strong class="text-danger">${formatCurrency(Math.max(0, total - partialPaidNow))}</strong>
                ${partialDueDate ? ` • Échéance : <strong>${escapeHtml(partialDueDate.split('-').reverse().join('/'))}</strong>` : ''}
            </div>`
         : '';
@@ -2317,7 +2532,7 @@ function renderMobileConfirmSummary() {
         </div>`;
     }).join('');
 
-    const changeHtml = (method === 'cash' && !isNaN(received) && received > 0)
+    const changeHtml = (method === 'cash' && !isPartial && paymentStatusVal === 'paid' && !isNaN(received) && received > 0)
         ? `<div class="d-flex justify-content-between mt-1">
                <span class="text-muted">Reçu : <strong>${formatCurrency(received)}</strong></span>
                <span class="${received >= total ? 'text-success' : 'text-danger'} fw-bold">
@@ -2340,7 +2555,10 @@ function renderMobileConfirmSummary() {
                 <span class="text-muted small fw-semibold"><i class="fas fa-credit-card me-1"></i>Paiement</span>
                 <button type="button" onclick="goToMobileStep(4)" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px;">Modifier</button>
             </div>
-            <div class="fw-bold text-dark">${methodLabels[method] || method}</div>
+            <div class="fw-bold text-dark d-flex align-items-center gap-2 flex-wrap">
+                <span>${escapeHtml(methodLabels[method] || (method || 'Non sélectionné'))}</span>
+                ${paymentStatusBadgeHtml}
+            </div>
             <div class="small mt-1 d-flex align-items-center gap-1.5 flex-wrap" style="color:#334155;"><span>Statut :</span> ${orderStatusBadgeHtml} <span class="ms-1">Livraison :</span> ${orderDeliveryBadgeHtml} <span class="ms-1">Régime :</span> ${orderTaxBadgeHtml}</div>
             ${partialHtml}
             ${changeHtml}
@@ -3297,6 +3515,9 @@ function updateTotals() {
 
     updateCashChange();
     updatePartialPaymentSummary();
+    if (typeof updatePosRequiredSelectionIndicators === 'function') {
+        updatePosRequiredSelectionIndicators();
+    }
     updateMobileBottomBar();
 }
 
@@ -3310,8 +3531,27 @@ window.POS_ORDER_STATUS_META = {
 };
 
 window.formatPosStatusBadgeHtml = function(statusVal) {
-    const meta = window.POS_ORDER_STATUS_META[statusVal] || window.POS_ORDER_STATUS_META.delivered;
+    const key = String(statusVal || '').trim().toLowerCase();
+    const meta = key ? window.POS_ORDER_STATUS_META[key] : null;
+    if (!meta) {
+        return '<span class="badge d-inline-flex align-items-center gap-1" style="background:#fef3c7;color:#b45309;border:1px solid #fde68a;padding:2px 9px;font-size:11px;font-weight:700;"><i class="fas fa-exclamation-circle"></i> Non sélectionné</span>';
+    }
     return `<span class="brand-badge ${meta.badgeClass}" style="padding: 2px 9px; font-size: 11px;"><span class="status-dot dot-${meta.dot}"></span> ${escapeHtml(meta.label)}</span>`;
+};
+
+window.POS_PAYMENT_STATUS_META = {
+    paid:    { label: 'Payé',       icon: 'fa-check-circle',       badgeClass: 'pay-badge-paid',    textClass: 'text-success', hint: 'Encaissé intégralement', hintColor: '#059669' },
+    partial: { label: 'Avance',     icon: 'fa-circle-half-stroke', badgeClass: 'pay-badge-partial', textClass: 'text-primary', hint: 'Avance + reste à payer', hintColor: '#1d4ed8' },
+    pending: { label: 'En attente', icon: 'fa-clock',              badgeClass: 'pay-badge-pending', textClass: 'text-warning', hint: 'En attente de règlement', hintColor: '#d97706' }
+};
+
+window.formatPosPaymentStatusBadgeHtml = function(payStatusVal) {
+    const key = String(payStatusVal || '').trim().toLowerCase();
+    const meta = key ? window.POS_PAYMENT_STATUS_META[key] : null;
+    if (!meta) {
+        return '<span class="badge d-inline-flex align-items-center gap-1" style="background:#fef3c7;color:#b45309;border:1px solid #fde68a;padding:2px 9px;font-size:11px;font-weight:700;"><i class="fas fa-exclamation-circle"></i> Non sélectionné</span>';
+    }
+    return `<span class="brand-badge ${meta.badgeClass}" style="padding: 2px 9px; font-size: 11px;"><i class="fas ${meta.icon} me-1"></i>${escapeHtml(meta.label)}</span>`;
 };
 
 window.formatPosTaxBadgeHtml = function(taxMode) {
@@ -3328,21 +3568,187 @@ window.POS_DELIVERY_TYPE_META = {
 };
 
 window.formatPosDeliveryBadgeHtml = function(deliveryType) {
-    const key = String(deliveryType || 'store').toLowerCase();
-    const meta = window.POS_DELIVERY_TYPE_META[key] || window.POS_DELIVERY_TYPE_META.store;
+    const key = String(deliveryType || '').trim().toLowerCase();
+    const meta = key ? window.POS_DELIVERY_TYPE_META[key] : null;
+    if (!meta) {
+        return '<span class="badge d-inline-flex align-items-center gap-1" style="background:#fef3c7;color:#b45309;border:1px solid #fde68a;padding:2px 9px;font-size:11px;font-weight:700;"><i class="fas fa-exclamation-circle"></i> Non sélectionné</span>';
+    }
     return `<span class="badge d-inline-flex align-items-center gap-1" style="background:${meta.bg};color:${meta.color};border:1px solid ${meta.border};padding:2px 9px;font-size:11px;font-weight:700;"><i class="fas ${meta.icon}"></i> ${escapeHtml(meta.label)}</span>`;
 };
 
+window.updatePosRequiredSelectionIndicators = function() {
+    const payVal = (document.getElementById('paymentMethod')?.value || '').trim();
+    const payStatusVal = (document.getElementById('paymentStatus')?.value || '').trim();
+    const orderStatusVal = (document.getElementById('orderStatus')?.value || '').trim();
+    const delivVal = (document.getElementById('orderDeliveryType')?.value || '').trim();
+
+    const payBadge = document.getElementById('posPaymentRequiredBadge');
+    const payGroup = document.getElementById('posPaymentMethodGroup');
+    if (payBadge) {
+        payBadge.classList.toggle('is-selected', payVal !== '');
+        if (payVal !== '') {
+            payBadge.classList.remove('is-missing');
+            payBadge.textContent = 'À sélectionner';
+        }
+    }
+    if (payGroup && payVal !== '') {
+        payGroup.classList.remove('pos-selection-missing');
+    }
+
+    const payStatusRow = document.getElementById('posPaymentStatusRow');
+    const payStatusPill = document.getElementById('posPaymentStatusPill');
+    if (payStatusVal !== '') {
+        payStatusRow?.classList.remove('pos-selection-missing');
+        payStatusPill?.classList.remove('pos-pill-missing');
+    }
+
+    const orderStatusRow = document.getElementById('posOrderStatusRow');
+    const orderStatusPill = document.getElementById('posStatusPill');
+    if (orderStatusVal !== '') {
+        orderStatusRow?.classList.remove('pos-selection-missing');
+        orderStatusPill?.classList.remove('pos-pill-missing');
+    }
+
+    const delivBadge = document.getElementById('posDeliveryRequiredBadge');
+    const delivGroup = document.getElementById('posDeliveryTypeGroup');
+    if (delivBadge) {
+        delivBadge.classList.toggle('is-selected', delivVal !== '');
+        if (delivVal !== '') {
+            delivBadge.classList.remove('is-missing');
+            delivBadge.textContent = 'À sélectionner';
+        }
+    }
+    if (delivGroup && delivVal !== '') {
+        delivGroup.classList.remove('pos-selection-missing');
+    }
+
+    const hintEl = document.getElementById('posCheckoutSelectionHint');
+    if (hintEl) {
+        const hasCart = (window.posState?.cart?.length || 0) > 0;
+        const missing = [];
+        if (!payVal) missing.push('Mode de paiement');
+        if (!payStatusVal) missing.push('Statut de paiement');
+        if (!orderStatusVal) missing.push('Statut commande');
+        if (!delivVal) missing.push('Type de livraison');
+        if (hasCart && missing.length > 0) {
+            hintEl.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>À sélectionner : ${missing.join(' • ')}`;
+            hintEl.style.display = 'block';
+        } else {
+            hintEl.innerHTML = '';
+            hintEl.style.display = 'none';
+        }
+    }
+};
+
+window.validatePosPaymentAndDelivery = function(opts = {}) {
+    const payVal = (document.getElementById('paymentMethod')?.value || '').trim();
+    const payStatusVal = (document.getElementById('paymentStatus')?.value || '').trim();
+    const orderStatusVal = (document.getElementById('orderStatus')?.value || '').trim();
+    const delivVal = (document.getElementById('orderDeliveryType')?.value || '').trim();
+
+    if (payVal !== '' && payStatusVal !== '' && orderStatusVal !== '' && delivVal !== '') {
+        return true;
+    }
+
+    const payBadge = document.getElementById('posPaymentRequiredBadge');
+    const payGroup = document.getElementById('posPaymentMethodGroup');
+    const payStatusRow = document.getElementById('posPaymentStatusRow');
+    const payStatusPill = document.getElementById('posPaymentStatusPill');
+    const payStatusHint = document.getElementById('paymentStatusHint');
+    const orderStatusRow = document.getElementById('posOrderStatusRow');
+    const orderStatusPill = document.getElementById('posStatusPill');
+    const orderStatusHint = document.getElementById('orderStatusStockHint');
+    const delivBadge = document.getElementById('posDeliveryRequiredBadge');
+    const delivGroup = document.getElementById('posDeliveryTypeGroup');
+
+    const missingLabels = [];
+
+    if (!payVal) {
+        missingLabels.push('Mode de paiement');
+        if (payBadge) {
+            payBadge.classList.remove('is-selected');
+            payBadge.classList.add('is-missing');
+            payBadge.textContent = 'Obligatoire';
+        }
+        payGroup?.classList.add('pos-selection-missing');
+    }
+    if (!payStatusVal) {
+        missingLabels.push('Statut de paiement');
+        payStatusRow?.classList.add('pos-selection-missing');
+        payStatusPill?.classList.add('pos-pill-missing');
+        if (payStatusHint) {
+            payStatusHint.textContent = 'Obligatoire';
+            payStatusHint.style.color = '#b91c1c';
+        }
+    }
+    if (!orderStatusVal) {
+        missingLabels.push('Statut commande');
+        orderStatusRow?.classList.add('pos-selection-missing');
+        orderStatusPill?.classList.add('pos-pill-missing');
+        if (orderStatusHint) {
+            orderStatusHint.textContent = 'Obligatoire';
+            orderStatusHint.style.color = '#b91c1c';
+        }
+    }
+    if (!delivVal) {
+        missingLabels.push('Type de livraison');
+        if (delivBadge) {
+            delivBadge.classList.remove('is-selected');
+            delivBadge.classList.add('is-missing');
+            delivBadge.textContent = 'Obligatoire';
+        }
+        delivGroup?.classList.add('pos-selection-missing');
+    }
+
+    if (window.innerWidth < 1024 && window.posState?.mobileStep !== 4) {
+        window.goToMobileStep(4);
+    }
+
+    const firstMissingEl = !payVal
+        ? payGroup
+        : (!payStatusVal ? payStatusRow : (!orderStatusVal ? orderStatusRow : delivGroup));
+    firstMissingEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    let title = 'Sélections requises';
+    let text = `Veuillez sélectionner avant de confirmer : ${missingLabels.join(', ')}.`;
+    if (missingLabels.length === 1) {
+        if (!payVal) {
+            title = 'Mode de paiement requis';
+            text = 'Veuillez sélectionner un mode de paiement avant de confirmer la commande.';
+        } else if (!payStatusVal) {
+            title = 'Statut de paiement requis';
+            text = 'Veuillez sélectionner un statut de paiement avant de confirmer la commande.';
+        } else if (!orderStatusVal) {
+            title = 'Statut de commande requis';
+            text = 'Veuillez sélectionner un statut de commande avant de confirmer la commande.';
+        } else {
+            title = 'Type de livraison requis';
+            text = 'Veuillez sélectionner un type de livraison avant de confirmer la commande.';
+        }
+    }
+
+    Swal.fire({
+        icon: 'warning',
+        title,
+        text
+    });
+
+    return false;
+};
+
 window.setPosDeliveryType = function(deliveryType) {
-    const raw = String(deliveryType || 'store').toLowerCase();
-    const nextType = window.POS_DELIVERY_TYPE_META[raw] ? raw : 'store';
+    const raw = String(deliveryType || '').trim().toLowerCase();
+    const nextType = (raw && window.POS_DELIVERY_TYPE_META[raw]) ? raw : '';
     const inputEl = document.getElementById('orderDeliveryType');
     if (inputEl) {
         inputEl.value = nextType;
     }
     document.querySelectorAll('#posDeliveryTypeGroup .pos-delivery-toggle-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.deliveryType === nextType);
+        btn.classList.toggle('active', nextType !== '' && btn.dataset.deliveryType === nextType);
     });
+    if (typeof updatePosRequiredSelectionIndicators === 'function') {
+        updatePosRequiredSelectionIndicators();
+    }
     if (window.posState?.mobileStep === 5 && typeof renderMobileConfirmSummary === 'function') {
         renderMobileConfirmSummary();
     }
@@ -3363,53 +3769,77 @@ window.setPosTaxMode = function(mode) {
 };
 
 window.updateOrderStatusHint = function() {
-    const raw = document.getElementById('orderStatus')?.value || 'delivered';
-    const status = window.POS_ORDER_STATUS_META[raw] ? raw : 'delivered';
-    const meta = window.POS_ORDER_STATUS_META[status];
+    const raw = String(document.getElementById('orderStatus')?.value || '').trim().toLowerCase();
+    const status = (raw && window.POS_ORDER_STATUS_META[raw]) ? raw : '';
+    const meta = status ? window.POS_ORDER_STATUS_META[status] : null;
 
     const pillEl = document.getElementById('posStatusPill');
     const dotEl = document.getElementById('posStatusDot');
     const labelEl = document.getElementById('posStatusLabel');
-    if (pillEl) {
-        pillEl.className = `brand-badge brand-badge-btn ${meta.badgeClass} dropdown-toggle`;
-    }
-    if (dotEl) {
-        dotEl.className = `status-dot dot-${meta.dot}`;
-    }
-    if (labelEl) {
-        labelEl.textContent = meta.label;
+    const hintEl = document.getElementById('orderStatusStockHint');
+
+    if (!meta) {
+        if (pillEl) {
+            pillEl.className = 'brand-badge brand-badge-btn pos-pill-unselected dropdown-toggle';
+        }
+        if (dotEl) {
+            dotEl.className = 'status-dot dot-amber';
+        }
+        if (labelEl) {
+            labelEl.textContent = 'À sélectionner';
+        }
+        if (hintEl) {
+            hintEl.textContent = 'À sélectionner';
+            hintEl.style.color = '#b45309';
+        }
+    } else {
+        if (pillEl) {
+            pillEl.className = `brand-badge brand-badge-btn ${meta.badgeClass} dropdown-toggle`;
+        }
+        if (dotEl) {
+            dotEl.className = `status-dot dot-${meta.dot}`;
+        }
+        if (labelEl) {
+            labelEl.textContent = meta.label;
+        }
+        if (hintEl) {
+            if (status === 'delivered') {
+                hintEl.textContent = 'Stock déduit';
+                hintEl.style.color = '#16a34a';
+            } else {
+                hintEl.textContent = 'Stock déduit à la livraison';
+                hintEl.style.color = '#d97706';
+            }
+        }
     }
 
     const menuEl = document.getElementById('posStatusMenu');
     if (menuEl) {
         menuEl.querySelectorAll('.dropdown-item').forEach(btn => {
-            const isSelected = btn.dataset.status === status;
+            const isSelected = status !== '' && btn.dataset.status === status;
             btn.classList.toggle('active', isSelected);
             const oldCheck = btn.querySelector('.fa-check');
             if (oldCheck) oldCheck.remove();
-            if (isSelected) {
+            if (isSelected && meta) {
                 btn.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${meta.textClass} small"></i>`);
             }
         });
     }
 
-    const hintEl = document.getElementById('orderStatusStockHint');
-    if (hintEl) {
-        if (status === 'delivered') {
-            hintEl.textContent = 'Stock déduit';
-            hintEl.style.color = '#16a34a';
-        } else {
-            hintEl.textContent = 'Stock déduit à la livraison';
-            hintEl.style.color = '#d97706';
-        }
+    if (typeof updatePosRequiredSelectionIndicators === 'function') {
+        updatePosRequiredSelectionIndicators();
     }
     if (typeof updateMobileBottomBar === 'function') {
         updateMobileBottomBar();
     }
+    if (window.posState?.mobileStep === 5 && typeof renderMobileConfirmSummary === 'function') {
+        renderMobileConfirmSummary();
+    }
 };
 
 window.setPosOrderStatus = function(statusVal) {
-    const nextStatus = window.POS_ORDER_STATUS_META[statusVal] ? statusVal : 'delivered';
+    const raw = String(statusVal || '').trim().toLowerCase();
+    const nextStatus = (raw && window.POS_ORDER_STATUS_META[raw]) ? raw : '';
     const statusEl = document.getElementById('orderStatus');
     if (statusEl) {
         statusEl.value = nextStatus;
@@ -3428,19 +3858,145 @@ window.setPosOrderStatus = function(statusVal) {
     document.getElementById('posStatusMenu')?.classList.remove('show');
 };
 
-window.togglePartialPaymentBox = function() {
-    const method = document.getElementById('paymentMethod')?.value || 'cash';
+window.setPosPaymentStatus = function(payStatusVal, opts = {}) {
+    const method = document.getElementById('paymentMethod')?.value || '';
+    const raw = String(payStatusVal || '').trim().toLowerCase();
+    const status = method === 'credit'
+        ? 'pending'
+        : ((raw && window.POS_PAYMENT_STATUS_META[raw]) ? raw : '');
+    const meta = status ? window.POS_PAYMENT_STATUS_META[status] : null;
+
+    const hiddenEl = document.getElementById('paymentStatus');
+    if (hiddenEl) hiddenEl.value = status;
+
+    const pillEl = document.getElementById('posPaymentStatusPill');
+    const iconEl = document.getElementById('posPaymentStatusIcon');
+    const labelEl = document.getElementById('posPaymentStatusLabel');
+    const hintEl = document.getElementById('paymentStatusHint');
+
+    if (!meta) {
+        if (pillEl) {
+            pillEl.className = 'brand-badge brand-badge-btn pos-pill-unselected dropdown-toggle';
+        }
+        if (iconEl) {
+            iconEl.className = 'fas fa-exclamation-circle';
+        }
+        if (labelEl) {
+            labelEl.textContent = 'À sélectionner';
+        }
+        if (hintEl) {
+            hintEl.textContent = 'À sélectionner';
+            hintEl.style.color = '#b45309';
+        }
+    } else {
+        if (pillEl) {
+            pillEl.className = `brand-badge brand-badge-btn ${meta.badgeClass} dropdown-toggle`;
+        }
+        if (iconEl) {
+            iconEl.className = `fas ${meta.icon}`;
+        }
+        if (labelEl) {
+            labelEl.textContent = meta.label;
+        }
+        if (hintEl) {
+            hintEl.textContent = meta.hint;
+            hintEl.style.color = meta.hintColor;
+        }
+    }
+
+    const menuEl = document.getElementById('posPaymentStatusMenu');
+    if (menuEl) {
+        menuEl.querySelectorAll('.dropdown-item').forEach(btn => {
+            const isSelected = status !== '' && btn.dataset.paymentStatus === status;
+            btn.classList.toggle('active', isSelected);
+            const oldCheck = btn.querySelector('.fa-check');
+            if (oldCheck) oldCheck.remove();
+            if (isSelected && meta) {
+                btn.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${meta.textClass} small"></i>`);
+            }
+        });
+    }
+
+    if (pillEl) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+            const inst = bootstrap.Dropdown.getInstance(pillEl);
+            if (inst) inst.hide();
+        }
+        pillEl.classList.remove('show');
+        pillEl.setAttribute('aria-expanded', 'false');
+    }
+    menuEl?.classList.remove('show');
+
     const toggle = document.getElementById('isPartialPayment');
     const fields = document.getElementById('partialPaymentFields');
     const cashBox = document.getElementById('cashTenderedBox');
-    const isPartial = !!toggle?.checked && method !== 'credit';
+    const paidInput = document.getElementById('partialPaidAmount');
+    const isPartial = status === 'partial' && method !== 'credit';
 
+    if (toggle) toggle.checked = isPartial;
     if (fields) fields.style.display = isPartial ? 'block' : 'none';
     if (cashBox) cashBox.style.display = 'none';
 
+    if (isPartial && paidInput && paidInput.value.trim() === '' && !opts.preserveEmpty) {
+        const total = window.posState?.currentTotal || 0;
+        if (total > 0) {
+            paidInput.value = (Math.round(total * 50) / 100).toFixed(2);
+        }
+    }
+
     updateCashChange();
     updatePartialPaymentSummary();
+    if (typeof updatePosRequiredSelectionIndicators === 'function') {
+        updatePosRequiredSelectionIndicators();
+    }
+    if (typeof updateMobileBottomBar === 'function') {
+        updateMobileBottomBar();
+    }
+    if (window.posState?.mobileStep === 5 && typeof renderMobileConfirmSummary === 'function') {
+        renderMobileConfirmSummary();
+    }
 };
+
+window.togglePartialPaymentBox = function() {
+    const toggle = document.getElementById('isPartialPayment');
+    window.setPosPaymentStatus(toggle?.checked ? 'partial' : '', { preserveEmpty: true });
+};
+
+window.setPosPartialPercent = function(pct) {
+    const input = document.getElementById('partialPaidAmount');
+    if (!input) return;
+    const total = window.posState?.currentTotal || 0;
+    const amt = Math.round(total * (Number(pct) || 0)) / 100;
+    input.value = amt.toFixed(2);
+    updatePartialPaymentSummary();
+    input.focus();
+};
+
+window.setPosPartialDueDays = function(days) {
+    const input = document.getElementById('paymentDueDate');
+    if (!input) return;
+    const numDays = parseInt(days, 10) || 0;
+    if (numDays <= 0) {
+        input.value = '';
+    } else {
+        const target = new Date();
+        target.setDate(target.getDate() + numDays);
+        const yyyy = target.getFullYear();
+        const mm = String(target.getMonth() + 1).padStart(2, '0');
+        const dd = String(target.getDate()).padStart(2, '0');
+        input.value = `${yyyy}-${mm}-${dd}`;
+    }
+    updatePartialPaymentSummary();
+};
+
+function formatPosOffsetDate(days) {
+    const target = new Date();
+    target.setDate(target.getDate() + (parseInt(days, 10) || 0));
+    const yyyy = target.getFullYear();
+    const mm = String(target.getMonth() + 1).padStart(2, '0');
+    const dd = String(target.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
 
 function hasValidPartialClientInfo() {
     const name = (document.getElementById('customerName')?.value || '').trim();
@@ -3472,55 +4028,70 @@ function syncAutoSaveCustomerCheckbox() {
     cb.checked = hasValidPartialClientInfo() && (curName !== origName || curPhone !== origPhone);
 }
 
-function validatePartialClientInfo() {
-    if (hasValidPartialClientInfo()) {
-        return true;
-    }
-
-    const nameEl = document.getElementById('customerName');
-    const phoneEl = document.getElementById('customerPhone');
-    const name = (nameEl?.value || '').trim();
-    const lower = name.toLowerCase();
-    const needsName = name === '' || lower === 'client de passage' || lower === 'walk-in customer';
-
-    Swal.fire({
-        icon: 'warning',
-        title: 'Client requis',
-        text: 'Veuillez saisir le nom réel du client et un numéro de téléphone de 10 chiffres pour le paiement partiel.'
-    }).then(() => {
-        if (window.innerWidth < 1024) {
-            window.goToMobileStep(3);
-        }
-        const targetEl = needsName ? nameEl : phoneEl;
-        targetEl?.focus();
-        if (needsName) {
-            targetEl?.select();
-        }
-    });
-
-    return false;
-}
-
 window.updatePartialPaymentSummary = function() {
     const cart = window.posState?.cart || [];
     const total = window.posState?.currentTotal || 0;
-    const method = document.getElementById('paymentMethod')?.value || 'cash';
-    const isPartial = !!document.getElementById('isPartialPayment')?.checked && method !== 'credit';
+    const method = document.getElementById('paymentMethod')?.value || '';
+    const rawPayStatus = document.getElementById('paymentStatus')?.value || '';
+    const isPartial = (!!document.getElementById('isPartialPayment')?.checked || rawPayStatus === 'partial') && method !== 'credit';
     const paidInput = document.getElementById('partialPaidAmount');
+    const dueInput = document.getElementById('paymentDueDate');
     const remEl = document.getElementById('partialRemainingDisplay');
+    const duePreviewEl = document.getElementById('partialDuePreview');
     const clientNoticeEl = document.getElementById('partialClientNotice');
+    const totalsPartialEl = document.getElementById('posTotalsPartialSummary');
+    const totalsPaidEl = document.getElementById('posTotalsPaidNow');
+    const totalsRemEl = document.getElementById('posTotalsRemaining');
     const checkoutLabel = document.getElementById('checkoutBtnLabel');
+    const sym = window.currencyConfig?.symbol || 'DH';
 
-    const paidNow = Math.max(0, parseFloat(paidInput?.value) || 0);
+    const paidRawStr = (paidInput?.value || '').trim();
+    const paidNow = Math.max(0, parseFloat(paidRawStr) || 0);
     const remaining = Math.max(0, +(total - paidNow).toFixed(2));
     if (remEl) remEl.textContent = formatCurrency(remaining);
+
+    document.querySelectorAll('#posPartialPctBtns .pos-partial-pct-btn[data-pct]').forEach(btn => {
+        const pct = parseFloat(btn.dataset.pct || '0') || 0;
+        const amt = Math.round(total * pct) / 100;
+        btn.textContent = total > 0 ? `${pct}% (${amt.toFixed(2)} ${sym})` : `${pct}%`;
+        const isMatch = isPartial && total > 0 && paidRawStr !== '' && Math.abs(paidNow - amt) < 0.01;
+        btn.classList.toggle('active', isMatch);
+    });
+
+    const curDue = (dueInput?.value || '').trim();
+    document.querySelectorAll('#partialPaymentFields .pos-partial-due-btn[data-days]').forEach(btn => {
+        const days = parseInt(btn.dataset.days || '0', 10) || 0;
+        btn.classList.toggle('active', curDue !== '' && curDue === formatPosOffsetDate(days));
+    });
+
+    if (duePreviewEl) {
+        if (isPartial && curDue !== '') {
+            duePreviewEl.textContent = `Échéance prévue : ${curDue.split('-').reverse().join('/')}`;
+            duePreviewEl.style.display = 'block';
+        } else {
+            duePreviewEl.textContent = '';
+            duePreviewEl.style.display = 'none';
+        }
+    }
+
     if (clientNoticeEl) {
         clientNoticeEl.style.display = (isPartial && !hasValidPartialClientInfo()) ? 'block' : 'none';
     }
 
+    if (totalsPartialEl) {
+        totalsPartialEl.style.display = (isPartial && cart.length > 0) ? 'block' : 'none';
+        if (totalsPaidEl) totalsPaidEl.textContent = formatCurrency(paidNow);
+        if (totalsRemEl) totalsRemEl.textContent = formatCurrency(remaining);
+    }
+
+    const effectiveStatus = method === 'credit' ? 'pending' : (isPartial ? 'partial' : rawPayStatus);
     if (checkoutLabel) {
-        if (isPartial && cart.length > 0) {
+        if (cart.length === 0) {
+            checkoutLabel.textContent = `Encaisser ${formatCurrency(0)}`;
+        } else if (effectiveStatus === 'partial') {
             checkoutLabel.textContent = `Encaisser acompte ${formatCurrency(paidNow)}`;
+        } else if (effectiveStatus === 'pending') {
+            checkoutLabel.textContent = `Valider en attente (${formatCurrency(total)})`;
         } else {
             checkoutLabel.textContent = `Encaisser ${formatCurrency(total)}`;
         }
@@ -3656,38 +4227,47 @@ window.renderPosPaymentAttachments = function() {
 };
 
 window.selectPaymentMethod = function(method, btn) {
-    document.getElementById('paymentMethod').value = method;
-    document.querySelectorAll('.payment-pill').forEach(p => p.classList.remove('active'));
-    btn?.classList.add('active');
+    const methodEl = document.getElementById('paymentMethod');
+    const prevMethod = methodEl?.value || '';
+    const normalized = String(method || '').trim().toLowerCase();
+    if (methodEl) methodEl.value = normalized;
+    document.querySelectorAll('.payment-pill').forEach(p => {
+        const isAct = normalized !== '' && (btn ? p === btn : p.dataset.method === normalized);
+        p.classList.toggle('active', isAct);
+    });
 
     const docsBox = document.getElementById('posPaymentDocsBox');
     const docsLabel = document.getElementById('posPaymentDocsBtnLabel');
     if (docsBox) {
-        docsBox.classList.toggle('is-recommended', method === 'cheque' || method === 'virement');
+        docsBox.classList.toggle('is-recommended', normalized === 'cheque' || normalized === 'virement');
     }
     if (docsLabel) {
-        docsLabel.textContent = method === 'cheque'
+        docsLabel.textContent = normalized === 'cheque'
             ? 'Joindre photo du chèque / Document'
-            : (method === 'virement' ? 'Joindre reçu de virement / Document' : 'Joindre image (Chèque / Document)');
+            : (normalized === 'virement' ? 'Joindre reçu de virement / Document' : 'Joindre image (Chèque / Document)');
     }
 
     const partialWrap = document.getElementById('partialPaymentToggleWrap');
-    const partialToggle = document.getElementById('isPartialPayment');
-    const partialFields = document.getElementById('partialPaymentFields');
-    if (method === 'credit') {
-        if (partialToggle) partialToggle.checked = false;
+    if (normalized === 'credit') {
         if (partialWrap) partialWrap.style.display = 'none';
-        if (partialFields) partialFields.style.display = 'none';
+        setPosPaymentStatus('pending', { preserveEmpty: true });
     } else {
         if (partialWrap) partialWrap.style.display = 'block';
+        const curPayStatus = prevMethod === 'credit'
+            ? ''
+            : (document.getElementById('paymentStatus')?.value || '');
+        setPosPaymentStatus(curPayStatus, { preserveEmpty: true });
     }
 
-    const isPartial = !!partialToggle?.checked && method !== 'credit';
     const cashBox = document.getElementById('cashTenderedBox');
     if (cashBox) cashBox.style.display = 'none';
-    updateCashChange();
-    updatePartialPaymentSummary();
-    updateMobileBottomBar();
+
+    if (typeof updatePosRequiredSelectionIndicators === 'function') {
+        updatePosRequiredSelectionIndicators();
+    }
+    if (window.posState?.mobileStep === 5 && typeof renderMobileConfirmSummary === 'function') {
+        renderMobileConfirmSummary();
+    }
 };
 
 window.resetCustomerFields = function() {
@@ -3704,7 +4284,7 @@ window.resetCustomerFields = function() {
     document.getElementById('creditInfo').style.display = 'none';
 
     if (document.getElementById('paymentMethod').value === 'credit') {
-        selectPaymentMethod('cash', document.querySelector('.payment-pill[data-method="cash"]'));
+        selectPaymentMethod('', null);
     }
     updatePartialPaymentSummary();
 };
@@ -3754,24 +4334,30 @@ window.checkout = function() {
         return;
     }
 
-    const paymentMethod = document.getElementById('paymentMethod').value;
+    if (!validatePosPaymentAndDelivery()) {
+        return;
+    }
+
+    const paymentMethod = (document.getElementById('paymentMethod')?.value || '').trim();
+    const deliveryType = (document.getElementById('orderDeliveryType')?.value || '').trim();
+    const orderStatus = (document.getElementById('orderStatus')?.value || '').trim();
     const total = window.posState.currentTotal;
-    const isPartialPayment = !!document.getElementById('isPartialPayment')?.checked && paymentMethod !== 'credit';
+    const rawPayStatus = (document.getElementById('paymentStatus')?.value || '').trim();
+    const isPartialPayment = (!!document.getElementById('isPartialPayment')?.checked || rawPayStatus === 'partial') && paymentMethod !== 'credit';
+    const effectivePaymentStatus = paymentMethod === 'credit'
+        ? 'pending'
+        : (isPartialPayment ? 'partial' : rawPayStatus);
     const partialPaidAmount = Math.max(0, parseFloat(document.getElementById('partialPaidAmount')?.value) || 0);
     const paymentDueDate = (document.getElementById('paymentDueDate')?.value || '').trim();
 
     if (isPartialPayment) {
-        if (!validatePartialClientInfo()) {
-            return;
-        }
-        if (partialPaidAmount < 0 || partialPaidAmount >= total) {
-            Swal.fire({ icon: 'warning', title: 'Acompte invalide', text: 'Le montant payé maintenant doit être inférieur au total.' });
+        if (partialPaidAmount < 0 || (total > 0 && partialPaidAmount >= total) || (total <= 0 && partialPaidAmount > 0)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Acompte invalide',
+                text: 'Pour un paiement total, choisissez plutôt « Payé » — le montant payé maintenant doit être inférieur au total.'
+            });
             document.getElementById('partialPaidAmount')?.focus();
-            return;
-        }
-        if (!paymentDueDate) {
-            Swal.fire({ icon: 'warning', title: 'Échéance requise', text: 'Veuillez indiquer la date limite pour le reste à payer.' });
-            document.getElementById('paymentDueDate')?.focus();
             return;
         }
     }
@@ -3804,12 +4390,13 @@ window.checkout = function() {
         save_customer: saveCustomer,
         store_id: document.getElementById('posStoreSelect')?.value || null,
         payment_method: paymentMethod,
-        amount_received: isPartialPayment ? partialPaidAmount : (document.getElementById('amountReceived')?.value || null),
+        payment_status: effectivePaymentStatus,
+        amount_received: isPartialPayment ? partialPaidAmount : (effectivePaymentStatus === 'pending' ? 0 : (document.getElementById('amountReceived')?.value || null)),
         is_partial_payment: isPartialPayment,
         paid_amount: isPartialPayment ? partialPaidAmount : null,
-        payment_due_date: isPartialPayment ? paymentDueDate : null,
-        status: document.getElementById('orderStatus')?.value || 'delivered',
-        delivery_type: document.getElementById('orderDeliveryType')?.value || 'store',
+        payment_due_date: isPartialPayment ? (paymentDueDate || null) : null,
+        status: orderStatus,
+        delivery_type: deliveryType,
         tax_mode: document.getElementById('orderTaxMode')?.value || 'ht',
         notes: document.getElementById('orderNotes')?.value || null,
         discount_amount: parseFloat(document.getElementById('discountAmount')?.value) || 0,
@@ -3900,15 +4487,16 @@ window.checkout = function() {
         if (totEl) totEl.textContent = formatCurrency(window.posState.todayTotal);
 
         const received = parseFloat(document.getElementById('amountReceived')?.value);
-        const changeHtml = (!isPartialPayment && paymentMethod === 'cash' && !isNaN(received) && received > data.order.total)
+        const changeHtml = (effectivePaymentStatus === 'paid' && !isPartialPayment && paymentMethod === 'cash' && !isNaN(received) && received > data.order.total)
             ? `<p class="mb-1"><strong>Monnaie à rendre :</strong> <span class="text-success fw-bold">${formatCurrency(received - data.order.total)}</span></p>`
             : '';
-        const partialOrderHtml = (data.order.remaining_amount && data.order.remaining_amount > 0)
+        const partialOrderHtml = (data.order.payment_status === 'partial' || (data.order.remaining_amount && data.order.remaining_amount > 0))
             ? `<p class="mb-1"><strong>Montant payé :</strong> <span class="text-success fw-bold">${formatCurrency(data.order.paid_amount || 0)}</span></p>
-               <p class="mb-1"><strong>Reste à payer :</strong> <span class="text-danger fw-bold">${formatCurrency(data.order.remaining_amount)}</span></p>
+               <p class="mb-1"><strong>Reste à payer :</strong> <span class="text-danger fw-bold">${formatCurrency(data.order.remaining_amount || 0)}</span></p>
                ${data.order.payment_due_date ? `<p class="mb-1"><strong>Échéance :</strong> ${escapeHtml(data.order.payment_due_date)}</p>` : ''}`
             : '';
         const statusLabelHtml = formatPosStatusBadgeHtml(data.order.status || 'delivered');
+        const paymentStatusBadgeHtml = formatPosPaymentStatusBadgeHtml(data.order.payment_status || effectivePaymentStatus);
         const deliveryTypeBadgeHtml = formatPosDeliveryBadgeHtml(data.order.delivery_type || 'store');
         const taxModeBadgeHtml = formatPosTaxBadgeHtml(data.order.tax_mode || 'ht');
         const savedClientHtml = (saveCustomer && data.customer)
@@ -3926,6 +4514,7 @@ window.checkout = function() {
                 <div class="text-start p-2 rounded bg-light border mb-2">
                     <p class="mb-1"><strong>Commande :</strong> #${escapeHtml(data.order.order_number)}</p>
                     <p class="mb-1"><strong>Statut :</strong> ${statusLabelHtml}</p>
+                    <p class="mb-1"><strong>Paiement :</strong> ${paymentStatusBadgeHtml}</p>
                     <p class="mb-1"><strong>Livraison :</strong> ${deliveryTypeBadgeHtml}</p>
                     <p class="mb-1"><strong>Régime :</strong> ${taxModeBadgeHtml}</p>
                     <p class="mb-1"><strong>Total commande :</strong> <strong class="text-danger">${formatCurrency(data.order.total)}</strong></p>
@@ -3952,11 +4541,12 @@ window.checkout = function() {
             document.getElementById('amountReceived').value = '';
             if (document.getElementById('isPartialPayment')) document.getElementById('isPartialPayment').checked = false;
             if (document.getElementById('partialPaidAmount')) document.getElementById('partialPaidAmount').value = '';
-            if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '{{ now()->addDays(15)->toDateString() }}';
-            togglePartialPaymentBox();
+            if (document.getElementById('paymentDueDate')) document.getElementById('paymentDueDate').value = '';
+            setPosPaymentStatus('', { preserveEmpty: true });
+            selectPaymentMethod('', null);
             clearPosPaymentAttachments();
-            setPosOrderStatus('delivered');
-            setPosDeliveryType('store');
+            setPosOrderStatus('');
+            setPosDeliveryType('');
             setPosTaxMode('ht');
             document.getElementById('orderNotes').value = '';
             resetCustomerFields();
@@ -4091,7 +4681,7 @@ function initPosTerminal() {
         } else {
             creditInfo.style.display = 'none';
             if (document.getElementById('paymentMethod').value === 'credit') {
-                selectPaymentMethod('cash', document.querySelector('.payment-pill[data-method="cash"]'));
+                selectPaymentMethod('', null);
             }
         }
         updatePartialPaymentSummary();
@@ -4133,37 +4723,44 @@ function initPosTerminal() {
         });
     });
 
-    const posStatusPillEl = document.getElementById('posStatusPill');
-    if (posStatusPillEl && typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
-        bootstrap.Dropdown.getOrCreateInstance(posStatusPillEl, {
-            autoClose: true,
-            popperConfig: function(defaultBsPopperConfig) {
-                return {
-                    ...defaultBsPopperConfig,
-                    strategy: 'fixed',
-                    modifiers: [
-                        ...(defaultBsPopperConfig?.modifiers || []),
-                        {
-                            name: 'preventOverflow',
-                            options: {
-                                boundary: 'viewport',
-                                padding: 8
+    const dueDateEl = document.getElementById('paymentDueDate');
+    dueDateEl?.addEventListener('change', updatePartialPaymentSummary);
+    dueDateEl?.addEventListener('input', updatePartialPaymentSummary);
+
+    if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+        [document.getElementById('posStatusPill'), document.getElementById('posPaymentStatusPill')].forEach(pillEl => {
+            if (!pillEl) return;
+            bootstrap.Dropdown.getOrCreateInstance(pillEl, {
+                autoClose: true,
+                popperConfig: function(defaultBsPopperConfig) {
+                    return {
+                        ...defaultBsPopperConfig,
+                        strategy: 'fixed',
+                        modifiers: [
+                            ...(defaultBsPopperConfig?.modifiers || []),
+                            {
+                                name: 'preventOverflow',
+                                options: {
+                                    boundary: 'viewport',
+                                    padding: 8
+                                }
+                            },
+                            {
+                                name: 'flip',
+                                options: {
+                                    fallbackPlacements: ['top', 'bottom']
+                                }
                             }
-                        },
-                        {
-                            name: 'flip',
-                            options: {
-                                fallbackPlacements: ['top', 'bottom']
-                            }
-                        }
-                    ]
-                };
-            }
+                        ]
+                    };
+                }
+            });
         });
     }
 
     refreshHeldBadge();
     renderCart();
+    updatePosRequiredSelectionIndicators();
     loadProducts();
 }
 

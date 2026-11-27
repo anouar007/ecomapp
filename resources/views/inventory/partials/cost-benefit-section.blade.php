@@ -9,9 +9,10 @@
 
 <div class="mb-3 p-3 rounded-4 border bg-white inv-cost-section-card" id="{{ $prefix }}CostSection" style="background: #ffffff !important; border-color: #d1fae5 !important;">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-        <label class="form-label text-dark small fw-bold mb-0 d-flex align-items-center gap-1.5" style="font-size: 0.78rem; font-weight: 700 !important;">
+        <label class="form-label text-dark small fw-bold mb-0 d-flex align-items-center gap-1.5 flex-wrap" style="font-size: 0.78rem; font-weight: 700 !important;">
             <i class="fas fa-coins text-success"></i>
             <span>Coût de cette nouvelle quantité</span>
+            <span id="{{ $prefix }}CostVariantBadge" class="badge bg-primary-subtle text-primary border border-primary-subtle d-none" style="font-size: 0.65rem; font-weight: 600 !important;"></span>
         </label>
         <span class="inv-cost-opt-pill">Optionnel · PMP &amp; Bénéfice auto</span>
     </div>
@@ -334,6 +335,18 @@
                 : null;
             const addedQty = Math.max(0, parseInt(ctx.addedQty || 0, 10) || 0);
             const mode = this.getMode(prefix);
+
+            const variantBadgeEl = document.getElementById(prefix + 'CostVariantBadge');
+            if (variantBadgeEl) {
+                const vName = String(ctx.variantName || '').trim();
+                if (vName !== '') {
+                    variantBadgeEl.textContent = `Variante : ${vName}`;
+                    variantBadgeEl.classList.remove('d-none');
+                } else {
+                    variantBadgeEl.textContent = '';
+                    variantBadgeEl.classList.add('d-none');
+                }
+            }
 
             const sellEl = document.getElementById(prefix + 'PreviewSellPrice');
             const oldPmpEl = document.getElementById(prefix + 'PreviewOldPmp');

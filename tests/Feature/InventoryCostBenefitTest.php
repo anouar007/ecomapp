@@ -423,4 +423,149 @@ class InventoryCostBenefitTest extends TestCase
             ->assertSee('Coût :')
             ->assertSee('PMP :');
     }
+
+    public function test_adjust_modal_and_page_render_variants_as_cards_and_save_per_variant_costs(): void
+    {
+        $admin = $this->makeAdmin();
+        $staff = $this->makeStaff();
+
+        $product = $this->makeProduct([
+            'price' => 5000.00,
+            'cost_price' => null,
+            'stock' => 5,
+            'stock_quantity' => 5,
+            'has_variants' => true,
+        ]);
+
+        $v1 = ProductVariant::create([
+            'product_id' => $product->id,
+            'name' => 'Boîtier Nu',
+            'sku' => 'VAR-BN-' . uniqid(),
+            'price' => 5000.00,
+            'cost_price' => null,
+            'stock' => 3,
+            'min_stock' => 1,
+            'status' => 'active',
+        ]);
+
+        $v2 = ProductVariant::create([
+            'product_id' => $product->id,
+            'name' => 'Kit 24-70mm',
+            'sku' => 'VAR-KIT-' . uniqid(),
+            'price' => 8000.00,
+            'cost_price' => null,
+            'stock' => 2,
+            'min_stock' => 1,
+            'status' => 'active',
+        ]);
+
+        // 1. Admin sees small cards + hidden select + per-variant cost UI on both inventory index modal and adjust page
+        $this->actingAs($admin)->get(route('inventory.index', ['search' => $product->sku]))
+            ->assertOk()
+            ->assertSee('inv-variant-card-grid', false)
+            ->assertSee('id="modalAdjustVariantCards"', false)
+            ->assertSee('id="modalVariantSelect" class="form-select form-select-sm d-none"', false)
+            ->assertSee('variant_costs[', false)
+            ->assertSee('saveSingleVariantCost', false);
+
+        $this->actingAs($admin)->get(route('inventory.adjust', $product))
+            ->assertOk()
+            ->assertSee('inv-variant-card-grid', false)
+            ->assertSee('inv-variant-card', false)
+            ->assertSee('id="adjustPageVariantCards"', false)
+            ->assertSee('id="variantSelectAdjust" class="form-select d-none"', false)
+            ->assertSee('name="variant_costs[' . $v1->id . ']"', false)
+            ->assertSee('name="variant_costs[' . $v2->id . ']"', false)
+            ->assertSee('saveAdjustPageVariantCost', false);
+
+        // 2. Non-admin staff sees variant small cards on both views, WITHOUT cost inputs or save hooks, and receives 403 on cost endpoint
+        $this->actingAs($staff)->get(route('inventory.index', ['search' => $product->sku]))
+            ->assertOk()
+            ->assertSee('inv-variant-card-grid', false)
+            ->assertSee('id="modalAdjustVariantCards"', false)
+            ->assertDontSee('variant_costs[', false)
+            ->assertDontSee('saveSingleVariantCost', false);
+
+        $this->actingAs($staff)->get(route('inventory.adjust', $product))
+            ->assertOk()
+            ->assertSee('inv-variant-card-grid', false)
+            ->assertSee('inv-variant-card', false)
+            ->assertSee('id="adjustPageVariantCards"', false)
+            ->assertDontSee('variant_costs[', false)
+            ->assertDontSee('saveAdjustPageVariantCost', false);
+
+        $this->actingAs($staff)->postJson(
+            route('inventory.update-variant-costs', $product),
+            ['variant_costs' => [$v1->id => 3500]]
+        )->assertForbidden();
+
+        // 3. Admin saves per-variant costs without changing stock & recalculates parent weighted-average cost
+        // Simulate store-level stock that diverged from the variant sum: saving costs must NOT reset it
+        \Illuminate\Support\Facades\DB::table('products')->where('id', $product->id)->update(['stock' => 30, 'stock_quantity' => 30]);
+        $costRes = $this->actingAs($admin)->postJson(
+            route('inventory.update-variant-costs', $product),
+            [
+                'variant_costs' => [
+                    $v1->id => 3500.00,
+                    $v2->id => 5500.00,
+                ],
+            ]
+        );
+
+        $costRes->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('cost_price', 4300)
+            ->assertJsonFragment(['id' => $v1->id, 'cost_price' => 3500])
+            ->assertJsonFragment(['id' => $v2->id, 'cost_price' => 5500]);
+
+        $this->assertEquals(3500.00, (float) $v1->fresh()->cost_price);
+        $this->assertEquals(5500.00, (float) $v2->fresh()->cost_price);
+        $this->assertEquals(4300.00, (float) $product->fresh()->cost_price);
+        $this->assertSame(30, (int) $product->fresh()->stock, 'Saving variant costs must not alter product stock');
+        $this->assertSame(3, (int) $v1->fresh()->stock);
+        $this->assertSame(2, (int) $v2->fresh()->stock);
+
+        // 4. Stock-in on a newly added uncosted variant with variant_costs[v3] sets variant cost, movement cost & parent cost
+        $v3 = ProductVariant::create([
+            'product_id' => $product->id,
+            'name' => 'Pack Studio',
+            'sku' => 'VAR-PK-' . uniqid(),
+            'price' => 3000.00,
+            'cost_price' => null,
+            'stock' => 0,
+            'min_stock' => 1,
+            'status' => 'active',
+        ]);
+
+        $adjRes = $this->actingAs($admin)->postJson(
+            route('inventory.process-adjustment', $product),
+            [
+                'adjustment_type' => 'in',
+                'quantity' => 2,
+                'variant_id' => $v3->id,
+                'variant_costs' => [
+                    $v3->id => 2000.00,
+                ],
+            ]
+        );
+
+        $adjRes->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('variant_id', $v3->id)
+            ->assertJsonPath('variant_stock', 2)
+            ->assertJsonPath('variant_cost_price', 2000)
+            ->assertJsonPath('batch_unit_cost', 2000);
+
+        $this->assertEquals(2000.00, (float) $v3->fresh()->cost_price);
+
+        $mov = InventoryMovement::where('product_id', $product->id)
+            ->where('variant_id', $v3->id)
+            ->latest('id')
+            ->firstOrFail();
+        $this->assertEquals(2000.00, (float) $mov->unit_cost);
+        $this->assertEquals(4000.00, (float) $mov->total_cost);
+
+        // Weighted parent cost across (3*3500 + 2*5500 + 2*2000) / 7 = 25500 / 7 = 3642.86
+        $this->assertEquals(3642.86, (float) $product->fresh()->cost_price);
+    }
 }

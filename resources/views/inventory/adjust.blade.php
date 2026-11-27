@@ -86,6 +86,170 @@
     background: #fee2e2;
     color: #991b1b;
 }
+.inv-variant-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+@media (max-width: 575.98px) {
+    .inv-variant-card-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+.inv-variant-card {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px !important;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    user-select: none;
+}
+.inv-variant-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+}
+.inv-variant-card.is-all-variants {
+    grid-column: 1 / -1;
+}
+.inv-variant-card.active {
+    background: #eff6ff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+}
+.inv-variant-card.is-empty {
+    background: #fafafa;
+}
+.inv-var-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+.inv-var-name {
+    font-size: 0.8rem;
+    font-weight: 700 !important;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.inv-var-check {
+    display: none;
+    font-size: 0.74rem;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+.inv-variant-card.active .inv-var-check {
+    display: inline-block;
+}
+.inv-var-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: #475569;
+    font-variant-numeric: tabular-nums;
+}
+.inv-var-qty {
+    font-weight: 700 !important;
+    padding: 1px 7px;
+    border-radius: 999px !important;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 0.68rem;
+}
+.inv-variant-card.is-has-stock .inv-var-qty {
+    background: #dcfce7;
+    color: #166534;
+}
+.inv-variant-card.is-empty .inv-var-qty {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.inv-var-cost-box {
+    margin-top: 3px;
+    padding-top: 5px;
+    border-top: 1px dashed #cbd5e1;
+    cursor: default;
+}
+.inv-var-cost-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.inv-var-cost-input-group {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px !important;
+    padding: 2px 6px;
+    min-height: 28px;
+}
+.inv-var-cost-input-group:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+.inv-var-cost-input {
+    width: 100%;
+    min-width: 0;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+    color: #0f172a;
+    padding: 0;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+}
+.inv-var-cost-input::-webkit-inner-spin-button,
+.inv-var-cost-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.inv-var-cost-save-btn {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px !important;
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700 !important;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.inv-var-cost-save-btn:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+}
+.inv-var-cost-save-btn.is-dirty {
+    background: #059669;
+    border-color: #059669;
+    color: #ffffff;
+}
+.inv-var-benefit-line {
+    margin-top: 3px;
+    font-size: 0.66rem;
+    font-weight: 600 !important;
+    line-height: 1.25;
+}
 </style>
 @endpush
 
@@ -247,13 +411,25 @@
                     @endif
 
                     @if($product->variants && $product->variants->isNotEmpty())
-                    <!-- Sélecteur de déclinaison / variante -->
+                    <!-- Sélecteur de déclinaison / variante (Petites cartes 1 clic + Coût par variante) -->
                     <div class="mb-3.5 p-3 rounded-3 bg-light border">
-                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.04em;">
-                            <i class="fas fa-layer-group text-primary me-1"></i>Déclinaison / Variante ciblée
-                        </label>
-                        <select name="variant_id" id="variantSelectAdjust" class="form-select" onchange="onAdjustVariantChange(this)">
-                            <option value="" data-stock="{{ $product->stock ?? 0 }}">Produit complet (Stock total : {{ $product->stock ?? 0 }})</option>
+                        <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                            <label class="form-label text-muted small fw-semibold text-uppercase mb-0" style="font-size: 0.72rem; letter-spacing: 0.04em;">
+                                <i class="fas fa-layer-group text-primary me-1"></i>Déclinaison / Variante ciblée (1 clic)
+                            </label>
+                            @if($canManageCost)
+                                <button type="button"
+                                        id="adjustSaveAllVariantCostsBtn"
+                                        class="btn btn-xs btn-outline-primary rounded-pill px-2.5 py-0.5 fw-semibold d-none"
+                                        style="font-size: 0.7rem;"
+                                        onclick="saveAllAdjustPageVariantCosts()">
+                                    <i class="fas fa-save me-1"></i>Enregistrer coûts variantes
+                                </button>
+                            @endif
+                        </div>
+
+                        <select name="variant_id" id="variantSelectAdjust" class="form-select d-none" onchange="onAdjustVariantChange(this)">
+                            <option value="" data-stock="{{ $product->stock ?? 0 }}" data-name="">Produit complet (Stock total : {{ $product->stock ?? 0 }})</option>
                             @foreach($product->variants as $var)
                                 <option value="{{ $var->id }}"
                                         data-stock="{{ $var->stock ?? 0 }}"
@@ -264,8 +440,107 @@
                                 </option>
                             @endforeach
                         </select>
-                        <div class="form-text small" style="font-size: 0.72rem;">
-                            Sélectionnez une variante pour ajuster son stock spécifique, ou le produit complet.
+
+                        @php
+                            $adjProdStock = (int) ($product->stock ?? 0);
+                            $adjCurrSym = setting('currency_symbol', 'DH');
+                        @endphp
+                        <div id="adjustVariantScopeNote" class="text-muted mb-1.5" style="font-size: 0.7rem;">
+                            <i class="fas fa-globe me-1"></i>Quantités : stock global (tous dépôts)
+                        </div>
+                        <div class="inv-variant-card-grid" id="adjustPageVariantCards">
+                            <div role="button"
+                                 tabindex="0"
+                                 class="inv-variant-card is-all-variants active {{ $adjProdStock > 0 ? 'is-has-stock' : 'is-empty' }}"
+                                 data-variant-id=""
+                                 data-global-qty="{{ $adjProdStock }}"
+                                 onclick="selectVariantForAdjust('')"
+                                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectVariantForAdjust('');}">
+                                <div class="inv-var-card-top">
+                                    <span class="inv-var-name">Produit complet</span>
+                                    <i class="fas fa-check-circle inv-var-check"></i>
+                                </div>
+                                <div class="inv-var-card-meta">
+                                    <span>Toutes variantes</span>
+                                    <span class="inv-var-qty" data-adjust-page-var-qty>{{ $adjProdStock }} u.</span>
+                                </div>
+                            </div>
+
+                            @foreach($product->variants as $var)
+                                @php
+                                    $varStk = (int) ($var->stock ?? 0);
+                                    $varSellPrice = (float) ($var->price ?? $product->active_price ?? 0);
+                                    $varCostVal = $var->cost_price !== null ? (float) $var->cost_price : null;
+                                @endphp
+                                <div role="button"
+                                     tabindex="0"
+                                     class="inv-variant-card {{ $varStk > 0 ? 'is-has-stock' : 'is-empty' }}"
+                                     data-variant-id="{{ $var->id }}"
+                                     data-sell-price="{{ $varSellPrice }}"
+                                     data-global-qty="{{ $varStk }}"
+                                     data-store-qtys='@json((object) $var->storeQuantityMap())'
+                                     onclick="selectVariantForAdjust({{ $var->id }})"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectVariantForAdjust({{ $var->id }});}">
+                                    <div class="inv-var-card-top">
+                                        <span class="inv-var-name" title="{{ $var->name }}">{{ $var->name }}</span>
+                                        <i class="fas fa-check-circle inv-var-check"></i>
+                                    </div>
+                                    <div class="inv-var-card-meta">
+                                        <span>{{ currency($varSellPrice) }}</span>
+                                        <span class="inv-var-qty" data-adjust-page-var-qty>{{ $varStk }} u.</span>
+                                    </div>
+
+                                    @if($canManageCost)
+                                        @php
+                                            $varHasCost = $varCostVal !== null;
+                                            $varBen = $varHasCost ? round($varSellPrice - $varCostVal, 2) : null;
+                                            $varMrg = ($varHasCost && $varSellPrice > 0) ? round(($varBen / $varSellPrice) * 100, 1) : 0.0;
+                                        @endphp
+                                        <div class="inv-var-cost-box" onclick="event.stopPropagation()">
+                                            <div class="inv-var-cost-row">
+                                                <div class="inv-var-cost-input-group">
+                                                    <input type="number"
+                                                           step="0.01"
+                                                           min="0"
+                                                           inputmode="decimal"
+                                                           name="variant_costs[{{ $var->id }}]"
+                                                           class="inv-var-cost-input"
+                                                           data-adjust-var-cost-input="{{ $var->id }}"
+                                                           data-sell-price="{{ $varSellPrice }}"
+                                                           value="{{ $varHasCost ? number_format($varCostVal, 2, '.', '') : '' }}"
+                                                           placeholder="Coût/u."
+                                                           onclick="event.stopPropagation()"
+                                                           onfocus="this.select()"
+                                                           oninput="onAdjustPageVariantCostInput({{ $var->id }}, this)">
+                                                    <span class="text-muted fw-semibold" style="font-size: 0.64rem;">{{ $adjCurrSym }}</span>
+                                                </div>
+                                                <button type="button"
+                                                        class="inv-var-cost-save-btn"
+                                                        data-adjust-var-cost-save="{{ $var->id }}"
+                                                        onclick="event.stopPropagation(); saveAdjustPageVariantCost({{ $var->id }}, this)"
+                                                        title="Enregistrer le coût de cette variante">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </div>
+                                            <div class="inv-var-benefit-line" data-adjust-var-benefit-line="{{ $var->id }}">
+                                                @if($varHasCost)
+                                                    <span class="{{ $varBen >= 0 ? 'text-success' : 'text-danger' }}">
+                                                        Bén. {{ $varBen >= 0 ? '+' : '' }}{{ currency($varBen) }} ({{ $varMrg }}%)
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted">Coût non défini</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                        <div id="adjustVariantWholeHint" class="mt-2 px-2 py-1.5 rounded-3 bg-warning-subtle border border-warning-subtle text-warning-emphasis" style="font-size: 0.7rem; font-weight: 600 !important;">
+                            <i class="fas fa-info-circle me-1"></i>« Produit complet » n'est lié à aucune variante : choisissez une variante pour que le stock soit attribué à la bonne déclinaison.
+                        </div>
+                        <div class="form-text small mt-1.5" style="font-size: 0.72rem;">
+                            Sélectionnez une variante en 1 clic pour ajuster son stock{{ $canManageCost ? ' et saisir son coût unitaire' : '' }}, ou choisissez « Produit complet ».
                         </div>
                     </div>
                     @endif
@@ -462,9 +737,21 @@
                         </div>
                         <div class="d-flex flex-column gap-1">
                             @foreach($product->variants as $v)
-                                <div class="d-flex align-items-center justify-content-between p-1.5 rounded bg-light border small">
-                                    <span class="fw-medium text-dark">{{ $v->name }}</span>
-                                    <div class="d-flex align-items-center gap-1.5">
+                                <div class="d-flex align-items-center justify-content-between p-1.5 rounded bg-light border small"
+                                     style="cursor: pointer;"
+                                     onclick="selectVariantForAdjust({{ $v->id }})"
+                                     title="Cliquer pour cibler la variante {{ $v->name }}">
+                                    <div class="min-w-0 me-2">
+                                        <span class="fw-medium text-dark">{{ $v->name }}</span>
+                                        @if($canManageCost)
+                                            <span class="text-muted {{ ($v->cost_price !== null && (float) $v->cost_price > 0) ? '' : 'd-none' }}"
+                                                  id="sidebar-var-cost-{{ $v->id }}"
+                                                  style="font-size: 0.68rem;">
+                                                · Coût: {{ currency($v->cost_price ?? 0) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
                                         <span class="text-muted" style="font-size: 0.72rem;">{{ currency($v->price) }}</span>
                                         <span class="badge {{ $v->stock <= 0 ? 'bg-danger text-white' : ($v->stock <= ($v->min_stock ?: 5) ? 'bg-warning text-dark' : 'bg-primary text-white') }} px-1.5 py-0.5">
                                             {{ $v->stock }} u.
@@ -696,6 +983,74 @@
         });
     }
 
+    function getAdjustSelectedStore() {
+        const storeSelect = document.getElementById('storeSelectAdjust');
+        if (!storeSelect || !storeSelect.value) return null;
+        const opt = storeSelect.options[storeSelect.selectedIndex];
+        return {
+            id: String(storeSelect.value),
+            qty: parseInt(opt?.dataset.stock || '0', 10) || 0,
+            name: opt?.dataset.label || 'ce dépôt'
+        };
+    }
+
+    // Quantity shown on a variant card: per-store when a Magasin / Point is selected, global otherwise
+    function getAdjustCardQty(card, store) {
+        if (!card) return 0;
+        const isWhole = String(card.dataset.variantId || '') === '';
+        if (!store) return parseInt(card.dataset.globalQty || '0', 10) || 0;
+        if (isWhole) return store.qty;
+        let map = {};
+        try { map = JSON.parse(card.dataset.storeQtys || '{}') || {}; } catch (e) { map = {}; }
+        return parseInt(map[store.id] ?? 0, 10) || 0;
+    }
+
+    function refreshAdjustPageVariantQtys() {
+        const store = getAdjustSelectedStore();
+        document.querySelectorAll('#adjustPageVariantCards .inv-variant-card').forEach(card => {
+            const qty = getAdjustCardQty(card, store);
+            const qtyEl = card.querySelector('[data-adjust-page-var-qty]');
+            if (qtyEl) {
+                qtyEl.textContent = `${qty} u.`;
+                const globalQty = parseInt(card.dataset.globalQty || '0', 10) || 0;
+                qtyEl.title = store ? `${qty} dans ce dépôt · ${globalQty} au total` : `${qty} au total (tous dépôts)`;
+            }
+            card.classList.toggle('is-empty', qty <= 0);
+            card.classList.toggle('is-has-stock', qty > 0);
+        });
+        const note = document.getElementById('adjustVariantScopeNote');
+        if (note) {
+            note.innerHTML = store
+                ? `<i class="fas fa-warehouse me-1"></i>Quantités dans : <strong>${String(store.name).replace(/[&<>"']/g, '')}</strong>`
+                : '<i class="fas fa-globe me-1"></i>Quantités : stock global (tous dépôts)';
+        }
+    }
+
+    // Current stock for the live simulator: variant-in-store, store, variant (global) or product (global)
+    function computeAdjustCurrentStock() {
+        const store = getAdjustSelectedStore();
+        const variantSelect = document.getElementById('variantSelectAdjust');
+        const variantId = variantSelect ? String(variantSelect.value || '') : '';
+        if (variantId !== '') {
+            const card = document.querySelector(`#adjustPageVariantCards .inv-variant-card[data-variant-id="${variantId}"]`);
+            if (card) return getAdjustCardQty(card, store);
+            const vOpt = variantSelect.options[variantSelect.selectedIndex];
+            return parseInt(vOpt?.dataset.stock || '0', 10) || 0;
+        }
+        return store ? store.qty : {{ (int) ($product->stock ?? 0) }};
+    }
+
+    function applyAdjustCurrentStock() {
+        currentStock = computeAdjustCurrentStock();
+        const liveStockEl = document.getElementById('liveCurrentStock');
+        if (liveStockEl) liveStockEl.textContent = currentStock;
+        const op = document.getElementById('mainAdjustmentType').value;
+        if (op === 'adjustment') {
+            document.getElementById('mainQuantityInput').value = currentStock;
+        }
+        updateLiveCalc();
+    }
+
     function onAdjustStoreChange(select) {
         const opt = select.options[select.selectedIndex];
         const metaRow = document.getElementById('adjustStoreMetaRow');
@@ -705,48 +1060,40 @@
         syncAdjustPageStorePills(select.value);
 
         if (select.value && opt) {
-            currentStock = parseInt(opt.dataset.stock, 10) || 0;
             if (metaRow) metaRow.style.display = 'flex';
             if (locInput) locInput.value = opt.dataset.location || '';
             if (minInput) minInput.value = opt.dataset.min || 2;
-        } else {
-            if (metaRow) metaRow.style.display = 'none';
-            const variantSelect = document.getElementById('variantSelectAdjust');
-            if (variantSelect && variantSelect.value) {
-                const vOpt = variantSelect.options[variantSelect.selectedIndex];
-                currentStock = parseInt(vOpt.dataset.stock, 10) || 0;
-            } else {
-                currentStock = {{ $product->stock ?? 0 }};
-            }
+        } else if (metaRow) {
+            metaRow.style.display = 'none';
         }
 
-        const liveStockEl = document.getElementById('liveCurrentStock');
-        if (liveStockEl) liveStockEl.textContent = currentStock;
+        refreshAdjustPageVariantQtys();
+        applyAdjustCurrentStock();
+    }
 
-        const op = document.getElementById('mainAdjustmentType').value;
-        if (op === 'adjustment') {
-            document.getElementById('mainQuantityInput').value = currentStock;
+    function selectVariantForAdjust(variantId, scrollIntoView = false) {
+        const variantSelect = document.getElementById('variantSelectAdjust');
+        if (!variantSelect) return;
+        variantSelect.value = variantId ? String(variantId) : '';
+        onAdjustVariantChange(variantSelect);
+        if (scrollIntoView) {
+            const cardsWrap = document.getElementById('adjustPageVariantCards') || variantSelect;
+            cardsWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-        updateLiveCalc();
+    }
+
+    function syncAdjustPageVariantCards(selectedId) {
+        const activeVal = selectedId ? String(selectedId) : '';
+        document.querySelectorAll('#adjustPageVariantCards .inv-variant-card').forEach(card => {
+            card.classList.toggle('active', String(card.dataset.variantId || '') === activeVal);
+        });
+        const wholeHint = document.getElementById('adjustVariantWholeHint');
+        if (wholeHint) wholeHint.classList.toggle('d-none', activeVal !== '');
     }
 
     function onAdjustVariantChange(select) {
-        const storeSelect = document.getElementById('storeSelectAdjust');
-        if (storeSelect && storeSelect.value) {
-            return;
-        }
-        const opt = select.options[select.selectedIndex];
-        if (opt) {
-            currentStock = parseInt(opt.dataset.stock, 10) || 0;
-            const liveStockEl = document.getElementById('liveCurrentStock');
-            if (liveStockEl) liveStockEl.textContent = currentStock;
-
-            const op = document.getElementById('mainAdjustmentType').value;
-            if (op === 'adjustment') {
-                document.getElementById('mainQuantityInput').value = currentStock;
-            }
-            updateLiveCalc();
-        }
+        syncAdjustPageVariantCards(select.value);
+        applyAdjustCurrentStock();
     }
 
     function changeOp(op) {
@@ -816,6 +1163,154 @@
         updateAdjustCostBenefit();
     }
 
+    @if($canManageCost)
+    function formatAdjustVariantBenefitHtml(sellPrice, rawCostVal) {
+        const str = String(rawCostVal ?? '').trim();
+        const cost = str !== '' ? parseFloat(str) : NaN;
+        if (str === '' || !Number.isFinite(cost) || cost < 0) {
+            return '<span class="text-muted">Coût non défini</span>';
+        }
+        const benefit = sellPrice - cost;
+        const margin = sellPrice > 0 ? ((benefit / sellPrice) * 100).toFixed(1) : '0.0';
+        const sign = benefit >= 0 ? '+' : '';
+        const cls = benefit >= 0 ? 'text-success' : 'text-danger';
+        const fmt = typeof window.formatInvCurrency === 'function'
+            ? window.formatInvCurrency(benefit)
+            : `${benefit.toFixed(2)} {{ setting('currency_symbol', 'DH') }}`;
+        return `<span class="${cls}">Bén. ${sign}${fmt} (${margin}%)</span>`;
+    }
+
+    function onAdjustPageVariantCostInput(variantId, inputEl) {
+        const card = inputEl ? inputEl.closest('.inv-variant-card') : null;
+        const sellPrice = parseFloat(inputEl?.dataset.sellPrice || card?.dataset.sellPrice || '0') || 0;
+        const benefitEl = document.querySelector(`[data-adjust-var-benefit-line="${variantId}"]`);
+        if (benefitEl) {
+            benefitEl.innerHTML = formatAdjustVariantBenefitHtml(sellPrice, inputEl ? inputEl.value : '');
+        }
+        const saveBtn = document.querySelector(`[data-adjust-var-cost-save="${variantId}"]`);
+        if (saveBtn) saveBtn.classList.add('is-dirty');
+        const saveAllBtn = document.getElementById('adjustSaveAllVariantCostsBtn');
+        if (saveAllBtn) saveAllBtn.classList.remove('d-none');
+    }
+
+    async function persistAdjustPageVariantCosts(costsMap, triggerBtn = null) {
+        if (!costsMap || Object.keys(costsMap).length === 0) return;
+        const origHtml = triggerBtn ? triggerBtn.innerHTML : '';
+        if (triggerBtn) {
+            triggerBtn.disabled = true;
+            triggerBtn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:11px;height:11px;"></span>';
+        }
+
+        try {
+            const resp = await fetch(@json(route('inventory.update-variant-costs', $product)), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify({
+                    variant_costs: costsMap
+                })
+            });
+            const data = await resp.json();
+            if (!resp.ok || !data.success) {
+                let msg = data.message || 'Impossible d\'enregistrer les coûts des variantes.';
+                if (data.errors) msg = Object.values(data.errors).flat().join(' ');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'error', title: 'Erreur', text: msg });
+                } else {
+                    alert(msg);
+                }
+                return;
+            }
+
+            if ('cost_price' in data) {
+                adjustBaseCost = data.cost_price !== null ? parseFloat(data.cost_price) : null;
+            }
+
+            const variantSelect = document.getElementById('variantSelectAdjust');
+            (data.variants || []).forEach(v => {
+                const costStr = (v.cost_price !== null && v.cost_price !== undefined)
+                    ? Number(v.cost_price).toFixed(2)
+                    : '';
+
+                if (variantSelect) {
+                    const opt = variantSelect.querySelector(`option[value="${v.id}"]`);
+                    if (opt) opt.dataset.cost = costStr;
+                }
+
+                const inp = document.querySelector(`[data-adjust-var-cost-input="${v.id}"]`);
+                if (inp) {
+                    inp.value = costStr;
+                }
+
+                const saveBtn = document.querySelector(`[data-adjust-var-cost-save="${v.id}"]`);
+                if (saveBtn) saveBtn.classList.remove('is-dirty');
+
+                const sellPrice = parseFloat(v.price ?? inp?.dataset.sellPrice ?? adjustBaseSellPrice) || 0;
+                const benefitEl = document.querySelector(`[data-adjust-var-benefit-line="${v.id}"]`);
+                if (benefitEl) {
+                    benefitEl.innerHTML = formatAdjustVariantBenefitHtml(sellPrice, costStr);
+                }
+
+                const sideCostEl = document.getElementById(`sidebar-var-cost-${v.id}`);
+                if (sideCostEl) {
+                    if (costStr !== '' && parseFloat(costStr) > 0) {
+                        const fmtCost = typeof window.formatInvCurrency === 'function'
+                            ? window.formatInvCurrency(parseFloat(costStr))
+                            : `${costStr} {{ setting('currency_symbol', 'DH') }}`;
+                        sideCostEl.textContent = `· Coût: ${fmtCost}`;
+                        sideCostEl.classList.remove('d-none');
+                    } else {
+                        sideCostEl.classList.add('d-none');
+                    }
+                }
+            });
+
+            const saveAllBtn = document.getElementById('adjustSaveAllVariantCostsBtn');
+            if (saveAllBtn) saveAllBtn.classList.add('d-none');
+
+            updateAdjustCostBenefit();
+
+            const successMsg = data.message || 'Coût des variantes enregistré avec succès.';
+            if (window.Toast) {
+                window.Toast.fire({ icon: 'success', title: successMsg });
+            }
+        } catch (err) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'error', title: 'Erreur réseau', text: 'Impossible de contacter le serveur.' });
+            } else {
+                alert('Erreur réseau lors de l\'enregistrement des coûts.');
+            }
+        } finally {
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.innerHTML = origHtml;
+            }
+        }
+    }
+
+    function saveAdjustPageVariantCost(variantId, btnEl) {
+        const inp = document.querySelector(`[data-adjust-var-cost-input="${variantId}"]`);
+        if (!inp) return;
+        const costsMap = {};
+        costsMap[String(variantId)] = inp.value !== '' ? inp.value : null;
+        persistAdjustPageVariantCosts(costsMap, btnEl);
+    }
+
+    function saveAllAdjustPageVariantCosts() {
+        const costsMap = {};
+        document.querySelectorAll('#adjustPageVariantCards [data-adjust-var-cost-input]').forEach(inp => {
+            const vid = inp.dataset.adjustVarCostInput;
+            if (vid) costsMap[String(vid)] = inp.value !== '' ? inp.value : null;
+        });
+        const btn = document.getElementById('adjustSaveAllVariantCostsBtn');
+        persistAdjustPageVariantCosts(costsMap, btn);
+    }
+    @endif
+
     function updateAdjustCostBenefit() {
         if (!window.__invCostEngine) return;
         const op = document.getElementById('mainAdjustmentType')?.value || 'in';
@@ -826,15 +1321,17 @@
         let sellingPrice = adjustBaseSellPrice;
         let existingCost = adjustBaseCost;
         let existingStock = adjustBaseStock;
+        let variantName = '';
 
         if (vOpt) {
+            variantName = vOpt.dataset.name || '';
             const vPrice = parseFloat(vOpt.dataset.price || '0');
             if (Number.isFinite(vPrice) && vPrice > 0) {
                 sellingPrice = vPrice;
             }
-            if (vOpt.dataset.cost !== undefined && vOpt.dataset.cost !== '') {
-                existingCost = parseFloat(vOpt.dataset.cost);
-            }
+            existingCost = (vOpt.dataset.cost !== undefined && vOpt.dataset.cost !== '')
+                ? parseFloat(vOpt.dataset.cost)
+                : null;
             existingStock = parseInt(vOpt.dataset.stock || '0', 10) || 0;
         }
 
@@ -843,7 +1340,8 @@
             addedQty,
             sellingPrice,
             existingCost,
-            existingStock
+            existingStock,
+            variantName
         });
     }
 

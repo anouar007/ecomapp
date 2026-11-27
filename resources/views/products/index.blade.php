@@ -34,7 +34,7 @@
     <!-- KPI Metric Stat Cards -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
-            <a href="{{ route('products.index') }}" class="stat-kpi-card text-decoration-none {{ !request('stock_status') && !request('quality') && !request('category') && !request('search') ? 'active-filter' : '' }}">
+            <a href="{{ route('products.index') }}" class="stat-kpi-card text-decoration-none {{ !request('stock_status') && !request('quality') && !request('category') && !request('search') && !request('status') && !request('created_from') && !request('created_to') && !request('updated_from') && !request('updated_to') && !request('sort_by') ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label">Total Produits</div>
@@ -106,8 +106,37 @@
                 </div>
 
                 @php
-                    $hasActiveFilters = request('category') || request('stock_status') || request('quality') || request('status');
-                    $activeFilterCount = collect(['category', 'stock_status', 'quality', 'status'])->filter(fn($k) => request()->filled($k))->count();
+                    $fmtDateFilter = static function (?string $raw): ?string {
+                        $raw = trim((string) $raw);
+                        if ($raw === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $raw)) {
+                            return null;
+                        }
+                        try {
+                            $dt = \Carbon\Carbon::createFromFormat('Y-m-d', $raw);
+                            return ($dt && $dt->format('Y-m-d') === $raw) ? $dt->format('d/m/Y') : null;
+                        } catch (\Throwable $e) {
+                            return null;
+                        }
+                    };
+                    $createdFromLabel = $fmtDateFilter(request('created_from'));
+                    $createdToLabel = $fmtDateFilter(request('created_to'));
+                    $updatedFromLabel = $fmtDateFilter(request('updated_from'));
+                    $updatedToLabel = $fmtDateFilter(request('updated_to'));
+                    $hasCreatedDateFilter = $createdFromLabel !== null || $createdToLabel !== null;
+                    $hasUpdatedDateFilter = $updatedFromLabel !== null || $updatedToLabel !== null;
+                    $sortLabels = [
+                        'created_desc' => 'Création (récent → ancien)',
+                        'created_asc' => 'Création (ancien → récent)',
+                        'updated_desc' => 'Modification (récent → ancien)',
+                        'updated_asc' => 'Modification (ancien → récent)',
+                    ];
+                    $hasSortFilter = array_key_exists((string) request('sort_by'), $sortLabels);
+
+                    $hasActiveFilters = request('category') || request('stock_status') || request('quality') || request('status') || $hasCreatedDateFilter || $hasUpdatedDateFilter || $hasSortFilter;
+                    $activeFilterCount = collect(['category', 'stock_status', 'quality', 'status'])->filter(fn($k) => request()->filled($k))->count()
+                        + ($hasCreatedDateFilter ? 1 : 0)
+                        + ($hasUpdatedDateFilter ? 1 : 0)
+                        + ($hasSortFilter ? 1 : 0);
                 @endphp
 
                 <!-- Bouton Drawer Filtres Mobile (d-md-none) -->
@@ -194,6 +223,51 @@
                         </select>
                     </div>
 
+                    <!-- Date de création -->
+                    <div class="col-12 col-lg-auto">
+                        <div class="prod-date-filter-box">
+                            <span class="prod-date-filter-label"><i class="fas fa-calendar-plus text-primary me-1"></i>Création</span>
+                            <div class="prod-date-inputs">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">Du</span>
+                                    <input type="date" name="created_from" value="{{ $createdFromLabel ? request('created_from') : '' }}" class="form-control form-control-sm" title="Date de création (du)">
+                                </div>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">Au</span>
+                                    <input type="date" name="created_to" value="{{ $createdToLabel ? request('created_to') : '' }}" class="form-control form-control-sm" title="Date de création (au)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date de modification -->
+                    <div class="col-12 col-lg-auto">
+                        <div class="prod-date-filter-box">
+                            <span class="prod-date-filter-label"><i class="fas fa-calendar-check text-success me-1"></i>Modification</span>
+                            <div class="prod-date-inputs">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">Du</span>
+                                    <input type="date" name="updated_from" value="{{ $updatedFromLabel ? request('updated_from') : '' }}" class="form-control form-control-sm" title="Date de modification (du)">
+                                </div>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">Au</span>
+                                    <input type="date" name="updated_to" value="{{ $updatedToLabel ? request('updated_to') : '' }}" class="form-control form-control-sm" title="Date de modification (au)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tri par date -->
+                    <div class="col-6 col-md-auto">
+                        <select name="sort_by" class="form-select form-select-sm" style="min-width: 175px;" title="Trier par date">
+                            <option value="">Tri par défaut</option>
+                            <option value="created_desc" {{ request('sort_by') === 'created_desc' ? 'selected' : '' }}>📅 Création : Plus récent</option>
+                            <option value="created_asc" {{ request('sort_by') === 'created_asc' ? 'selected' : '' }}>📅 Création : Plus ancien</option>
+                            <option value="updated_desc" {{ request('sort_by') === 'updated_desc' ? 'selected' : '' }}>✏️ Modif. : Plus récent</option>
+                            <option value="updated_asc" {{ request('sort_by') === 'updated_asc' ? 'selected' : '' }}>✏️ Modif. : Plus ancien</option>
+                        </select>
+                    </div>
+
                     <!-- Boutons Filtrer / Réinitialiser -->
                     <div class="col-12 col-md-auto d-flex gap-2">
                         <button type="submit" class="btn-brand-primary btn-sm flex-grow-1 flex-md-grow-0 justify-content-center" title="Appliquer les filtres">
@@ -270,6 +344,24 @@
             @if(request('status'))
                 <a href="{{ request()->fullUrlWithQuery(['status' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
                     Statut : {{ request('status') === 'active' ? 'Actifs' : 'Inactifs' }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if($hasCreatedDateFilter)
+                <a href="{{ request()->fullUrlWithQuery(['created_from' => null, 'created_to' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Création : {{ $createdFromLabel ?? '…' }} → {{ $createdToLabel ?? '…' }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if($hasUpdatedDateFilter)
+                <a href="{{ request()->fullUrlWithQuery(['updated_from' => null, 'updated_to' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Modification : {{ $updatedFromLabel ?? '…' }} → {{ $updatedToLabel ?? '…' }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if($hasSortFilter)
+                <a href="{{ request()->fullUrlWithQuery(['sort_by' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Tri : {{ $sortLabels[request('sort_by')] }} <i class="fas fa-times text-muted ms-0.5"></i>
                 </a>
             @endif
 
@@ -383,6 +475,7 @@
                         <th class="col-stock">Stock</th>
                         <th class="col-order text-center" title="Ordre d'affichage sur la boutique (1 = premier)">Ordre</th>
                         <th class="col-status">Statut</th>
+                        <th class="col-dates">Dates</th>
                         <th class="col-actions text-end">Actions</th>
                     </tr>
                 </thead>
@@ -532,6 +625,18 @@
                                 {{ $isActive ? 'Actif' : 'Inactif' }}
                             </span>
                         </td>
+                        <td class="col-dates">
+                            <div class="prod-dates-cell">
+                                <div class="prod-date-line" title="Créé le {{ $product->created_at?->format('d/m/Y à H:i') ?? '—' }}">
+                                    <i class="fas fa-calendar-plus text-primary"></i>
+                                    <span>{{ $product->created_at?->format('d/m/Y') ?? '—' }}</span>
+                                </div>
+                                <div class="prod-date-line" title="Modifié le {{ $product->updated_at?->format('d/m/Y à H:i') ?? '—' }}">
+                                    <i class="fas fa-pen-to-square text-success"></i>
+                                    <span>{{ $product->updated_at?->format('d/m/Y') ?? '—' }}</span>
+                                </div>
+                            </div>
+                        </td>
                         <td class="col-actions text-end">
                             <div class="action-buttons-group">
                                 <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" 
@@ -580,14 +685,14 @@
                     </tr>
                     @empty
                     <tr id="emptyProductsRow">
-                        <td colspan="8">
+                        <td colspan="10">
                             <div class="text-center py-5">
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-search"></i>
                                 </div>
                                 <h5 class="fw-bold text-dark">Aucun produit trouvé</h5>
                                 <p class="text-muted">Essayez d'ajuster vos critères de recherche ou vos filtres.</p>
-                                @if(request('search') || request('category') || request('quality') || request('stock_status') || request('status'))
+                                @if(request('search') || $hasActiveFilters)
                                     <a href="{{ route('products.index') }}" class="btn-brand-primary mt-3">
                                         <i class="fas fa-redo me-1"></i> Réinitialiser tous les filtres
                                     </a>
@@ -634,7 +739,7 @@
                 </div>
                 <h6 class="fw-bold text-dark">Aucun produit trouvé</h6>
                 <p class="text-muted small mb-0">Essayez d'ajuster vos critères de recherche ou vos filtres.</p>
-                @if(request('search') || request('category') || request('quality') || request('stock_status') || request('status'))
+                @if(request('search') || $hasActiveFilters)
                     <a href="{{ route('products.index') }}" class="btn-brand-primary btn-sm mt-3">
                         <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
                     </a>
@@ -666,7 +771,7 @@
 
     .brand-table-products {
         width: 100%;
-        min-width: 1060px;
+        min-width: 1120px;
         table-layout: auto;
         border-collapse: separate;
         border-spacing: 0;
@@ -746,6 +851,75 @@
     .brand-table-products .col-status {
         width: 85px;
         white-space: nowrap;
+    }
+
+    .brand-table-products .col-dates {
+        width: 108px;
+        white-space: nowrap;
+    }
+
+    .prod-dates-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 0.72rem;
+        line-height: 1.25;
+        color: #475569;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .prod-date-line {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .prod-date-line i {
+        width: 11px;
+        font-size: 0.68rem;
+        text-align: center;
+    }
+
+    .prod-date-filter-box {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 4px 8px;
+    }
+
+    .prod-date-filter-label {
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: #475569;
+        white-space: nowrap;
+    }
+
+    .prod-date-inputs {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .prod-date-inputs .input-group {
+        width: auto;
+    }
+
+    .prod-date-inputs .input-group-text {
+        background: #ffffff;
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 6px;
+    }
+
+    .prod-date-inputs input[type="date"] {
+        font-size: 0.76rem;
+        min-width: 122px;
     }
 
     /* Product Details Styling */

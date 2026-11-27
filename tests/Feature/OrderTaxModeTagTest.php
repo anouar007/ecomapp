@@ -88,6 +88,9 @@ class OrderTaxModeTagTest extends TestCase
             'customer_phone' => '0622334455',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
+            'delivery_type' => 'store',
             'tax_mode' => 'ttc',
             'items' => [
                 [
@@ -111,6 +114,9 @@ class OrderTaxModeTagTest extends TestCase
             'customer_name' => 'Client POS Default',
             'store_id' => $store->id,
             'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'status' => 'delivered',
+            'delivery_type' => 'store',
             'items' => [
                 [
                     'product_id' => $product->id,

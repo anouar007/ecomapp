@@ -97,6 +97,15 @@
                     {!! $product->image_quality_badge !!}
                 </span>
             </div>
+
+            <div class="d-flex align-items-center gap-2.5 flex-wrap mt-1 text-muted" style="font-size: 0.68rem;">
+                <span title="Date de création : {{ $product->created_at?->format('d/m/Y H:i') ?? '—' }}">
+                    <i class="fas fa-calendar-plus text-primary me-1 opacity-75"></i>Créé : {{ $product->created_at?->format('d/m/Y') ?? '—' }}
+                </span>
+                <span title="Date de modification : {{ $product->updated_at?->format('d/m/Y H:i') ?? '—' }}">
+                    <i class="fas fa-pen-to-square text-success me-1 opacity-75"></i>Modifié : {{ $product->updated_at?->format('d/m/Y') ?? '—' }}
+                </span>
+            </div>
         </div>
     </div>
 

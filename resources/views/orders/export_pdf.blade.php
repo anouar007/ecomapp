@@ -256,6 +256,7 @@
                     <tr>
                         <td>
                             <span class="order-num">#{{ $order->order_number }}</span>
+                            <span class="badge {{ $order->isPosOrder() ? 'badge-danger' : 'badge-info' }}" style="margin-left: 4px;">{{ $order->isPosOrder() ? 'POS' : 'Site Web' }}</span>
                             <span class="badge {{ $order->isHt() ? 'badge-ht' : 'badge-ttc' }}" style="margin-left: 4px;">{{ $order->tax_mode_label }}</span>
                             <span style="color: #64748b; font-size: 8px; margin-left: 6px;">
                                 {{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '' }}

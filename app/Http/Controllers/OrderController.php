@@ -46,12 +46,25 @@ class OrderController extends Controller
     }
 
     /**
-     * Shared listing builder for website orders and POS orders.
+     * Display a unified listing of all orders (Website + POS).
+     */
+    public function allOrders(Request $request)
+    {
+        return $this->renderOrdersList($request, 'all');
+    }
+
+    /**
+     * Shared listing builder for website, POS, and unified orders.
      */
     protected function renderOrdersList(Request $request, string $channel = 'website')
     {
         $isPos = $channel === 'pos';
-        $indexRoute = $isPos ? 'orders.pos' : 'orders.index';
+        $isAll = $channel === 'all';
+        $indexRoute = match ($channel) {
+            'pos' => 'orders.pos',
+            'all' => 'orders.all',
+            default => 'orders.index',
+        };
 
         $stores = $this->activeStores();
         $storeFilter = $request->input('store_id');
@@ -71,7 +84,7 @@ class OrderController extends Controller
 
         if ($isPos) {
             $query->pos();
-        } else {
+        } elseif (!$isAll) {
             $query->website();
         }
 
@@ -99,13 +112,22 @@ class OrderController extends Controller
 
         // Filter by Staff member (POS creator OR first confirming staff on Website)
         $staffFilter = trim((string) $request->input('staff_id', ''));
-        $applyStaffFilter = function ($q) use ($staffFilter, $isPos) {
+        $applyStaffFilter = function ($q) use ($staffFilter, $isPos, $isAll) {
             if ($staffFilter === 'unconfirmed' && !$isPos) {
-                $q->whereNull('confirmed_by');
+                if ($isAll) {
+                    $q->website()->whereNull('confirmed_by');
+                } else {
+                    $q->whereNull('confirmed_by');
+                }
             } elseif (is_numeric($staffFilter) && (int) $staffFilter > 0) {
                 $uid = (int) $staffFilter;
                 if ($isPos) {
                     $q->where('created_by', $uid);
+                } elseif ($isAll) {
+                    $q->where(function ($sq) use ($uid) {
+                        $sq->where('created_by', $uid)
+                            ->orWhere('confirmed_by', $uid);
+                    });
                 } else {
                     $q->where('confirmed_by', $uid);
                 }
@@ -199,7 +221,7 @@ class OrderController extends Controller
         $statsQuery = Order::query();
         if ($isPos) {
             $statsQuery->pos();
-        } else {
+        } elseif (!$isAll) {
             $statsQuery->website();
         }
         if (!empty($dateFrom)) {
@@ -241,6 +263,10 @@ class OrderController extends Controller
             'date_to' => $dateTo,
             'date_preset' => $datePreset,
         ];
+        if ($isAll) {
+            $stats['web_count'] = (clone $statsQuery)->website()->count();
+            $stats['pos_count'] = (clone $statsQuery)->pos()->count();
+        }
 
         $referencedStaffIds = Order::select('confirmed_by')
             ->whereNotNull('confirmed_by')
@@ -492,6 +518,7 @@ class OrderController extends Controller
             'delivered' => 'Livrée',
             'cancelled' => 'Annulée',
             'paid' => 'Payé',
+            'partial' => 'Avance',
             'failed' => 'Échoué',
             'refunded' => 'Remboursé',
             'cash' => 'Espèces',
@@ -1304,12 +1331,22 @@ class OrderController extends Controller
         }
         $filterStaffId = trim((string) $request->input('filter_staff_id', ''));
         if ($filterStaffId === 'unconfirmed' && $channel !== 'pos') {
-            $statsQuery->whereNull('confirmed_by');
-        } elseif (is_numeric($filterStaffId) && (int) $filterStaffId > 0) {
-            if ($channel === 'pos') {
-                $statsQuery->where('created_by', (int) $filterStaffId);
+            if ($channel === 'all') {
+                $statsQuery->website()->whereNull('confirmed_by');
             } else {
-                $statsQuery->where('confirmed_by', (int) $filterStaffId);
+                $statsQuery->whereNull('confirmed_by');
+            }
+        } elseif (is_numeric($filterStaffId) && (int) $filterStaffId > 0) {
+            $uid = (int) $filterStaffId;
+            if ($channel === 'pos') {
+                $statsQuery->where('created_by', $uid);
+            } elseif ($channel === 'all') {
+                $statsQuery->where(function ($sq) use ($uid) {
+                    $sq->where('created_by', $uid)
+                        ->orWhere('confirmed_by', $uid);
+                });
+            } else {
+                $statsQuery->where('confirmed_by', $uid);
             }
         }
         if ($request->filled('date_from')) {
@@ -1353,7 +1390,7 @@ class OrderController extends Controller
                 'payment_status' => $order->payment_status,
                 'payment_status_label' => match ($order->payment_status) {
                     'paid' => 'Payé',
-                    'partial' => 'Partiel',
+                    'partial' => 'Avance',
                     'failed' => 'Échoué',
                     'refunded' => 'Remboursé',
                     default => 'En attente'

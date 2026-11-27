@@ -1103,9 +1103,17 @@
                 <span>Ventes & Clients</span>
                 <i class="fas fa-chevron-down sidebar-section-chevron" aria-hidden="true"></i>
             </li>
+            @if(auth()->check() && (auth()->user()->hasAnyRole(['Admin', 'Super Admin']) || auth()->user()->canAny(['access_pos', 'manage_orders', 'view_orders'])))
+            <li class="sidebar-menu-item" data-section="sales">
+                <a href="{{ route('orders.all') }}" class="sidebar-menu-link {{ request()->routeIs('orders.all') ? 'active' : '' }}" data-tooltip="Toutes les commandes">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Toutes commandes</span>
+                </a>
+            </li>
+            @endif
             @if(auth()->check() && (auth()->user()->hasAnyRole(['Admin', 'Super Admin']) || auth()->user()->canAny(['manage_orders', 'view_orders', 'create_orders', 'edit_orders'])))
             <li class="sidebar-menu-item" data-section="sales">
-                <a href="{{ route('orders.index') }}" class="sidebar-menu-link {{ request()->routeIs('orders.*') && !request()->routeIs('orders.pos', 'orders.staff-stats') ? 'active' : '' }}" data-tooltip="Commandes Site Web">
+                <a href="{{ route('orders.index') }}" class="sidebar-menu-link {{ request()->routeIs('orders.*') && !request()->routeIs('orders.pos', 'orders.all', 'orders.staff-stats') ? 'active' : '' }}" data-tooltip="Commandes Site Web">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Commandes</span>
                 </a>

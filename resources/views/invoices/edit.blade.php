@@ -167,7 +167,7 @@
                             <select name="payment_status" required class="form-select">
                                 <option value="paid" {{ old('payment_status', $invoice->payment_status) == 'paid' ? 'selected' : '' }}>✅ Payé</option>
                                 <option value="unpaid" {{ old('payment_status', $invoice->payment_status) == 'unpaid' ? 'selected' : '' }}>⏳ Impayé</option>
-                                <option value="partial" {{ old('payment_status', $invoice->payment_status) == 'partial' ? 'selected' : '' }}>🔄 Partiel</option>
+                                <option value="partial" {{ old('payment_status', $invoice->payment_status) == 'partial' ? 'selected' : '' }}>🔄 Avance</option>
                                 <option value="cancelled" {{ old('payment_status', $invoice->payment_status) == 'cancelled' ? 'selected' : '' }}>❌ Annulé</option>
                             </select>
                         </div>

@@ -43,7 +43,7 @@
                 };
                 $payPillLabel = match($pStatus) {
                     'paid' => 'Payé',
-                    'partial' => 'Partiel',
+                    'partial' => 'Avance',
                     'cancelled' => 'Annulé',
                     default => 'Impayé'
                 };
@@ -84,7 +84,7 @@
                     </li>
                     <li>
                         <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $pStatus === 'partial' ? 'active' : '' }}" onclick="quickUpdateInvoice({{ $invoice->id }}, 'partial')">
-                            <span><i class="fas fa-adjust text-info me-1.5"></i> Partiel</span>
+                            <span><i class="fas fa-adjust text-info me-1.5"></i> Avance</span>
                             @if($pStatus === 'partial') <i class="fas fa-check text-info small"></i> @endif
                         </button>
                     </li>

@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class POSController extends Controller
 {
@@ -315,12 +316,18 @@ class POSController extends Controller
             'save_customer' => ['nullable', 'boolean'],
             'store_id' => ['nullable', 'exists:stores,id'],
             'payment_method' => ['required', 'string', 'max:50'],
+            'payment_status' => [
+                Rule::requiredIf(fn () => $request->input('payment_method') !== 'credit' && !$request->boolean('is_partial_payment')),
+                'nullable',
+                'string',
+                'in:paid,partial,pending',
+            ],
             'amount_received' => ['nullable', 'numeric', 'min:0'],
             'is_partial_payment' => ['nullable', 'boolean'],
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
             'payment_due_date' => ['nullable', 'date'],
-            'status' => ['nullable', 'string', 'in:delivered,pending,en_demande,reserved,processing,shipped'],
-            'delivery_type' => ['nullable', 'string', 'in:store,our_team,livreur,ozon,autre'],
+            'status' => ['required', 'string', 'in:delivered,pending,en_demande,reserved,processing,shipped'],
+            'delivery_type' => ['required', 'string', 'in:store,our_team,livreur,ozon,autre'],
             'tax_mode' => ['nullable', 'string', 'in:ttc,ht'],
             'notes' => ['nullable', 'string', 'max:500'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
@@ -335,6 +342,10 @@ class POSController extends Controller
             'items.*.discount_type' => ['nullable', 'string', 'in:percent,fixed'],
             'items.*.store_id' => ['nullable', 'exists:stores,id'],
         ], [
+            'payment_method.required' => 'Veuillez sélectionner un mode de paiement.',
+            'payment_status.required' => 'Veuillez sélectionner un statut de paiement.',
+            'status.required' => 'Veuillez sélectionner un statut de commande.',
+            'delivery_type.required' => 'Veuillez sélectionner un type de livraison.',
             'customer_phone.regex' => 'Le numéro de téléphone doit contenir exactement 10 chiffres.',
             'payment_attachments.*.mimes' => 'Format non supporté (JPG, PNG, WEBP, GIF ou PDF uniquement).',
             'payment_attachments.*.max' => 'Chaque document ne doit pas dépasser 10 Mo.',
@@ -467,53 +478,44 @@ class POSController extends Controller
             $customerCity = !empty($validated['customer_city']) ? trim($validated['customer_city']) : null;
             $customerEmail = !empty($validated['customer_email']) ? trim($validated['customer_email']) : null;
             $saveCustomer = !empty($validated['save_customer']);
-            $isPartialPayment = !empty($validated['is_partial_payment']) && $validated['payment_method'] !== 'credit';
+            $isGenericWalkIn = $customerName === '' || in_array(mb_strtolower($customerName), ['client de passage', 'walk-in customer'], true);
+            $requestedPayStatus = !empty($validated['payment_status']) ? strtolower((string) $validated['payment_status']) : null;
 
-            if ($isPartialPayment) {
-                $selectedCustomerPhone = !empty($validated['customer_id'])
-                    ? ($this->normalizePhone10(Customer::where('id', $validated['customer_id'])->value('phone')) ?? '')
-                    : '';
-                $effectivePartialPhone = $customerPhone ?: ($selectedCustomerPhone !== '' ? $selectedCustomerPhone : null);
-                $isGenericWalkIn = $customerName === '' || in_array(mb_strtolower($customerName), ['client de passage', 'walk-in customer'], true);
-
-                if ($isGenericWalkIn || empty($effectivePartialPhone) || !preg_match('/^\d{10}$/', (string) $effectivePartialPhone)) {
-                    DB::rollBack();
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Le nom du client et un numéro de téléphone de 10 chiffres sont obligatoires pour un paiement partiel.',
-                    ], 422);
-                }
-
-                if (empty($validated['payment_due_date'])) {
-                    DB::rollBack();
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Veuillez indiquer la date limite (échéance) pour le reste à payer.',
-                    ], 422);
-                }
-
+            if ($validated['payment_method'] === 'credit') {
+                $isPartialPayment = false;
+                $orderPaymentStatus = 'pending';
+                $paidNow = 0.0;
+                $remainingAmount = $total;
+                $dueDate = !empty($validated['payment_due_date']) ? (string) $validated['payment_due_date'] : now()->addDays(30)->toDateString();
+            } elseif (!empty($validated['is_partial_payment']) || $requestedPayStatus === 'partial') {
+                $isPartialPayment = true;
+                $orderPaymentStatus = 'partial';
                 $paidNow = round((float) ($validated['paid_amount'] ?? 0), 2);
-                if ($paidNow >= $total) {
+                if ($paidNow < 0 || ($total > 0 && $paidNow >= $total) || ($total <= 0 && $paidNow > 0)) {
                     DB::rollBack();
                     return response()->json([
                         'success' => false,
-                        'message' => 'Le montant payé maintenant doit être inférieur au total pour un paiement partiel.',
-                    ], 400);
+                        'message' => 'Pour un paiement total, choisissez plutôt « Payé » — le montant payé maintenant doit être inférieur au total.',
+                    ], 422);
                 }
 
                 $remainingAmount = max(0.0, round($total - $paidNow, 2));
-                $dueDate = $validated['payment_due_date'];
-            } elseif ($validated['payment_method'] === 'credit') {
+                $dueDate = !empty($validated['payment_due_date']) ? (string) $validated['payment_due_date'] : null;
+            } elseif ($requestedPayStatus === 'pending') {
+                $isPartialPayment = false;
+                $orderPaymentStatus = 'pending';
                 $paidNow = 0.0;
-                $remainingAmount = $total;
-                $dueDate = now()->addDays(30)->toDateString();
+                $remainingAmount = 0.0;
+                $dueDate = !empty($validated['payment_due_date']) ? (string) $validated['payment_due_date'] : null;
             } else {
+                $isPartialPayment = false;
+                $orderPaymentStatus = 'paid';
                 $paidNow = $total;
                 $remainingAmount = 0.0;
                 $dueDate = null;
             }
 
-            // Resolve existing or newly saved customer (required for credit & partial payment tracking)
+            // Resolve existing or newly saved customer (link real customers for credit & partial payment tracking)
             $customer = null;
             if (!empty($validated['customer_id'])) {
                 $customer = Customer::find($validated['customer_id']);
@@ -532,7 +534,7 @@ class POSController extends Controller
                         $customer->update($updates);
                     }
                 }
-            } elseif ($saveCustomer || $isPartialPayment) {
+            } elseif ($saveCustomer || ($isPartialPayment && (!$isGenericWalkIn || $customerPhone !== null || $customerEmail !== null))) {
                 if ($customerPhone) {
                     $customer = Customer::where('phone', $customerPhone)->first();
                 }
@@ -583,13 +585,10 @@ class POSController extends Controller
             }
 
             $notes = trim((string) ($validated['notes'] ?? ''));
-            $orderStatus = $validated['status'] ?? 'delivered';
-            $orderDeliveryType = Order::normalizeDeliveryType($validated['delivery_type'] ?? 'store') ?? 'store';
+            $orderStatus = $validated['status'];
+            $orderDeliveryType = Order::normalizeDeliveryType($validated['delivery_type']) ?? 'store';
             $orderTaxMode = strtolower((string) ($validated['tax_mode'] ?? 'ht')) === 'ttc' ? 'ttc' : 'ht';
             $shouldDeductStock = $orderStatus === 'delivered';
-            $orderPaymentStatus = $isPartialPayment
-                ? ($paidNow > 0 ? 'partial' : 'pending')
-                : ($validated['payment_method'] === 'credit' ? 'pending' : 'paid');
 
             $uploadedFiles = $request->file('payment_attachments', []);
             if (!is_array($uploadedFiles)) {
@@ -727,21 +726,21 @@ class POSController extends Controller
                 } else {
                     $customer->applyBalanceDelta((float) $total);
                 }
-            } elseif ($customer && $isPartialPayment) {
+            } elseif ($isPartialPayment) {
                 $invoice = Invoice::create([
                     'invoice_number' => Invoice::generateInvoiceNumber(),
                     'order_id' => $order->id,
-                    'customer_name' => $customer->name,
-                    'customer_email' => $customer->email,
-                    'customer_phone' => $customer->phone,
+                    'customer_name' => $customer?->name ?? $customerName,
+                    'customer_email' => $customer?->email ?? $customerEmail,
+                    'customer_phone' => $customer?->phone ?? $customerPhone,
                     'subtotal' => $subtotalNet,
                     'tax_amount' => $tax,
                     'tax_rate' => floatval(setting('tax_rate', 20)),
-                    'ice' => $customer->ice ?? null,
+                    'ice' => $customer?->ice ?? null,
                     'discount_amount' => $totalDiscount,
                     'total_amount' => $total,
                     'payment_method' => $validated['payment_method'],
-                    'payment_status' => $paidNow > 0 ? 'partial' : 'unpaid',
+                    'payment_status' => 'partial',
                     'stock_deducted' => $shouldDeductStock,
                     'notes' => 'Vente POS paiement partiel (Acompte : ' . currency($paidNow) . ', Reste : ' . currency($remainingAmount) . ')',
                     'issued_at' => now(),
@@ -773,8 +772,10 @@ class POSController extends Controller
                     ]);
                 }
 
-                if ($remainingAmount > 0) {
-                    $formattedDue = \Carbon\Carbon::parse($dueDate)->format('d/m/Y');
+                if ($customer && $remainingAmount > 0) {
+                    $dueSuffix = $dueDate
+                        ? ' (Échéance : ' . \Carbon\Carbon::parse($dueDate)->format('d/m/Y') . ')'
+                        : '';
                     if (method_exists($customer, 'recordTransaction')) {
                         $customer->recordTransaction([
                             'type' => 'credit_given',
@@ -785,7 +786,7 @@ class POSController extends Controller
                             'store_id' => $storeId,
                             'payment_date' => now(),
                             'proof_image_path' => $storedAttachments[0]['path'] ?? null,
-                            'notes' => "Reste à payer POS #{$order->order_number} (Échéance : {$formattedDue})",
+                            'notes' => "Reste à payer POS #{$order->order_number}{$dueSuffix}",
                         ]);
                     } else {
                         $customer->applyBalanceDelta((float) $remainingAmount);
@@ -817,7 +818,13 @@ class POSController extends Controller
                     'paid_amount' => (float) $order->paid_amount,
                     'remaining_amount' => (float) $order->remaining_amount,
                     'payment_status' => $order->payment_status,
+                    'payment_status_label' => match ($order->payment_status) {
+                        'paid' => 'Payé',
+                        'partial' => 'Avance',
+                        default => 'En attente',
+                    },
                     'payment_due_date' => $order->payment_due_date?->format('d/m/Y'),
+                    'payment_due_date_iso' => $order->payment_due_date?->format('Y-m-d'),
                     'discount' => (float) $order->discount,
                     'payment_method' => $order->payment_method,
                     'payment_attachments' => $order->payment_attachments_list,
